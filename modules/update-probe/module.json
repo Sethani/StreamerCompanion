@@ -2,13 +2,43 @@
   "schemaVersion": 2,
   "id": "update-probe",
   "name": "Update Probe",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Tests module installation and updates without connecting to stream services.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
-  "streamerbot": { "requiredActions": [] },
-  "dependencies": { "modules": {}, "optionalModules": {}, "capabilities": { "embedded-node": "required" }, "companion": ">=1.1.0" },
-  "service": { "apiVersion": 1, "entry": "service/runtime.js", "port": 3140, "healthPath": "/health", "healthService": "update-probe", "settingsPath": "/settings" },
-  "ui": { "id": "update-probe", "name": "Update Probe", "category": "System", "dockPage": "/settings", "ownership": "node", "overlays": [], "actions": [], "dependencies": ["streaming-companion"], "optionalDependencies": [], "settings": [], "tests": [] }
+  "streamerbot": {
+    "requiredActions": []
+  },
+  "dependencies": {
+    "modules": {},
+    "optionalModules": {},
+    "capabilities": {
+      "embedded-node": "required"
+    },
+    "companion": ">=1.1.0"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/runtime.js",
+    "port": 3140,
+    "healthPath": "/health",
+    "healthService": "update-probe",
+    "settingsPath": "/settings"
+  },
+  "ui": {
+    "id": "update-probe",
+    "name": "Update Probe",
+    "category": "System",
+    "dockPage": "/settings",
+    "ownership": "node",
+    "overlays": [],
+    "actions": [],
+    "dependencies": [
+      "streaming-companion"
+    ],
+    "optionalDependencies": [],
+    "settings": [],
+    "tests": []
+  }
 }
