@@ -33,6 +33,7 @@ function command(executable, args, cwd, allowFailure = false) {
 
 function publishModule(id, distribution) {
   if (typeof id !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(id)) throw new Error("Pass one module ID and the distribution repository checkout directory.");
+  if (command("git", ["status", "--porcelain"], root).stdout.trim()) throw new Error("Commit source changes before publishing so the package has an exact source commit.");
   const checkout = path.resolve(distribution);
   const git = (...args) => command("git", args, checkout).stdout.trim();
   const origin = git("remote", "get-url", "origin").replace(/\.git$/, "");

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "update-probe",
   "name": "Update Probe",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Tests module installation and updates without connecting to stream services.",
   "author": "Sethani",
   "license": "MIT",
