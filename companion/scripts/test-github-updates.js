@@ -63,7 +63,7 @@ async function main() {
       const cached = await host.catalog.check(); assert.ok(cached.error); assert.equal(cached.modules.find((item) => item.id === "update-probe").version, expected);
       assert.equal(host.services.get("update-probe").status, "running");
       complete = true;
-      console.log("Real GitHub update passed: 1.0.0 â†’ 1.0.1, service health, automatic-start preference, private data and offline cache preserved.");
+      console.log("Real module-repository update passed: " + state.version + " -> " + expected + ", service health, automatic-start preference, private data and offline cache preserved.");
     }
   } finally {
     if (host) { await host.services.stopAll(); await host.controlApi.stop(); }
