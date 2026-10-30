@@ -105,7 +105,7 @@ function render(state) {
     else if (module.state === "verification-unavailable") details.textContent = "Start Streamer.bot to verify the module installation.";
     else details.textContent = module.requiredActions.length + " required Streamer.bot actions verified.";
     const actions = card.querySelector(".actions");
-    if (module.missingActions.length && module.hasImport) {
+    if (module.hasImport) {
       actions.append(action("Open Streamer.bot import", () => window.companion.openImport(module.id)));
     }
     if (module.hasDocumentation) {

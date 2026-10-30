@@ -50,7 +50,7 @@ async function main() {
   function fixture(version, ready = true) {
     const manifest = {
       schemaVersion: 2, id: "desktop-fixture", name: "Smoke fixture", version,
-      description: "Synthetic desktop acceptance fixture.", author: "Sethani", dependencies: { modules: {}, optionalModules: {}, capabilities: { "embedded-node": "required" }, companion: ">=1.1.0" }, streamerbot: { requiredActions: [] },
+      description: "Synthetic desktop acceptance fixture.", author: "Sethani", dependencies: { modules: {}, optionalModules: {}, capabilities: { "embedded-node": "required" }, companion: ">=1.1.0" }, streamerbot: { requiredActions: [], importFile: "fixture.sb" },
       service: { apiVersion: 1, entry: "service.js", port: servicePort, healthService: "fixture", healthPath: "/health", settingsPath: "/settings", startTimeoutMs: 1500, dependencies: { requiredCapabilities: ["embedded-node"], optionalCapabilities: ["smoke-extra"] } }
     };
     const source = `const http=require('node:http');const s=http.createServer((q,r)=>{r.setHeader('Content-Type','application/json');r.end(JSON.stringify({service:'fixture',ready:${ready},version:${JSON.stringify(version)}}))});s.listen(Number(process.env.COMPANION_SERVICE_PORT),'127.0.0.1');process.on('SIGTERM',()=>s.close(()=>process.exit(0)));`;
@@ -60,10 +60,12 @@ async function main() {
   const initial = fixture("1.0.0");
   fs.writeFileSync(path.join(moduleRoot, "module.json"), JSON.stringify(initial.manifest));
   fs.writeFileSync(path.join(moduleRoot, "service.js"), initial.source);
+  fs.writeFileSync(path.join(moduleRoot, "fixture.sb"), "Synthetic non-importable test fixture");
   const remote = fixture("1.1.0");
   const remoteZip = new AdmZip();
   remoteZip.addFile("module.json", Buffer.from(JSON.stringify(remote.manifest)));
   remoteZip.addFile("service.js", Buffer.from(remote.source));
+  remoteZip.addFile("fixture.sb", Buffer.from("Synthetic non-importable test fixture"));
   const remoteBytes = remoteZip.toBuffer();
   const packageUrl = "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/smoke/fixture.streammodule";
   const catalogUrl = "https://api.github.com/repos/Sethani/StreamerCompanion-Modules/contents/catalog/modules.json?ref=main";
@@ -85,6 +87,7 @@ async function main() {
   assert.equal(desktop.window.isVisible(), false);
   const execute = (source) => desktop.window.webContents.executeJavaScript(source);
   await waitFor(() => execute("document.querySelectorAll('#services .service').length === 1 && document.querySelector('#streamerbot').textContent === 'Streamer.bot connected'"), "initial desktop refresh");
+  assert.equal(await execute("[...document.querySelectorAll('#modules button')].some(button=>button.textContent==='Open Streamer.bot import')"), true, "A ready module must still expose its import for action-code upgrades");
   const labels = await execute("[...document.querySelectorAll('#services .actions button')].map(b=>b.textContent)");
   assert.deepEqual(labels, ["Start", "Stop", "Restart", "Settings"]);
   const dependencyText = await execute("document.querySelector('#services .service-meta').textContent");
@@ -119,6 +122,7 @@ async function main() {
   const zip = new AdmZip();
   zip.addFile("module.json", Buffer.from(JSON.stringify(upgrade.manifest)));
   zip.addFile("service.js", Buffer.from(upgrade.source));
+  zip.addFile("fixture.sb", Buffer.from("Synthetic non-importable test fixture"));
   const packageFile = path.join(temporary, "fixture.streammodule");
   zip.writeZip(packageFile);
   electron.dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [packageFile] });
