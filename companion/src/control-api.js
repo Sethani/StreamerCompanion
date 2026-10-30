@@ -76,7 +76,8 @@ class ControlApi {
     if (request.method === "GET" && url.pathname === "/api/public/modules") {
       const origin = String(request.headers.origin || "");
       const allowed = /^(https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?)$/.test(origin) ? origin : "";
-      const body = Buffer.from(JSON.stringify(await this.publicModules()));
+      const sameHost = ["http://127.0.0.1:" + this.port, "http://localhost:" + this.port].includes(origin);
+      const body = Buffer.from(JSON.stringify(await this.publicModules({ browserModules: !origin || sameHost || url.searchParams.get("browserModules") === "1" })));
       response.writeHead(200, { "Content-Type": "application/json", "Content-Length": body.length, "Cache-Control": "no-store", ...(allowed ? { "Access-Control-Allow-Origin": allowed, "Vary": "Origin" } : {}) });
       return response.end(body);
     }

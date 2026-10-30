@@ -58,6 +58,14 @@ async function main() {
     assert.ok((await host.availableCapabilities()).has("universal-overlay"));
     const registry = await (await fetch(base + "/api/public/modules")).json();
     assert.equal(registry.modules.find((item) => item.id === "video").nodeUrl, base + "/api/public/assets/video/video/index.html");
+    const legacy = await (await fetch(base + "/api/public/modules", { headers: { Origin: "http://127.0.0.1:7474" } })).json();
+    for (const module of legacy.modules) {
+      for (const field of ["overlays", "actions", "dependencies", "optionalDependencies", "settings", "tests"]) assert.ok(Array.isArray(module[field]), "Legacy UI registry requires " + field);
+      assert.ok(["node", "streamerbot", "mixed", "system"].includes(module.ownership));
+      assert.equal(module.extensionOverlayUrl, "", "Legacy overlays must not automatically embed the new aggregate overlay or duplicate Video renderer");
+    }
+    const optedIn = await (await fetch(base + "/api/public/modules?browserModules=1", { headers: { Origin: "http://127.0.0.1:7474" } })).json();
+    assert.ok(optedIn.modules.find((item) => item.id === "video").extensionOverlayUrl);
     for (const item of registry.modules) for (const url of [item.nodeUrl, item.extensionOverlayUrl, ...item.links.map((link) => link.url)].filter(Boolean)) assert.equal((await fetch(url)).status, 200, url);
     assert.equal((await fetch(base + "/api/public/assets/video/module.json")).status, 404);
     for (const unsafe of ["../module.json", "x/../../module.json", "C:/private", "x\\y", "x."]) assert.throws(() => inside(path.join(host.registry.moduleDirectory("video"), "web"), unsafe));

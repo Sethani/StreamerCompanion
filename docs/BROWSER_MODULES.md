@@ -13,3 +13,5 @@ Universal Dock and Tests poll the installed registry. Universal Overlay owns no 
 Builds include reviewed JavaScript, HTML, CSS and JSON under the declared web root. Binary artwork/media are excluded; another asset type requires provenance/build review. The host package allow-list includes static serving and dependency states. Installed actions/globals, OBS profiles, media and personal server files are never build inputs.
 
 Action-name verification cannot prove imported code/version. Explicitly import replacement exports, initialize once and verify before retiring legacy endpoints. No silent action import is provided.
+
+For cross-origin legacy registry readers, the public projection supplies the legacy UI arrays/ownership defaults and omits packaged overlay frames by default. This prevents the old aggregate overlay from automatically embedding the replacement aggregate and duplicating Video when new packages are installed. Same-host clients receive packaged overlays; a deliberate cross-origin client can opt in with `?browserModules=1`. Existing child-service overlay registrations remain compatible. This adapter does not require the personal server to run.

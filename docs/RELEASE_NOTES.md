@@ -8,4 +8,6 @@ Upgrade the host before installing browser modules. Imports remain explicit even
 
 Preview 2 keeps the Streamer.bot import button available for modules that already show Ready, so existing named actions can receive updated code. Module packages are unchanged from preview 1.
 
+Preview 3 preserves the old UI registry shape and prevents legacy cross-origin overlays from automatically embedding the new aggregate/Video renderer. This keeps installation separate from an explicit OBS cutover. Module packages remain unchanged.
+
 Host self-update and silent installation are not supported. Keep backups, retain the complete Windows application directory and close another Companion instance before launching. Streamer.bot imports remain an explicit user operation. Legacy features not yet migrated remain in the personal integration project.
