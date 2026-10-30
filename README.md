@@ -40,3 +40,5 @@ Host self-update, automatic installation, silent updates and automatic downgrade
 `scripts/build-modules.js <tag>` generates deterministic `.streammodule` archives, SHA-256 sums and the catalogue from module manifests. Streamer.bot `.sb` files are compiled from editable action JSON and C# sources; no live Streamer.bot installation is a build input. GitHub release assets use versioned URLs and must not be replaced in place; version source changes before publishing another package.
 
 The release workflow is manually dispatched with an explicit tag and produces a prerelease. CI checks source and module builds on pushes and pull requests. See [catalogue format](catalog/README.md), [third-party notices](THIRD_PARTY_NOTICES.md) and [MIT licence](LICENSE).
+
+The first real GitHub update test passed from Update Probe 1.0.0 to 1.0.1 with the same host binary. See [validation evidence and remaining gates](docs/VALIDATION.md).
