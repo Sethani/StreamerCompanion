@@ -1,0 +1,10 @@
+node_modules/
+companion/out/
+dist/
+.env
+.env.*
+!*.example
+*.log
+*.sqlite*
+module-data/
+output/

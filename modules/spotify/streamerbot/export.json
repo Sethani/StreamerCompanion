@@ -1,0 +1,322 @@
+{
+  "meta": {
+    "name": "Spotify Music",
+    "author": "Sethani",
+    "version": "2.0.1",
+    "description": "",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "a8b82b93-f0b7-4e5b-bd3f-2d0a84f298e3",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Spotify - Scene Changed",
+        "group": "Spotify",
+        "alwaysRun": true,
+        "randomAction": false,
+        "concurrent": true,
+        "triggers": [
+          {
+            "sceneName": null,
+            "obsId": null,
+            "id": "f1124964-6b8d-4287-9dc0-a74f3dd94ae6",
+            "type": 14004,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "name": "Forward OBS scene changes to Spotify Companion",
+            "description": "Stateless bridge; Spotify Companion owns playback sessions",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Net.Http.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "ccfb1ccb-c0c0-4604-928e-ebbe5e580b06",
+            "weight": 0.0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "spotify---scene-changed-0.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "aef60d6b-a142-424d-ab81-336e3bc6170c",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Spotify - Current Song",
+        "group": "Spotify",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "commandId": "7a47c19a-4b37-48b4-8e96-b60422145530",
+            "id": "0ea1f585-cfbe-478c-a06d-fbbd421ce1b4",
+            "type": 401,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "spotifyLookupMode",
+            "value": "song",
+            "autoType": false,
+            "id": "d5fc0dd3-bfb7-4e9b-ad8a-d67758a4ed61",
+            "weight": 0.0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "name": "Read Spotify playback",
+            "description": "Queries the local Spotify Companion and routes enabled viewer replies through Chat Routing",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Net.Http.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "df4dd8bb-9acc-4f24-a36f-98ac45563afd",
+            "weight": 0.0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "sourceFile": "spotify---current-song-1.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "7dfefd71-f900-40f5-91d9-fcc64dd5d77f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Spotify - Current Playlist",
+        "group": "Spotify",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "commandId": "fdd355c5-1e3c-4d67-9c66-74a208bc1b13",
+            "id": "5a27870e-70f1-4216-814b-6fdf6869a414",
+            "type": 401,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "spotifyLookupMode",
+            "value": "playlist",
+            "autoType": false,
+            "id": "1552952b-b7b0-4e42-88ab-9fe99e4fb200",
+            "weight": 0.0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "name": "Read Spotify playback",
+            "description": "Queries the local Spotify Companion and routes enabled viewer replies through Chat Routing",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Net.Http.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "81c7c9d7-dfec-454f-9100-faf0dcfdf9c3",
+            "weight": 0.0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "sourceFile": "spotify---current-playlist-1.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "311b3106-aefc-46ef-970c-96acf8bfbbac",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Spotify - Send Chat",
+        "group": "Spotify",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": true,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "chatMessage",
+            "value": "%spotifyChatMessage%",
+            "autoType": false,
+            "id": "cd5180cb-f636-4643-8497-b75326cbc2c1",
+            "weight": 0.0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "variableName": "chatReplyId",
+            "value": "",
+            "autoType": false,
+            "id": "4de9e0cd-6552-4049-a6d6-9f71d37996b1",
+            "weight": 0.0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          },
+          {
+            "variableName": "chatReplyUser",
+            "value": "",
+            "autoType": false,
+            "id": "8be3f77d-8817-4739-90fe-09c322b58e71",
+            "weight": 0.0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 2
+          },
+          {
+            "variableName": "chatIsReply",
+            "value": false,
+            "autoType": true,
+            "id": "aa07af44-0753-45ee-a4f3-53c7c6c23509",
+            "weight": 0.0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 3
+          },
+          {
+            "variableName": "chatTargets",
+            "value": "all",
+            "autoType": false,
+            "id": "ec557971-4c93-4774-adfa-f99efefb3714",
+            "weight": 0.0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 4
+          },
+          {
+            "name": "Route through Chat module",
+            "description": "Name-based module dependency; keeps Chat Routing out of Spotify exports",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Net.Http.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "6785414d-cee9-4d59-baad-d73f6c217b79",
+            "weight": 0.0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 5,
+            "sourceFile": "spotify---send-chat-5.cs"
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [
+      {
+        "id": "7a47c19a-4b37-48b4-8e96-b60422145530",
+        "name": "Spotify - Current Song",
+        "enabled": false,
+        "include": true,
+        "mode": 0,
+        "command": "!song",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 10,
+        "userCooldown": 15,
+        "group": "Spotify",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [],
+        "_uiIwwMNAAL8h4D3YWTFGiJcGDYdb": "!song"
+      },
+      {
+        "id": "fdd355c5-1e3c-4d67-9c66-74a208bc1b13",
+        "name": "Spotify - Current Playlist",
+        "enabled": false,
+        "include": true,
+        "mode": 0,
+        "command": "!playlist",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 10,
+        "userCooldown": 15,
+        "group": "Spotify",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [],
+        "_uiIwwMNAAL8h4D3YWTFGiJcGDYdb": "!playlist"
+      }
+    ],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

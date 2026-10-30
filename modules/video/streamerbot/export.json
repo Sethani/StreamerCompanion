@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "name": "Video Player",
+    "author": "Sethani",
+    "version": "2.1.1",
+    "description": "Reusable local-video playback for the shared stream overlay.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "3e7cf840-0545-4076-ad74-bf3fafc263a5",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Video - Play",
+        "group": "Videos",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "videoMode",
+            "value": "play",
+            "autoType": false,
+            "id": "0d293950-6aa1-4321-b829-56f931764b2e",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f840e83f-7f87-4767-abb7-dd8950039b6f",
+            "runImmedately": true,
+            "id": "cc5c3879-5d7e-400b-9327-0b9e03ae3758",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "f95b2c16-2235-413c-9d91-677ffca515cf",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Video - Stop",
+        "group": "Videos",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "videoMode",
+            "value": "stop",
+            "autoType": false,
+            "id": "e17213d0-e640-4b01-a889-cb754718f2bb",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f840e83f-7f87-4767-abb7-dd8950039b6f",
+            "runImmedately": true,
+            "id": "8d3db36a-9560-4283-921d-f37ae22eb306",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "f840e83f-7f87-4767-abb7-dd8950039b6f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Video - Engine",
+        "group": "Videos",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Video state and playback engine",
+            "description": "Owns Video library, presentation, and playback state",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "d592174e-8730-4a6b-80d5-2b5e1906ae3c",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "video---engine-0.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "211f41de-791c-4643-9e08-133be7f1878b",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Video - Initialize",
+        "group": "Videos",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "ab2b1bec-cbac-4ec9-b446-151f8b040ff1",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "videoMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "503272dc-e878-4623-9234-d6b8e8a39ea5",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f840e83f-7f87-4767-abb7-dd8950039b6f",
+            "runImmedately": true,
+            "id": "7fb29c0e-255a-4e7d-b20c-b3da1652c4a8",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "74cadb02-7a29-4518-9c36-b16b83df06a9",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Video - Health",
+        "group": "Videos",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "videoMode",
+            "value": "health",
+            "autoType": false,
+            "id": "9f392cdf-6a81-4951-9cfa-2897afc31afb",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f840e83f-7f87-4767-abb7-dd8950039b6f",
+            "runImmedately": true,
+            "id": "fded9e3f-65fe-4d4e-9f8e-2c287fbb423e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "4da5c92b-74eb-4408-a9c5-fece554ace19",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Video - Configure",
+        "group": "Videos",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "videoMode",
+            "value": "configure",
+            "autoType": false,
+            "id": "5f070938-8f95-4d68-969b-fcc96d5de1fc",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f840e83f-7f87-4767-abb7-dd8950039b6f",
+            "runImmedately": true,
+            "id": "d9f7e9d2-61e2-4776-866f-9c66a91d7c53",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

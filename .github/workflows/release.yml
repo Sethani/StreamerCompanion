@@ -1,0 +1,38 @@
+name: Experimental release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Immutable release tag (for example v1.1.0-preview.3)
+        required: true
+        type: string
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: companion/package-lock.json
+      - run: npm --prefix companion ci
+      - run: npm run check
+      - run: npm run build:modules -- "$env:RELEASE_TAG"
+      - run: npm run package
+      - name: Assemble and publish prerelease
+        shell: pwsh
+        run: |
+          $build = Get-Content -LiteralPath companion/out/latest-build.json | ConvertFrom-Json
+          npm --prefix companion run check:desktop -- "$($build.directory)"
+          if ($LASTEXITCODE -ne 0) { throw "Desktop acceptance failed" }
+          Compress-Archive -LiteralPath $build.directory -DestinationPath dist/StreamerCompanion-Windows-x64.zip
+          $hash = (Get-FileHash -LiteralPath dist/StreamerCompanion-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          Add-Content -LiteralPath dist/SHA256SUMS -Value "$hash  StreamerCompanion-Windows-x64.zip"
+          $assets = Get-ChildItem -LiteralPath dist -File | Select-Object -ExpandProperty FullName
+          gh release create "$env:RELEASE_TAG" @assets --target "$env:GITHUB_SHA" --prerelease --title "Streamer Companion $env:RELEASE_TAG" --notes-file docs/RELEASE_NOTES.md

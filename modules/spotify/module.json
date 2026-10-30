@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "id": "spotify",
+  "name": "Spotify Music",
+  "version": "2.0.1",
+  "description": "Spotify playback, countdown fading, scene-owned music, and viewer song information.",
+  "documentation": "README.md",
+  "streamerbot": {
+    "requiredActions": [
+      "Spotify - Scene Changed",
+      "Spotify - Current Song",
+      "Spotify - Current Playlist",
+      "Spotify - Send Chat"
+    ],
+    "importFile": "streamerbot/spotify.sb"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/spotify-runtime.js",
+    "port": 3127,
+    "healthPath": "/health",
+    "healthService": "spotify",
+    "settingsPath": "/spotify/settings",
+    "provides": [
+      "spotify-playback",
+      "spotify-countdown-fade"
+    ]
+  },
+  "dataMigration": {
+    "legacyIds": [
+      "spotify"
+    ]
+  },
+  "ui": {
+    "id": "spotify",
+    "name": "Spotify Music",
+    "category": "Stream",
+    "order": 45,
+    "dockPage": "/spotify/settings",
+    "ownership": "node",
+    "overlays": [],
+    "actions": [
+      "Spotify - Scene Changed",
+      "Spotify - Current Song",
+      "Spotify - Current Playlist",
+      "Spotify - Send Chat"
+    ],
+    "dependencies": [
+      "streaming-companion",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "spotify-account",
+      "obs-scenes",
+      "countdown",
+      "chat-routing"
+    ],
+    "settings": [
+      "credentials",
+      "device",
+      "playlist",
+      "volumes",
+      "fade",
+      "sceneBindings",
+      "songCommand",
+      "playlistCommand",
+      "nowPlaying"
+    ],
+    "tests": [
+      {
+        "id": "current",
+        "name": "Spotify current playback",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Read current song",
+            "localRequest": {
+              "url": "http://127.0.0.1:3127/api/spotify/current"
+            }
+          }
+        ]
+      },
+      {
+        "id": "scene",
+        "name": "Spotify scene music",
+        "level": "mutating",
+        "fields": [
+          {
+            "id": "scene",
+            "label": "OBS scene",
+            "type": "text",
+            "value": "Intermission: BRB",
+            "maxlength": 120
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Apply scene",
+            "localRequest": {
+              "url": "http://127.0.0.1:3127/api/spotify/scene",
+              "query": {
+                "scene": {
+                  "field": "scene",
+                  "trim": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "author": "Sethani",
+  "license": "MIT",
+  "dependencies": {
+    "modules": {},
+    "optionalModules": {},
+    "capabilities": {
+      "streamerbot-websocket": "required",
+      "spotify-account": "optional"
+    },
+    "companion": ">=1.1.0"
+  }
+}

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Streaming Companion</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Streaming Companion</h1>
+      <p>Advanced services and installable modules for Streamer.bot.</p>
+    </div>
+    <div id="streamerbot" class="connection">Checking Streamer.bot</div>
+  </header>
+  <main>
+    <section class="toolbar">
+      <button id="install">Install module</button>
+      <button id="refresh" class="icon" title="Refresh module health" aria-label="Refresh module health">&#8635;</button>
+    </section>
+    <div id="feedback" role="status"></div>
+    <section class="services-section">
+      <div class="section-heading"><h2>Module catalogue</h2><button id="catalog-check">Check for updates</button></div>
+      <p id="catalog-status">Check GitHub Releases for available modules. Updates install only when you choose them.</p>
+      <div id="catalog" class="module-list"></div>
+    </section>
+    <section class="api-section">
+      <div><h2>Module API</h2><p id="api-status">Authenticated local module installation</p></div>
+      <div class="actions"><button id="copy-api-token" class="secondary">Copy API token</button><button id="rotate-api-token" class="secondary">Rotate token</button></div>
+    </section>
+    <section class="services-section">
+      <div class="section-heading">
+        <h2>Services</h2>
+        <div class="service-bulk-actions">
+          <label><input id="autostart-all" type="checkbox"> Auto-start all</label>
+          <button id="start-all">Start all</button>
+          <button id="stop-all" class="secondary">Stop all</button>
+        </div>
+      </div>
+      <div id="services" class="module-list"></div>
+    </section>
+    <section>
+      <h2>Modules</h2>
+      <div id="modules" class="module-list"></div>
+    </section>
+  </main>
+  <template id="module-template">
+    <article class="module">
+      <div class="module-heading">
+        <div><h3></h3><p class="description"></p></div>
+        <span class="status"></span>
+      </div>
+      <div class="details"></div>
+      <div class="actions"></div>
+    </article>
+  </template>
+  <template id="service-template">
+    <article class="module service">
+      <div class="module-heading"><div><h3></h3><p class="description"></p></div><span class="status"></span></div>
+      <div class="service-health"></div>
+      <div class="service-meta"></div>
+      <label class="autostart"><input type="checkbox"> Start automatically with Companion</label>
+      <div class="actions"></div>
+      <details><summary>Recent logs</summary><pre>No logs yet.</pre></details>
+    </article>
+  </template>
+  <script src="app.js"></script>
+</body>
+</html>

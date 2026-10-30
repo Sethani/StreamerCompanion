@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "id": "video",
+  "name": "Video",
+  "version": "2.1.1",
+  "description": "Owned video playback, titles, presentation settings, and overlay tests.",
+  "configurationRequired": false,
+  "documentation": "README.md",
+  "streamerbot": {
+    "requiredActions": [
+      "Video - Engine",
+      "Video - Initialize",
+      "Video - Health",
+      "Video - Configure",
+      "Video - Play",
+      "Video - Stop"
+    ],
+    "importFile": "streamerbot/video.sb"
+  },
+  "ui": {
+    "id": "video",
+    "name": "Video Player",
+    "category": "Effects",
+    "order": 10,
+    "dockPage": "/video/index.html",
+    "ownership": "streamerbot",
+    "overlays": [
+      "video"
+    ],
+    "actions": [
+      "Video - Configure",
+      "Video - Play",
+      "Video - Stop"
+    ],
+    "dependencies": [
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [],
+    "settings": [
+      "registeredVideos",
+      "position",
+      "size",
+      "fit",
+      "volume",
+      "titleAppearance"
+    ],
+    "tests": [
+      {
+        "id": "player",
+        "name": "Video",
+        "level": "mutating",
+        "dataSources": [
+          "videos"
+        ],
+        "fields": [
+          {
+            "id": "video",
+            "label": "Registered video",
+            "type": "select",
+            "dataSource": "videos"
+          },
+          {
+            "id": "title",
+            "label": "Optional title",
+            "type": "text",
+            "placeholder": "Video test"
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Play",
+            "feature": "video",
+            "command": "Play",
+            "args": {
+              "id": {
+                "field": "video"
+              },
+              "src": {
+                "field": "video",
+                "selectedData": "src",
+                "portableUrl": true
+              },
+              "title": {
+                "field": "title"
+              }
+            }
+          },
+          {
+            "label": "Stop",
+            "className": "secondary",
+            "feature": "video",
+            "command": "Stop",
+            "args": {}
+          }
+        ]
+      },
+      {
+        "id": "health",
+        "name": "Video health",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check health",
+            "feature": "video",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      }
+    ]
+  },
+  "author": "Sethani",
+  "license": "MIT",
+  "dependencies": {
+    "modules": {},
+    "optionalModules": {},
+    "capabilities": {
+      "streamerbot-websocket": "required",
+      "universal-overlay": "required",
+      "universal-dock": "required"
+    },
+    "companion": ">=1.1.0"
+  }
+}

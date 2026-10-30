@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "modules": [
+    {
+      "id": "spotify",
+      "name": "Spotify Music",
+      "version": "2.0.1",
+      "description": "Spotify playback, countdown fading, scene-owned music, and viewer song information.",
+      "author": "Sethani",
+      "category": "Stream",
+      "dependencies": {
+        "modules": {},
+        "optionalModules": {},
+        "capabilities": {
+          "streamerbot-websocket": "required",
+          "spotify-account": "optional"
+        },
+        "companion": ">=1.1.0"
+      },
+      "provides": [
+        "spotify-playback",
+        "spotify-countdown-fade"
+      ],
+      "streamerbot": {
+        "minimumVersion": "1.0.0",
+        "requiredActions": [
+          "Spotify - Scene Changed",
+          "Spotify - Current Song",
+          "Spotify - Current Playlist",
+          "Spotify - Send Chat"
+        ]
+      },
+      "package": {
+        "url": "https://github.com/Sethani/StreamerCompanion/releases/download/v1.1.0-preview.1/spotify-2.0.1.streammodule",
+        "sha256": "5692659864d3dee18cc21a0cb654b3219672ef163b199c20720debe24b4682b8"
+      }
+    },
+    {
+      "id": "update-probe",
+      "name": "Update Probe",
+      "version": "1.0.0",
+      "description": "Tests module installation and updates without connecting to stream services.",
+      "author": "Sethani",
+      "category": "System",
+      "dependencies": {
+        "modules": {},
+        "optionalModules": {},
+        "capabilities": {
+          "embedded-node": "required"
+        },
+        "companion": ">=1.1.0"
+      },
+      "provides": [],
+      "streamerbot": {
+        "minimumVersion": "1.0.0",
+        "requiredActions": []
+      },
+      "package": {
+        "url": "https://github.com/Sethani/StreamerCompanion/releases/download/v1.1.0-preview.1/update-probe-1.0.0.streammodule",
+        "sha256": "cad4e491259f613e3ed94ee3b3fc633997e629ea2a5db18646416873c479f1d0"
+      }
+    },
+    {
+      "id": "video",
+      "name": "Video",
+      "version": "2.1.1",
+      "description": "Owned video playback, titles, presentation settings, and overlay tests.",
+      "author": "Sethani",
+      "category": "Effects",
+      "dependencies": {
+        "modules": {},
+        "optionalModules": {},
+        "capabilities": {
+          "streamerbot-websocket": "required",
+          "universal-overlay": "required",
+          "universal-dock": "required"
+        },
+        "companion": ">=1.1.0"
+      },
+      "provides": [],
+      "streamerbot": {
+        "minimumVersion": "1.0.0",
+        "requiredActions": [
+          "Video - Engine",
+          "Video - Initialize",
+          "Video - Health",
+          "Video - Configure",
+          "Video - Play",
+          "Video - Stop"
+        ]
+      },
+      "package": {
+        "url": "https://github.com/Sethani/StreamerCompanion/releases/download/v1.1.0-preview.1/video-2.1.1.streammodule",
+        "sha256": "cc9c91517648164694ad713817b9357f4a0dbc897b4cd240d08d066e6756cbbe"
+      }
+    }
+  ]
+}
