@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 2,
+  "id": "source-modules",
+  "name": "Source Modules",
+  "version": "1.0.0",
+  "description": "Preserved Streamer.bot scene routing for installed module overlays.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "provides": [
+    "source-modules"
+  ],
+  "web": {
+    "root": "web"
+  },
+  "streamerbot": {
+    "requiredActions": [
+      "Module Routing - Engine",
+      "Module Routing - Initialize",
+      "Module Routing - Save",
+      "Module Routing - Scene Changed"
+    ],
+    "importFile": "streamerbot/source-modules.sb"
+  },
+  "ui": {
+    "id": "source-modules",
+    "name": "Source Modules",
+    "category": "System",
+    "order": 90,
+    "dockPage": "/routing/index.html",
+    "transport": {
+      "feature": "moduleRouting",
+      "stateKey": "portable.moduleRouting.state",
+      "actionPrefix": "Module Routing"
+    },
+    "actions": [
+      "Module Routing - Save",
+      "Module Routing - Initialize"
+    ],
+    "tests": [
+      {
+        "id": "routing-state",
+        "name": "Routing state",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Read routing state",
+            "readFeature": "moduleRouting"
+          }
+        ]
+      }
+    ]
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.2.0"
+  }
+}

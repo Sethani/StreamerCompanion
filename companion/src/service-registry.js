@@ -54,15 +54,19 @@ class ServiceRegistry {
     const dependencies = service.manifest.dependencies || {};
     const provided = new Set(this.systemCapabilities);
     for (const candidate of this.services.values()) {
+      if (candidate.manifest.installedModule && this.activeProviders && !this.activeProviders.has(candidate.manifest.id)) continue;
       for (const capability of candidate.manifest.provides || []) provided.add(capability);
     }
     const required = dependencies.requiredCapabilities || [];
     const optional = dependencies.optionalCapabilities || [];
+    const moduleState = service.manifest.installedModule && this.moduleStates?.get(service.manifest.id);
+    const moduleProblem = moduleState && ["broken", "incompatible", "missing-dependency"].includes(moduleState.state) ? [moduleState.problem] : [];
+    const missingRequired = [...required.filter((capability) => !provided.has(capability)), ...moduleProblem];
     return {
-      ready: required.every((capability) => provided.has(capability)),
+      ready: missingRequired.length === 0,
       required,
       optional,
-      missingRequired: required.filter((capability) => !provided.has(capability)),
+      missingRequired,
       missingOptional: optional.filter((capability) => !provided.has(capability))
     };
   }

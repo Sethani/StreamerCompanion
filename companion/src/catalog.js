@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const semver = require("semver");
+const { provides } = require("./module-state");
 
 const ID = /^[a-z0-9][a-z0-9-]*$/;
 const MAX_PACKAGE = 100 * 1024 * 1024;
@@ -199,7 +200,7 @@ class ModuleCatalog {
         const file = path.join(temporary, item.id + ".streammodule");
         fs.writeFileSync(file, bytes);
         const { manifest } = this.registry.inspectPackage(file);
-        if (manifest.id !== item.id || manifest.version !== item.version || manifest.author !== item.author || manifest.description !== item.description || JSON.stringify(manifest.dependencies) !== JSON.stringify(item.dependencies) || JSON.stringify(manifest.service?.provides || []) !== JSON.stringify(item.provides) || JSON.stringify(manifest.streamerbot.requiredActions) !== JSON.stringify(item.streamerbot.requiredActions)) throw new Error("Package metadata differs from its catalogue entry: " + item.id + ".");
+        if (manifest.id !== item.id || manifest.version !== item.version || manifest.author !== item.author || manifest.description !== item.description || JSON.stringify(manifest.dependencies) !== JSON.stringify(item.dependencies) || JSON.stringify(provides(manifest)) !== JSON.stringify(item.provides) || JSON.stringify(manifest.streamerbot.requiredActions) !== JSON.stringify(item.streamerbot.requiredActions)) throw new Error("Package metadata differs from its catalogue entry: " + item.id + ".");
         packages.push({ item, file });
       }
       return { temporary, packages };

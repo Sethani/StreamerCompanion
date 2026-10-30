@@ -43,6 +43,22 @@ The isolated service and API were stopped, and the test profile/state file was r
 
 ## Remaining retirement gates
 
-This proves independent module distribution and updates; it does not retire all legacy features. Universal Dock/Overlay/Tests still need a clean distributable foundation. Video's catalogue entry declares those missing facilities and remains unavailable until they are supplied. Streamer.bot imports are explicit, and real clean-machine compilation/import has not been claimed.
+Independent module distribution and updates are proven; full legacy retirement still requires per-feature cutovers. The browser foundation implementation and isolated evidence are recorded below. Streamer.bot imports remain explicit, and real clean-machine compilation/import has not been claimed.
 
 Pokemon imagery and Chat Core's bundled helper remain outside the public batch pending their redistribution notices. Host self-update, production data migration and full legacy shutdown are later gates. See [the migration batches](MIGRATION.md).
+
+## Browser foundation 1.2.0
+
+The host now serves reviewed assets from installed package web roots and explicitly selected private media. Universal Dock 1.0.0 (including Tests), Universal Overlay 1.0.0 and Source Modules 1.0.0 are separate packages. Video 2.2.0 includes its own editor/renderer and requires all three. New modules start with no personal library or scene rules. Existing action IDs, globals, valid library sources, unknown routing rules and presentation settings are preserved.
+
+Verified locally with temporary data and isolated loopback ports:
+
+- Full existing check suite plus actual four-package dependency installation, top-level capability/identity validation, incompatible ranges/cycles, missing-dependency propagation and repair, missing imports, offline states and broken-manifest handling.
+- Only declared web roots are served; imports/package metadata and unindexed media are excluded. Traversal, GET/HEAD, partial/suffix byte ranges, invalid ranges and methods were checked. Explicit copies store generated filenames without original absolute paths. Invalid selections cannot partially alter the index.
+- Browser package upgrades preserve synthetic private files, media URLs and stored preferences. A package missing a declared page is rejected before replacement, leaving the previous version/data intact. Installation/verification invokes no Streamer.bot action.
+- Actual Video and Source Modules C# source compiles in PowerShell's compiler against a synthetic CPH adapter. Tests execute Initialize/Configure/Play/Stop and routing Save: empty defaults, legacy/new media URLs, rejected remote URLs, preserved configuration, merged unknown routing rules, invalid-save atomicity, scene updates and stale-completion guards pass. This does not substitute for Streamer.bot's own compiler/import test.
+- The built ASAR passed existing hidden desktop acceptance and a new hidden browser acceptance. A tiny synthetic WebM is generated locally and copied through the real media implementation. The test opens packaged Dock/Tests, registers and saves media, relinks an existing ID, checks cancelled/explicit tests, plays the real generated clip, verifies title/volume, duplicate-state handling, natural completion, scene routing and disconnect/reconnect. No live integrations or personal media are used. All spawned test processes/listeners are stopped and temporary profiles removed.
+
+Unchecked/remaining: real Streamer.bot import and startup/OBS triggers, real OBS browser behavior/audio/codec support and production cutover. Existing action-name verification cannot establish installed action code/version; reimport exports explicitly. Shared WebSocket transport currently requires unauthenticated loopback access. Spotify's service controls remain its operational test surface: its older service does not enable cross-origin fetch responses for the new shared Tests page's localRequest buttons. Shared Tests checks the service's read-only health endpoint first and reports an unsupported/unavailable service before sending the requested command. A synthetic service verifies that local query/body/method handling works and that blocked cross-origin requests cannot send a mutating command. No real Spotify/OAuth/playback calls were made. This does not prove every legacy test registration works.
+
+Full legacy retirement is not claimed. Original legacy video URLs retain their original host dependency until the operator explicitly copies/relinks them. Pokemon and other legacy feature renderers are not copied into Universal Overlay.

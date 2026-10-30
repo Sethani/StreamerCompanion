@@ -1,6 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const AdmZip = require("adm-zip");
+const semver = require("semver");
 const { getActions } = require("./streamerbot-client");
 
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
@@ -35,6 +36,23 @@ class CompanionRegistry {
     }
     if (manifest.documentation !== undefined) validateRelativeFile(manifest.documentation, "Module documentation");
     if (manifest.streamerbot.importFile !== undefined) validateRelativeFile(manifest.streamerbot.importFile, "Module Streamer.bot import");
+    if (manifest.provides !== undefined && (!Array.isArray(manifest.provides) || manifest.provides.some((value) => typeof value !== "string" || !ID_PATTERN.test(value)))) throw new Error("Invalid module capabilities.");
+    if (manifest.dependencies) {
+      if (manifest.dependencies.companion && !semver.validRange(manifest.dependencies.companion)) throw new Error("Invalid Companion compatibility range.");
+      for (const field of ["modules", "optionalModules"]) if (manifest.dependencies[field]) {
+        if (typeof manifest.dependencies[field] !== "object" || Array.isArray(manifest.dependencies[field])) throw new Error("Invalid module dependency map.");
+        for (const [id, range] of Object.entries(manifest.dependencies[field])) if (!ID_PATTERN.test(id) || typeof range !== "string" || !semver.validRange(range)) throw new Error("Invalid module dependency range.");
+      }
+    }
+    if (manifest.web) {
+      if (manifest.schemaVersion < 2) throw new Error("Browser modules require package schema 2.");
+      validateRelativeFile(manifest.web.root, "Browser asset root");
+      const page = (value) => { if (typeof value !== "string" || !value.startsWith("/")) throw new Error("Browser page must start with /."); validateRelativeFile(value.slice(1), "Browser page"); };
+      if (manifest.ui?.dockPage) page(manifest.ui.dockPage);
+      if (manifest.web.overlayPage) page(manifest.web.overlayPage);
+      for (const link of manifest.ui?.links || []) { if (!link.name || typeof link.name !== "string") throw new Error("Browser link name required."); page(link.path); }
+    }
+    if (manifest.media && manifest.media.kind !== "video") throw new Error("Unsupported module media type.");
     if (manifest.service) {
       if (manifest.schemaVersion < 2) throw new Error("Service modules require package schema 2.");
       if (manifest.service.apiVersion !== 1) throw new Error("Module requires an unsupported Companion service API version.");
@@ -85,6 +103,13 @@ class CompanionRegistry {
       if (extracted.id !== inspected.manifest.id || extracted.version !== inspected.manifest.version) throw new Error("Extracted module manifest changed during installation.");
       for (const [file, label] of [[extracted.service?.entry, "service entry"], [extracted.streamerbot.importFile, "Streamer.bot import file"], [extracted.documentation, "documentation file"]]) {
         if (file && (!fs.existsSync(path.join(temporary, file)) || !fs.statSync(path.join(temporary, file)).isFile())) throw new Error("Module " + label + " was not included in the package.");
+      }
+      if (extracted.web) {
+        const root = path.join(temporary, extracted.web.root);
+        if (!fs.existsSync(root) || !fs.statSync(root).isDirectory()) throw new Error("Browser asset root was not included in the package.");
+        for (const page of [extracted.ui?.dockPage, extracted.web.overlayPage, ...(extracted.ui?.links || []).map((link) => link.path)].filter(Boolean)) {
+          if (!fs.existsSync(path.join(root, page.slice(1))) || !fs.statSync(path.join(root, page.slice(1))).isFile()) throw new Error("Browser page was not included in the package.");
+        }
       }
       return { manifest: extracted, destination, temporary, backup, hadPrevious: fs.existsSync(destination), committed: false };
     } catch (error) {
@@ -156,7 +181,7 @@ class CompanionRegistry {
       const documentationFile = manifest.documentation ? path.join(directory, manifest.documentation) : "";
       let state = "ready";
       if (error) state = "broken";
-      else if (!streamerBot.connected) state = "verification-unavailable";
+      else if (required.length && !streamerBot.connected) state = "verification-unavailable";
       else if (missingActions.length) state = "streamerbot-required";
       else if (manifest.configurationRequired) state = "configuration-required";
       return {

@@ -14,6 +14,7 @@ class ControlApi {
     this.listCatalog = options.listCatalog;
     this.checkCatalog = options.checkCatalog;
     this.installCatalog = options.installCatalog;
+    this.publicAssets = options.publicAssets;
     this.authPath = path.join(this.dataDirectory, "companion-api.json");
     this.server = null;
     this.token = this.loadToken();
@@ -70,6 +71,7 @@ class ControlApi {
 
   async handle(request, response) {
     const url = new URL(request.url, "http://127.0.0.1:" + this.port);
+    if (this.publicAssets && await this.publicAssets(request, response, url)) return;
     if (request.method === "GET" && url.pathname === "/health") return this.json(response, 200, { service: "streaming-companion-control", ready: true, port: this.port });
     if (request.method === "GET" && url.pathname === "/api/public/modules") {
       const origin = String(request.headers.origin || "");

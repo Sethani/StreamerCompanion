@@ -2,7 +2,7 @@
   "meta": {
     "name": "Video Player",
     "author": "Sethani",
-    "version": "2.1.1",
+    "version": "2.2.0",
     "description": "Reusable local-video playback for the shared stream overlay.",
     "autoRunAction": null,
     "minimumVersion": null

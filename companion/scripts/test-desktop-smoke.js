@@ -12,8 +12,10 @@ async function main() {
   try {
     const env = { ...process.env };
     delete env.ELECTRON_RUN_AS_NODE;
+    for (const script of ["electron-desktop-smoke.js", "electron-browser-foundation.js"]) {
+    const profile = path.join(temporary, script); fs.mkdirSync(profile);
     const code = await new Promise((resolve, reject) => {
-      const child = spawn(require("electron"), [path.join(__dirname, "electron-desktop-smoke.js"), bundle, temporary], {
+      const child = spawn(require("electron"), [path.join(__dirname, script), bundle, profile], {
         env, windowsHide: true, stdio: ["ignore", "pipe", "pipe"]
       });
       child.stdout.pipe(process.stdout);
@@ -22,6 +24,7 @@ async function main() {
       child.once("exit", resolve);
     });
     assert.equal(code, 0, "Hidden desktop smoke failed");
+    }
   } finally {
     assert.ok(path.resolve(temporary).startsWith(path.resolve(os.tmpdir()) + path.sep));
     fs.rmSync(temporary, { recursive: true, force: true });

@@ -2,6 +2,8 @@ const $ = (selector) => document.querySelector(selector);
 const labels = {
   ready: "Ready",
   broken: "Broken",
+  incompatible: "Incompatible Companion version",
+  "missing-dependency": "Missing dependency",
   "streamerbot-required": "Streamer.bot confirmation needed",
   "verification-unavailable": "Verification unavailable",
   "configuration-required": "Configuration needed"
@@ -98,17 +100,24 @@ function render(state) {
     status.textContent = labels[module.state] || module.state;
     status.classList.add(module.state);
     const details = card.querySelector(".details");
-    if (module.error) details.textContent = module.error;
+    if (module.error || module.problem) details.textContent = module.error || module.problem;
     else if (module.missingActions.length) details.textContent = "Missing Streamer.bot actions: " + module.missingActions.join(", ");
     else if (module.state === "verification-unavailable") details.textContent = "Start Streamer.bot to verify the module installation.";
     else details.textContent = module.requiredActions.length + " required Streamer.bot actions verified.";
     const actions = card.querySelector(".actions");
-    if (module.state === "streamerbot-required" && module.hasImport) {
+    if (module.missingActions.length && module.hasImport) {
       actions.append(action("Open Streamer.bot import", () => window.companion.openImport(module.id)));
     }
     if (module.hasDocumentation) {
       actions.append(action("Documentation", () => window.companion.openDocs(module.id), true));
     }
+    if (module.ui?.nodeUrl) actions.append(action("Open controls", () => window.companion.moduleLink(module.id, "controls"), true));
+    if (module.ui?.extensionOverlayUrl) actions.append(action("Copy overlay URL", () => window.companion.moduleLink(module.id, "overlay", true), true));
+    for (const [index, link] of (module.ui?.links || []).entries()) actions.append(action(link.name, () => window.companion.moduleLink(module.id, "link-" + index), true));
+    if (module.hasMedia) actions.append(action("Add media", async () => {
+      const result = await window.companion.importMedia(module.id);
+      if (!result.canceled) feedback("Media copied privately. Open the module controls and refresh media to register it.");
+    }, true));
     list.append(card);
   }
 }

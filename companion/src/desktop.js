@@ -61,8 +61,23 @@ function createDesktop(options) {
     });
   });
 
-  ipcMain.handle("companion:list", () => registry.list());
-  ipcMain.handle("companion:refresh", () => registry.refresh());
+  ipcMain.handle("companion:list", () => host.listModules());
+  ipcMain.handle("companion:refresh", () => host.listModules());
+  ipcMain.handle("companion:module-link", async (_event, { id, target, copy }) => {
+    const module = (await host.listModules()).modules.find((item) => item.id === id);
+    const links = { controls: module?.ui?.nodeUrl, overlay: module?.ui?.extensionOverlayUrl };
+    for (const [index, link] of (module?.ui?.links || []).entries()) links["link-" + index] = link.url;
+    const url = links[target];
+    if (!url || !/^http:\/\/(127\.0\.0\.1|localhost):\d+\//.test(url)) throw new Error("This module link is unavailable.");
+    if (copy) clipboard.writeText(url); else await shell.openExternal(url);
+    return true;
+  });
+  ipcMain.handle("companion:import-media", async (_event, id) => {
+    if (registry.readManifest(id)?.media?.kind !== "video") throw new Error("This module does not accept video media.");
+    const selection = await dialog.showOpenDialog(window, { title: "Add video media", properties: ["openFile", "multiSelections"], filters: [{ name: "Videos", extensions: ["mp4", "webm", "m4v", "mov"] }] });
+    if (selection.canceled) return { canceled: true };
+    return { media: host.webAssets.importMedia(id, selection.filePaths) };
+  });
   ipcMain.handle("companion:catalog", () => host.catalog.inventory());
   ipcMain.handle("companion:catalog-check", () => host.catalog.check());
   ipcMain.handle("companion:catalog-install", (_event, id) => host.installCatalogModule(id));
@@ -90,8 +105,8 @@ function createDesktop(options) {
       filters: [{ name: "Streaming modules", extensions: ["streammodule"] }]
     });
     if (selection.canceled || !selection.filePaths[0]) return null;
-    const result = await host.installModulePackage(selection.filePaths[0]);
-    return result.registry;
+    await host.installModulePackage(selection.filePaths[0]);
+    return host.listModules();
   });
   ipcMain.handle("companion:open-import", async (_event, moduleId) => {
     const target = registry.getImportFile(moduleId);

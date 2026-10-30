@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 2,
+  "id": "universal-dock",
+  "name": "Universal Dock",
+  "version": "1.0.0",
+  "description": "Installed module controls, shared Streamer.bot transport, and operator tests.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "provides": [
+    "universal-dock",
+    "module-tests"
+  ],
+  "web": {
+    "root": "web"
+  },
+  "streamerbot": {
+    "requiredActions": []
+  },
+  "ui": {
+    "id": "universal-dock",
+    "name": "Universal Dock",
+    "category": "System",
+    "order": 0,
+    "dockPage": "/dock/index.html",
+    "links": [
+      {
+        "name": "Tests",
+        "path": "/tests/index.html"
+      }
+    ]
+  },
+  "dependencies": {
+    "modules": {},
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.2.0"
+  }
+}

@@ -5,12 +5,15 @@ const { ServiceRegistry } = require("./service-registry");
 const { InstalledService } = require("./installed-service");
 const { ControlApi } = require("./control-api");
 const { ModuleCatalog } = require("./catalog");
+const { moduleStates } = require("./module-state");
+const { WebAssets } = require("./web-assets");
 
 // Application-independent orchestration. Personal services are registered by main.js.
 class CompanionHost {
   constructor(options) {
     this.app = options.app;
     this.installing = false;
+    this.version = options.version || require("../package.json").version;
     this.dataDirectory = options.dataDirectory || this.app.getPath("userData");
     this.registry = new CompanionRegistry({
       dataDirectory: path.join(this.dataDirectory, "modules"),
@@ -24,27 +27,46 @@ class CompanionHost {
       port: options.controlApiPort ?? 3135,
       dataDirectory: path.join(this.dataDirectory, "control-api"),
       installPackage: (packagePath) => this.installModulePackage(packagePath),
-      listModules: () => this.registry.list(),
+      listModules: () => this.listModules(),
       listServices: () => this.listServices(),
-      publicModules: async () => this.publicInstalledModules(),
+      publicModules: async () => this.publicInstalledModules((await this.moduleState()).states),
       listCatalog: () => this.catalog.inventory(),
       checkCatalog: () => this.catalog.check(),
-      installCatalog: (id) => this.installCatalogModule(id)
+      installCatalog: (id) => this.installCatalogModule(id),
+      publicAssets: (request, response, url) => this.webAssets.handle(request, response, url)
     });
+    this.webAssets = new WebAssets({ registry: this.registry, dataDirectory: this.dataDirectory, port: () => this.controlApi.port, moduleStates: () => this.moduleState() });
     this.catalog = new ModuleCatalog({
       repository: options.catalogRepository, fetch: options.catalogFetch,
-      version: options.version || require("../package.json").version,
+      version: this.version,
       registry: this.registry, directory: path.join(this.dataDirectory, "catalog"),
       capabilities: () => this.availableCapabilities()
     });
   }
 
   async availableCapabilities() {
-    if ((await this.registry.refresh()).streamerBot.connected) this.services.systemCapabilities.add("streamerbot-websocket");
+    return (await this.moduleState()).capabilities;
+  }
+
+  async moduleState() {
+    const state = await this.registry.refresh();
+    if (state.streamerBot.connected) this.services.systemCapabilities.add("streamerbot-websocket");
     else this.services.systemCapabilities.delete("streamerbot-websocket");
-    const available = new Set(this.services.systemCapabilities);
-    for (const service of this.services.services.values()) for (const capability of service.manifest.provides || []) available.add(capability);
-    return available;
+    for (const capability of this.staticCapabilities || []) this.services.systemCapabilities.delete(capability);
+    const actions = [...new Set(state.modules.flatMap((item) => item.requiredActions.filter((name) => !item.missingActions.includes(name))))];
+    const result = moduleStates(this.registry.manifests(), this.version, this.services.systemCapabilities, actions, state.streamerBot.connected);
+    this.staticCapabilities = [...result.capabilities].filter((value) => !this.services.systemCapabilities.has(value));
+    for (const capability of this.staticCapabilities) this.services.systemCapabilities.add(capability);
+    this.services.activeProviders = new Set([...result.states].filter(([, value]) => value.state === "ready").map(([id]) => id));
+    this.services.moduleStates = result.states;
+    return { ...result, registry: state };
+  }
+
+  async listModules() {
+    const status = await this.moduleState();
+    const ui = new Map(this.publicInstalledModules(status.states).modules.map((item) => [item.packageId, item]));
+    const manifests = new Map(this.registry.manifests().map((item) => [item.manifest.id, item.manifest]));
+    return { ...status.registry, modules: status.registry.modules.map((item) => ({ ...item, ...status.states.get(item.id), ui: ui.get(item.id) || null, hasMedia: manifests.get(item.id)?.media?.kind === "video" })) };
   }
 
   async listServices() {
@@ -76,14 +98,14 @@ class CompanionHost {
     }
   }
 
-  publicInstalledModules() {
+  publicInstalledModules(states) {
     const modules = this.registry.manifests().filter((item) => !item.error && item.manifest.ui).map((item) => {
       const manifest = item.manifest;
       const service = manifest.service || {};
-      const base = service.port ? "http://127.0.0.1:" + service.port : "";
-      return { ...manifest.ui, id: manifest.ui.id || manifest.id, name: manifest.ui.name || manifest.name, author: manifest.author || manifest.ui.author || "", description: manifest.description, version: manifest.version, nodeUrl: manifest.ui.dockPage && base ? base + manifest.ui.dockPage : manifest.ui.nodeUrl || "", extensionOverlayUrl: service.overlayPath && base ? base + service.overlayPath : "" };
+      const base = manifest.web ? this.webAssets.base(manifest.id) : service.port ? "http://127.0.0.1:" + service.port : "";
+      return { ...manifest.ui, packageId: manifest.id, id: manifest.ui.id || manifest.id, name: manifest.ui.name || manifest.name, author: manifest.author || manifest.ui.author || "", description: manifest.description, version: manifest.version, state: states?.get(manifest.id)?.state || "ready", problem: states?.get(manifest.id)?.problem || "", nodeUrl: manifest.ui.dockPage && base ? base + manifest.ui.dockPage : manifest.ui.nodeUrl || "", extensionOverlayUrl: manifest.web?.overlayPage ? base + manifest.web.overlayPage : service.overlayPath && base ? base + service.overlayPath : "", links: (manifest.ui.links || []).map((link) => ({ name: link.name, url: base + link.path })) };
     });
-    return { schemaVersion: 3, categories: Array.from(new Set(modules.map((item) => item.category).filter(Boolean))), modules };
+    return { schemaVersion: 3, transport: { streamerBotUrl: this.registry.streamerBotUrl }, categories: Array.from(new Set(modules.map((item) => item.category).filter(Boolean))), modules };
   }
 
   async installModulePackage(packagePath) {
@@ -162,6 +184,7 @@ class CompanionHost {
         replacement = this.createInstalledService(staged.manifest, staged.destination);
         this.services.replace(replacement);
         if (shouldStart) {
+          await this.availableCapabilities();
           const dependencies = this.services.dependencyState(replacement);
           if (!dependencies.ready) throw new Error("Missing required capabilities: " + dependencies.missingRequired.join(", "));
           const started = await replacement.start();

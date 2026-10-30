@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "name": "Source Modules",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Shared overlay scene routing",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "4c66314c-f6d0-4dbf-b2eb-ba57c2651a04",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Module Routing - Engine",
+        "group": "Source Modules",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Module routing engine",
+            "description": "Stores module routing without personal defaults",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "74c1b19f-be06-4c4c-85a4-609ff4e2da69",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "module-routing.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d6184f53-bf63-42de-99a8-3badd14782fe",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Module Routing - Initialize",
+        "group": "Source Modules",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "c8ff6323-de9e-4e37-a499-71853a9b35c6",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "moduleRoutingMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "ea5439ae-89fa-4318-acaa-e75e32f248a5",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "4c66314c-f6d0-4dbf-b2eb-ba57c2651a04",
+            "runImmedately": true,
+            "id": "332e332e-811f-4690-b017-30dfbf20ce11",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "47779d1a-e7f2-4154-b799-9c8780e94a87",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Module Routing - Save",
+        "group": "Source Modules",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "moduleRoutingMode",
+            "value": "save",
+            "autoType": false,
+            "id": "63a60d48-a268-4c98-abbb-a00f60a16497",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "4c66314c-f6d0-4dbf-b2eb-ba57c2651a04",
+            "runImmedately": true,
+            "id": "b89d3f38-d5bd-4d8c-920d-c81991efa500",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "8cd94ce4-858b-4eb1-b23c-fa23d231c223",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Module Routing - Scene Changed",
+        "group": "Source Modules",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "f4bc4331-5efd-4586-a401-5aa4832a7b6a",
+            "type": 14004,
+            "enabled": true,
+            "exclusions": [],
+            "sceneName": null,
+            "obsId": null
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "moduleRoutingMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "a7df604a-6b4d-4fe3-b8b9-94b094ae5668",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "4c66314c-f6d0-4dbf-b2eb-ba57c2651a04",
+            "runImmedately": true,
+            "id": "f89fd3ae-1ed0-4f05-97a2-c284172fd1f8",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

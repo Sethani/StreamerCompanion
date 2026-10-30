@@ -8,7 +8,8 @@ This is the canonical source for the new host and the modules migrated here. The
 
 - **Update Probe**: a harmless local service for exercising install/update/restart behavior. No stream integrations, credentials or overlays.
 - **Spotify Music**: independently hosted OAuth, playback and music-session service. Configure your own Spotify application and authorization. Viewer chat integration is optional and requires your own Chat Routing actions.
-- **Video**: the six-action Streamer.bot player package. Its Universal Dock, shared overlay and media hosting are still external prerequisites; the catalogue shows those dependencies rather than claiming a complete clean-machine install.
+- **Universal Dock / Overlay / Source Modules**: packaged controls, operator Tests, a transparent overlay and preserved Streamer.bot scene routing.
+- **Video 2.2**: its own editor/renderer and explicitly selected private media. The catalogue installs its three browser dependencies. See [installation and migration](modules/video/README.md).
 
 Pokemon and Chat Core are not in this first public batch: their bundled artwork/library notices need a separate redistribution review. Other legacy features will migrate in batches; see [the migration checklist](docs/MIGRATION.md).
 
@@ -32,6 +33,8 @@ Click **Check for updates** to read [`catalog/modules.json` in StreamerCompanion
 Required module dependencies are resolved before changes. Downloads are bounded, their SHA-256 is checked, and package identities/metadata are verified before installation. Services are supervised by the host; failed multi-module operations restore changed code where possible. Private module data is kept outside immutable code and is not deleted during an upgrade or code rollback. A failed network check leaves installed services running and the last valid catalogue available.
 
 Freshly installed services remain stopped until explicitly started, unless an existing automatic-start preference applies. Streamer.bot imports remain a guided user action; the host verifies required action names without editing Streamer.bot data.
+
+Browser modules require Companion 1.2.0 and stay available while Companion runs. Their links come from installed manifests. Video media is copied only through **Add media** and stored outside package code. Import new Streamer.bot exports explicitly even when old action names show as verified; matching names do not establish imported code/version.
 
 Host self-update, automatic installation, silent updates and automatic downgrades are not implemented. This experimental catalogue currently includes preview modules. Do not rely on it as the only copy of production configuration yet.
 

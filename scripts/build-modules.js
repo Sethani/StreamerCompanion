@@ -37,6 +37,7 @@ function buildModules(ids, options = {}) {
       }
     };
     if (fs.existsSync(service)) addService(service, "service/");
+    if (manifest.web) addService(path.join(source, manifest.web.root), manifest.web.root + "/");
     if (manifest.streamerbot.importFile) {
       const exportRoot = path.join(source, "streamerbot");
       const exported = JSON.parse(fs.readFileSync(path.join(exportRoot, "export.json"), "utf8"));
@@ -62,7 +63,7 @@ function buildModules(ids, options = {}) {
     modules.push({
       id, name: manifest.name, version: manifest.version, description: manifest.description,
       author: manifest.author, category: manifest.ui?.category || "System",
-      dependencies: manifest.dependencies, provides: manifest.service?.provides || [],
+      dependencies: manifest.dependencies, provides: [...new Set([...(manifest.provides || []), ...(manifest.service?.provides || [])])],
       streamerbot: { minimumVersion: manifest.streamerbot.minimumVersion || "1.0.0", requiredActions: manifest.streamerbot.requiredActions },
       package: { url: "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/" + id + "-v" + manifest.version + "/" + name, sha256: crypto.createHash("sha256").update(bytes).digest("hex") }
     });

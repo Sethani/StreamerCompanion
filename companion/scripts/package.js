@@ -11,7 +11,7 @@ async function main() {
   const directory = fs.mkdtempSync(path.join(builds, "build-"));
   const stage = path.join(directory, "app");
   fs.mkdirSync(stage);
-  for (const file of ["main.js", "preload.js", "desktop.js", "companion-host.js", "catalog.js", "module-registry.js", "service-registry.js", "installed-service.js", "control-api.js", "streamerbot-client.js", "renderer/index.html", "renderer/app.js", "renderer/styles.css"]) {
+  for (const file of ["main.js", "preload.js", "desktop.js", "companion-host.js", "catalog.js", "module-registry.js", "module-state.js", "web-assets.js", "service-registry.js", "installed-service.js", "control-api.js", "streamerbot-client.js", "renderer/index.html", "renderer/app.js", "renderer/styles.css"]) {
     const destination = path.join(stage, "src", file);
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.copyFileSync(path.join(root, "src", file), destination);

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 2,
+  "id": "universal-overlay",
+  "name": "Universal Overlay",
+  "version": "1.0.0",
+  "description": "Manifest-driven browser overlay with explicit scene routing.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "provides": [
+    "universal-overlay"
+  ],
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "streamerbot": {
+    "requiredActions": []
+  },
+  "ui": {
+    "id": "universal-overlay",
+    "name": "Universal Overlay",
+    "category": "System",
+    "order": 0
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.2.0"
+  }
+}

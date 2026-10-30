@@ -22,3 +22,9 @@ The new repository is canonical for the generic host, Video and Spotify source. 
 For each production cutover, record browser refresh, application restart, duplicate-command/disconnect behavior, safe tests, controlled stream observations, timestamped backups and a rollback point. Preserve old state until intentionally migrated or archived. Remove a legacy endpoint only after no remaining caller depends on it. Do not publish a shadow copy of the personal monolith as a shortcut.
 
 The source catalogue is generated from module manifests; installed UI registrations continue to be projected from those manifests. Do not keep manually synchronizing public source changes back into the old project.
+
+## Browser foundation implementation
+
+Companion 1.2.0, Universal Dock/Overlay/Source Modules 1.0.0 and Video 2.2.0 implement the shared browser slice. New media and browser assets require no personal server. The [browser contract](BROWSER_MODULES.md) documents ownership and paths; the [Video guide](../modules/video/README.md) documents explicit imports, backups, media relinking and rollback. Isolated checks are recorded in [validation](VALIDATION.md).
+
+Next is an operator-controlled Video cutover: close the old preview before opening 1.2.0, install Video/dependencies, back up and explicitly import both action exports, initialize, copy/relink a short test video, configure scene routing and verify an OBS test source before replacing the old source. Preserve original globals/media until that test and a restart pass. Installing packages does not version-verify or overwrite imported actions. Remaining legacy renderers/features continue on the old system until migrated separately.

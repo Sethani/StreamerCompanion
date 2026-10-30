@@ -23,6 +23,7 @@ jobs:
           cache-dependency-path: companion/package-lock.json
       - run: npm --prefix companion ci
       - run: npm run check
+      - run: pwsh -NoProfile -File companion/scripts/test-action-engines.ps1
       - run: npm run package
       - name: Assemble and publish prerelease
         shell: pwsh

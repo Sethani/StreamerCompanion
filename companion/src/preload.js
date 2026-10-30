@@ -1,6 +1,8 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("companion", {
+  moduleLink: (id, target, copy = false) => ipcRenderer.invoke("companion:module-link", { id, target, copy }),
+  importMedia: (id) => ipcRenderer.invoke("companion:import-media", id),
   list: () => ipcRenderer.invoke("companion:list"),
   refresh: () => ipcRenderer.invoke("companion:refresh"),
   catalog: () => ipcRenderer.invoke("companion:catalog"),

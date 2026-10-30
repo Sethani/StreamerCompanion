@@ -1,7 +1,7 @@
 {
   "name": "streamer-companion",
   "productName": "Streamer Companion Preview",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A modular desktop companion for Streamer.bot.",
   "author": "Sethani",
   "license": "MIT",
@@ -9,7 +9,7 @@
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "check": "node scripts/test-build.js && node scripts/test-module-publishing.js && node scripts/test-service-module.js && node scripts/test-control-api.js && node scripts/test-service-registry.js && node scripts/test-catalog.js",
+    "check": "node scripts/test-build.js && node scripts/test-module-publishing.js && node scripts/test-service-module.js && node scripts/test-control-api.js && node scripts/test-service-registry.js && node scripts/test-catalog.js && node scripts/test-browser-foundation.js",
     "package": "node scripts/package.js",
     "check:desktop": "node scripts/test-desktop-smoke.js"
   },

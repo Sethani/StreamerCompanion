@@ -1,8 +1,8 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "id": "video",
   "name": "Video",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Owned video playback, titles, presentation settings, and overlay tests.",
   "configurationRequired": false,
   "documentation": "README.md",
@@ -30,7 +30,8 @@
     "actions": [
       "Video - Configure",
       "Video - Play",
-      "Video - Stop"
+      "Video - Stop",
+      "Video - Health"
     ],
     "dependencies": [
       "universal-dock",
@@ -109,18 +110,30 @@
           }
         ]
       }
-    ]
+    ],
+    "transport": {
+      "feature": "video",
+      "stateKey": "portable.video.state",
+      "actionPrefix": "Video"
+    }
   },
   "author": "Sethani",
   "license": "MIT",
   "dependencies": {
-    "modules": {},
-    "optionalModules": {},
-    "capabilities": {
-      "streamerbot-websocket": "required",
-      "universal-overlay": "required",
-      "universal-dock": "required"
+    "modules": {
+      "universal-dock": "^1.0.0",
+      "universal-overlay": "^1.0.0",
+      "source-modules": "^1.0.0"
     },
-    "companion": ">=1.1.0"
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.2.0"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "media": {
+    "kind": "video"
   }
 }
