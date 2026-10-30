@@ -113,6 +113,7 @@ async function main() {
   await waitFor(() => execute("document.querySelector('#catalog .status')?.textContent === 'Update available'"), "catalogue update comparison");
   await execute("document.querySelector('#catalog .actions button').click()");
   await waitFor(() => execute("document.querySelector('#services h3').textContent.includes('1.1.0')"), "confirmed catalogue update through sandboxed IPC");
+  await waitFor(async () => !desktop.host.installing && await execute("document.querySelector('#feedback').textContent.includes('Installed Smoke fixture 1.1.0')"), "catalogue operation completion before picker installation");
   assert.equal(desktop.host.registry.readManifest("desktop-fixture").version, "1.1.0");
   const upgrade = fixture("1.2.0");
   const zip = new AdmZip();
@@ -123,6 +124,7 @@ async function main() {
   electron.dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [packageFile] });
   await execute("document.querySelector('#install').click()");
   await waitFor(() => execute("document.querySelector('#services h3').textContent.includes('1.2.0')"), "hot installation UI refresh");
+  await waitFor(async () => !desktop.host.installing && await execute("document.querySelector('#feedback').textContent === 'Module package installed and checked.'"), "picker installation completion");
   assert.equal(desktop.host.registry.readManifest("desktop-fixture").version, "1.2.0");
   assert.equal((await desktop.host.services.get("desktop-fixture").state()).status, "running");
   await execute("document.querySelector('#services details').open = true");
