@@ -1,12 +1,14 @@
 {
   "name": "streamer-companion-project",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "author": "Sethani",
   "license": "MIT",
   "scripts": {
     "check": "npm --prefix companion run check",
     "build:modules": "node scripts/build-modules.js",
-    "package": "npm --prefix companion run package"
+    "package": "npm --prefix companion run package",
+    "build:module": "node scripts/build-modules.js",
+    "publish:module": "node scripts/publish-module.js"
   }
 }

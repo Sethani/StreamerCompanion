@@ -8,7 +8,7 @@ const MAX_PACKAGE = 100 * 1024 * 1024;
 
 class ModuleCatalog {
   constructor(options) {
-    this.repository = options.repository || "Sethani/StreamerCompanion";
+    this.repository = options.repository || "Sethani/StreamerCompanion-Modules";
     if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(this.repository)) throw new Error("Invalid catalogue repository.");
     this.version = options.version;
     this.registry = options.registry;
@@ -102,14 +102,12 @@ class ModuleCatalog {
 
   async check() {
     try {
-      const releases = JSON.parse((await this.request("https://api.github.com/repos/" + this.repository + "/releases?per_page=30", 2 * 1024 * 1024)).toString("utf8"));
-      if (!Array.isArray(releases)) throw new Error("Invalid GitHub releases response.");
-      // This preview intentionally includes prereleases; it never downloads or installs automatically.
-      const release = releases.filter((item) => !item.draft && Array.isArray(item.assets) && item.assets.some((asset) => asset.name === "modules.json"))
-        .sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at))[0];
-      if (!release) throw new Error("No published module catalogue is available yet.");
-      const url = this.assetUrl(release.assets.find((asset) => asset.name === "modules.json").browser_download_url, ".json");
-      const catalog = this.validate(JSON.parse((await this.request(url, 1024 * 1024)).toString("utf8")));
+      // One atomic Git file snapshot scales independently of the number of module releases.
+      const file = JSON.parse((await this.request("https://api.github.com/repos/" + this.repository + "/contents/catalog/modules.json?ref=main", 2 * 1024 * 1024)).toString("utf8"));
+      if (file.type !== "file" || file.path !== "catalog/modules.json" || file.encoding !== "base64" || typeof file.content !== "string" || !Number.isInteger(file.size) || file.size < 1 || file.size > 1024 * 1024 || !/^[A-Za-z0-9+/=\r\n]+$/.test(file.content)) throw new Error("Invalid GitHub catalogue file response.");
+      const bytes = Buffer.from(file.content, "base64");
+      if (bytes.length !== file.size) throw new Error("Catalogue file size mismatch.");
+      const catalog = this.validate(JSON.parse(bytes.toString("utf8")));
       const checkedAt = new Date().toISOString();
       fs.mkdirSync(this.directory, { recursive: true });
       fs.writeFileSync(this.cacheFile + ".tmp", JSON.stringify({ repository: this.repository, checkedAt, catalog }, null, 2));

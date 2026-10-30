@@ -65,13 +65,12 @@ async function main() {
   remoteZip.addFile("module.json", Buffer.from(JSON.stringify(remote.manifest)));
   remoteZip.addFile("service.js", Buffer.from(remote.source));
   const remoteBytes = remoteZip.toBuffer();
-  const packageUrl = "https://github.com/Sethani/StreamerCompanion/releases/download/smoke/fixture.streammodule";
-  const catalogUrl = "https://github.com/Sethani/StreamerCompanion/releases/download/smoke/modules.json";
+  const packageUrl = "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/smoke/fixture.streammodule";
+  const catalogUrl = "https://api.github.com/repos/Sethani/StreamerCompanion-Modules/contents/catalog/modules.json?ref=main";
   const catalog = { schemaVersion: 1, modules: [{ id: remote.manifest.id, name: remote.manifest.name, description: remote.manifest.description, author: "Sethani", category: "Tests", version: "1.1.0", dependencies: remote.manifest.dependencies, provides: [], streamerbot: remote.manifest.streamerbot, package: { url: packageUrl, sha256: crypto.createHash("sha256").update(remoteBytes).digest("hex") } }] };
   const catalogFetch = async (url) => {
     if (url === packageUrl) return new Response(remoteBytes);
-    if (url === catalogUrl) return new Response(JSON.stringify(catalog));
-    if (url === "https://api.github.com/repos/Sethani/StreamerCompanion/releases?per_page=30") return new Response(JSON.stringify([{ published_at: "2026-01-01T00:00:00Z", assets: [{ name: "modules.json", browser_download_url: catalogUrl }] }]));
+    if (url === catalogUrl) { const bytes = Buffer.from(JSON.stringify(catalog)); return new Response(JSON.stringify({ type: "file", path: "catalog/modules.json", encoding: "base64", size: bytes.length, content: bytes.toString("base64") })); }
     throw new Error("Unexpected smoke-test network request");
   };
   desktop = createDesktop({

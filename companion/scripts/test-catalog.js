@@ -38,7 +38,7 @@ async function main() {
       if (extra.service) zip.addFile("runtime.js", Buffer.from("process.exit(1);"));
       const bytes = zip.toBuffer();
       const entry = { id, version, name: id, description: manifest.description, author: "Sethani", category: "Tests", dependencies: manifest.dependencies, provides: [], streamerbot: manifest.streamerbot,
-        package: { url: "https://github.com/Sethani/StreamerCompanion/releases/download/test/" + id + "-" + version + ".streammodule", sha256: crypto.createHash("sha256").update(bytes).digest("hex") } };
+        package: { url: "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/test/" + id + "-" + version + ".streammodule", sha256: crypto.createHash("sha256").update(bytes).digest("hex") } };
       transport.set(entry.package.url, bytes);
       return { manifest, entry, bytes };
     }
@@ -49,10 +49,12 @@ async function main() {
     host.start(); await once(host.controlApi.server, "listening");
     assert.equal(requests, 0, "Startup must not require GitHub");
     const first = fixture("probe", "1.0.0");
-    const catalogUrl = "https://github.com/Sethani/StreamerCompanion/releases/download/test/modules.json";
-    const releasesUrl = "https://api.github.com/repos/Sethani/StreamerCompanion/releases?per_page=30";
-    transport.set(releasesUrl, JSON.stringify([{ draft: false, prerelease: true, published_at: "2026-01-01T00:00:00Z", assets: [{ name: "modules.json", browser_download_url: catalogUrl }] }]));
-    transport.set(catalogUrl, JSON.stringify({ schemaVersion: 1, modules: [first.entry] }));
+    const catalogUrl = "https://api.github.com/repos/Sethani/StreamerCompanion-Modules/contents/catalog/modules.json?ref=main";
+    const publish = (catalog) => {
+      const bytes = Buffer.from(JSON.stringify(catalog));
+      transport.set(catalogUrl, JSON.stringify({ type: "file", path: "catalog/modules.json", encoding: "base64", size: bytes.length, content: bytes.toString("base64") }));
+    };
+    publish({ schemaVersion: 1, modules: [first.entry] });
     let inventory = await host.catalog.check();
     assert.equal(inventory.modules[0].state, "Available");
     assert.ok(inventory.checkedAt);
@@ -61,18 +63,33 @@ async function main() {
     assert.equal(host.registry.readManifest("probe").version, "1.0.0");
     const marker = path.join(host.dataDirectory, "module-data/probe/private.txt"); fs.mkdirSync(path.dirname(marker), { recursive: true }); fs.writeFileSync(marker, "preserved");
     const next = fixture("probe", "1.1.0");
-    transport.set(catalogUrl, JSON.stringify({ schemaVersion: 1, modules: [next.entry] }));
+    publish({ schemaVersion: 1, modules: [next.entry] });
     inventory = await host.catalog.check();
     assert.equal(inventory.modules[0].updateAvailable, true);
     await host.installCatalogModule("probe");
     assert.equal(host.registry.readManifest("probe").version, "1.1.0");
     assert.equal(fs.readFileSync(marker, "utf8"), "preserved");
     const checkedAt = host.catalog.checkedAt;
-    transport.delete(releasesUrl);
+    transport.delete(catalogUrl);
     inventory = await host.catalog.check();
     assert.equal(inventory.checkedAt, checkedAt); assert.ok(inventory.error); assert.equal(inventory.modules.length, 1);
     const cached = new ModuleCatalog({ directory: host.catalog.directory, version: "1.1.0", registry: host.registry, capabilities: async () => [], fetch: fetcher });
     assert.equal(cached.catalog.modules[0].version, "1.1.0");
+    const savedCache = fs.readFileSync(host.catalog.cacheFile, "utf8");
+    const previousRepositoryCache = JSON.parse(savedCache); previousRepositoryCache.repository = "Sethani/StreamerCompanion";
+    fs.writeFileSync(host.catalog.cacheFile, JSON.stringify(previousRepositoryCache));
+    assert.equal(new ModuleCatalog({ directory: host.catalog.directory, version: "1.1.1" }).catalog, null, "Old combined-repository caches must not be trusted as the new distribution source");
+    assert.equal(host.registry.readManifest("probe").version, "1.1.0", "Changing catalogue source must preserve installed modules");
+    fs.writeFileSync(host.catalog.cacheFile, savedCache);
+    for (const file of [
+      { type: "file", path: "different.json", encoding: "base64", size: 1, content: "eA==" },
+      { type: "file", path: "catalog/modules.json", encoding: "none", size: 1, content: "x" },
+      { type: "file", path: "catalog/modules.json", encoding: "base64", size: 10, content: "eA==" }
+    ]) {
+      transport.set(catalogUrl, JSON.stringify(file));
+      const invalid = await host.catalog.check();
+      assert.ok(invalid.error); assert.equal(invalid.checkedAt, checkedAt); assert.equal(invalid.modules[0].version, "1.1.0");
+    }
     host.catalog.catalog = { schemaVersion: 1, modules: [first.entry] };
     await assert.rejects(host.installCatalogModule("probe"), /downgrade/);
     const badHash = structuredClone(next.entry); badHash.version = "1.2.0"; badHash.package.sha256 = "0".repeat(64);
@@ -122,7 +139,7 @@ async function main() {
     host.catalog.catalog = { schemaVersion: 1, modules: [conflict.entry, branchA.entry, branchB.entry, dependencyNew.entry] };
     assert.throws(() => host.catalog.resolve("conflict", []), /compatible catalogue version|Conflicting/);
 
-    for (const url of ["http://github.com/Sethani/StreamerCompanion/releases/download/test/a.streammodule", "https://github.com/other/repo/releases/download/test/a.streammodule", "https://github.com/Sethani/StreamerCompanion/releases/latest/download/a.streammodule", "https://user:pass@github.com/Sethani/StreamerCompanion/releases/download/test/a.streammodule", "https://github.com/Sethani/StreamerCompanion/releases/download/test/a.streammodule?auth=secret"]) {
+    for (const url of ["http://github.com/Sethani/StreamerCompanion-Modules/releases/download/test/a.streammodule", "https://github.com/other/repo/releases/download/test/a.streammodule", "https://github.com/Sethani/StreamerCompanion-Modules/releases/latest/download/a.streammodule", "https://user:pass@github.com/Sethani/StreamerCompanion-Modules/releases/download/test/a.streammodule", "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/test/a.streammodule?auth=secret"]) {
       assert.throws(() => host.catalog.assetUrl(url, ".streammodule"));
     }
     const redirectUrl = first.entry.package.url;

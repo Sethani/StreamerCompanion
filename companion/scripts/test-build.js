@@ -7,10 +7,14 @@ const AdmZip = require("adm-zip");
 const { buildModules } = require("../../scripts/build-modules");
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "companion-build-"));
 try {
-  const options = { output: temporary, writeCatalog: false };
-  const first = buildModules("test-release", options);
-  const second = buildModules("test-release", options);
+  const options = { output: temporary };
+  const first = buildModules(undefined, options);
+  const second = buildModules(undefined, options);
   assert.deepEqual(first, second, "Identical module source must produce identical release hashes");
+  const selectedDirectory = path.join(temporary, "selected");
+  const selected = buildModules(["update-probe"], { output: selectedDirectory });
+  assert.deepEqual(selected.modules.map((entry) => entry.id), ["update-probe"]);
+  assert.equal(fs.readdirSync(selectedDirectory).filter((file) => file.endsWith(".streammodule")).length, 1, "A single-module release must not build unrelated packages");
   for (const entry of second.modules) {
     const zip = new AdmZip(path.join(temporary, path.basename(new URL(entry.package.url).pathname)));
     const manifest = JSON.parse(zip.readAsText("module.json"));

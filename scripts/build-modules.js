@@ -9,12 +9,12 @@ const AdmZip = requireCompanion("adm-zip");
 const { CompanionRegistry } = require("../companion/src/module-registry");
 const textBytes = (file) => Buffer.from(fs.readFileSync(file, "utf8").replaceAll("\r\n", "\n"));
 
-function buildModules(tag, options = {}) {
-  if (!/^[A-Za-z0-9][A-Za-z0-9._-]+$/.test(tag)) throw new Error("Pass an immutable release tag.");
-  const output = options.output || path.join(root, "dist");
+function buildModules(ids, options = {}) {
+  if (ids !== undefined && (!Array.isArray(ids) || !ids.length || ids.some((id) => typeof id !== "string" || !/^[a-z0-9][a-z0-9-]*$/.test(id)))) throw new Error("Pass valid module IDs.");
+  const output = options.output || path.join(root, "dist", "modules");
   fs.mkdirSync(output, { recursive: true });
   const modules = [];
-  for (const id of fs.readdirSync(path.join(root, "modules")).sort()) {
+  for (const id of (ids || fs.readdirSync(path.join(root, "modules"))).sort()) {
     const source = path.join(root, "modules", id);
     if (!fs.statSync(source).isDirectory()) continue;
     const manifest = JSON.parse(fs.readFileSync(path.join(source, "module.json"), "utf8"));
@@ -64,20 +64,17 @@ function buildModules(tag, options = {}) {
       author: manifest.author, category: manifest.ui?.category || "System",
       dependencies: manifest.dependencies, provides: manifest.service?.provides || [],
       streamerbot: { minimumVersion: manifest.streamerbot.minimumVersion || "1.0.0", requiredActions: manifest.streamerbot.requiredActions },
-      package: { url: "https://github.com/Sethani/StreamerCompanion/releases/download/" + tag + "/" + name, sha256: crypto.createHash("sha256").update(bytes).digest("hex") }
+      package: { url: "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/" + id + "-v" + manifest.version + "/" + name, sha256: crypto.createHash("sha256").update(bytes).digest("hex") }
     });
   }
   const catalog = { schemaVersion: 1, modules };
   const catalogText = JSON.stringify(catalog, null, 2) + "\n";
-  fs.writeFileSync(path.join(output, "modules.json"), catalogText);
-  if (options.writeCatalog !== false) {
-    fs.mkdirSync(path.join(root, "catalog"), { recursive: true });
-    fs.writeFileSync(path.join(root, "catalog/modules.json"), catalogText);
-  }
-  fs.writeFileSync(path.join(output, "SHA256SUMS"), [...modules.map((item) => item.package.sha256 + "  " + path.basename(new URL(item.package.url).pathname)), crypto.createHash("sha256").update(catalogText).digest("hex") + "  modules.json"].join("\n") + "\n");
-  console.log("Built " + modules.length + " deterministic modules and catalogue for " + tag + ".");
+  // This is a build result, never a replacement for the complete distribution catalogue.
+  fs.writeFileSync(path.join(output, "module-entries.json"), catalogText);
+  fs.writeFileSync(path.join(output, "SHA256SUMS"), modules.map((item) => item.package.sha256 + "  " + path.basename(new URL(item.package.url).pathname)).join("\n") + "\n");
+  console.log("Built " + modules.length + " selected module(s): " + modules.map((item) => item.id).join(", ") + ".");
   return catalog;
 }
 
-if (require.main === module) buildModules(process.argv[2] || "v1.1.0-preview.1");
+if (require.main === module) buildModules(process.argv.length > 2 ? process.argv.slice(2) : undefined);
 module.exports = { buildModules };

@@ -1,0 +1,20 @@
+const assert = require("node:assert/strict");
+const { mergeCatalog } = require("../../scripts/publish-module");
+
+const entry = (id, version, hash) => ({ id, version, package: { url: "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/" + id + "-v" + version + "/" + id + "-" + version + ".streammodule", sha256: hash.repeat(64) } });
+const spotify = entry("spotify", "2.0.1", "a");
+const video = entry("video", "2.1.1", "b");
+const probe = entry("update-probe", "1.0.1", "c");
+const current = { schemaVersion: 1, modules: [spotify, probe, video] };
+const before = JSON.stringify(current);
+const nextProbe = entry("update-probe", "1.0.2", "d");
+const next = mergeCatalog(current, nextProbe);
+assert.equal(JSON.stringify(current), before, "Publishing must not mutate the previous catalogue snapshot");
+assert.deepEqual(next.modules.find((item) => item.id === "spotify"), spotify);
+assert.deepEqual(next.modules.find((item) => item.id === "video"), video);
+assert.deepEqual(next.modules.find((item) => item.id === "update-probe"), nextProbe);
+assert.equal(mergeCatalog(next, nextProbe), next, "Retrying the same version must be a no-op");
+assert.throws(() => mergeCatalog(next, probe), /downgrade/);
+assert.throws(() => mergeCatalog(next, entry("update-probe", "1.0.2", "e")), /bump the module version/);
+assert.equal(mergeCatalog(next, entry("new-module", "1.0.0", "f")).modules.length, 4);
+console.log("Single-module catalogue updates preserve unrelated URLs/hashes, reject downgrades/version reuse and retry idempotently.");

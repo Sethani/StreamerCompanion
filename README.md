@@ -19,7 +19,7 @@ Install Node 22 or newer for development, then:
 ```powershell
 npm --prefix companion ci
 npm run check
-npm run build:modules -- v1.1.0-preview.1
+npm run build:module -- spotify
 npm run package
 ```
 
@@ -27,18 +27,24 @@ The packaged Windows application embeds Node; end users do not need Node/npm. Ke
 
 ## GitHub module updates
 
-Click **Check for updates** to read this repository's experimental GitHub Releases. The client reads a versioned `modules.json` asset, shows installed/latest versions and required/optional dependencies, and installs only after your explicit confirmation.
+Click **Check for updates** to read [`catalog/modules.json` in StreamerCompanion-Modules](https://github.com/Sethani/StreamerCompanion-Modules/tree/main/catalog). The client shows installed/latest versions and required/optional dependencies, then downloads only the modules you explicitly confirm. Each entry points to that module's own immutable release asset in the distribution repository.
 
 Required module dependencies are resolved before changes. Downloads are bounded, their SHA-256 is checked, and package identities/metadata are verified before installation. Services are supervised by the host; failed multi-module operations restore changed code where possible. Private module data is kept outside immutable code and is not deleted during an upgrade or code rollback. A failed network check leaves installed services running and the last valid catalogue available.
 
 Freshly installed services remain stopped until explicitly started, unless an existing automatic-start preference applies. Streamer.bot imports remain a guided user action; the host verifies required action names without editing Streamer.bot data.
 
-Host self-update, automatic installation, silent updates and automatic downgrades are not implemented. This preview intentionally sees prereleases. Do not rely on it as the only copy of production configuration yet.
+Host self-update, automatic installation, silent updates and automatic downgrades are not implemented. This experimental catalogue currently includes preview modules. Do not rely on it as the only copy of production configuration yet.
 
 ## Releases and ownership
 
-`scripts/build-modules.js <tag>` generates deterministic `.streammodule` archives, SHA-256 sums and the catalogue from module manifests. Streamer.bot `.sb` files are compiled from editable action JSON and C# sources; no live Streamer.bot installation is a build input. GitHub release assets use versioned URLs and must not be replaced in place; version source changes before publishing another package.
+All editable source remains here under `modules/`. `npm run build:module -- <id>` builds just that module. Streamer.bot `.sb` files are compiled from editable action JSON and C# sources; no live Streamer.bot installation is a build input.
 
-The release workflow is manually dispatched with an explicit tag and produces a prerelease. CI checks source and module builds on pushes and pull requests. See [catalogue format](catalog/README.md), [third-party notices](THIRD_PARTY_NOTICES.md) and [MIT licence](LICENSE).
+**Application releases** in this repository contain only the Windows app and its checksum. The Application release workflow never publishes module packages or a module catalogue. The two original combined prototype releases remain as compatibility archives for older previews.
+
+**Module releases** live in [Sethani/StreamerCompanion-Modules](https://github.com/Sethani/StreamerCompanion-Modules). Its Publish module workflow accepts one module ID and builds only that source folder. It publishes a release such as `spotify-v2.0.1` with one package/checksum, then atomically changes only Spotify's catalogue entry. Unchanged modules retain their previous URLs and hashes; no app rebuild/release is involved.
+
+For local publishing, check out the distribution repository and run `npm run publish:module -- <id> <distribution-checkout>`. The checkout must be clean and point to the expected repository. Reusing an existing version with different bytes is rejected. Bump a changed module's version first. The distribution workflow uses its own repository-scoped GitHub token; no cross-repository write token is needed.
+
+See [catalogue format](catalog/README.md), [third-party notices](THIRD_PARTY_NOTICES.md) and [MIT licence](LICENSE).
 
 The first real GitHub update test passed from Update Probe 1.0.0 to 1.0.1 with the same host binary. See [validation evidence and remaining gates](docs/VALIDATION.md).

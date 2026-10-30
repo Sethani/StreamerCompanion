@@ -16,6 +16,7 @@ async function freePort() {
 
 async function main() {
   const phase = process.argv[2];
+  const expected = process.argv[3] || (phase === "baseline" ? "1.0.1" : "1.0.2");
   assert.ok(["baseline", "upgrade"].includes(phase), "Choose baseline or upgrade phase");
   const occupied = await new Promise((resolve) => {
     const socket = net.connect({ host: "127.0.0.1", port: 3140 });
@@ -39,30 +40,30 @@ async function main() {
     const probe = catalog.modules.find((item) => item.id === "update-probe"); assert.ok(probe && !probe.problem);
     const marker = path.join(state.directory, "module-data/update-probe/private-marker.txt");
     if (phase === "baseline") {
-      assert.equal(probe.version, "1.0.0");
+      assert.equal(probe.version, expected);
       await host.installCatalogModule("update-probe");
       await host.services.execute("update-probe", "start");
       await host.services.setAutoStart("update-probe", true);
       fs.writeFileSync(marker, "Synthetic private data must survive a GitHub update.");
-      state.version = "1.0.0";
+      state.version = expected;
       fs.writeFileSync(stateFile, JSON.stringify(state));
-      console.log("Real GitHub baseline passed: installed and started Update Probe 1.0.0 after SHA-256 verification.");
+      console.log("Real module-repository baseline passed: installed and started Update Probe " + expected + " after SHA-256 verification.");
     } else {
       assert.equal(host.registry.readManifest("update-probe").version, state.version);
-      assert.equal(probe.version, "1.0.1"); assert.equal(probe.updateAvailable, true);
+      assert.equal(probe.version, expected); assert.equal(probe.updateAvailable, true);
       await host.services.startAll({ automaticOnly: true });
       assert.equal(host.services.get("update-probe").status, "running");
       const result = await host.installCatalogModule("update-probe");
-      assert.equal(result.installed[0].version, "1.0.1");
+      assert.equal(result.installed[0].version, expected);
       const health = await fetch("http://127.0.0.1:3140/health").then((response) => response.json());
-      assert.equal(health.version, "1.0.1");
+      assert.equal(health.version, expected);
       assert.equal(fs.readFileSync(marker, "utf8"), "Synthetic private data must survive a GitHub update.");
       assert.equal(host.services.config.autoStart["update-probe"], true);
       host.catalog.fetch = async () => { throw new Error("Synthetic offline check"); };
-      const cached = await host.catalog.check(); assert.ok(cached.error); assert.equal(cached.modules.find((item) => item.id === "update-probe").version, "1.0.1");
+      const cached = await host.catalog.check(); assert.ok(cached.error); assert.equal(cached.modules.find((item) => item.id === "update-probe").version, expected);
       assert.equal(host.services.get("update-probe").status, "running");
       complete = true;
-      console.log("Real GitHub update passed: 1.0.0 → 1.0.1, service health, automatic-start preference, private data and offline cache preserved.");
+      console.log("Real GitHub update passed: 1.0.0 â†’ 1.0.1, service health, automatic-start preference, private data and offline cache preserved.");
     }
   } finally {
     if (host) { await host.services.stopAll(); await host.controlApi.stop(); }

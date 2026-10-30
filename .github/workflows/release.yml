@@ -1,9 +1,9 @@
-name: Experimental release
+name: Application release
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Immutable release tag (for example v1.1.0-preview.3)
+        description: Immutable app release tag (for example v1.1.1-preview.1)
         required: true
         type: string
 permissions:
@@ -23,7 +23,6 @@ jobs:
           cache-dependency-path: companion/package-lock.json
       - run: npm --prefix companion ci
       - run: npm run check
-      - run: npm run build:modules -- "$env:RELEASE_TAG"
       - run: npm run package
       - name: Assemble and publish prerelease
         shell: pwsh
@@ -31,8 +30,8 @@ jobs:
           $build = Get-Content -LiteralPath companion/out/latest-build.json | ConvertFrom-Json
           npm --prefix companion run check:desktop -- "$($build.directory)"
           if ($LASTEXITCODE -ne 0) { throw "Desktop acceptance failed" }
-          Compress-Archive -LiteralPath $build.directory -DestinationPath dist/StreamerCompanion-Windows-x64.zip
-          $hash = (Get-FileHash -LiteralPath dist/StreamerCompanion-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
-          Add-Content -LiteralPath dist/SHA256SUMS -Value "$hash  StreamerCompanion-Windows-x64.zip"
-          $assets = Get-ChildItem -LiteralPath dist -File | Select-Object -ExpandProperty FullName
-          gh release create "$env:RELEASE_TAG" @assets --target "$env:GITHUB_SHA" --prerelease --title "Streamer Companion $env:RELEASE_TAG" --notes-file docs/RELEASE_NOTES.md
+          New-Item -ItemType Directory -Force -Path dist/app | Out-Null
+          Compress-Archive -LiteralPath $build.directory -DestinationPath dist/app/StreamerCompanion-Windows-x64.zip
+          $hash = (Get-FileHash -LiteralPath dist/app/StreamerCompanion-Windows-x64.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          Set-Content -LiteralPath dist/app/SHA256SUMS -Value "$hash  StreamerCompanion-Windows-x64.zip"
+          gh release create "$env:RELEASE_TAG" dist/app/StreamerCompanion-Windows-x64.zip dist/app/SHA256SUMS --target "$env:GITHUB_SHA" --prerelease --title "Streamer Companion $env:RELEASE_TAG" --notes-file docs/RELEASE_NOTES.md

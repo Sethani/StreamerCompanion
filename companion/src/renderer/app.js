@@ -9,7 +9,7 @@ const labels = {
 const serviceViewState = new Map();
 
 function renderCatalog(state) {
-  $("#catalog-status").textContent = (state.checkedAt ? "Last checked " + new Date(state.checkedAt).toLocaleString() + ". " : "Not checked yet. ") + (state.error ? "Using the last saved catalogue. " + state.error : "Source: " + state.repository + " (experimental releases).");
+  $("#catalog-status").textContent = (state.checkedAt ? "Last checked " + new Date(state.checkedAt).toLocaleString() + ". " : "Not checked yet. ") + (state.error ? "Using the last saved catalogue. " + state.error : "Module catalogue: " + state.repository + "/catalog (experimental).");
   const list = $("#catalog");
   list.replaceChildren();
   for (const module of state.modules) {
