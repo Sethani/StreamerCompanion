@@ -27,4 +27,6 @@ The source catalogue is generated from module manifests; installed UI registrati
 
 Companion 1.2.0, Universal Dock/Overlay/Source Modules 1.0.0 and Video 2.2.0 implement the shared browser slice. New media and browser assets require no personal server. The [browser contract](BROWSER_MODULES.md) documents ownership and paths; the [Video guide](../modules/video/README.md) documents explicit imports, backups, media relinking and rollback. Isolated checks are recorded in [validation](VALIDATION.md).
 
+Use [app preview 3](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.2.0-preview.3), which includes visible reimport controls and the guard against automatic duplicate embedding by the old overlay. All four module packages are independently published; unrelated Spotify and Update Probe catalogue entries are unchanged.
+
 Next is an operator-controlled Video cutover: close the old preview before opening 1.2.0, install Video/dependencies, back up and explicitly import both action exports, initialize, copy/relink a short test video, configure scene routing and verify an OBS test source before replacing the old source. Preserve original globals/media until that test and a restart pass. Installing packages does not version-verify or overwrite imported actions. Remaining legacy renderers/features continue on the old system until migrated separately.
