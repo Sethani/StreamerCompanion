@@ -32,6 +32,7 @@ function segmentsFor(event) {
     const participants = event.participants || [];
     const sender = participants.find((player) => player.role === "sender");
     const receiver = participants.find((player) => player.role === "receiver");
+    if (event.type === "item_cheat" && typeof event.item?.name === "string" && event.item.name && receiver?.name) return [{ type: "player", text: String(receiver.name).slice(0, 120) }, { type: "text", text: " received " }, { type: "item", text: event.item.name.slice(0, 200) }, { type: "text", text: " (cheat)" }];
     if (event.item?.name && typeof event.item.name === "string" && sender?.name && receiver?.name) {
       const segments = [{ type: "player", text: String(sender.name).slice(0, 120) }, { type: "text", text: " sent " }, { type: "item", text: event.item.name.slice(0, 200) }, { type: "text", text: " to " }, { type: "player", text: String(receiver.name).slice(0, 120) }];
       if (typeof event.location?.name === "string" && event.location.name) segments.push({ type: "text", text: " (" }, { type: "location", text: event.location.name.slice(0, 200) }, { type: "text", text: ")" });
@@ -74,6 +75,9 @@ function project(snapshot, selection, events, now = Date.now()) {
     };
   }).filter((row) => row.progress || row.logic || row.goal !== null);
   const filteredEvents = settings.display.activity && !stale ? events.filter((event) => {
+    // Server startup/save restoration is not a newly received item.
+    if (/^\s*Loaded save file\b/i.test(String(event.message || ""))) return false;
+    if (["item_send", "item_cheat"].includes(event.type) && !event.item && !(event.participants || []).length) return false;
     if (!settings.eventTypes.includes(event.type) || !Number.isFinite(Date.parse(event.timestamp)) || now - Date.parse(event.timestamp) > 75000 || Date.parse(event.timestamp) > now + 5000) return false;
     const participants = Array.isArray(event.participants) ? event.participants : [];
     if (participants.length && !participants.some((player) => chosen.has(key(player)))) return false;

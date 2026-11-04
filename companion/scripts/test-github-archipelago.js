@@ -10,9 +10,9 @@ async function main() {
   try {
     host = new CompanionHost({ dataDirectory: root, streamerBotUrl: "ws://127.0.0.1:1", controlApiPort: await freePort() });
     const inventory = await host.catalog.check(); assert.equal(inventory.error, "");
-    const entry = inventory.modules.find((item) => item.id === "archipelago"); assert.equal(entry.version, "1.0.4"); assert.equal(entry.problem, "");
+    const entry = inventory.modules.find((item) => item.id === "archipelago"); assert.equal(entry.version, "1.0.5"); assert.equal(entry.problem, "");
     await host.installCatalogModule("archipelago");
-    assert.equal(host.registry.readManifest("archipelago").version, "1.0.4");
+    assert.equal(host.registry.readManifest("archipelago").version, "1.0.5");
     assert.equal(host.registry.readManifest("universal-dock").version, "1.0.0");
     // Override only the private test installation's port, preserving the published runtime bytes.
     const manifestFile = path.join(host.registry.moduleDirectory("archipelago"), "module.json"), manifest = host.registry.readManifest("archipelago");

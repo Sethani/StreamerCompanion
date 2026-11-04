@@ -13,6 +13,17 @@ async function main() {
   item = model.project(snap, { slots: ["0:1", "1:1"], eventTypes: ["item_send"] }, [namedEvent]).events[0];
   assert.equal(item.text, "Synthetic A sent Synthetic item to Synthetic B (Synthetic location)");
   assert.deepEqual(item.segments.map((segment) => segment.type), ["player", "text", "item", "text", "player", "text", "location", "text"]);
+  const operational = { ...numericEvent, source: "server", message: "Loaded save file with 8 received items for 2 players", participants: [] };
+  const activitySelection = { slots: ["0:1", "1:1"], eventTypes: ["item_send", "notice", "item_cheat"] };
+  assert.equal(model.project(snap, activitySelection, [operational]).events.length, 0, "Save restoration must never appear as an item alert");
+  assert.equal(model.project(snap, activitySelection, [{ ...operational, type: "notice" }]).events.length, 0);
+  assert.equal(model.project(snap, activitySelection, [{ ...operational, message: "Synthetic server item summary" }]).events.length, 0, "Unattributed unstructured server item summaries are not deliveries");
+  const resolvedEvent = { ...namedEvent, enrichment: { status: "resolved" }, item: { id: 100, name: "Synthetic item", game: "Game B", resolution: "resolved" }, location: { id: 200, name: "Synthetic location", game: "Game A", resolution: "resolved" } };
+  assert.equal(model.project(snap, activitySelection, [resolvedEvent]).events[0].text, "Synthetic A sent Synthetic item to Synthetic B (Synthetic location)");
+  const cheat = { ...resolvedEvent, type: "item_cheat", participants: resolvedEvent.participants.filter(player => player.role === "receiver"), location: null };
+  assert.equal(model.project(snap, activitySelection, [cheat]).events[0].text, "Synthetic B received Synthetic item (cheat)");
+  const partial = { ...resolvedEvent, location: { id: 200, name: null, resolution: "unresolved" }, enrichment: { status: "partial" } };
+  assert.equal(model.project(snap, activitySelection, [partial]).events[0].text, "Synthetic A sent Synthetic item to Synthetic B");
   const selected = { slots: ["0:1", "1:1"], display: { showNames: false }, slotDisplay: { "0:1": { progress: false }, "1:1": { logic: false } } };
   let projected = model.project(snap, selected, []);
   assert.equal(projected.players[0].name, ""); assert.equal(projected.players[0].game, "Game A");
@@ -37,7 +48,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.4.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.5.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");
