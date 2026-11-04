@@ -68,7 +68,7 @@ function publishModule(id, distribution) {
       // A release and its verified asset must exist before any catalogue pointer is published.
       if (!/404|Not Found/.test(existing.stderr)) throw new Error("Could not inspect the module release: " + existing.stderr.trim());
       const notes = path.join(temporary, "notes.md");
-      fs.writeFileSync(notes, entry.description + "\n\nBy Sethani, MIT. Source: https://github.com/Sethani/StreamerCompanion/tree/" + entry.source.commit + "/modules/" + id + "\n\nIndependent experimental module release. No Companion application or unrelated modules are included.\n");
+      fs.writeFileSync(notes, entry.description + "\n\nFirst-party code by Sethani, MIT. Third-party assets retain their upstream notices and rights; see the package documentation. Source: https://github.com/Sethani/StreamerCompanion/tree/" + entry.source.commit + "/modules/" + id + "\n\nIndependent experimental module release. No Companion application or unrelated modules are included.\n");
       command("gh", ["release", "create", tag, path.join(temporary, file), checksumFile, "--repo", REPOSITORY, "--target", "main", "--prerelease", "--title", entry.name + " " + entry.version, "--notes-file", notes], root);
     }
     if (next === current) {

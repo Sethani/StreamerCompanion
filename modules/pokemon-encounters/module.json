@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 2,
+  "id": "pokemon-encounters",
+  "name": "Pokemon Encounters",
+  "version": "1.7.0",
+  "description": "Shows Pokemon Community Game encounters, type icons, and animated viewer ball throws.",
+  "documentation": "README.md",
+  "streamerbot": {
+    "requiredActions": [
+      "Pokemon Encounters - Chat",
+      "Pokemon Encounters - Initialize"
+    ],
+    "importFile": "streamerbot/pokemon-encounters.sb"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/pokemon-runtime.js",
+    "port": 3128,
+    "healthPath": "/health",
+    "healthService": "pokemon",
+    "settingsPath": "/pokemon/settings",
+    "overlayPath": "/pokemon/overlay",
+    "provides": [
+      "pokemon-encounters",
+      "pokemon-art-cache"
+    ]
+  },
+  "ui": {
+    "id": "pokemon",
+    "name": "Pokemon Encounters",
+    "category": "Effects",
+    "order": 50,
+    "dockPage": "/pokemon/settings",
+    "ownership": "node",
+    "overlays": [
+      "pokemon"
+    ],
+    "actions": [
+      "Pokemon Encounters - Chat"
+    ],
+    "dependencies": [
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "pokeapi",
+      "universal-overlay",
+      "source-modules"
+    ],
+    "settings": [
+      "enabled",
+      "duration",
+      "position",
+      "width",
+      "opacity",
+      "timer",
+      "throwAnimations",
+      "showThrowNames",
+      "throwSpeed",
+      "throwQueueLimit"
+    ],
+    "tests": [
+      {
+        "id": "encounter",
+        "name": "Pokemon encounter",
+        "level": "mutating",
+        "fields": [
+          {
+            "id": "name",
+            "label": "Pokemon",
+            "type": "text",
+            "value": "Weedle",
+            "placeholder": "Weedle or Nidoran (f)",
+            "maxlength": 80
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Show encounter",
+            "localRequest": {
+              "url": "http://127.0.0.1:3128/api/pokemon/test",
+              "query": {
+                "name": {
+                  "field": "name",
+                  "trim": true
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "throw",
+        "name": "Pokemon ball throw",
+        "level": "mutating",
+        "fields": [
+          {
+            "id": "user",
+            "label": "Viewer",
+            "type": "text",
+            "value": "Alice",
+            "maxlength": 40
+          },
+          {
+            "id": "ball",
+            "label": "Ball",
+            "type": "text",
+            "value": "great ball",
+            "maxlength": 40
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Throw ball",
+            "localRequest": {
+              "url": "http://127.0.0.1:3128/api/pokemon/test-throw",
+              "query": {
+                "user": {
+                  "field": "user",
+                  "trim": true
+                },
+                "ball": {
+                  "field": "ball",
+                  "trim": true
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "packagedOverlay": true
+  },
+  "author": "Sethani",
+  "license": "MIT",
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {
+      "universal-overlay": "^1.0.0",
+      "source-modules": "^1.0.0"
+    },
+    "capabilities": {
+      "embedded-node": "required"
+    },
+    "companion": ">=1.2.2"
+  }
+}

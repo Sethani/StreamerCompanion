@@ -1,0 +1,49 @@
+const assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path");
+const { app, BrowserWindow } = require("electron");
+const { buildModules } = require("../../scripts/build-modules");
+const { fixture } = require("./pokemon-fixture");
+const bundle = path.resolve(process.argv[2]), temporary = path.resolve(process.argv[3]);
+const { CompanionRegistry } = require(path.join(bundle, "resources/app.asar/src/module-registry"));
+app.setPath("userData", temporary); app.commandLine.appendSwitch("disable-gpu");
+let test; const windows = [];
+function hiddenWindow() { const window = new BrowserWindow({ width: 1080, height: 1080, show: false, webPreferences: { contextIsolation: true, nodeIntegration: false, backgroundThrottling: false } }); windows.push(window); return window; }
+async function waitFor(check, label) { const deadline = Date.now() + 10000; while (Date.now() < deadline) { if (await check()) return; await new Promise(resolve => setTimeout(resolve, 50)); } throw new Error("Timed out: " + label); }
+async function main() {
+  await app.whenReady(); buildModules(["pokemon-encounters"], { output: path.join(temporary, "packages") });
+  const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") });
+  const staged = registry.stage(path.join(temporary, "packages/pokemon-encounters-1.7.0.streammodule")); registry.commit(staged); registry.finalize(staged);
+  test = await fixture(temporary, path.join(registry.moduleDirectory("pokemon-encounters"), "service/pokemon-runtime.js"));
+  const settings = hiddenWindow(), overlay = hiddenWindow();
+  await settings.loadURL(test.base + "/pokemon/settings"); await overlay.loadURL(test.base + "/pokemon/overlay");
+  const control = code => settings.webContents.executeJavaScript(code), view = code => overlay.webContents.executeJavaScript(code);
+  await waitFor(() => control("document.getElementById('width').value==='320'"), "settings defaults");
+  assert.equal(await control("document.getElementById('overlay-url').value"), test.base + "/pokemon/overlay");
+  assert.equal(await view("document.getElementById('layer').classList.contains('idle')"), true);
+  await control("document.getElementById('enabled').checked=true;document.getElementById('width').value='390';document.getElementById('position').value='top-left';document.getElementById('throw-speed').value='650';document.getElementById('save').click()");
+  await waitFor(() => control("document.getElementById('feedback').textContent.includes('settings saved')"), "save settings");
+  await control("document.getElementById('test').click()");
+  await waitFor(() => view("document.getElementById('name').textContent==='Weedle' && !document.getElementById('layer').classList.contains('idle')"), "test reaches real overlay route");
+  assert.equal(await view("getComputedStyle(document.documentElement).backgroundColor"), "rgba(0, 0, 0, 0)");
+  assert.equal(await view("getComputedStyle(document.getElementById('card')).borderTopColor"), "rgba(90, 214, 126, 0.9)");
+  assert.equal(await view("getComputedStyle(document.getElementById('layer')).width"), "390px");
+  assert.equal(await view("document.getElementById('layer').classList.contains('top-left')"), true);
+  await waitFor(() => view("document.querySelectorAll('#types img').length===2 && [...document.querySelectorAll('#types img')].every(image=>image.complete&&image.naturalWidth>0)"), "original type assets load");
+  await waitFor(() => view("document.getElementById('art').complete && document.getElementById('art').naturalWidth>0"), "private cached artwork loads");
+  const output = path.resolve(__dirname, "../out"); fs.mkdirSync(output, { recursive: true });
+  fs.writeFileSync(path.join(output, "pokemon-overlay-preview.png"), (await overlay.webContents.capturePage()).toPNG());
+  fs.writeFileSync(path.join(output, "pokemon-settings-preview.png"), (await settings.webContents.capturePage()).toPNG());
+  await control("document.getElementById('test-throw').click()");
+  await waitFor(() => view("document.querySelectorAll('.thrower').length===1"), "ball throw reaches live renderer");
+  await waitFor(() => view("document.querySelector('.thrown-ball')?.naturalWidth>0"), "original ball artwork loads");
+  assert.equal(await view("document.querySelector('.throw-name').textContent"), "Alice");
+  await waitFor(() => view("document.querySelectorAll('.thrower').length===0"), "throw animation finishes");
+  await control("document.getElementById('clear').click()");
+  await waitFor(() => view("document.getElementById('layer').classList.contains('idle')"), "clear overlay");
+  await control("document.getElementById('test-name').value='Unidentified Ghost';document.getElementById('test').click()");
+  await waitFor(() => view("document.getElementById('name').textContent==='Unidentified Ghost' && getComputedStyle(document.querySelector('.mystery-art')).display==='grid'"), "mystery fallback design");
+  assert.equal(test.requests.length, 2, "All artwork lookups are synthetic and cached; mystery uses no network");
+  assert.ok(windows.every(window => !window.isVisible()));
+  console.log("Hidden Pokemon UI passed: original transparent card/type/ball design, settings, synthetic artwork/cache, live encounter/throw/clear and mystery rendering.");
+}
+const timeout = setTimeout(() => { console.error("Pokemon desktop acceptance timed out"); app.exit(1); }, 60000);
+main().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => { clearTimeout(timeout); for (const window of windows) if (!window.isDestroyed()) window.destroy(); await test?.close(); app.exit(process.exitCode || 0); });

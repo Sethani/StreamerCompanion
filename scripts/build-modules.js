@@ -25,12 +25,27 @@ function buildModules(ids, options = {}) {
     zip.addFile("module.json", Buffer.from(JSON.stringify(manifest, null, 2) + "\n"));
     zip.addFile("README.md", textBytes(path.join(source, "README.md")));
     zip.addFile("LICENSE", textBytes(path.join(root, "LICENSE")));
+    const reviewFile = path.join(source, "reviewed-assets.json");
+    const review = fs.existsSync(reviewFile) ? JSON.parse(fs.readFileSync(reviewFile, "utf8")) : { files: [] };
+    const reviewedAssets = new Map((review.files || []).map((entry) => [entry.path, entry]));
+    if (reviewedAssets.size) {
+      zip.addFile("ASSET-PROVENANCE.json", textBytes(reviewFile));
+      if (!/^third-party\/[a-z0-9-]+\.txt$/.test(review.notice || "")) throw new Error("Reviewed assets require an upstream notice.");
+      zip.addFile(review.notice, textBytes(path.join(source, review.notice)));
+    }
     const service = path.join(source, "service");
     const addService = (directory, prefix) => {
       for (const entry of fs.readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name, "en"))) {
         if (entry.isSymbolicLink()) throw new Error("Service symlinks are not distributable.");
         if (entry.isDirectory()) addService(path.join(directory, entry.name), prefix + entry.name + "/");
         else {
+          if (entry.name.endsWith(".png")) {
+            const assetPath = prefix + entry.name, reviewed = reviewedAssets.get(assetPath);
+            const bytes = fs.readFileSync(path.join(directory, entry.name));
+            if (!reviewed || crypto.createHash("sha256").update(bytes).digest("hex") !== reviewed.sha256) throw new Error("Unreviewed or changed image: " + assetPath);
+            zip.addFile(assetPath, bytes);
+            continue;
+          }
           if (!/\.(js|cjs|mjs|html|css|json)$/.test(entry.name)) throw new Error("Service asset needs redistribution review: " + entry.name);
           zip.addFile(prefix + entry.name, textBytes(path.join(directory, entry.name)));
         }

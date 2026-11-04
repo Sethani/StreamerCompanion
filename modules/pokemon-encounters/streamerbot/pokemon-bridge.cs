@@ -1,0 +1,12 @@
+using System;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+public class CPHInline {
+ string Arg(string k){try{return args.ContainsKey(k)&&args[k]!=null?args[k].ToString().Trim():"";}catch{return "";}}
+ string Read(string k){try{return CPH.GetGlobalVar<string>(k,true)??"";}catch{return "";}}
+ JObject Parse(string s){try{return JObject.Parse(s);}catch{return new JObject();}}
+ void Initialize(){const string key="portable.moduleRouting.config",stateKey="portable.moduleRouting.state";JObject c=Parse(Read(key));if(!c.HasValues)c=new JObject{{"version",1},{"modules",new JObject()}};JObject modules=c["modules"] as JObject??new JObject();if(modules["pokemon"]==null)modules["pokemon"]=new JObject{{"mode","disabled"},{"scenes",new JArray()}};c["modules"]=modules;CPH.SetGlobalVar(key,c.ToString(Formatting.None),true);JObject old=Parse(Read(stateKey));long revision=(long?)old["revision"]??0;JObject envelope=new JObject{{"schemaVersion",1},{"feature","moduleRouting"},{"type","state"},{"revision",revision+1},{"payload",c}};string json=envelope.ToString(Formatting.None);CPH.SetGlobalVar(stateKey,json,true);try{CPH.WebsocketBroadcastJson(json);}catch{}}
+ void Message(){string sender=Arg("userName");if(String.IsNullOrWhiteSpace(sender))sender=Arg("user");sender=sender.TrimStart('@');string message=Arg("message");if(String.IsNullOrWhiteSpace(message))message=Arg("rawInput");if(String.IsNullOrWhiteSpace(message))return;bool game=String.Equals(sender,"pokemoncommunitygame",StringComparison.OrdinalIgnoreCase);bool catching=message.StartsWith("!pokecatch",StringComparison.OrdinalIgnoreCase);if(!game&&!catching)return;try{using(var client=new HttpClient()){client.Timeout=TimeSpan.FromSeconds(12);string url="http://127.0.0.1:3128/api/pokemon/message?sender="+Uri.EscapeDataString(sender)+"&message="+Uri.EscapeDataString(message);var response=client.GetAsync(url).GetAwaiter().GetResult();if(!response.IsSuccessStatusCode)CPH.LogWarn("[pokemon] Companion returned HTTP "+(int)response.StatusCode+".");}}catch(Exception ex){CPH.LogWarn("[pokemon] Companion unavailable: "+ex.Message);}}
+ public bool Execute(){string mode=Arg("pokemonMode").ToLowerInvariant();if(mode=="initialize")Initialize();else Message();return true;}
+}

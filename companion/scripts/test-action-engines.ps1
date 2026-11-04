@@ -2,9 +2,11 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $videoSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/video/streamerbot/video---engine-0.cs')
 $routingSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/source-modules/streamerbot/module-routing.cs')
+$pokemonSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/pokemon-encounters/streamerbot/pokemon-bridge.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
+$pokemonSource = $pokemonSource.Replace('public class CPHInline {', ('public class PokemonInline {' + $fields))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
@@ -24,7 +26,7 @@ public class FakeCPH {
 $references = @((Get-ChildItem -LiteralPath (Join-Path $PSHOME 'ref') -Filter '*.dll').FullName) + (Join-Path $PSHOME 'Newtonsoft.Json.dll')
 # Add-Type's in-memory assemblies can be shared by compiling all three units together.
 # Keep using directives scoped to separate namespaces so each original source remains unchanged.
-$combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace EngineTest {' + $videoSource + '}' + "`n" + 'namespace EngineTest {' + $routingSource + '}'
+$combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace EngineTest {' + $videoSource + '}' + "`n" + 'namespace EngineTest {' + $routingSource + '}' + "`n" + 'namespace EngineTest {' + $pokemonSource + '}'
 Add-Type -TypeDefinition $combined -ReferencedAssemblies $references -CompilerOptions '/nowarn:1701,1702'
 function Assert-True($Condition, [string]$Message) { if (-not $Condition) { throw $Message } }
 function Run-Engine($Engine, [hashtable]$Arguments) {
@@ -75,4 +77,14 @@ Run-Engine $routing @{ moduleRoutingMode = 'initialize'; sceneName = 'Changed Sc
 $state = $routing.CPH.Globals['portable.moduleRouting.state'] | ConvertFrom-Json
 Assert-True ($state.payload.currentScene -eq 'Changed Scene') 'OBS scene event must update routing state'
 Assert-True ($routing.CPH.Errors.Count -eq 1) 'Only intentional invalid-routing test should report an error'
-Write-Output 'Actual Video and Source Modules C# compiled against a synthetic CPH adapter; clean defaults, preserved globals, validation and guarded Stop passed.'
+$pokemon = [EngineTest.PokemonInline]::new()
+Run-Engine $pokemon @{ pokemonMode = 'initialize' }
+$config = $pokemon.CPH.Globals['portable.moduleRouting.config'] | ConvertFrom-Json
+Assert-True ($config.modules.pokemon.mode -eq 'disabled') 'New Pokemon routing must be disabled'
+$pokemon.CPH.Globals['portable.moduleRouting.config'] = '{"version":1,"modules":{"legacy":{"mode":"global","scenes":[]},"pokemon":{"mode":"scenes","scenes":["Synthetic Scene"]}},"retained":"synthetic"}'
+Run-Engine $pokemon @{ pokemonMode = 'initialize' }
+$config = $pokemon.CPH.Globals['portable.moduleRouting.config'] | ConvertFrom-Json
+Assert-True ($config.modules.pokemon.scenes[0] -eq 'Synthetic Scene' -and $config.modules.legacy.mode -eq 'global' -and $config.retained -eq 'synthetic') 'Pokemon Initialize must preserve existing rules and unknown metadata'
+Run-Engine $pokemon @{ pokemonMode = 'message'; userName = 'ordinaryviewer'; message = 'A wild Weedle appears Catch it using !pokecatch' }
+Assert-True ($pokemon.CPH.Errors.Count -eq 0) 'Rejected viewer imitation must be inert'
+Write-Output 'Actual Video, Source Modules and Pokemon C# compiled against a synthetic CPH adapter; preserved globals, validation, guarded Stop and Pokemon initialization passed. No live HTTP/chat call was made.'

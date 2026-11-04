@@ -1,0 +1,58 @@
+const assert = require("node:assert/strict"), fs = require("node:fs"), path = require("node:path"), os = require("node:os"), http = require("node:http"), zlib = require("node:zlib"), crypto = require("node:crypto");
+const AdmZip = require("adm-zip");
+const { buildModules } = require("../../scripts/build-modules");
+const { CompanionRegistry } = require("../src/module-registry");
+const { InstalledService } = require("../src/installed-service");
+const { fixture } = require("./pokemon-fixture");
+const core = require("../../modules/pokemon-encounters/service/pokemon-core");
+async function freePort() { const server = http.createServer(); await new Promise(resolve => server.listen(0, "127.0.0.1", resolve)); const port = server.address().port; await new Promise(resolve => server.close(resolve)); return port; }
+async function main() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "companion-pokemon-")); let test, child;
+  try {
+    assert.equal(core.parseCommunityMessage("ordinaryviewer", "A wild Weedle appears Catch it using !pokecatch").type, "ignored");
+    assert.equal(core.parseCommunityMessage("@PokemonCommunityGame", "A wild Mr. Mime appears Catch it using !pokecatch (winners revealed in 90s)", null, 1000).expiresAtMs, 91000);
+    assert.equal(core.slugFor("Nidoran (f)"), "nidoran-f"); assert.equal(core.slugFor("Nidoran M"), "nidoran-m");
+    assert.equal(core.slugFor("Vulpix (Alolan)"), "vulpix-alola"); assert.equal(core.parsePokemonLabel("Shiny Staraptor (F)").shiny, true);
+    assert.equal(core.parsePokemonLabel("Shiny Staraptor (F)").gender, "female");
+    assert.equal(core.parseCatchCommand("!POKECATCH great ball").ball, "great-ball"); assert.equal(core.parseCatchCommand("!pokecatch unknown").fallback, true);
+    const catalog = buildModules(["pokemon-encounters"], { output: path.join(root, "packages") });
+    const archive = path.join(root, "packages/pokemon-encounters-1.7.0.streammodule"), zip = new AdmZip(archive);
+    const review = JSON.parse(zip.readAsText("ASSET-PROVENANCE.json")); assert.equal(review.files.length, 45);
+    assert.ok(zip.readAsText(review.notice).includes("Copyright The Pokémon Company"));
+    for (const asset of review.files) assert.equal(crypto.createHash("sha256").update(zip.readFile(asset.path)).digest("hex"), asset.sha256);
+    const bytes = Buffer.from(zip.readAsText("streamerbot/pokemon-encounters.sb"), "base64"), exported = JSON.parse(zlib.gunzipSync(bytes.subarray(4)));
+    assert.deepEqual(exported.data.actions.map(action => action.name).sort(), [...catalog.modules[0].streamerbot.requiredActions].sort());
+    assert.equal(exported.meta.author, "Sethani"); assert.deepEqual(exported.data.actions.map(action => action.triggers[0].type), [133, 706]);
+    assert.ok(exported.data.actions.flatMap(action => action.subActions).filter(action => action.type === 99999).every(action => Buffer.from(action.byteCode, "base64").toString().includes("EscapeDataString(sender)")));
+    const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules") });
+    const staged = registry.stage(archive); registry.commit(staged); registry.finalize(staged);
+    const moduleDirectory = registry.moduleDirectory("pokemon-encounters");
+    test = await fixture(root, path.join(moduleDirectory, "service/pokemon-runtime.js"));
+    const get = async route => (await fetch(test.base + route)).json();
+    assert.equal((await get("/health")).enabled, false);
+    assert.equal((await get("/api/pokemon/test?name=Weedle")).type, "disabled"); assert.equal(test.requests.length, 0);
+    assert.equal((await get("/api/pokemon/message?sender=viewer&message=" + encodeURIComponent("A wild Weedle appears Catch it using !pokecatch"))).accepted, false);
+    const settings = { enabled: true, width: 420, position: "top-left", showThrowNames: false, throwSpeedMs: 650 };
+    await fetch(test.base + "/api/pokemon/config", { method: "POST", body: JSON.stringify(settings) });
+    const encounter = await get("/api/pokemon/test?name=Weedle"); assert.equal(encounter.encounter.types.length, 2); assert.equal(encounter.encounter.name, "Weedle");
+    assert.equal(test.requests.length, 2); assert.equal((await fetch(test.base + encounter.encounter.imageUrl)).status, 200);
+    await get("/api/pokemon/test?name=Weedle"); assert.equal(test.requests.length, 2, "Metadata/artwork cache avoids repeated requests");
+    assert.equal((await get("/api/pokemon/test-throw?user=Synthetic&ball=great%20ball")).thrown.ball, "great-ball");
+    assert.equal((await get("/api/pokemon/test-throw?user=synthetic")).reason, "already-threw");
+    assert.equal((await fetch(test.base + "/pokemon/type/7.png")).status, 200); assert.equal((await fetch(test.base + "/pokemon/ball/great-ball.png")).status, 200);
+    const ghost = await get("/api/pokemon/test?name=Unidentified%20Ghost"); assert.equal(ghost.encounter.mystery, true); assert.equal(test.requests.length, 2);
+    await get("/api/pokemon/message?sender=pokemoncommunitygame&message=The%20wild%20Pokemon%20fled!"); assert.equal(test.service.publicState().encounter, null);
+    await get("/api/pokemon/test?name=Weedle"); await get("/api/pokemon/clear"); assert.equal(test.service.publicState().throws.length, 0);
+    assert.equal((await fetch(test.base + "/pokemon/settings")).status, 200); assert.equal((await fetch(test.base + "/pokemon/overlay")).status, 200);
+    await test.close(); test = null;
+    const marker = path.join(root, "data/private-marker.txt"); fs.writeFileSync(marker, "synthetic");
+    const manifest = registry.readManifest("pokemon-encounters"); manifest.version = "1.7.1"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); const upgrade = path.join(root, "upgrade.streammodule"); zip.writeZip(upgrade);
+    const replacement = registry.stage(upgrade); registry.commit(replacement); registry.finalize(replacement);
+    child = new InstalledService({ app: {}, moduleDirectory, dataDirectory: path.join(root, "data"), manifest: { ...manifest, service: { ...manifest.service, port: await freePort() } } });
+    assert.equal((await child.start()).status, "running");
+    const state = (await child.state()).endpoint.details; assert.equal(state.config.width, 420); assert.equal(state.encounter, null); assert.deepEqual(state.throws, []); assert.equal(fs.readFileSync(marker, "utf8"), "synthetic");
+    await child.stop(); assert.equal((await child.probe(200)).ready, false);
+    console.log("Pokemon package passed: pinned assets/notices, reproducible actions, sender boundary, variants, cache, encounter/throw/clear, upgrade/data preservation and isolated child lifecycle.");
+  } finally { await test?.close(); await child?.stop(); assert.ok(path.resolve(root).startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(root, { recursive: true, force: true }); }
+}
+if (require.main === module) main().catch(error => { console.error(error); process.exitCode = 1; });

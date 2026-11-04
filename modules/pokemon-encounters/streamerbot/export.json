@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "name": "Pokemon Encounters",
+    "author": "Sethani",
+    "version": "1.7.0",
+    "description": "",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "6b70a04d-e485-4637-873a-91f69436e277",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Pokemon Encounters - Chat",
+        "group": "Pokemon Encounters",
+        "alwaysRun": true,
+        "randomAction": false,
+        "concurrent": true,
+        "triggers": [
+          {
+            "id": "be02ffde-693c-4b9b-a2e7-f54d55baa628",
+            "type": 133,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "pokemonMode",
+            "value": "message",
+            "autoType": false,
+            "id": "32b6552e-cfbd-4514-98bd-15660f6c4294",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "name": "Pokemon encounter bridge",
+            "description": "PCG encounter and viewer catch-animation bridge",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Net.Http.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "47df854a-c1f8-4ec6-8940-618294a56b1a",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "sourceFile": "pokemon-bridge.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "67ed40e1-e53b-4b0a-a02a-61b9038cbd46",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Pokemon Encounters - Initialize",
+        "group": "Pokemon Encounters",
+        "alwaysRun": true,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "60c7629e-fe98-461a-8c3b-ca079a5e46d0",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "pokemonMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "af92a365-1246-46d1-a65c-198fc0bb593c",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "name": "Pokemon encounter bridge",
+            "description": "PCG encounter and viewer catch-animation bridge",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Net.Http.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "8f7b342d-fe7c-4f06-8064-8905c2380bda",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "sourceFile": "pokemon-bridge.cs"
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

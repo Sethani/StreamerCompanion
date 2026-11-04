@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "upstream": "https://github.com/PokeAPI/sprites",
+  "revision": "1b3b7c0a538dd2226ae08d0d2f8955125075bbd4",
+  "notice": "third-party/pokeapi-sprites-licence.txt",
+  "files": [
+    {
+      "path": "service/type-icons/1.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/1.png",
+      "sha256": "de02fc1e79cdf624a0f816a518e69c936b346d5e4ee089bafd4ef1e5d6d92881"
+    },
+    {
+      "path": "service/type-icons/10.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/10.png",
+      "sha256": "a0b4eeeb26254e6ffeb44d5cc599ba97c7e044e62f4d006795ef80d94c01b91a"
+    },
+    {
+      "path": "service/type-icons/11.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/11.png",
+      "sha256": "6d900ed3f6529962468d4997b67bb5b64d3355423310c7aa99bdd1913a7fcb4b"
+    },
+    {
+      "path": "service/type-icons/12.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/12.png",
+      "sha256": "c171c40e1e64f3737a9e9bfbbf0876f6e737024671dbf77c0599b8e5c6f5d12d"
+    },
+    {
+      "path": "service/type-icons/13.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/13.png",
+      "sha256": "af3e8839eca934db431625c75ce0a364472982d424c036783eda8abd4581232e"
+    },
+    {
+      "path": "service/type-icons/14.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/14.png",
+      "sha256": "bba03681ffa450092fe04ba48fb2ca050f2d470c8b9c1b00b1e6710043c3ff5f"
+    },
+    {
+      "path": "service/type-icons/15.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/15.png",
+      "sha256": "b48b4013daecedeefaaa1f2d9ddd4a0c001d8a90f6b5a2a14cd119471ce7ff36"
+    },
+    {
+      "path": "service/type-icons/16.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/16.png",
+      "sha256": "fd55ba89efacb8da844d52f09527fb585fc2754f902e89655ff2769537865f0b"
+    },
+    {
+      "path": "service/type-icons/17.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/17.png",
+      "sha256": "19cbffd03aa9316bd3f68474461d1e54ff6e1f7566b041d84d34d18ce6b8f5d6"
+    },
+    {
+      "path": "service/type-icons/18.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/18.png",
+      "sha256": "72bcb8cb3365aadd7c15433d70cb800f4048e0b404f1f3cd02ce6e7b16a1c982"
+    },
+    {
+      "path": "service/type-icons/2.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/2.png",
+      "sha256": "5e641fcaf0bb515a89f915e88dca94a0c38669319de3782a9a8e0bc5e411e6e4"
+    },
+    {
+      "path": "service/type-icons/3.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/3.png",
+      "sha256": "52346312fd23a412832a46076925e36a539e1580f6da5dc6e2d26b5a8ed39290"
+    },
+    {
+      "path": "service/type-icons/4.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/4.png",
+      "sha256": "38b284167a89219b61b6ec70d6057529dddf1cce90eed4348503101990f7c0fc"
+    },
+    {
+      "path": "service/type-icons/5.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/5.png",
+      "sha256": "55ba86c99bab9bbab8065877893277afb18fa94aaccdd5486b1948e2c93f5ba8"
+    },
+    {
+      "path": "service/type-icons/6.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/6.png",
+      "sha256": "1645f09258e90666d4ca2d5ddd49ba1d036a0585b9b7c2442cb63e04f054dadb"
+    },
+    {
+      "path": "service/type-icons/7.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/7.png",
+      "sha256": "a97db6cd77c34b2a457a2ba7af5a2c998c47a80b43d88a40c0f850cd33269542"
+    },
+    {
+      "path": "service/type-icons/8.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/8.png",
+      "sha256": "8fa78945484a23cc797a064c89a2d9b82ff790e0b77aa61ea2ac22c2c474a56d"
+    },
+    {
+      "path": "service/type-icons/9.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/types/generation-viii/sword-shield/small/9.png",
+      "sha256": "6a491f70cc6f46b051b61791f4c03dc68826942b460ec2720ac0ae97da0d0c21"
+    },
+    {
+      "path": "service/ball-icons/beast-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/beast-ball.png",
+      "sha256": "1649321323a2f57225313475aafc47c77d078b297c088c516df5c3d5cba50988"
+    },
+    {
+      "path": "service/ball-icons/cherish-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/cherish-ball.png",
+      "sha256": "f39eaef1ba65ae6256a42b9b00d68d2e773341cb62c9bc4d886ad1ffd068a9f2"
+    },
+    {
+      "path": "service/ball-icons/dive-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/dive-ball.png",
+      "sha256": "69a891bf39e631f29a9ffa96bfe280694d2a891bed3208e1c8f3776591001bc5"
+    },
+    {
+      "path": "service/ball-icons/dream-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/dream-ball.png",
+      "sha256": "1c919533d894eb26f4a1eb236f1ccacc0e675a85b484b8f7313077ee7f66f6b5"
+    },
+    {
+      "path": "service/ball-icons/dusk-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/dusk-ball.png",
+      "sha256": "5ae06ec973f78e003f323992e5f72e1686efed12abe1b936a29a46edec62a367"
+    },
+    {
+      "path": "service/ball-icons/fast-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/fast-ball.png",
+      "sha256": "5439c38be642f79bbaee30b0227c0a282e253e22e08c891bcbe23a3deb8c2851"
+    },
+    {
+      "path": "service/ball-icons/friend-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/friend-ball.png",
+      "sha256": "7d03fa4e1fa53160be2a659213a49cd959a8dd8740d8caeb3f2e877258fb993e"
+    },
+    {
+      "path": "service/ball-icons/great-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/great-ball.png",
+      "sha256": "4d0a614eebb4aef6b02a3620e4262f471b620cc8bc81cfeebeb3cbb995727ac6"
+    },
+    {
+      "path": "service/ball-icons/heal-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/heal-ball.png",
+      "sha256": "01d97180475c7cb8a83b0f31f8a3facbbc89a924082beaac534bb8264d8875c4"
+    },
+    {
+      "path": "service/ball-icons/heavy-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/heavy-ball.png",
+      "sha256": "a4bac5f6e6088fe6db665f2456453cfc3ed4d6b8a7cb37658c547384ef83b001"
+    },
+    {
+      "path": "service/ball-icons/level-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/level-ball.png",
+      "sha256": "07e6abe67deac6de46e1dedf67f6aaa894f98428035e421cfdf93ef4cf137e4d"
+    },
+    {
+      "path": "service/ball-icons/love-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/love-ball.png",
+      "sha256": "977476b7d5aeef52dd304ec9d2b9f9a998611872d49066bcd644750c8e220008"
+    },
+    {
+      "path": "service/ball-icons/lure-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/lure-ball.png",
+      "sha256": "f9a372a03e16c327bb1e885e71638665ae4139e47f826123c6edc2b1b39ac7df"
+    },
+    {
+      "path": "service/ball-icons/luxury-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/luxury-ball.png",
+      "sha256": "305f15d1387fac249ba17d938dc731958ad38d932bb5ba8be1273842ade26a79"
+    },
+    {
+      "path": "service/ball-icons/master-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/master-ball.png",
+      "sha256": "a702e5700d83d28cfbdefeb4cdb70e7ec82a4903133355b87fbac5cae4c98c9e"
+    },
+    {
+      "path": "service/ball-icons/moon-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/moon-ball.png",
+      "sha256": "e09122c40555a45bbb871a8ae8833b37429a79e27b54d143b1104141028c5bf4"
+    },
+    {
+      "path": "service/ball-icons/nest-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/nest-ball.png",
+      "sha256": "28f5947a50b4e93c1fb1df9f320f43c7a950fd125735f6eea083d95b9f0eee75"
+    },
+    {
+      "path": "service/ball-icons/net-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/net-ball.png",
+      "sha256": "d18b14b1b9a7b6744396f61f0d817c8ae14f250dd8c74b222624bf4ab08aab97"
+    },
+    {
+      "path": "service/ball-icons/park-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/park-ball.png",
+      "sha256": "7ccb775e998a521be2a2487ce2b38e9ffd3daa61cd0612a1b6b91e6727c3d4ce"
+    },
+    {
+      "path": "service/ball-icons/poke-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/poke-ball.png",
+      "sha256": "a4c7b9e8ff5727d10e6f679bcf16a963a95b2a36480d3bd9156d9808bdf54dff"
+    },
+    {
+      "path": "service/ball-icons/premier-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/premier-ball.png",
+      "sha256": "fcb9788efab4dba53d507a0e44f75adbbca69adb5ae2ce4222abfb2277168085"
+    },
+    {
+      "path": "service/ball-icons/quick-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/quick-ball.png",
+      "sha256": "566d280cd7702ae84189e63a4d85ba7307c17cd0d75f61de5d4b90d799f5f4bc"
+    },
+    {
+      "path": "service/ball-icons/repeat-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/repeat-ball.png",
+      "sha256": "fca530eeb2036754cc2487cd0737e32be57a2ca951b267637beb87de35a4d904"
+    },
+    {
+      "path": "service/ball-icons/safari-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/safari-ball.png",
+      "sha256": "8abfba292d69c952da4ce9a9d5a0bfa6d7e075a01e8ea137b6e36b7168772fc9"
+    },
+    {
+      "path": "service/ball-icons/sport-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/sport-ball.png",
+      "sha256": "3911e0bbaf4f33c5dd1881f7c7e97d0556259ae0e7fee287fb6311f5651ad09e"
+    },
+    {
+      "path": "service/ball-icons/timer-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/timer-ball.png",
+      "sha256": "7b2281202147c17e6c89b7a33256b4686fa7e3e0f06002a657a1e535d45a22fa"
+    },
+    {
+      "path": "service/ball-icons/ultra-ball.png",
+      "source": "https://raw.githubusercontent.com/PokeAPI/sprites/1b3b7c0a538dd2226ae08d0d2f8955125075bbd4/sprites/items/ultra-ball.png",
+      "sha256": "4dbf6751968bd3b96d3036da1a55e5a764c792e780a5fa5cd2391bc155224a10"
+    }
+  ]
+}
