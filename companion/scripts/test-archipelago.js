@@ -2,13 +2,35 @@ const assert = require("node:assert/strict"), fs = require("node:fs"), os = requ
 const { buildModules } = require("../../scripts/build-modules");
 const { CompanionRegistry } = require("../src/module-registry");
 const { CompanionHost } = require("../src/companion-host");
-const { fixture } = require("./archipelago-fixture");
+const { fixture, snapshot } = require("./archipelago-fixture");
+const model = require("../../modules/archipelago/service/model");
 async function main() {
+  const snap = snapshot();
+  const selected = { slots: ["0:1", "1:1"], display: { showNames: false }, slotDisplay: { "0:1": { progress: false }, "1:1": { logic: false } } };
+  let projected = model.project(snap, selected, []);
+  assert.equal(projected.players[0].name, ""); assert.equal(projected.players[0].game, "Game A");
+  assert.equal(projected.players[0].progress, null); assert.equal(projected.players[0].logic.inLogic, 4);
+  assert.equal(projected.players[1].logic, null); assert.equal(projected.players[1].progress.percent, 10);
+  snap.enriched.dashboard.players[0].checksDone = 10;
+  projected = model.project(snap, { slots: ["0:1"], display: { hideCompletedLogic: true } }, []);
+  assert.equal(projected.players[0].logic, null); assert.equal(projected.players[0].progress.percent, 100);
+  snap.enriched.dashboard.players[0].checksDone = 9;
+  assert.equal(model.project(snap, { slots: ["0:1"], display: { hideCompletedLogic: true } }, []).players[0].logic.inLogic, 4, "Goal status alone must not imply 100% checks");
+  const logic = snap.enriched.logic["0:1"]; logic.inLogic = 0;
+  assert.equal(model.project(snap, { slots: ["0:1"], display: { showBK: false } }, []).players[0].logic, null);
+  logic.glitchedSupported = true;
+  assert.equal(model.project(snap, { slots: ["0:1"], display: { showBK: false } }, []).players[0].logic.glitched, 3, "Supported glitched checks are not BK");
+  logic.glitched = 0; logic.goMode = "yes";
+  assert.equal(model.project(snap, { slots: ["0:1"], display: { showBK: false } }, []).players[0].logic.goMode, "yes");
+  logic.state = "loading";
+  assert.equal(model.project(snap, { slots: ["0:1"], display: { showBK: false } }, []).players[0].logic.state, "loading", "Unavailable analysis must not be classified as BK");
+  assert.equal(model.profile({ slots: ["0:1"] }).display.showBK, true);
+  assert.deepEqual(model.profile(selected).slotDisplay, { "0:1": { progress: false, logic: true }, "1:1": { progress: true, logic: false } });
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "companion-archipelago-")); let test, restarted;
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.1.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.2.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");
@@ -57,9 +79,13 @@ async function main() {
     await assert.rejects(service.update({ brokerUrl: "http://user:pass@127.0.0.1:38283/api/controller/v2" }), /local/);
     await assert.rejects(service.update({ token: "Bearer wrong" }), /only the API key/);
     await service.update({ roomId: "beta" }); assert.deepEqual(service.settings().config.profiles.beta.slots, ["1:1"]);
+    await service.update({ profile: { slots: ["1:1"], slotDisplay: { "1:1": { progress: false, logic: true } }, display: { hideCompletedLogic: true, showBK: false } } });
     await test.close(); test = null;
     restarted = await fixture(root, path.join(registry.moduleDirectory("archipelago"), "service/runtime.js"));
     assert.equal(restarted.service.settings().config.roomId, "beta"); assert.deepEqual(restarted.service.settings().config.profiles.beta.slots, ["1:1"]); assert.equal(restarted.service.settings().hasToken, true); assert.equal(restarted.service.publicState().events.length, 0);
+    assert.deepEqual(restarted.service.settings().config.profiles.beta.slotDisplay["1:1"], { progress: false, logic: true });
+    assert.equal(restarted.service.settings().config.profiles.beta.display.hideCompletedLogic, true);
+    assert.equal(restarted.service.settings().config.profiles.beta.display.showBK, false);
     assert.deepEqual(fs.readdirSync(path.join(root, "data")).sort(), ["auth.json", "config.json"], "Events/cursors/room history must not be persisted");
     console.log("Archipelago packaged service passed: room/team selections, private auth, explicit actions, independent display options, SlotLock, stale data, ETags, cursor dedup/reset, outages, generation changes and persisted preferences.");
   } finally { await test?.close(); await restarted?.close(); assert.ok(path.resolve(root).startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(root, { recursive: true, force: true }); }

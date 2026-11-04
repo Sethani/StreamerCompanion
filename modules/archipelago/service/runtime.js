@@ -143,7 +143,7 @@ function createService(options = {}) {
     try {
       if (!/^((127\.0\.0\.1|localhost)(:\d+)?)$/.test(request.headers.host || "")) return json(response, 403, { error: "Local requests only." });
       const url = new URL(request.url, "http://127.0.0.1");
-      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.1", ready: true, configured: !!config.roomId, brokerConnected: connected });
+      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.2", ready: true, configured: !!config.roomId, brokerConnected: connected });
       if (request.method === "GET" && url.pathname === "/api/public/state") return json(response, 200, publicState());
       const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/app.js": "app.js", "/styles.css": "styles.css", "/overlay.js": "overlay.js", "/overlay.css": "overlay.css" };
       if (request.method === "GET" && pages[url.pathname]) {

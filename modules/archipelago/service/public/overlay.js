@@ -29,7 +29,7 @@ function render(state) {
   if (!state.enabled || ["no-room", "no-slots"].includes(state.status)) { hide(); return; }
   const players = Array.isArray(state.players) ? state.players : [], events = Array.isArray(state.events) ? state.events : [];
   const identity = (player) => [player.name, player.game].filter(Boolean).join(" · ");
-  const progressParts = players.filter((player) => player.progress?.percent !== null && player.progress).map((player) => identity(player) + " · " + player.progress.percent + "%" + (player.progress.stale ? " · Stale" : ""));
+  const progressParts = players.filter((player) => player.progress?.percent !== null && player.progress).sort((a, b) => b.progress.percent - a.progress.percent).map((player) => identity(player) + " · " + player.progress.percent + "%" + (player.progress.stale ? " · Stale" : ""));
   if (state.goals?.total) progressParts.push(`${state.goals.completed}/${state.goals.total} goals`);
   const logicParts = players.filter((player) => player.logic?.inLogic !== null && player.logic).map((player) => {
     const details = [], logic = player.logic;
@@ -81,4 +81,11 @@ async function refresh() {
     if (!lastSuccess || Date.now() - lastSuccess >= 10000) hide();
   } finally { expireEvents(); inFlight = false; }
 }
-refresh(); setInterval(refresh, 1000);
+if (new URLSearchParams(location.search).get("demo") === "item") {
+  const toolbar = document.createElement("div"); toolbar.className = "demo-controls";
+  const description = document.createElement("p"); description.textContent = "TEST PREVIEW · Synthetic data only. Nothing is sent to Controller or the live overlay.";
+  const button = document.createElement("button"); button.textContent = "Replay incoming item";
+  toolbar.append(description, button); document.body.prepend(toolbar);
+  const sample = () => render({ enabled: true, status: "ready", players: [], goals: null, events: [{ id: "demo-" + Date.now(), type: "item_send", at: new Date().toISOString(), segments: [{ type: "text", text: "TEST · " }, { type: "player", text: "Sample sender" }, { type: "text", text: " sent " }, { type: "item", text: "Sample item" }, { type: "text", text: " to " }, { type: "player", text: "Sample receiver" }, { type: "text", text: " (" }, { type: "location", text: "Sample location" }, { type: "text", text: ")" }] }] });
+  button.onclick = sample; sample(); setInterval(expireEvents, 1000);
+} else { refresh(); setInterval(refresh, 1000); }

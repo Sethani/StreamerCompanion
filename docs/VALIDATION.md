@@ -109,3 +109,12 @@ The full local check suite passed. Packaged hidden Electron acceptance verified 
 Real OBS visual acceptance remains unchecked. Controller reporting SlotLock as loading still prevents filtered player details; this update does not claim to repair upstream readiness. The old monolithic overlay is not automatically bridged or replaced.
 
 Archipelago 1.0.1 was published by the independent module workflow from source commit `3389063`. Real GitHub catalogue/package acceptance under the existing 1.2.2 packaged host passed: package/dependency hashes, isolated service start/restart, passive Guru Test room/slot discovery, saved selections and automatic-start preference. No broker actions, real credentials or live profile changes were used. Release: https://github.com/Sethani/StreamerCompanion-Modules/releases/tag/archipelago-v1.0.1 .
+
+
+### Archipelago 1.0.2 display controls and item preview
+
+Adds per-room, per-slot percentage/logic visibility, optional hiding of logic for reported 100% check completion, and a BK visibility toggle. Existing selections and defaults remain compatible; missing per-slot settings enable both trackers. These are display controls, not Controller job cancellation. Percentage strips sort high to low with stable ties. The existing Player names setting is unchanged.
+
+A separate synthetic incoming-item preview uses the real renderer and a replay button without reading rooms, changing the live overlay or invoking broker actions. It validates presentation only, not actual event delivery.
+
+Full source checks and hidden packaged desktop acceptance passed. New coverage checks independent slot visibility, 100% versus goal-status semantics, BK versus glitched/go-mode/unavailable results, saved preferences across restart, percentage ordering, settings save and preview replay. All tests use temporary data and stop their services/processes. Live settings and OBS sources are untouched.

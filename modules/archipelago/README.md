@@ -12,9 +12,13 @@ Install the module through the catalogue, start its service explicitly, and open
 
 Copy the OBS URL shown in Settings into a browser source, normally at 1920 × 1080. The default is `http://127.0.0.1:3141/overlay`; no room ID, credentials or player names belong in the URL. Keep Companion, this service and Controller running. The transparent overlay renders the selected slots and recent selected activity. Its own preview uses the same saved configuration.
 
-The overlay preserves the legacy translucent box, cyan summary strips and colored fading event stack at the bottom left of a transparent canvas. All permitted selected slots share continuous progress and logic strips; there are no timed pages or alternating views. Polling preserves existing nodes and animation timelines.
+Each included slot has independent **Percentage** and **Logic** checkboxes. **Hide logic for games at 100% checks** removes their logic results without hiding percentage or activity; completion uses reported checks, including released games that reach 100%. **Show BK games** controls fresh zero-check logic results; unavailable analysis is not treated as BK. These preferences are remembered per room. They control display only and do not cancel or prevent Controller calculations.
+
+The percentage strip sorts from highest to lowest, preserving the reported order for ties. The overlay preserves the legacy translucent box, cyan summary strips and colored fading event stack at the bottom left of a transparent canvas. All permitted selected slots share continuous progress and logic strips; there are no timed pages or alternating views. Polling preserves existing nodes and animation timelines.
 
 Universal Overlay and Source Modules are optional. If using them, enable Archipelago in Source Modules for the intended scenes. Direct OBS use needs neither optional module. Before cutover, disable the old Archipelago renderer; do not run both renderers for the same feature. This package never edits OBS profiles, imports old secrets or switches the live setup automatically.
+
+Use **Test incoming item (preview)** to open a separate, clearly labeled synthetic item notification with a replay button. It uses the same renderer without fetching room data, sending items, calling Controller or changing the live overlay. This tests presentation, not actual broker event delivery.
 
 ## Less typing, explicit controls
 

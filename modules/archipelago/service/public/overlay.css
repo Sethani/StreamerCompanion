@@ -168,3 +168,5 @@ body.overlay{background:transparent;color:rgba(245,245,245,.94);font-family:syst
 .overlay #overlay[hidden],.archipelago-summary-track[hidden]{display:none}
 
 html,body{width:100%;height:100%;margin:0;background:transparent}:root{background:transparent}
+
+.demo-controls{position:fixed;top:20px;left:20px;padding:14px;background:#18242c;color:#edf3f6;max-width:600px;border-radius:8px}.demo-controls button{cursor:pointer}

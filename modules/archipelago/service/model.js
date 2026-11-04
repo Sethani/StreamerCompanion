@@ -1,11 +1,12 @@
 "use strict";
-const DEFAULT_DISPLAY = { progress: true, goals: true, logic: true, activity: true, showNames: true };
+const DEFAULT_DISPLAY = { progress: true, goals: true, logic: true, activity: true, showNames: true, hideCompletedLogic: false, showBK: true };
 const EVENT_TYPES = ["item_send", "item_cheat", "hint", "check", "chat", "server_chat", "death_link", "goal", "release", "collect", "join", "part", "countdown", "notice", "unknown"];
 const key = (player) => Number.isInteger(player?.team) && player.team >= 0 && Number.isInteger(player?.slot) && player.slot > 0 ? player.team + ":" + player.slot : "";
 function profile(input = {}) {
   return {
     generationId: typeof input.generationId === "string" ? input.generationId : "",
     slots: [...new Set((Array.isArray(input.slots) ? input.slots : []).filter((id) => typeof id === "string" && /^[0-9]+:[0-9]+$/.test(id)))].slice(0, 1000),
+    slotDisplay: Object.fromEntries(Object.entries(input.slotDisplay || {}).filter(([id]) => /^[0-9]+:[0-9]+$/.test(id)).slice(0, 1000).map(([id, value]) => [id, { progress: value?.progress !== false, logic: value?.logic !== false }])),
     display: Object.fromEntries(Object.entries(DEFAULT_DISPLAY).map(([name, fallback]) => [name, typeof input.display?.[name] === "boolean" ? input.display[name] : fallback])),
     filterLocks: { progress: input.filterLocks?.progress !== false, logic: input.filterLocks?.logic !== false, activity: input.filterLocks?.activity !== false },
     eventTypes: (Array.isArray(input.eventTypes) ? input.eventTypes : ["item_send", "hint", "death_link", "goal"]).filter((value) => EVENT_TYPES.includes(value)),
@@ -43,10 +44,14 @@ function project(snapshot, selection, events, now = Date.now()) {
   const selected = players(snapshot).filter((player) => chosen.has(key(player)));
   const rows = selected.map((player) => {
     const id = key(player), locked = lockState(snapshot, id) !== "unlocked";
-    const progress = settings.display.progress && !(locked && settings.filterLocks.progress);
-    const showLogic = settings.display.logic && !(locked && settings.filterLocks.logic);
+    const slotOptions = settings.slotDisplay[id] || { progress: true, logic: true };
+    const complete = Number.isInteger(player.checksDone) && Number.isInteger(player.checksTotal) && player.checksTotal > 0 && player.checksDone >= player.checksTotal;
+    const progress = slotOptions.progress && settings.display.progress && !(locked && settings.filterLocks.progress);
+    let showLogic = slotOptions.logic && settings.display.logic && !(settings.display.hideCompletedLogic && complete) && !(locked && settings.filterLocks.logic);
     const result = enriched.logic?.[id], wrongGeneration = !!result?.generationId && result.generationId !== snapshot.generationId;
     const logicReady = showLogic && !stale && !wrongGeneration && result?.state === "ready" && !result.stale && key(result.player) === id;
+    const bk = logicReady && result.inLogic === 0 && !(result.glitchedSupported === true && result.glitched > 0) && !["yes", "glitched"].includes(result.goMode);
+    if (bk && !settings.display.showBK) showLogic = false;
     const validCount = (value) => Number.isInteger(value) && value >= 0 ? value : null;
     const done = validCount(player.checksDone), total = validCount(player.checksTotal);
     return {

@@ -28,9 +28,18 @@ const element = (tag, text, className) => { const node = document.createElement(
     if (!dirty) {
       const profile = selectedProfile(); $("slots").replaceChildren();
       for (const slot of next.slots) {
-        const label = element("label", undefined, "slot"), checkbox = element("input"); checkbox.type = "checkbox"; checkbox.dataset.slot = slot.id; checkbox.checked = profile.slots.includes(slot.id);
+        const label = element("div", undefined, "slot"), checkbox = element("input"); checkbox.type = "checkbox"; checkbox.dataset.slot = slot.id; checkbox.checked = profile.slots.includes(slot.id);
         const text = element("span"); text.append(element("strong", slot.name), element("small", slot.game), element("small", `${slot.checksDone}/${slot.checksTotal} · ${slot.status || "Unknown"} · Logic: ${slot.logicState} · ${slot.lock}`));
-        checkbox.onchange = () => { mark(); count(); }; label.append(checkbox, text); $("slots").append(label);
+        checkbox.setAttribute("aria-label", "Include " + slot.name + " · " + slot.game);
+        checkbox.onchange = () => { mark(); count(); }; label.append(checkbox, text);
+        const choices = element("div", undefined, "slot-options");
+        for (const [name, title] of [["progress", "Percentage"], ["logic", "Logic"]]) {
+          const choice = element("label", undefined, "check"), input = element("input"); input.type = "checkbox";
+          input.dataset.slotOption = name; input.dataset.slotId = slot.id;
+          input.checked = profile.slotDisplay?.[slot.id]?.[name] !== false; input.onchange = mark;
+          choice.append(input, document.createTextNode(title)); choices.append(choice);
+        }
+        label.append(choices); $("slots").append(label);
       }
       if (!next.slots.length) $("slots").append(element("p", next.config.roomId ? "No game slots reported yet. Check the room in Controller." : "Choose a room to see its slots.", "muted"));
       $("enabled").checked = next.config.enabled;
@@ -52,7 +61,9 @@ const element = (tag, text, className) => { const node = document.createElement(
   $("select-all").onclick = () => { document.querySelectorAll("[data-slot]").forEach((input) => { input.checked = true; }); mark(); count(); };
   $("clear").onclick = () => { document.querySelectorAll("[data-slot]").forEach((input) => { input.checked = false; }); mark(); count(); };
   $("display").onsubmit = (event) => { event.preventDefault(); perform(async () => {
-    const profile = { slots: [...document.querySelectorAll("[data-slot]:checked")].map((input) => input.dataset.slot), display: Object.fromEntries([...document.querySelectorAll("[data-display]")].map((input) => [input.dataset.display, input.checked])), filterLocks: Object.fromEntries([...document.querySelectorAll("[data-lock]")].map((input) => [input.dataset.lock, input.checked])), eventTypes: [...document.querySelectorAll("[data-event-type]:checked")].map((input) => input.dataset.eventType), maxEvents: Number($("max-events").value) };
+    const slotDisplay = { ...selectedProfile().slotDisplay };
+    for (const input of document.querySelectorAll("[data-slot-option]")) { (slotDisplay[input.dataset.slotId] ||= {})[input.dataset.slotOption] = input.checked; }
+    const profile = { slotDisplay, slots: [...document.querySelectorAll("[data-slot]:checked")].map((input) => input.dataset.slot), display: Object.fromEntries([...document.querySelectorAll("[data-display]")].map((input) => [input.dataset.display, input.checked])), filterLocks: Object.fromEntries([...document.querySelectorAll("[data-lock]")].map((input) => [input.dataset.lock, input.checked])), eventTypes: [...document.querySelectorAll("[data-event-type]:checked")].map((input) => input.dataset.eventType), maxEvents: Number($("max-events").value) };
     const next = await api("/api/settings", { roomId: state.config.roomId, enabled: $("enabled").checked, profile }); dirty = false; render(next); note("Display saved. OBS follows this selection automatically.");
   }); };
   $("reload").onclick = () => perform(async () => { render(await api("/api/refresh", {})); note("Room list refreshed."); });
@@ -64,6 +75,7 @@ const element = (tag, text, className) => { const node = document.createElement(
     note(failures ? `${failures} analysis request(s) could not start. Check slot templates and analysis details in Controller.` : "Controller: " + result.status, failures > 0);
     render(await api("/api/settings"));
   });
+  $("test-item").href = location.origin + "/overlay?demo=item";
   $("overlay-url").value = location.origin + "/overlay";
   $("copy-overlay").onclick = async () => { try { await navigator.clipboard.writeText($("overlay-url").value); note("OBS browser source URL copied."); } catch (_) { $("overlay-url").select(); note("Press Ctrl+C to copy the selected overlay URL."); } };
   $("import-key").onclick = () => $("key-file").click();
