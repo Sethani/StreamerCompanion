@@ -106,7 +106,11 @@ function render(state) {
     else details.textContent = module.requiredActions.length + " required Streamer.bot actions verified.";
     const actions = card.querySelector(".actions");
     if (module.hasImport) {
-      actions.append(action("Open Streamer.bot import", () => window.companion.openImport(module.id)));
+      actions.append(action("Import into Streamer.bot…", async () => {
+        const result = await window.companion.openImport(module.id);
+        if (result.operation === "copied") feedback("Import code copied. In Streamer.bot click Import, paste into Import String, review the actions, then click Import. Refresh Companion afterward.");
+        else if (result.operation === "shown") feedback("Drag the selected file into Streamer.bot's Import String box, review the actions, then click Import. Refresh Companion afterward.");
+      }));
     }
     if (module.hasDocumentation) {
       actions.append(action("Documentation", () => window.companion.openDocs(module.id), true));

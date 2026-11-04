@@ -1,5 +1,7 @@
 Experimental application release by Sethani, under MIT for first-party code.
 
+Companion 1.2.1 carries over the existing Companion icon for the application window and Windows executable. **Import into Streamer.bot…** now explains the manual import process and offers **Copy import code** or **Show import file**, avoiding Windows file-association prompts. Paste the code into Streamer.bot's Import String field, review the actions and complete the import there. No actions are imported automatically. Module releases and saved module data are unchanged.
+
 Application downloads are now separate from [module distribution](https://github.com/Sethani/StreamerCompanion-Modules). Click Check for updates to read that repository's catalogue folder. Each module has an independent release; updating one does not rebuild/publish the application or unrelated modules. This app release contains only the portable Windows app and its checksum.
 
 Companion 1.2.0 hosts packaged browser assets and explicitly selected private media. Universal Dock (including Tests), Universal Overlay and Source Modules are independent modules. Video 2.2.0 includes its own editor/renderer and installs those dependencies together. No personal static tree or monolithic server is included.

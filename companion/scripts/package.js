@@ -17,6 +17,8 @@ async function main() {
     fs.copyFileSync(path.join(root, "src", file), destination);
   }
   const original = require("../package.json");
+  fs.mkdirSync(path.join(stage, "assets"));
+  for (const name of ["companion-icon.png", "companion-icon.ico"]) fs.copyFileSync(path.join(root, "assets", name), path.join(stage, "assets", name));
   const manifest = { name: original.name, productName: original.productName, version: original.version, author: original.author, license: original.license, description: original.description, main: original.main, dependencies: original.dependencies };
   fs.writeFileSync(path.join(stage, "package.json"), JSON.stringify(manifest, null, 2));
   const seen = new Set();
@@ -32,7 +34,7 @@ async function main() {
   }
   for (const name of Object.keys(original.dependencies)) dependency(name, path.join(root, "package.json"));
   fs.copyFileSync(path.join(root, "../LICENSE"), path.join(stage, "LICENSE"));
-  const outputs = await require("@electron/packager")({ dir: stage, out: path.join(directory, "packages"), name: "Streamer Companion Preview", executableName: "StreamerCompanionPreview", platform: "win32", arch: "x64", electronVersion: require("electron/package.json").version, asar: true, prune: false });
+  const outputs = await require("@electron/packager")({ dir: stage, out: path.join(directory, "packages"), name: "Streamer Companion Preview", executableName: "StreamerCompanionPreview", platform: "win32", arch: "x64", electronVersion: require("electron/package.json").version, icon: path.join(root, "assets", "companion-icon.ico"), asar: true, prune: false });
   for (const output of outputs) {
     const archive = path.join(output, "resources/app.asar");
     const files = asar.listPackage(archive).map((file) => file.replace(/^[/\\]/, "")).filter((file) => !asar.statFile(archive, file).files);

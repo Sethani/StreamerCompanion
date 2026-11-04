@@ -1,4 +1,5 @@
 const path = require("node:path");
+const fs = require("node:fs");
 const { CompanionHost } = require("./companion-host");
 
 // Shared Electron shell; personal adapters are supplied only by the personal entrypoint.
@@ -19,6 +20,7 @@ function createDesktop(options) {
       minWidth: 760,
       minHeight: 520,
       backgroundColor: "#111517",
+      icon: path.join(__dirname, "..", "assets", "companion-icon.png"),
       title: options.title || "Streaming Companion",
       show: options.show !== false,
       webPreferences: {
@@ -111,8 +113,19 @@ function createDesktop(options) {
   ipcMain.handle("companion:open-import", async (_event, moduleId) => {
     const target = registry.getImportFile(moduleId);
     if (!target) throw new Error("This module does not include a Streamer.bot import file yet.");
-    await shell.openPath(target);
-    return true;
+    const choice = await dialog.showMessageBox(window, {
+      type: "info", title: "Import into Streamer.bot",
+      message: "Import this module using Streamer.bot's Import window.",
+      detail: "Copy the import code, then in Streamer.bot click Import, paste into Import String, review the listed actions, and click Import. To update existing actions, import the new export even if Companion already reports Ready.\n\nAlternatively, show the file and drag it into Import String.\n\nFile: " + target,
+      buttons: ["Copy import code", "Show import file", "Cancel"], defaultId: 0, cancelId: 2,
+      noLink: true
+    });
+    if (choice.response === 0) {
+      clipboard.writeText(fs.readFileSync(target, "utf8").trim());
+      return { operation: "copied" };
+    }
+    if (choice.response === 1) { shell.showItemInFolder(target); return { operation: "shown" }; }
+    return { operation: "cancelled" };
   });
   ipcMain.handle("companion:open-docs", async (_event, moduleId) => {
     const target = registry.getDocumentationFile(moduleId);

@@ -19,8 +19,14 @@ app.commandLine.appendSwitch("disable-gpu");
 let desktop;
 let websocket;
 const opened = [];
+const copied = [], revealed = [], importDialogs = [];
+let importChoice = 0;
 const errors = [];
 electron.shell.openExternal = async (url) => { opened.push(url); };
+electron.clipboard.writeText = (value) => { copied.push(value); };
+electron.shell.showItemInFolder = (value) => { revealed.push(value); };
+electron.shell.openPath = async () => { throw new Error("Import must not launch a file association."); };
+electron.dialog.showMessageBox = async (_window, options) => { importDialogs.push(options); return { response: importChoice }; };
 
 async function freePort() {
   const server = http.createServer();
@@ -87,7 +93,28 @@ async function main() {
   assert.equal(desktop.window.isVisible(), false);
   const execute = (source) => desktop.window.webContents.executeJavaScript(source);
   await waitFor(() => execute("document.querySelectorAll('#services .service').length === 1 && document.querySelector('#streamerbot').textContent === 'Streamer.bot connected'"), "initial desktop refresh");
-  assert.equal(await execute("[...document.querySelectorAll('#modules button')].some(button=>button.textContent==='Open Streamer.bot import')"), true, "A ready module must still expose its import for action-code upgrades");
+  assert.equal(await execute("[...document.querySelectorAll('#modules button')].some(button=>button.textContent==='Import into Streamer.bot…')"), true, "A ready module must still expose its import for action-code upgrades");
+  const importButton = "[...document.querySelectorAll('#modules button')].find(button=>button.textContent==='Import into Streamer.bot…')";
+  await execute(importButton + ".click()");
+  await waitFor(() => copied.length === 1, "copy import through sandboxed IPC");
+  assert.equal(copied[0], "Synthetic non-importable test fixture");
+  assert.ok(importDialogs[0].detail.includes("Import String"));
+  assert.equal(importDialogs[0].cancelId, 2);
+  await waitFor(() => execute("!" + importButton + ".disabled"), "copy button completion");
+  importChoice = 1; await execute(importButton + ".click()");
+  await waitFor(() => revealed.length === 1, "show import file without launching Streamer.bot");
+  assert.equal(revealed[0], path.join(moduleRoot, "fixture.sb"));
+  await waitFor(() => execute("!" + importButton + ".disabled"), "show button completion");
+  importChoice = 2; await execute(importButton + ".click()");
+  await waitFor(() => importDialogs.length === 3 && execute("!" + importButton + ".disabled"), "cancel import");
+  assert.equal(copied.length, 1); assert.equal(revealed.length, 1);
+  await assert.rejects(execute("window.companion.openImport('not-installed')"), /does not include/);
+  assert.equal(importDialogs.length, 3, "Missing imports must not open a dialog or alter clipboard");
+  assert.equal(electron.nativeImage.createFromBuffer(fs.readFileSync(path.join(asar, "assets/companion-icon.png"))).isEmpty(), false, "Packaged window icon must decode");
+  const packagedIcon = await app.getFileIcon(path.join(bundle, "StreamerCompanionPreview.exe"), { size: "normal" });
+  const defaultIcon = await app.getFileIcon(process.execPath, { size: "normal" });
+  assert.equal(packagedIcon.isEmpty(), false);
+  assert.equal(packagedIcon.toPNG().equals(defaultIcon.toPNG()), false, "Windows executable must use the custom icon, not Electron's default");
   const labels = await execute("[...document.querySelectorAll('#services .actions button')].map(b=>b.textContent)");
   assert.deepEqual(labels, ["Start", "Stop", "Restart", "Settings"]);
   const dependencyText = await execute("document.querySelector('#services .service-meta').textContent");
@@ -144,7 +171,7 @@ async function main() {
   app.once("will-quit", () => {
     assert.equal(desktop.host.services.hasRunningServices(), false);
     assert.equal(desktop.host.controlApi.server, null);
-    console.log("Hidden Electron desktop passed: sandboxed preload, catalogue comparison/confirmed update, generic settings, Start/Stop/Restart, auto-start, hot upgrade UI, log persistence, and quit cleanup.");
+    console.log("Hidden Electron desktop passed: custom icon, guided import copy/show/cancel, sandboxed preload, catalogue update, service lifecycle, auto-start, hot upgrade UI, log persistence, and quit cleanup.");
   });
   app.quit();
 }

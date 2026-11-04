@@ -47,6 +47,14 @@ Independent module distribution and updates are proven; full legacy retirement s
 
 Pokemon imagery and Chat Core's bundled helper remain outside the public batch pending their redistribution notices. Host self-update, production data migration and full legacy shutdown are later gates. See [the migration batches](MIGRATION.md).
 
+## Host 1.2.1: icon and guided imports
+
+The existing personal Companion PNG/ICO assets are carried over unchanged. The standalone payload explicitly includes both; the window uses the PNG and the Windows packager embeds the ICO. The packaged desktop test decodes the included PNG and confirms the executable's Windows icon differs from the default Electron executable.
+
+The module import button now opens an instructional dialog offering Copy import code, Show import file and Cancel. It never invokes the `.sb` file association. Hidden packaged tests use synthetic export data and mocked clipboard/shell/dialog calls to verify exact copied content, file reveal, cancel without side effects, continued availability for Ready modules, and rejection of absent imports. No real clipboard contents or Streamer.bot actions are altered by the tests.
+
+The full host/module checks and hidden desktop/browser acceptance passed locally with temporary profiles and isolated ports. Existing service lifecycle, updates, saved preferences, browser playback and routing checks remain passing. No module source or release is changed by this app-only update. A real user import remains a manual operation inside Streamer.bot.
+
 ## Browser foundation 1.2.0
 
 The host now serves reviewed assets from installed package web roots and explicitly selected private media. Universal Dock 1.0.0 (including Tests), Universal Overlay 1.0.0 and Source Modules 1.0.0 are separate packages. Video 2.2.0 includes its own editor/renderer and requires all three. New modules start with no personal library or scene rules. Existing action IDs, globals, valid library sources, unknown routing rules and presentation settings are preserved.

@@ -30,6 +30,8 @@ The packaged Windows application embeds Node; end users do not need Node/npm. Ke
 
 ## GitHub module updates
 
+Modules with Streamer.bot exports offer **Import into Streamer.bot…**. Choose **Copy import code**, open Streamer.bot's **Import** dialog, paste into **Import String**, review the actions and click **Import**. Alternatively choose **Show import file** and drag that file into the same field. Refresh Companion afterward. Importing remains available for Ready modules because matching action names alone do not prove their code is current. Companion never launches an export through Windows file associations or silently imports it.
+
 Click **Check for updates** to read [`catalog/modules.json` in StreamerCompanion-Modules](https://github.com/Sethani/StreamerCompanion-Modules/tree/main/catalog). The client shows installed/latest versions and required/optional dependencies, then downloads only the modules you explicitly confirm. Each entry points to that module's own immutable release asset in the distribution repository.
 
 Required module dependencies are resolved before changes. Downloads are bounded, their SHA-256 is checked, and package identities/metadata are verified before installation. Services are supervised by the host; failed multi-module operations restore changed code where possible. Private module data is kept outside immutable code and is not deleted during an upgrade or code rollback. A failed network check leaves installed services running and the last valid catalogue available.

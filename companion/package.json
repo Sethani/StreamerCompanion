@@ -1,7 +1,7 @@
 {
   "name": "streamer-companion",
   "productName": "Streamer Companion Preview",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A modular desktop companion for Streamer.bot.",
   "author": "Sethani",
   "license": "MIT",
