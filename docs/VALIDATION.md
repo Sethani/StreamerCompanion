@@ -59,6 +59,8 @@ A separate temporary-profile passive check against the actual running broker dis
 
 Host 1.2.2 gates `ui.packagedOverlay` service URLs in the legacy cross-origin registry projection. Package tests confirm the old aggregate receives no replacement Archipelago overlay URL while modern clients receive the stable service URL. Existing service overlay behavior is retained unless explicitly opted into this gate. Runtime/settings/cutover instructions are in the module README.
 
+[Archipelago 1.0.0](https://github.com/Sethani/StreamerCompanion-Modules/releases/tag/archipelago-v1.0.0) and [host 1.2.2 preview 1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.2.2-preview.1) passed their independent publication workflows. The host release includes hidden Archipelago UI acceptance. `test-github-archipelago.js` then used the packaged host's embedded runtime to install the real catalogue package plus its Dock dependency with hash verification, start the published runtime on an isolated test port, passively discover/select Guru Test slots, save the display and restart while preserving choices and automatic-start preference. The real broker was read only; no actual key or broker action was used. Test processes were stopped and temporary profiles removed. Initial discovery is asynchronous, so the acceptance check waits for it before asserting readiness.
+
 ## Host 1.2.1: icon and guided imports
 
 The existing personal Companion PNG/ICO assets are carried over unchanged. The standalone payload explicitly includes both; the window uses the PNG and the Windows packager embeds the ICO. The packaged desktop test decodes the included PNG and confirms the executable's Windows icon differs from the default Electron executable.
