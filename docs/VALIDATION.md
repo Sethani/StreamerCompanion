@@ -55,6 +55,8 @@ The module import button now opens an instructional dialog offering Copy import 
 
 The full host/module checks and hidden desktop/browser acceptance passed locally with temporary profiles and isolated ports. Existing service lifecycle, updates, saved preferences, browser playback and routing checks remain passing. No module source or release is changed by this app-only update. A real user import remains a manual operation inside Streamer.bot.
 
+[App 1.2.1 preview 1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.2.1-preview.1) also passed the GitHub release workflow, including full checks, C# engine checks, Windows packaging and hidden packaged desktop/browser acceptance. The local verified build is available without replacing or launching the user's running preview. Installed data, live applications and clipboard contents were not altered by these checks.
+
 ## Browser foundation 1.2.0
 
 The host now serves reviewed assets from installed package web roots and explicitly selected private media. Universal Dock 1.0.0 (including Tests), Universal Overlay 1.0.0 and Source Modules 1.0.0 are separate packages. Video 2.2.0 includes its own editor/renderer and requires all three. New modules start with no personal library or scene rules. Existing action IDs, globals, valid library sources, unknown routing rules and presentation settings are preserved.

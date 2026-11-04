@@ -4,7 +4,7 @@ An experimental Windows desktop host for independently installable Streamer.bot 
 
 This is the canonical source for the new host and the modules migrated here. The earlier personal integration project remains a migration laboratory and private configuration store; it is not bundled into this application.
 
-Current browser-foundation build: [Windows preview 1.2.0 preview 3](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.2.0-preview.3). This app-only release includes the explicit action reimport and legacy-overlay compatibility fixes. Install modules separately from its catalogue.
+Current build: [Windows preview 1.2.1 preview 1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.2.1-preview.1). This app-only release adds the existing Companion icon and guided Streamer.bot imports, retaining the browser-foundation and legacy-overlay compatibility fixes. Install modules separately from its catalogue.
 
 ## What is available
 
