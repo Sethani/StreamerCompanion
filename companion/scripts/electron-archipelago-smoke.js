@@ -12,7 +12,7 @@ async function main() {
   await app.whenReady();
   buildModules(["archipelago"], { output: path.join(temporary, "packages") });
   const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") });
-  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.2.streammodule")); registry.commit(staged); registry.finalize(staged);
+  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.3.streammodule")); registry.commit(staged); registry.finalize(staged);
   test = await fixture(temporary, path.join(registry.moduleDirectory("archipelago"), "service/runtime.js"));
   const settings = hiddenWindow(), overlay = hiddenWindow();
   await settings.loadURL(test.base + "/settings"); await overlay.loadURL(test.base + "/overlay");
@@ -97,6 +97,14 @@ async function main() {
   assert.equal(test.service.settings().config.profiles.alpha.display.hideCompletedLogic, true);
   assert.equal(test.service.settings().config.profiles.alpha.display.showBK, false);
   await waitFor(() => view("document.querySelector('.archipelago-logic-track').hidden"), "per-slot logic hidden without removing percentage");
+  await waitFor(() => execute("document.getElementById('feedback').textContent.includes('Display saved') && !document.getElementById('save').disabled"), "save before live test");
+  const requestsBeforeLiveTest = test.state.actions.length;
+  await execute("document.getElementById('test-live-item').click()");
+  await waitFor(() => view("document.querySelector('.archipelago-events').textContent.includes('TEST ITEM:')"), "test item reaches actual live overlay URL");
+  assert.equal(test.state.actions.length, requestsBeforeLiveTest);
+  await waitFor(() => execute("document.getElementById('feedback').textContent.includes('TEST ITEM sent')"), "live test completion");
+  await execute("document.getElementById('clear-live-test').click()");
+  await waitFor(() => view("!document.querySelector('.archipelago-events').textContent.includes('TEST ITEM:')"), "clear actual live test");
   const demo = hiddenWindow(); await demo.loadURL(test.base + "/overlay?demo=item");
   const demoView = (code) => demo.webContents.executeJavaScript(code);
   await waitFor(() => demoView("document.querySelectorAll('.archipelago-event').length===1"), "synthetic incoming item preview");

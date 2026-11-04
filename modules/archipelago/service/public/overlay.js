@@ -26,6 +26,7 @@ function textTrack(id, text, className) {
 }
 function hide() { root.hidden = true; }
 function render(state) {
+  if (state.enabled && state.testEvent) state = { ...state, status: "ready", events: [...(state.events || []), state.testEvent] };
   if (!state.enabled || ["no-room", "no-slots"].includes(state.status)) { hide(); return; }
   const players = Array.isArray(state.players) ? state.players : [], events = Array.isArray(state.events) ? state.events : [];
   const identity = (player) => [player.name, player.game].filter(Boolean).join(" · ");

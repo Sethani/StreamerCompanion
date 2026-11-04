@@ -32,7 +32,7 @@ async function fixture(directory, runtimePath) {
     if (options.headers["If-None-Match"] === etag) { state.etagHits++; return new Response(null, { status: 304 }); }
     return new Response(body, { headers: { etag, "Content-Type": "application/json" } });
   };
-  const service = createService({ dataDirectory: path.join(directory, "data"), port: 0, fetch: fetcher, autoPoll: false });
+  const service = createService({ dataDirectory: path.join(directory, "data"), port: 0, fetch: fetcher, autoPoll: false, now: () => state.now ?? Date.now() });
   const port = await service.start();
   return { service, state, base: "http://127.0.0.1:" + port,
     event(id, participant = { team: 0, slot: 1 }) { return { id, generationId: state.snapshots.alpha.generationId, type: "item_send", message: "Synthetic event " + id, timestamp: new Date().toISOString(), participants: [participant] }; },

@@ -18,6 +18,8 @@ The percentage strip sorts from highest to lowest, preserving the reported order
 
 Universal Overlay and Source Modules are optional. If using them, enable Archipelago in Source Modules for the intended scenes. Direct OBS use needs neither optional module. Before cutover, disable the old Archipelago renderer; do not run both renderers for the same feature. This package never edits OBS profiles, imports old secrets or switches the live setup automatically.
 
+Use **Test incoming item on live overlay** to show a marked synthetic item on the actual OBS URL for 15 seconds. Enable/save the overlay first. This explicit test works even when normal activity is hidden or SlotLock is pending, uses only sample identities, and does not change filters or room data. **Clear live test** removes it immediately. Only one test is held in process memory; it expires and is never replayed after restart. No Controller request or game item is sent.
+
 Use **Test incoming item (preview)** to open a separate, clearly labeled synthetic item notification with a replay button. It uses the same renderer without fetching room data, sending items, calling Controller or changing the live overlay. This tests presentation, not actual broker event delivery.
 
 ## Less typing, explicit controls

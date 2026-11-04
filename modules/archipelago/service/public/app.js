@@ -75,6 +75,11 @@ const element = (tag, text, className) => { const node = document.createElement(
     note(failures ? `${failures} analysis request(s) could not start. Check slot templates and analysis details in Controller.` : "Controller: " + result.status, failures > 0);
     render(await api("/api/settings"));
   });
+  $("test-live-item").onclick = () => perform(async () => {
+    if (dirty) throw new Error("Save your display changes before testing the live overlay.");
+    await api("/api/test-item", {}); note("TEST ITEM sent to the live overlay for 15 seconds. No game item was sent.");
+  });
+  $("clear-live-test").onclick = () => perform(async () => { await api("/api/test-item", { clear: true }); note("Live test cleared."); });
   $("test-item").href = location.origin + "/overlay?demo=item";
   $("overlay-url").value = location.origin + "/overlay";
   $("copy-overlay").onclick = async () => { try { await navigator.clipboard.writeText($("overlay-url").value); note("OBS browser source URL copied."); } catch (_) { $("overlay-url").select(); note("Press Ctrl+C to copy the selected overlay URL."); } };

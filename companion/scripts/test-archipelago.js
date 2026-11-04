@@ -30,7 +30,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.2.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.3.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");
@@ -46,6 +46,13 @@ async function main() {
     assert.equal(service.publicState().players[0].logic.glitched, null, "Unknown glitched support must not claim supported counts");
     assert.equal(service.publicState().goals.completed, 1);
     assert.equal(JSON.stringify(service.settings()).includes("synthetic-private-key"), false); assert.equal(JSON.stringify(service.publicState()).includes("synthetic-private-key"), false);
+    const testRequest = (body = {}) => fetch(base + "/api/test-item", { method: "POST", headers: { "X-Companion-CSRF": service.csrf, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    assert.equal((await fetch(base + "/api/test-item", { method: "POST", body: "{}" })).status, 403);
+    const requestsBeforeTest = state.requests.length, configBeforeTest = JSON.stringify(service.settings().config);
+    assert.equal((await testRequest()).status, 200); assert.ok(service.publicState().testEvent.id.startsWith("test-"));
+    assert.equal(state.requests.length, requestsBeforeTest); assert.equal(JSON.stringify(service.settings().config), configBeforeTest);
+    state.now = Date.now() + 16000; assert.equal(service.publicState().testEvent, null); state.now = undefined;
+    await testRequest(); await testRequest({ clear: true }); assert.equal(service.publicState().testEvent, null);
     assert.ok(state.etagHits > 0); assert.ok(state.requests.every((entry) => !entry.path.includes("mode=history")));
     const e1 = test.event("one"), e2 = test.event("two", { team: 1, slot: 1 });
     state.pages.push({ events: [e1, e1], nextCursor: "page-two", hasMore: true }, { events: [e2], nextCursor: "tail", hasMore: false }); await service.poll();
@@ -80,9 +87,11 @@ async function main() {
     await assert.rejects(service.update({ token: "Bearer wrong" }), /only the API key/);
     await service.update({ roomId: "beta" }); assert.deepEqual(service.settings().config.profiles.beta.slots, ["1:1"]);
     await service.update({ profile: { slots: ["1:1"], slotDisplay: { "1:1": { progress: false, logic: true } }, display: { hideCompletedLogic: true, showBK: false } } });
+    await testRequest();
     await test.close(); test = null;
     restarted = await fixture(root, path.join(registry.moduleDirectory("archipelago"), "service/runtime.js"));
     assert.equal(restarted.service.settings().config.roomId, "beta"); assert.deepEqual(restarted.service.settings().config.profiles.beta.slots, ["1:1"]); assert.equal(restarted.service.settings().hasToken, true); assert.equal(restarted.service.publicState().events.length, 0);
+    assert.equal(restarted.service.publicState().testEvent, null, "Tests must not replay after restart");
     assert.deepEqual(restarted.service.settings().config.profiles.beta.slotDisplay["1:1"], { progress: false, logic: true });
     assert.equal(restarted.service.settings().config.profiles.beta.display.hideCompletedLogic, true);
     assert.equal(restarted.service.settings().config.profiles.beta.display.showBK, false);

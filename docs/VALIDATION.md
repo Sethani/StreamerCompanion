@@ -120,3 +120,10 @@ A separate synthetic incoming-item preview uses the real renderer and a replay b
 Full source checks and hidden packaged desktop acceptance passed. New coverage checks independent slot visibility, 100% versus goal-status semantics, BK versus glitched/go-mode/unavailable results, saved preferences across restart, percentage ordering, settings save and preview replay. All tests use temporary data and stop their services/processes. Live settings and OBS sources are untouched.
 
 Archipelago 1.0.2 publication succeeded from source `031a2bb`. Released GitHub package acceptance passed under the unchanged packaged 1.2.2 host: verified catalogue/package/dependency hashes, isolated install/start/restart, passive room/slot discovery and saved selections/automatic-start. No real credentials, broker actions or live profile changes were used.
+
+
+### Archipelago 1.0.3 live overlay test
+
+Adds an explicit CSRF-protected live synthetic item test and clear button. The notification reaches the unchanged public OBS overlay URL, is labeled TEST ITEM with sample identities, expires after 15 seconds and is not persisted. It requires the saved overlay to be enabled. Test notifications bypass normal activity/SlotLock filtering only for the synthetic sample, preserving filters and room data. Separate preview remains available. No broker request, game item or action is sent.
+
+Full source checks and hidden packaged desktop acceptance passed. Regressions verify CSRF rejection, no broker requests/config changes, clock-based expiry, clearing, no replay after restart, and settings-button delivery/removal in a second browser at the normal overlay URL. No user live test was triggered during verification.

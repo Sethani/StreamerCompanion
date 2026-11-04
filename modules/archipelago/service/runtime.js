@@ -9,6 +9,7 @@ function createService(options = {}) {
   function write(file, data) { fs.writeFileSync(file + ".tmp", JSON.stringify(data, null, 2)); fs.renameSync(file + ".tmp", file); }
   const saved = read(configFile);
   let config = { schemaVersion: 1, brokerUrl: model.brokerUrl(options.brokerUrl || saved.brokerUrl), roomId: typeof saved.roomId === "string" ? saved.roomId : "", enabled: saved.enabled === true, profiles: Object.assign(Object.create(null), Object.fromEntries(Object.entries(saved.profiles || {}).map(([id, value]) => [id, model.profile(value)]))) };
+  let testEvent = null;
   let rooms = [], snapshot = null, connected = false, error = "", notice = "", events = [], cursor = null, seen = new Set(), timer, polling, failures = 0, closed = false;
   let etags = new Map(), generation = "", revision = 0, actionBusy = false;
   const csrf = crypto.randomBytes(32).toString("hex"), fetcher = options.fetch || globalThis.fetch;
@@ -88,7 +89,9 @@ function createService(options = {}) {
   }
   function publicState() {
     const selection = model.profile(config.profiles[config.roomId]);
+    if (testEvent && clock() - Date.parse(testEvent.at) >= 15000) testEvent = null;
     return {
+      testEvent: config.enabled ? testEvent : null,
       schemaVersion: 1, enabled: config.enabled, status: !connected ? "unavailable" : !config.roomId ? "no-room" : !selection.slots.length ? "no-slots" : "ready",
       room: config.enabled && connected ? rooms.find((room) => room.id === config.roomId)?.label || "" : "",
       ...(config.enabled && connected && snapshot ? model.project(snapshot, selection, events, clock()) : { players: [], events: [], stale: !connected, goals: null })
@@ -143,7 +146,7 @@ function createService(options = {}) {
     try {
       if (!/^((127\.0\.0\.1|localhost)(:\d+)?)$/.test(request.headers.host || "")) return json(response, 403, { error: "Local requests only." });
       const url = new URL(request.url, "http://127.0.0.1");
-      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.2", ready: true, configured: !!config.roomId, brokerConnected: connected });
+      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.3", ready: true, configured: !!config.roomId, brokerConnected: connected });
       if (request.method === "GET" && url.pathname === "/api/public/state") return json(response, 200, publicState());
       const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/app.js": "app.js", "/styles.css": "styles.css", "/overlay.js": "overlay.js", "/overlay.css": "overlay.css" };
       if (request.method === "GET" && pages[url.pathname]) {
@@ -156,6 +159,12 @@ function createService(options = {}) {
       let length = 0; const chunks = [];
       for await (const chunk of request) { length += chunk.length; if (length > 65536) throw new Error("Settings request is too large."); chunks.push(chunk); }
       const input = chunks.length ? JSON.parse(Buffer.concat(chunks)) : {};
+      if (url.pathname === "/api/test-item") {
+        if (input.clear === true) { testEvent = null; return json(response, 200, { status: "cleared" }); }
+        if (!config.enabled) throw new Error("Enable and save the overlay before testing it live.");
+        testEvent = { id: "test-" + crypto.randomUUID(), type: "item_send", at: new Date(clock()).toISOString(), segments: [{ type: "text", text: "TEST ITEM: " }, { type: "player", text: "Sample sender" }, { type: "text", text: " sent " }, { type: "item", text: "Sample item" }, { type: "text", text: " to " }, { type: "player", text: "Sample receiver" }, { type: "text", text: " (" }, { type: "location", text: "Sample location" }, { type: "text", text: ")" }] };
+        return json(response, 200, { status: "shown", expiresInSeconds: 15 });
+      }
       if (url.pathname === "/api/settings") return json(response, 200, await update(input));
       if (url.pathname === "/api/refresh") { await poll(); schedule(); return json(response, 200, settings()); }
       if (url.pathname === "/api/actions") return json(response, 200, await action(input.action, input.roomId));
