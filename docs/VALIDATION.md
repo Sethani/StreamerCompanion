@@ -47,6 +47,18 @@ Independent module distribution and updates are proven; full legacy retirement s
 
 Pokemon imagery and Chat Core's bundled helper remain outside the public batch pending their redistribution notices. Host self-update, production data migration and full legacy shutdown are later gates. See [the migration batches](MIGRATION.md).
 
+## Archipelago 1.0.0 and host 1.2.2
+
+The module is an independent core-Node service consuming only Controller Room API 2.2. It has no personal-server dependency, AP connection, tracker scraping or local analysis worker. Configured broker addresses are loopback-only, redirects are refused and action keys remain in private module data. Its stable overlay URL contains no key or room-specific arguments. Installation starts with no chosen room, slots or enabled overlay.
+
+Packaged service tests cover overlapping slot numbers across teams, per-room choices, save/restart persistence, no historical activity on startup, cursor pagination/dedup/reset, generation changes, fresh/stale/wrong-generation logic, explicitly unsupported analysis features, independent goals/progress options, lock/unknown-state filtering, outages, local URL validation, private management endpoints and authenticated actions targeting only selected reported slots. Events are not persisted. Synthetic keys never appear in the public projection.
+
+Hidden Electron acceptance loads the built package and tests dropdown discovery, checkbox selection, Select all, switching/restoring rooms, the same OBS URL across changes, explicit confirmed/cancelled actions, safe text rendering for hostile event text, lock/outage hiding and compact rotating pages for large selections. All data/action responses are synthetic. Preview captures under ignored `companion/out` contain synthetic data only.
+
+A separate temporary-profile passive check against the actual running broker discovered its saved rooms and rendered both reported Guru Test slots with fresh Ready logic. No broker action, live OBS source or running Companion profile was changed. The earlier Guru Test authenticated API review is documented in the personal handover; exhaustive real SlotLock/restart/event-provider acceptance remains separate from these synthetic checks.
+
+Host 1.2.2 gates `ui.packagedOverlay` service URLs in the legacy cross-origin registry projection. Package tests confirm the old aggregate receives no replacement Archipelago overlay URL while modern clients receive the stable service URL. Existing service overlay behavior is retained unless explicitly opted into this gate. Runtime/settings/cutover instructions are in the module README.
+
 ## Host 1.2.1: icon and guided imports
 
 The existing personal Companion PNG/ICO assets are carried over unchanged. The standalone payload explicitly includes both; the window uses the PNG and the Windows packager embeds the ICO. The packaged desktop test decodes the included PNG and confirms the executable's Windows icon differs from the default Electron executable.

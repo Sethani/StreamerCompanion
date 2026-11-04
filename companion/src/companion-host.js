@@ -104,6 +104,7 @@ class CompanionHost {
       const service = manifest.service || {};
       const base = manifest.web ? this.webAssets.base(manifest.id) : service.port ? "http://127.0.0.1:" + service.port : "";
       const registration = { ownership: "system", overlays: [], actions: [], dependencies: [], optionalDependencies: [], settings: [], tests: [], ...manifest.ui, packageId: manifest.id, id: manifest.ui.id || manifest.id, name: manifest.ui.name || manifest.name, author: manifest.author || manifest.ui.author || "", description: manifest.description, version: manifest.version, state: states?.get(manifest.id)?.state || "ready", problem: states?.get(manifest.id)?.problem || "", nodeUrl: manifest.ui.dockPage && base ? base + manifest.ui.dockPage : manifest.ui.nodeUrl || "", extensionOverlayUrl: manifest.web?.overlayPage ? browserModules ? base + manifest.web.overlayPage : "" : service.overlayPath && base ? base + service.overlayPath : "", links: (manifest.ui.links || []).map((link) => ({ name: link.name, url: base + link.path })) };
+      if (!browserModules && manifest.ui.packagedOverlay) registration.extensionOverlayUrl = "";
       return registration;
     });
     return { schemaVersion: 3, transport: { streamerBotUrl: this.registry.streamerBotUrl }, categories: Array.from(new Set(modules.map((item) => item.category).filter(Boolean))), modules };

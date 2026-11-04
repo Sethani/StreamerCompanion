@@ -10,6 +10,7 @@ Current build: [Windows preview 1.2.1 preview 1](https://github.com/Sethani/Stre
 
 - **Update Probe**: a harmless local service for exercising install/update/restart behavior. No stream integrations, credentials or overlays.
 - **Spotify Music**: independently hosted OAuth, playback and music-session service. Configure your own Spotify application and authorization. Viewer chat integration is optional and requires your own Chat Routing actions.
+- **Archipelago**: Controller-populated room dropdown and game-slot checkboxes, per-room selections, progress/logic/activity and one stable OBS URL. Requires host 1.2.2 and Controller Room API 2.2; see [setup](modules/archipelago/README.md). No room parsing or analysis worker is bundled.
 - **Universal Dock / Overlay / Source Modules**: packaged controls, operator Tests, a transparent overlay and preserved Streamer.bot scene routing.
 - **Video 2.2**: its own editor/renderer and explicitly selected private media. The catalogue installs its three browser dependencies. See [installation and migration](modules/video/README.md).
 

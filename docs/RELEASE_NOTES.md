@@ -1,5 +1,7 @@
 Experimental application release by Sethani, under MIT for first-party code.
 
+Companion 1.2.2 supports service-backed packaged overlay replacements without automatically embedding them into the old legacy aggregate. The new independently distributed Archipelago 1.0.0 module offers a Controller-populated room dropdown, per-room slot checkboxes and one stable OBS URL. Progress, goals, fresh logic and selected live activity follow saved choices; SlotLock filtering defaults on. Room passwords, YAML setup, parsing and analysis remain in Controller. No Streamer.bot export is required for Archipelago. Optional authenticated Wake/Refresh/Recalculate actions are explicit user controls, never automatic.
+
 Companion 1.2.1 carries over the existing Companion icon for the application window and Windows executable. **Import into Streamer.bot…** now explains the manual import process and offers **Copy import code** or **Show import file**, avoiding Windows file-association prompts. Paste the code into Streamer.bot's Import String field, review the actions and complete the import there. No actions are imported automatically. Module releases and saved module data are unchanged.
 
 Application downloads are now separate from [module distribution](https://github.com/Sethani/StreamerCompanion-Modules). Click Check for updates to read that repository's catalogue folder. Each module has an independent release; updating one does not rebuild/publish the application or unrelated modules. This app release contains only the portable Windows app and its checksum.

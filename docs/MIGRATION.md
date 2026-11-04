@@ -16,7 +16,8 @@ The new repository is canonical for the generic host, Video and Spotify source. 
 | Published foundation | Generic host, Update Probe, Video/Spotify package source | GitHub update path, hash verification, rollback and data preservation pass. |
 | Shared browser foundation | Clean Universal Dock, shared overlay, Tests and Source Modules packaging | Refresh, disconnect and restart tests pass without the personal static tree; external dependency states are accurate. |
 | Already portable feature cores | Wheel, Reactive, Stream Together, Cameras, Audio Routing, Scene Links, TTRPG, Countdown, Writing, Walk Ons, Shoutout Clips, Reminders | Independent clean exports, dependencies, operator tests, saved state, upgrade/rollback and install documentation pass for each feature. Strip personal seeds/adapters from builders. |
-| Remaining Node services | Controller bridge, Archipelago, Phone Deck, optional Ollama | Separate packages preserve required runtimes, APIs and private pairing/room/config data. |
+| Broker-backed Archipelago | Room/slot picker and independent overlay implemented; controlled live cutover pending | Controller owns room parsing/analysis. Verify selected-room display, events, lock filtering and restart before disabling the old renderer. |
+| Remaining Node services | Controller bridge, Phone Deck, optional Ollama | Separate packages preserve required runtimes, APIs and private pairing/room/config data. |
 | Separate notice review | Pokemon icons and Chat Core's bundled helper | Establish redistributable sources/notices before publishing their assets. |
 
 For each production cutover, record browser refresh, application restart, duplicate-command/disconnect behavior, safe tests, controlled stream observations, timestamped backups and a rollback point. Preserve old state until intentionally migrated or archived. Remove a legacy endpoint only after no remaining caller depends on it. Do not publish a shadow copy of the personal monolith as a shortcut.
@@ -24,6 +25,8 @@ For each production cutover, record browser refresh, application restart, duplic
 The source catalogue is generated from module manifests; installed UI registrations continue to be projected from those manifests. Do not keep manually synchronizing public source changes back into the old project.
 
 ## Browser foundation implementation
+
+Archipelago 1.0.0 adds broker-populated room selection and per-room team/slot checkboxes, explicit authenticated room actions and a stable overlay URL. Host 1.2.2 prevents this service-backed replacement from being auto-embedded by legacy cross-origin overlay readers. Installation/startup do not configure or replace the active OBS source, adopt old credentials or run room actions. See its README for key-file selection and cutover.
 
 Companion 1.2.0, Universal Dock/Overlay/Source Modules 1.0.0 and Video 2.2.0 implement the shared browser slice. New media and browser assets require no personal server. The [browser contract](BROWSER_MODULES.md) documents ownership and paths; the [Video guide](../modules/video/README.md) documents explicit imports, backups, media relinking and rollback. Isolated checks are recorded in [validation](VALIDATION.md).
 

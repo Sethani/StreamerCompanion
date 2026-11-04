@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 2,
+  "id": "archipelago",
+  "name": "Archipelago",
+  "version": "1.0.0",
+  "description": "Choose Controller rooms and slots for a clean progress, logic and activity overlay.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "streamerbot": { "requiredActions": [] },
+  "dependencies": {
+    "modules": { "universal-dock": "^1.0.0" },
+    "optionalModules": { "universal-overlay": "^1.0.0", "source-modules": "^1.0.0" },
+    "capabilities": { "embedded-node": "required" },
+    "companion": ">=1.2.2"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/runtime.js",
+    "port": 3141,
+    "healthPath": "/health",
+    "healthService": "archipelago",
+    "settingsPath": "/settings",
+    "overlayPath": "/overlay",
+    "provides": ["archipelago-display"]
+  },
+  "ui": {
+    "id": "archipelago", "name": "Archipelago", "category": "Games", "order": 60,
+    "dockPage": "/settings", "ownership": "node", "packagedOverlay": true,
+    "overlays": ["archipelago"], "actions": [], "dependencies": [], "optionalDependencies": [],
+    "settings": ["room", "slots", "display", "slotLock"], "tests": []
+  }
+}
