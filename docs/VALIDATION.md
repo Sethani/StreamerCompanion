@@ -118,3 +118,5 @@ Adds per-room, per-slot percentage/logic visibility, optional hiding of logic fo
 A separate synthetic incoming-item preview uses the real renderer and a replay button without reading rooms, changing the live overlay or invoking broker actions. It validates presentation only, not actual event delivery.
 
 Full source checks and hidden packaged desktop acceptance passed. New coverage checks independent slot visibility, 100% versus goal-status semantics, BK versus glitched/go-mode/unavailable results, saved preferences across restart, percentage ordering, settings save and preview replay. All tests use temporary data and stop their services/processes. Live settings and OBS sources are untouched.
+
+Archipelago 1.0.2 publication succeeded from source `031a2bb`. Released GitHub package acceptance passed under the unchanged packaged 1.2.2 host: verified catalogue/package/dependency hashes, isolated install/start/restart, passive room/slot discovery and saved selections/automatic-start. No real credentials, broker actions or live profile changes were used.
