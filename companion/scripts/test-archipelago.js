@@ -6,6 +6,13 @@ const { fixture, snapshot } = require("./archipelago-fixture");
 const model = require("../../modules/archipelago/service/model");
 async function main() {
   const snap = snapshot();
+  const numericEvent = { id: "numeric-item", generationId: snap.generationId, timestamp: new Date().toISOString(), type: "item_send", message: "2 sent 9876543210123 to 1 (7654321)", participants: [{ team: 0, slot: 1, name: "Synthetic A", role: "player" }, { team: 1, slot: 1, name: "Synthetic B", role: "player" }] };
+  let item = model.project(snap, { slots: ["0:1", "1:1"], eventTypes: ["item_send"] }, [numericEvent]).events[0];
+  assert.equal(item.text, "Item sent - details unavailable from Controller"); assert.equal(JSON.stringify(item).includes("9876543210123"), false);
+  const namedEvent = { ...numericEvent, item: { name: "Synthetic item" }, location: { name: "Synthetic location" }, participants: numericEvent.participants.map((player, index) => ({ ...player, role: index ? "receiver" : "sender" })) };
+  item = model.project(snap, { slots: ["0:1", "1:1"], eventTypes: ["item_send"] }, [namedEvent]).events[0];
+  assert.equal(item.text, "Synthetic A sent Synthetic item to Synthetic B (Synthetic location)");
+  assert.deepEqual(item.segments.map((segment) => segment.type), ["player", "text", "item", "text", "player", "text", "location", "text"]);
   const selected = { slots: ["0:1", "1:1"], display: { showNames: false }, slotDisplay: { "0:1": { progress: false }, "1:1": { logic: false } } };
   let projected = model.project(snap, selected, []);
   assert.equal(projected.players[0].name, ""); assert.equal(projected.players[0].game, "Game A");
@@ -30,7 +37,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.3.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.4.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");

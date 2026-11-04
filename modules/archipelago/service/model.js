@@ -27,7 +27,19 @@ function lockState(snapshot, id) {
   return data.targets?.find((target) => key(target) === id)?.state || "unknown";
 }
 function segmentsFor(event) {
-  const text = String(event.message || "").slice(0, 1000);
+  const raw = String(event.message || "").slice(0, 1000);
+  if (["item_send", "item_cheat"].includes(event.type)) {
+    const participants = event.participants || [];
+    const sender = participants.find((player) => player.role === "sender");
+    const receiver = participants.find((player) => player.role === "receiver");
+    if (event.item?.name && typeof event.item.name === "string" && sender?.name && receiver?.name) {
+      const segments = [{ type: "player", text: String(sender.name).slice(0, 120) }, { type: "text", text: " sent " }, { type: "item", text: event.item.name.slice(0, 200) }, { type: "text", text: " to " }, { type: "player", text: String(receiver.name).slice(0, 120) }];
+      if (typeof event.location?.name === "string" && event.location.name) segments.push({ type: "text", text: " (" }, { type: "location", text: event.location.name.slice(0, 200) }, { type: "text", text: ")" });
+      return segments;
+    }
+    if (/^\s*\d+\s+sent\s+\d+\s+to\s+\d+(?:\s*\(\d+\))?\s*$/.test(raw)) return [{ type: "text", text: "Item sent - details unavailable from Controller" }];
+  }
+  const text = raw;
   const tokens = [...(event.participants || []).map((player) => ({ text: player.name, type: "player" })), { text: event.item?.name, type: "item" }, { text: event.location?.name, type: "location" }].filter((token) => typeof token.text === "string" && token.text.length >= 2).sort((a, b) => b.text.length - a.text.length);
   const segments = []; let offset = 0;
   while (offset < text.length) {
@@ -71,7 +83,7 @@ function project(snapshot, selection, events, now = Date.now()) {
       if (participants.some((player) => lockState(snapshot, key(player)) !== "unlocked")) return false;
     }
     return true;
-  }).slice(-settings.maxEvents).map((event) => ({ id: String(event.id), type: event.type, text: String(event.message || "").slice(0, 1000), segments: segmentsFor(event), at: event.timestamp })) : [];
+  }).slice(-settings.maxEvents).map((event) => ({ id: String(event.id), type: event.type, text: segmentsFor(event).map((segment) => segment.text).join(""), segments: segmentsFor(event), at: event.timestamp })) : [];
   const lockFiltered = selected.some((player) => lockState(snapshot, key(player)) !== "unlocked") && ((settings.filterLocks.progress && (settings.display.progress || settings.display.goals)) || settings.filterLocks.logic && settings.display.logic);
   const waiting = selected.length && !rows.length && lockFiltered ? selected.some((player) => lockState(snapshot, key(player)) === "unknown") ? "Waiting for SlotLock data" : "Selected slots are locked" : "";
   return { players: rows, events: filteredEvents, waiting, stale, goals: settings.display.goals ? { completed: rows.filter((row) => row.goal === true).length, total: rows.filter((row) => row.goal !== null).length } : null };

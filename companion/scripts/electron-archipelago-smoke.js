@@ -12,7 +12,7 @@ async function main() {
   await app.whenReady();
   buildModules(["archipelago"], { output: path.join(temporary, "packages") });
   const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") });
-  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.3.streammodule")); registry.commit(staged); registry.finalize(staged);
+  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.4.streammodule")); registry.commit(staged); registry.finalize(staged);
   test = await fixture(temporary, path.join(registry.moduleDirectory("archipelago"), "service/runtime.js"));
   const settings = hiddenWindow(), overlay = hiddenWindow();
   await settings.loadURL(test.base + "/settings"); await overlay.loadURL(test.base + "/overlay");

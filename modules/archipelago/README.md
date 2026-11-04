@@ -45,3 +45,5 @@ Activity starts at the current tail on service start, room switch and generation
 ## Data and rollback
 
 Private `module-data/archipelago/config.json` stores the local broker address, chosen room ID, overlay enable state and per-room display preferences/slot identities. `auth.json` stores only the optional broker key. No viewer/event archive is created. Package updates replace code, preserving these files. No legacy Archipelago configuration or token file is copied automatically. Keep the original system available until your controlled cutover, scene changes, room switches and restart checks pass.
+
+Item notifications prefer explicit sender/receiver roles and resolved item/location names from Controller. Numeric protocol-only item messages are replaced with a readable details-unavailable notice; Companion does not guess item names or participant roles from IDs.

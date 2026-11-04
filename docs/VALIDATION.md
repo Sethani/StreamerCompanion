@@ -127,3 +127,10 @@ Archipelago 1.0.2 publication succeeded from source `031a2bb`. Released GitHub p
 Adds an explicit CSRF-protected live synthetic item test and clear button. The notification reaches the unchanged public OBS overlay URL, is labeled TEST ITEM with sample identities, expires after 15 seconds and is not persisted. It requires the saved overlay to be enabled. Test notifications bypass normal activity/SlotLock filtering only for the synthetic sample, preserving filters and room data. Separate preview remains available. No broker request, game item or action is sent.
 
 Full source checks and hidden packaged desktop acceptance passed. Regressions verify CSRF rejection, no broker requests/config changes, clock-based expiry, clearing, no replay after restart, and settings-button delivery/removal in a second browser at the normal overlay URL. No user live test was triggered during verification.
+
+
+### Archipelago 1.0.4 item notification formatting
+
+Read-only broker inspection confirmed a protocol item event with numeric message text, no structured item/location, generic player roles and empty participant games. No real event contents or identifiers are recorded here. The broker handover in the personal repository now requests game-aware item/location resolution, explicit sender/receiver roles, unresolved-state semantics and cross-game fixtures. This upstream work remains outstanding.
+
+Companion now composes typed colored segments from explicit sender/receiver and item/location names when supplied, and substitutes a readable details-unavailable message for numeric-only protocol item messages. It does not guess names or roles. The full isolated source check suite passed, including synthetic numeric-ID suppression and named cross-team notification assertions. Live sources/settings were unchanged and no item was sent. Existing synthetic live tests do not establish upstream real-event enrichment.
