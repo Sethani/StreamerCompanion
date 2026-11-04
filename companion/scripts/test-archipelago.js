@@ -8,7 +8,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.0.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.1.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");
@@ -34,6 +34,11 @@ async function main() {
     assert.deepEqual(service.publicState().players.map((entry) => entry.id), ["1:1"]); assert.deepEqual(service.publicState().events.map((entry) => entry.id), ["two"]);
     locks.data.synchronized = false; await service.poll(); assert.equal(service.publicState().players.length, 0); assert.equal(service.publicState().events.length, 0);
     Object.assign(locks, { state: "unsupported", supported: false }); await service.poll();
+    state.activityFailure = true; await service.poll();
+    assert.equal(service.settings().connected, true); assert.equal(service.publicState().players.length, 2);
+    assert.equal(service.publicState().events.length, 0); assert.match(service.settings().notice, /Activity is temporarily unavailable/);
+    state.activityFailure = false; await service.poll(); assert.equal(service.settings().notice, "");
+
     await service.update({ profile: { slots: ["0:1"], display: { progress: false, logic: false, goals: true } } });
     assert.equal(service.publicState().players.length, 1); assert.equal(service.publicState().goals.completed, 1, "Goals must work independently of the progress toggle");
     await service.update({ roomId: "beta" }); assert.equal(service.publicState().players.length, 0, "A new room must not inherit selected slots");

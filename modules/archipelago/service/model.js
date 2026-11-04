@@ -25,6 +25,19 @@ function lockState(snapshot, id) {
   if (component?.state !== "ready" || component.stale || !data?.synchronized) return "unknown";
   return data.targets?.find((target) => key(target) === id)?.state || "unknown";
 }
+function segmentsFor(event) {
+  const text = String(event.message || "").slice(0, 1000);
+  const tokens = [...(event.participants || []).map((player) => ({ text: player.name, type: "player" })), { text: event.item?.name, type: "item" }, { text: event.location?.name, type: "location" }].filter((token) => typeof token.text === "string" && token.text.length >= 2).sort((a, b) => b.text.length - a.text.length);
+  const segments = []; let offset = 0;
+  while (offset < text.length) {
+    let next = null, position = text.length;
+    for (const token of tokens) { const index = text.indexOf(token.text, offset); if (index >= offset && index < position) { position = index; next = token; } }
+    if (position > offset) segments.push({ type: "text", text: text.slice(offset, position) });
+    if (!next) break;
+    segments.push(next); offset = position + next.text.length;
+  }
+  return segments;
+}
 function project(snapshot, selection, events, now = Date.now()) {
   const settings = profile(selection), chosen = new Set(settings.slots), enriched = snapshot.enriched || {}, stale = !!snapshot.stale || !snapshot.original?.endpoint;
   const selected = players(snapshot).filter((player) => chosen.has(key(player)));
@@ -53,7 +66,9 @@ function project(snapshot, selection, events, now = Date.now()) {
       if (participants.some((player) => lockState(snapshot, key(player)) !== "unlocked")) return false;
     }
     return true;
-  }).slice(-settings.maxEvents).map((event) => ({ id: String(event.id), type: event.type, text: String(event.message || "").slice(0, 1000), at: event.timestamp })) : [];
-  return { players: rows, events: filteredEvents, stale, goals: settings.display.goals ? { completed: rows.filter((row) => row.goal === true).length, total: rows.filter((row) => row.goal !== null).length } : null };
+  }).slice(-settings.maxEvents).map((event) => ({ id: String(event.id), type: event.type, text: String(event.message || "").slice(0, 1000), segments: segmentsFor(event), at: event.timestamp })) : [];
+  const lockFiltered = selected.some((player) => lockState(snapshot, key(player)) !== "unlocked") && ((settings.filterLocks.progress && (settings.display.progress || settings.display.goals)) || settings.filterLocks.logic && settings.display.logic);
+  const waiting = selected.length && !rows.length && lockFiltered ? selected.some((player) => lockState(snapshot, key(player)) === "unknown") ? "Waiting for SlotLock data" : "Selected slots are locked" : "";
+  return { players: rows, events: filteredEvents, waiting, stale, goals: settings.display.goals ? { completed: rows.filter((row) => row.goal === true).length, total: rows.filter((row) => row.goal !== null).length } : null };
 }
 module.exports = { DEFAULT_DISPLAY, EVENT_TYPES, key, profile, brokerUrl, players, lockState, project };

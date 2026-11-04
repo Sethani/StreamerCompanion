@@ -17,6 +17,7 @@ async function fixture(directory, runtimePath) {
       const [, id, route] = match;
       if (route === "snapshot") value = state.snapshots[id];
       else if (route === "events") {
+        if (state.activityFailure) throw new TypeError("Synthetic activity outage");
         if (state.reset && url.searchParams.has("after")) { state.reset = false; return new Response(JSON.stringify({ error: { resetCursor: "synthetic-reset" } }), { status: 409 }); }
         if (!url.searchParams.has("after")) { state.baselineReads++; value = { events: [], nextCursor: "tail", hasMore: false, initial: true }; }
         else value = state.pages.shift() || { events: [], nextCursor: "tail", hasMore: false, initial: false };

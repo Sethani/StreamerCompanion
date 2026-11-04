@@ -12,7 +12,7 @@ Install the module through the catalogue, start its service explicitly, and open
 
 Copy the OBS URL shown in Settings into a browser source, normally at 1920 × 1080. The default is `http://127.0.0.1:3141/overlay`; no room ID, credentials or player names belong in the URL. Keep Companion, this service and Controller running. The transparent overlay renders the selected slots and recent selected activity. Its own preview uses the same saved configuration.
 
-Up to six visible slots appear per overlay page, using two columns for larger groups. More slots rotate through pages every ten seconds; selected goal totals cover all visible permitted slots. Recent activity remains below the slots. This keeps a large room from covering the entire canvas.
+The overlay preserves the legacy translucent box, cyan summary strips and colored fading event stack at the bottom left of a transparent canvas. All permitted selected slots share continuous progress and logic strips; there are no timed pages or alternating views. Polling preserves existing nodes and animation timelines.
 
 Universal Overlay and Source Modules are optional. If using them, enable Archipelago in Source Modules for the intended scenes. Direct OBS use needs neither optional module. Before cutover, disable the old Archipelago renderer; do not run both renderers for the same feature. This package never edits OBS profiles, imports old secrets or switches the live setup automatically.
 
@@ -32,7 +32,7 @@ Wake and Recalculate ask for confirmation and never run from startup, room selec
 
 ## Polling, outages and activity
 
-The backend polls every five seconds for online rooms and fifteen for offline/unselected rooms, uses ETags, and backs off to at most sixty seconds after failures. Settings/overlay browser polling reads only this local service and does not multiply broker polling. Broker outages hide the stream display; settings retain choices and report the issue. No fallback to the old monolith or direct room parsing occurs.
+The backend polls every five seconds for online rooms and fifteen for offline/unselected rooms, uses ETags, and backs off to at most sixty seconds after failures. Settings/overlay browser polling reads only this local service and does not multiply broker polling. Broker outages replace player details with a neutral waiting message; settings retain choices and report the issue. Pending SlotLock data also shows a neutral waiting message without exposing player identities. Activity failures do not suppress available progress and logic. A failed local browser read retains the previous frame for at most ten seconds before hiding it. No fallback to the old monolith or direct room parsing occurs.
 
 Activity starts at the current tail on service start, room switch and generation change. Existing history is not replayed as new alerts. Subsequent pages are deduplicated and bounded. A cursor reset resumes at the current tail and records an operator notice. Event messages stay in bounded process memory for at most 75 seconds; they are not written to disk. Activity types and maximum rows are configurable. Selected state can intentionally restart visibility when returning to a room, but old historical alerts are never fetched for replay.
 

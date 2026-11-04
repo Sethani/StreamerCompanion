@@ -68,7 +68,12 @@ function createService(options = {}) {
           if (generation !== next.generationId) resetFeed();
           generation = next.generationId;
           if (current.generationId !== generation) { current.generationId = generation; save(); }
-          snapshot = next; await readEvents(base);
+          snapshot = next;
+          try {
+            await readEvents(base);
+            if (notice === "Activity is temporarily unavailable. Progress and logic remain available.") notice = "";
+          }
+          catch (_) { events = []; notice = "Activity is temporarily unavailable. Progress and logic remain available."; }
         } else { snapshot = null; resetFeed(); }
         connected = true; error = ""; failures = 0;
       } catch (failure) { if (expectedRevision === revision) { connected = false; failures++; events = []; error = failure.name === "SyntaxError" ? "Controller returned invalid JSON." : failure.name === "TimeoutError" || failure.name === "TypeError" ? "Controller is unavailable. Check that the Room data API is running." : failure.message; } }
@@ -90,7 +95,8 @@ function createService(options = {}) {
     };
   }
   function settings() {
-    return { config, hasToken: !!read(authFile).token, connected, error, notice, rooms, eventTypes: model.EVENT_TYPES,
+    const waiting = connected && snapshot ? model.project(snapshot, model.profile(config.profiles[config.roomId]), [], clock()).waiting : "";
+    return { config, hasToken: !!read(authFile).token, connected, error, notice: notice || waiting, rooms, eventTypes: model.EVENT_TYPES,
       slots: model.players(snapshot).map((player) => { const id = model.key(player), logic = snapshot.enriched?.logic?.[id]; return { id, name: String(player.alias || player.name || "Player"), game: String(player.game || "Game"), checksDone: player.checksDone, checksTotal: player.checksTotal, status: player.statusLabel, lock: model.lockState(snapshot, id), logicState: logic?.stale ? "stale" : logic?.state || "not_requested" }; }),
       components: Object.fromEntries(Object.entries(snapshot?.enriched?.components || {}).map(([name, component]) => [name, { state: component.state, stale: !!component.stale, supported: component.supported, reasonCode: component.reasonCode }])) };
   }
@@ -137,9 +143,9 @@ function createService(options = {}) {
     try {
       if (!/^((127\.0\.0\.1|localhost)(:\d+)?)$/.test(request.headers.host || "")) return json(response, 403, { error: "Local requests only." });
       const url = new URL(request.url, "http://127.0.0.1");
-      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.0", ready: true, configured: !!config.roomId, brokerConnected: connected });
+      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.1", ready: true, configured: !!config.roomId, brokerConnected: connected });
       if (request.method === "GET" && url.pathname === "/api/public/state") return json(response, 200, publicState());
-      const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/app.js": "app.js", "/styles.css": "styles.css" };
+      const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/app.js": "app.js", "/styles.css": "styles.css", "/overlay.js": "overlay.js", "/overlay.css": "overlay.css" };
       if (request.method === "GET" && pages[url.pathname]) {
         const file = pages[url.pathname], source = fs.readFileSync(path.join(__dirname, "public", file), "utf8").replace("__CSRF_TOKEN__", csrf);
         response.writeHead(200, { "Content-Type": file.endsWith("html") ? "text/html; charset=utf-8" : file.endsWith("js") ? "application/javascript" : "text/css", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }); response.end(source); return;

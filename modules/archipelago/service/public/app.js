@@ -1,39 +1,7 @@
 "use strict";
 const $ = (id) => document.getElementById(id);
 const element = (tag, text, className) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; };
-if (document.body.classList.contains("overlay")) {
-  let signature = "";
-  async function refreshOverlay() {
-    try {
-      const response = await fetch("/api/public/state", { cache: "no-store" }); if (!response.ok) throw new Error();
-      const state = await response.json(), pageCount = Math.max(1, Math.ceil(state.players.length / 6)), page = Math.floor(Date.now() / 10000) % pageCount;
-      const next = JSON.stringify([state, page]); if (next === signature) return; signature = next;
-      const root = $("overlay"); root.replaceChildren(); if (!state.enabled || state.status !== "ready") return;
-      if (!state.players.length && !state.events.length) return;
-      root.append(element("div", state.room + (state.stale ? " · Last known data" : "") + (pageCount > 1 ? ` · ${page + 1}/${pageCount}` : ""), "ap-room"));
-      const pageRows = state.players.slice(page * 6, page * 6 + 6), playerGrid = element("div", undefined, "ap-players" + (pageRows.length > 3 ? " many" : ""));
-      for (const player of pageRows) {
-        const card = element("div", undefined, "ap-player"); card.dataset.player = player.id;
-        card.append(element("div", [player.name, player.game].filter(Boolean).join(" · "), "ap-name"));
-        const details = [];
-        if (player.progress) details.push(player.progress.percent === null ? "Progress unavailable" : `${player.progress.done}/${player.progress.total} · ${player.progress.percent}%${player.progress.stale ? " · Stale" : ""}`);
-        if (player.goal === true) details.push("Goal complete");
-        if (player.logic) {
-          if (player.logic.inLogic !== null) { details.push(`${player.logic.inLogic} in logic`); if (player.logic.glitched !== null) details.push(`${player.logic.glitched} glitched`); if (player.logic.goMode === "yes") details.push("Go mode"); else if (player.logic.goMode === "glitched") details.push("Glitched go mode"); }
-          else details.push("Logic: " + player.logic.state.replaceAll("_", " "));
-        }
-        card.append(element("div", details.join(" · "), "ap-details"));
-        if (player.progress?.percent !== null && player.progress) { const bar = element("div", undefined, "ap-bar"), fill = element("span"); fill.style.width = player.progress.percent + "%"; bar.append(fill); card.append(bar); }
-        playerGrid.append(card);
-      }
-      root.append(playerGrid);
-      if (state.goals?.total) root.append(element("div", `${state.goals.completed}/${state.goals.total} selected goals complete`, "ap-details"));
-      const events = element("div", undefined, "ap-events");
-      for (const event of state.events) { const row = element("div", event.text, "ap-event"); row.dataset.event = event.id; events.append(row); } root.append(events);
-    } catch (_) { $("overlay").replaceChildren(); signature = ""; }
-  }
-  refreshOverlay(); setInterval(refreshOverlay, 1000);
-} else {
+{
   const csrf = document.querySelector('meta[name="companion-csrf"]').content;
   let state, dirty = false, busy = false, renderedRoom = "", renderedGeneration = "";
   const note = (text, bad = false) => { $("feedback").textContent = text; $("feedback").classList.toggle("bad", bad); };
