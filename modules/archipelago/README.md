@@ -49,3 +49,5 @@ Private `module-data/archipelago/config.json` stores the local broker address, c
 Item notifications prefer explicit sender/receiver roles and resolved item/location names from Controller. Numeric protocol-only item messages are replaced with a readable details-unavailable notice; Companion does not guess item names or participant roles from IDs.
 
 Save-file restoration messages and unstructured item events without any participant or item metadata are excluded from stream activity. Restored received-item counts are operational state, not new deliveries. Controller's enriched sender/receiver, item/location and partial-resolution contract is supported; cheat items can name a receiver without inventing a sender.
+
+Controller events marked `audience: operations` or `displayEligible: false` are always excluded from the overlay, regardless of selected activity types. Older event payloads remain supported.

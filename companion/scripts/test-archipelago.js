@@ -24,6 +24,9 @@ async function main() {
   assert.equal(model.project(snap, activitySelection, [cheat]).events[0].text, "Synthetic B received Synthetic item (cheat)");
   const partial = { ...resolvedEvent, location: { id: 200, name: null, resolution: "unresolved" }, enrichment: { status: "partial" } };
   assert.equal(model.project(snap, activitySelection, [partial]).events[0].text, "Synthetic A sent Synthetic item to Synthetic B");
+  assert.equal(model.project(snap, activitySelection, [{ ...resolvedEvent, audience: "operations", displayEligible: true }]).events.length, 0);
+  assert.equal(model.project(snap, activitySelection, [{ ...resolvedEvent, audience: "participants", displayEligible: false }]).events.length, 0);
+  assert.equal(model.project(snap, activitySelection, [{ ...resolvedEvent, audience: "participants", displayEligible: true }]).events.length, 1);
   const selected = { slots: ["0:1", "1:1"], display: { showNames: false }, slotDisplay: { "0:1": { progress: false }, "1:1": { logic: false } } };
   let projected = model.project(snap, selected, []);
   assert.equal(projected.players[0].name, ""); assert.equal(projected.players[0].game, "Game A");
@@ -48,7 +51,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.5.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.6.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");

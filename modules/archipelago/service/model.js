@@ -75,6 +75,7 @@ function project(snapshot, selection, events, now = Date.now()) {
     };
   }).filter((row) => row.progress || row.logic || row.goal !== null);
   const filteredEvents = settings.display.activity && !stale ? events.filter((event) => {
+    if (event.displayEligible === false || event.audience === "operations") return false;
     // Server startup/save restoration is not a newly received item.
     if (/^\s*Loaded save file\b/i.test(String(event.message || ""))) return false;
     if (["item_send", "item_cheat"].includes(event.type) && !event.item && !(event.participants || []).length) return false;

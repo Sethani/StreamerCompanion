@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "archipelago",
   "name": "Archipelago",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Choose Controller rooms and slots for a clean progress, logic and activity overlay.",
   "author": "Sethani",
   "license": "MIT",

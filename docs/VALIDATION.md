@@ -139,3 +139,8 @@ Companion now composes typed colored segments from explicit sender/receiver and 
 ### Archipelago 1.0.5 operational activity filtering
 
 Read-only updated OpenAPI inspection confirms structured item/location resolution and enrichment status, explicit sender/receiver roles, immutable retained events and brief pre-delivery enrichment. Bounded retained-event inspection still showed old-shaped events; this does not verify a fresh enriched real delivery or prove the updated producer failed. The save-restoration line was classified as item_send with no participants or item metadata. Companion now excludes save-file restoration text regardless of event type, plus unstructured unattributed item summaries. Resolved/partial enriched notifications and receiver-only cheat notifications have synthetic regression coverage. This is presentation filtering, not a claim that upstream event classification is fixed. No production action/item was triggered.
+
+
+### Archipelago 1.0.6 Controller eligibility flags
+
+Read-only live recheck on 2026-11-05 confirmed five retained item events with resolved item/location names and explicit sender/receiver roles. A bounded 50-event sample contained 35 operations records marked displayEligible false, including save-restoration records. No identities/content were logged and no event was triggered. Companion now suppresses audience operations or displayEligible false independently of event type, while preserving older API compatibility and legacy text guards. Regression fixtures cover each flag independently and eligible participant events.
