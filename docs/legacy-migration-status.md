@@ -32,7 +32,7 @@ The following entries were inventoried from personal public/modules/registry.jso
 | Cameras / audio routing (vital); TTRPG (later) | Streamer.bot plus OBS WebSocket | Complete camera/audio migration; defer TTRPG-specific cards/layouts |
 | Scene bindings | Streamer.bot, OBS and PowerShell | Window/app bindings, identifiers and process ownership |
 | Phone deck | Node, HTTPS and OBS WebSocket | Pairing/authentication, TLS keys and local endpoints |
-| Live chat / Chat Core (vital); archive (later) | Legacy service/core source; previously excluded helper | Live Chatbox (chat-core) 1.0.0 owns live-only ingestion/enrichment and the preserved renderer on port 3136, with both MIT upstream notices. No database/old-server dependency; existing-source URL cutover remains. |
+| Live chat / Chat Core (vital); archive (later) | Legacy service/core source; previously excluded helper | Live Chatbox (chat-core) 1.0.0 owns live-only ingestion/enrichment and the preserved renderer on port 3136, with both MIT upstream notices. No database/old-server dependency. User tested and accepted ticker and normal chatboxes on 2026-11-05; appearance remains independent in each source URL. |
 | Backends / Modules / Tests | Shared transport/registry adapters | Replace remaining personal routing assumptions as each feature migrates; shared public equivalents already exist |
 
 ## Ordered cleanup and retirement gates
