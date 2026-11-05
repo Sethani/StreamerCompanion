@@ -14,7 +14,7 @@ There are 24 vital features: six already have published modules, and 18 remainin
 | 6 | Countdown | Vital | Published; controlled import/visual acceptance and launch integration remain. |
 | 7 | Stream-launch automation | Vital | Migrate launch/countdown/Spotify startup and fades; replace remaining old-server clock/API dependency. |
 | 8 | Going-live announcements and bookkeeping | Vital | Retain existing follow-up actions and identities; audit all dependencies. No automatic live announcement test. |
-| 9 | Bot chat routing | Vital | Chat Routing 1.0.0 implements the compatible Twitch bot-message/reply contract; actual C# and package tests pass with synthetic sinks. Import and controlled live account/reply acceptance remain. |
+| 9 | Bot chat routing | Vital | Chat Routing 1.0.1 implements the compatible Twitch bot-message/reply contract; actual C# and package tests pass with synthetic sinks. Import and controlled live account/reply acceptance remain. |
 | 10 | On-stream chatbox | Vital | Preserve live chat display, pronouns and PluralMind enrichment. Must work without the deferred history/search archive. |
 | 11 | Chat archive | Later | Private history, search, retention and export do not block switchover. Preserve existing data; do not delete or publicly bundle it. |
 | 12 | Reminders | Vital | Extract backlog commands/controls and selected on-stream display after chat routing; preserve own-list/moderator privacy and existing data. |
