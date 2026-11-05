@@ -2,6 +2,12 @@
 
 Reviewed 2026-11-05. The old personal registry still lists both migrated and unmigrated features; its presence alone is not evidence that a legacy implementation is still required. This is a source/dependency audit, not proof that every installed action or live trigger works.
 
+Writing Challenge is explicitly parked at the user's request: it was experimental and is not a switchover requirement. It is omitted from the priority candidates below; its code and data are not removed.
+
+## User switchover priorities
+
+The authoritative [feature checklist](switchover-feature-checklist.md) records 24 vital features. Chat Archive (#11) and TTRPG (#22) are later; Stream Together (#18) is dropped. Writing Challenge remains parked. Live chatbox/enrichment and Reactive/camera tools stay vital; deferring the archive/TTRPG does not defer these dependencies. Ollama is now vital despite earlier “optional” wording. The source audit below does not override these priorities.
+
 ## Verified boundaries and next extraction
 
 | Feature | Confirmed source/ownership | Remaining dependency | Disposition |
@@ -20,22 +26,20 @@ The following entries were inventoried from personal public/modules/registry.jso
 | Entry | Declared owner/dependencies | Next verification |
 | --- | --- | --- |
 | Wheel | Streamer.bot state and WebSocket; public/wheel and installer | Persistence/presentation, assets, commands and action references |
-| Writing | Streamer.bot; public/writing and installer | Prompt sources, suggestions/moderation, saved state and renderer |
-| Reactive guests / Stream Together | Streamer.bot; external browser/guest URLs | URL/privacy handling and scene integration |
+| Reactive guests (vital) / Stream Together (dropped) | Streamer.bot; external browser/guest URLs | Migrate Reactive only; preserve old Stream Together data without treating it as a cutover requirement |
 | Walk-ons / shoutout clips | Streamer.bot; media/chat/clip integrations | Media portability, chat API and trigger/action references |
-| Cameras / audio routing / TTRPG | Streamer.bot plus OBS WebSocket | Device/scene mapping, credentials and live mutation tests |
+| Cameras / audio routing (vital); TTRPG (later) | Streamer.bot plus OBS WebSocket | Complete camera/audio migration; defer TTRPG-specific cards/layouts |
 | Scene bindings | Streamer.bot, OBS and PowerShell | Window/app bindings, identifiers and process ownership |
 | Phone deck | Node, HTTPS and OBS WebSocket | Pairing/authentication, TLS keys and local endpoints |
-| Chat archive / Chat Core helper | Legacy service/core source; previously excluded helper | Helper provenance, private data, runtime/SQLite and publication boundary |
+| Live chat / Chat Core (vital); archive (later) | Legacy service/core source; previously excluded helper | Preserve live enrichment and resolve helper provenance; split optional persistent history/search |
 | Backends / Modules / Tests | Shared transport/registry adapters | Replace remaining personal routing assumptions as each feature migrates; shared public equivalents already exist |
 
 ## Ordered cleanup and retirement gates
 
-1. Package the complete countdown timer and integrate it into the same combined OBS source. Keep legacy stream-launch controls intact and do not invoke them during tests.
-2. Resolve chat routing as a reusable module contract, then extract Reminders with explicit own-list/moderator visibility and no backlog export.
-3. Audit Wheel/Writing as independent candidates; preserve appearance/assets and globals, including combined-overlay integration in the same change.
-4. Package stream launch with isolated OBS/Spotify adapters and explicit user actions. This remains a blocker to switching off the legacy server even after Countdown migration.
-5. Work through media/guest/device/phone/chat modules with feature-specific privacy and compatibility checks. Never infer retirement from a catalogue entry alone.
-6. Finally audit actual startup/routes/OBS sources and test a reversible session with the old server stopped. Do not shut it down merely because the small timer package passed tests.
+1. Follow the dependency order in the switchover checklist: shared chat routing and live chat enrichment first, without requiring the deferred archive.
+2. Complete launch/announcements/Spotify fades around the published Countdown; remove the remaining old-server fade clock.
+3. Migrate all other vital viewer/production tools, integrating each into the same modern overlay and retaining private settings/data.
+4. Keep Chat Archive/TTRPG out of the cutover critical path, and do not migrate Stream Together or the parked Writing Challenge for this switch.
+5. Rehearse the full selected workflow with the old server stopped and a rollback available; only then retire its startup/routes.
 
 No production actions, streams, games, chat messages or settings were changed by this audit. Test evidence and published module results are recorded in VALIDATION.md. The public repository contains no personal state, reminders, globals dump, credential or history export.

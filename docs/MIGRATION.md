@@ -1,5 +1,8 @@
 # Legacy migration and retirement
 
+The [user-approved switchover checklist](switchover-feature-checklist.md) now defines the retirement scope: all listed features are vital except Chat Archive/TTRPG (later), Stream Together (drop), and the separately parked Writing Challenge. Keep live chat/enrichment and Reactive/camera controls in scope.
+
+
 Current status (2026-11-05): Archipelago, Pokemon and Controller are published and integrated into the existing combined source; user acceptance has been reported. Countdown is the next extracted timer module. Stream launch/Spotify fade orchestration, chat routing/Reminders and other features still keep the legacy backend necessary. The [current source/dependency inventory](legacy-migration-status.md) supersedes old roadmap status below.
 
 
@@ -18,7 +21,7 @@ The new repository is canonical for the generic host, Video and Spotify source. 
 | --- | --- | --- |
 | Published foundation | Generic host, Update Probe, Video/Spotify package source | GitHub update path, hash verification, rollback and data preservation pass. |
 | Shared browser foundation | Clean Universal Dock, shared overlay, Tests and Source Modules packaging | Refresh, disconnect and restart tests pass without the personal static tree; external dependency states are accurate. |
-| Already portable feature cores | Wheel, Reactive, Stream Together, Cameras, Audio Routing, Scene Links, TTRPG, Writing, Walk Ons, Shoutout Clips, Reminders | Independent clean exports, dependencies, operator tests, saved state, upgrade/rollback and install documentation pass for each feature. Strip personal seeds/adapters from builders. |
+| Already portable feature cores | Wheel, Reactive, Stream Together, Cameras, Audio Routing, Scene Links, TTRPG, Walk Ons, Shoutout Clips, Reminders | Independent clean exports, dependencies, operator tests, saved state, upgrade/rollback and install documentation pass for each feature. Strip personal seeds/adapters from builders. |
 | Broker-backed Archipelago | Room/slot picker and independent overlay implemented; controlled live cutover pending | Controller owns room parsing/analysis. Verify selected-room display, events, lock filtering and restart before disabling the old renderer. |
 | Published controller / remaining Node services | Controller 1.1 is extracted; Phone Deck and optional Ollama remain | Separate packages preserve required runtimes, APIs and private pairing/room/config data. |
 | Separate notice review | Pokemon icon provenance/notices are recorded; Chat Core's bundled helper remains | Establish redistributable sources/notices before publishing their assets. |
