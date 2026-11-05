@@ -1,0 +1,512 @@
+{
+  "meta": {
+    "name": "Reminders",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Private reminder backlogs and selected overlay display",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Engine",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "d47e4516-4ccf-4fb6-95ad-8316ae5cea68",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "name": "Reminder backlog state and privacy engine",
+            "description": "Preserves the private backlog and publishes only the selected overlay projection",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "sourceFile": "reminders-engine.cs",
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": ""
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "81fc225c-85cd-413e-a462-d86e397e34f4",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Initialize",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "45a0bb50-1d63-423d-8ecb-9d3b5d867043",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "id": "c139d82d-4bed-4dd3-8b28-b0153fe82ef2",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "initialize",
+            "autoType": false
+          },
+          {
+            "id": "9f4ccc8e-d919-4c07-9d97-1178019c11e6",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "e8978839-60a0-466f-8b70-8da770345e9b",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Health",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "a465cfea-22c9-4aef-9dd5-d219da02fd31",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "health",
+            "autoType": false
+          },
+          {
+            "id": "90dd49d4-3dba-4292-8a8c-35fa3a405616",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d38e79a5-d99a-4c02-890f-70df57dadc82",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Add",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "ccd1f293-2914-4c09-a02b-d4466041c5c5",
+            "type": 401,
+            "enabled": true,
+            "commandId": "a66b1948-df45-4d9c-b696-df68019ef8a3",
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "id": "7de71dd8-55b9-41e4-8790-be6ac1256c2d",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "add",
+            "autoType": false
+          },
+          {
+            "id": "6b0220ab-d490-41ca-8e1f-9b5f2a84e1d8",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          },
+          {
+            "id": "3227f78b-e856-4e91-a7c4-71fb48bf1f81",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 2,
+            "actionId": "c783e11d-61c0-4586-90f3-d5baba254a35",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "622c80e6-0b22-45fa-a4f9-0ff60d9c2418",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - List Mine",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "423a05f5-b1b0-45ba-bde2-c8dec0e04a7f",
+            "type": 401,
+            "enabled": true,
+            "commandId": "dd5fc46a-5d0b-40d4-9167-79d8156cea5e",
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "id": "cc58c107-a902-415b-ad70-d6b9a6d0f8df",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "list-mine",
+            "autoType": false
+          },
+          {
+            "id": "a3bae733-77c2-4c81-a789-5e892be249e6",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          },
+          {
+            "id": "4c1e6b07-dd48-4fda-8800-ea1b04b3d96e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 2,
+            "actionId": "c783e11d-61c0-4586-90f3-d5baba254a35",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "0ad167de-6020-4113-a035-fd199cc2b185",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Show",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "47e56aa9-bdfa-4a5c-9a4a-10db9c04e215",
+            "type": 401,
+            "enabled": true,
+            "commandId": "815dc620-1327-4737-99d4-62ca867b6b33",
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "id": "6c0cca65-ed22-4c4f-95e7-e4182845aca9",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "show",
+            "autoType": false
+          },
+          {
+            "id": "60e1b05c-42b5-4e35-bb9a-731aff102166",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "81f15099-c246-4773-a787-da56fd45fb1a",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Hide",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "9327565e-1d9f-42a3-9553-7d8b1e371914",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "hide",
+            "autoType": false
+          },
+          {
+            "id": "5ef69150-fa38-40a0-8e50-ac8094b0398b",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "b23640a6-d8ea-4681-b39b-6ad3e962c36c",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Complete",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "b5126d53-5d0a-426a-bc93-8e3e0e75cec5",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "complete",
+            "autoType": false
+          },
+          {
+            "id": "2188c845-df3a-43b3-8d50-3cb6498b6de2",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "4d450619-81ab-4b90-969d-7b21a33f82f0",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Restore",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "fde800e3-13c9-401e-a095-bfb4ca9430f0",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "restore",
+            "autoType": false
+          },
+          {
+            "id": "3d20ba3f-61f0-4bad-926a-c9b23573ac2f",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "5ac8226c-f4cc-4b75-86fa-8d3139de985d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reminders - Delete",
+        "group": "Reminders",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "ebd5e0da-7e75-44e9-8f45-70450f81ca9b",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "reminderMode",
+            "value": "delete",
+            "autoType": false
+          },
+          {
+            "id": "f984cb15-22b1-40ba-91e5-3eecea98100e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [
+      {
+        "id": "a66b1948-df45-4d9c-b696-df68019ef8a3",
+        "name": "Reminders - Add",
+        "enabled": true,
+        "include": true,
+        "mode": 0,
+        "command": "!reminder\r\n!rem",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 2,
+        "userCooldown": 3,
+        "group": "Reminders",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": []
+      },
+      {
+        "id": "dd5fc46a-5d0b-40d4-9167-79d8156cea5e",
+        "name": "Reminders - List Mine",
+        "enabled": true,
+        "include": true,
+        "mode": 0,
+        "command": "!reminders\r\n!remlist",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 2,
+        "userCooldown": 3,
+        "group": "Reminders",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": []
+      },
+      {
+        "id": "815dc620-1327-4737-99d4-62ca867b6b33",
+        "name": "Reminders - Show",
+        "enabled": true,
+        "include": true,
+        "mode": 0,
+        "command": "!remshow",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 2,
+        "userCooldown": 3,
+        "group": "Reminders",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [
+          "Moderators"
+        ]
+      }
+    ],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

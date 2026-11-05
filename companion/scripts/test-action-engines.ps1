@@ -6,6 +6,7 @@ $pokemonSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/
 $countdownSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/countdown/streamerbot/countdown-engine.cs')
 $chatSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/chat-routing/streamerbot/chat-routing.cs')
 $launchSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/stream-launch/streamerbot/launch-engine.cs')
+$remindersSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/reminders/streamerbot/reminders-engine.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
@@ -13,6 +14,7 @@ $pokemonSource = $pokemonSource.Replace('public class CPHInline {', ('public cla
 $countdownSource = $countdownSource.Replace('public class CPHInline {', ('public class CountdownInline {' + $fields))
 $chatSource = $chatSource.Replace('public class CPHInline {', ('public class ChatInline {' + $fields))
 $launchSource = $launchSource.Replace('public class CPHInline {', ('public class LaunchInline {' + $fields))
+$remindersSource = $remindersSource.Replace('public class CPHInline {', ('public class RemindersInline {' + $fields))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
@@ -51,6 +53,7 @@ $references = @((Get-ChildItem -LiteralPath (Join-Path $PSHOME 'ref') -Filter '*
 $combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace EngineTest {' + $videoSource + '}' + "`n" + 'namespace EngineTest {' + $routingSource + '}' + "`n" + 'namespace EngineTest {' + $pokemonSource + '}' + "`n" + 'namespace EngineTest {' + $countdownSource + '}'
 $combined += "`nnamespace EngineTest {" + $chatSource + "}"
 $combined += "`nnamespace EngineTest {" + $launchSource + "}"
+$combined += "`nnamespace EngineTest {" + $remindersSource + "}"
 $combined += @'
 namespace EngineTest {
  public class SyntheticLaunch : LaunchInline {
@@ -58,6 +61,10 @@ namespace EngineTest {
   public bool FailSpotify = false;
   protected override long Now(){return CPH.ClockMs;}
   protected override Newtonsoft.Json.Linq.JObject SpotifyRequest(string route){Requests.Add(route);if(FailSpotify && route!="/health")throw new System.Exception("Synthetic failure");return Newtonsoft.Json.Linq.JObject.Parse("{\"service\":\"spotify\",\"configured\":true}");}
+ }
+ public class SyntheticReminders : RemindersInline {
+  public long TestNow = 2000000000000;
+  protected override long Now(){return TestNow;}
  }
 }
 '@
@@ -176,6 +183,45 @@ Run-Engine $chat @{ chatMessage = 'Do not log this body'; chatTargets = 'youtube
 Assert-True ($chat.CPH.Actions.Count -eq $before) 'Empty, unresolved and unsupported-platform requests must not send'
 Assert-True ($chat.CPH.Errors.Count -eq 2 -and -not (($chat.CPH.Errors -join ' ') -match 'Do not log this body')) 'Diagnostics must omit message contents'
 Write-Output 'Actual Chat Routing C# passed with a recording sink: plain/reply/fallback, empty arguments and unsupported targets. No network or live chat call was made.'
+
+$reminders = [EngineTest.SyntheticReminders]::new()
+$reminders.CPH.Globals['portable.reminders.state'] = '{"schemaVersion":1,"feature":"reminders","revision":4,"payload":{"moduleVersion":"1.0.0","items":[{"id":"open-a","targetKey":"viewer_one","targetDisplay":"Viewer One","creatorKey":"creator","creatorDisplay":"Creator","message":"Synthetic private one","status":"open","createdAtMs":1000},{"id":"done-b","targetKey":"viewer_two","targetDisplay":"Viewer Two","creatorKey":"creator","creatorDisplay":"Creator","message":"Synthetic completed two","status":"completed","createdAtMs":2000}],"display":{"visible":true,"target":"viewer_one","title":"Viewer One''s reminders","items":[{"id":"open-a","message":"Synthetic private one","targetDisplay":"Viewer One"}],"hideAtMs":2000000010000},"config":{"maximumPerTarget":20,"messageLength":240,"overlayDurationSeconds":30,"maximumVisible":8,"retained":"synthetic"},"retained":"private-field"}}'
+Run-Engine $reminders @{ reminderMode = 'initialize' }
+$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
+$public = ($reminders.CPH.Globals['portable.reminders.state'] | ConvertFrom-Json).payload
+Assert-True (@($private.items).Count -eq 2 -and $private.retained -eq 'private-field' -and $private.config.retained -eq 'synthetic') 'Reminder initialization must preserve legacy items, completion history and unknown private fields'
+Assert-True ($null -eq $public.items -and $null -eq $public.config -and @($public.display.items).Count -eq 1) 'Public reminder state must contain only the selected display projection'
+Run-Engine $reminders @{ reminderMode = 'add'; userName = 'viewer_one'; user = 'Viewer One'; rawInput = 'Synthetic self reminder' }
+$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
+Assert-True (@($private.items).Count -eq 3 -and $reminders.CPH.Arguments['chatMessage'] -eq 'Reminder added to your backlog.') 'Self add must persist and prepare a generic chat acknowledgement'
+Run-Engine $reminders @{ reminderMode = 'add'; userName = 'creator'; user = 'Creator'; rawInput = '@viewer_two Synthetic target only' }
+$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
+Assert-True (@($private.items).Count -eq 4 -and $reminders.CPH.Arguments['chatMessage'] -eq 'Reminder added for viewer_two.') 'Targeted add must not reveal the target backlog'
+Run-Engine $reminders @{ reminderMode = 'list-mine'; userName = 'viewer_two' }
+Assert-True ($reminders.CPH.Arguments['chatMessage'].Contains('Synthetic target only') -and -not $reminders.CPH.Arguments['chatMessage'].Contains('Synthetic self reminder')) 'List Mine must return only the requester''s unresolved reminders'
+Run-Engine $reminders @{ reminderMode = 'show'; target = 'viewer_two'; durationSeconds = '10' }
+$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
+$public = ($reminders.CPH.Globals['portable.reminders.state'] | ConvertFrom-Json).payload
+Assert-True (@($public.display.items).Count -eq 1 -and $public.display.items[0].message -eq 'Synthetic target only' -and $null -eq $public.items) 'Targeted Show must publish only selected open items'
+$targetId = @($private.items | Where-Object message -eq 'Synthetic target only')[0].id
+Run-Engine $reminders @{ reminderMode = 'complete'; id = $targetId; userName = 'operator' }
+$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
+Assert-True (($private.items | Where-Object id -eq $targetId).status -eq 'completed') 'Complete must retain the record as history'
+Run-Engine $reminders @{ reminderMode = 'restore'; id = $targetId }
+$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
+Assert-True (($private.items | Where-Object id -eq $targetId).status -eq 'open') 'Restore must reopen a completed record'
+Run-Engine $reminders @{ reminderMode = 'delete'; id = $targetId }
+$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
+Assert-True ($null -eq ($private.items | Where-Object id -eq $targetId)) 'Delete must remove only the selected record'
+Run-Engine $reminders @{ reminderMode = 'hide' }
+$public = ($reminders.CPH.Globals['portable.reminders.state'] | ConvertFrom-Json).payload
+Assert-True (-not $public.display.visible -and @($public.display.items).Count -eq 0) 'Hide must clear the public display projection without clearing private items'
+$beforePrivate = $reminders.CPH.Globals['portable.reminders.private']
+Run-Engine $reminders @{ reminderMode = 'health' }
+Assert-True ($reminders.CPH.Globals['portable.reminders.private'] -eq $beforePrivate) 'Health must not rewrite or expose the private backlog'
+Run-Engine $reminders @{ reminderMode = 'list-mine' }
+Assert-True ($reminders.CPH.Arguments['chatMessage'] -eq 'I could not identify whose reminders to list.') 'Missing chat identity must fail without selecting another viewer'
+Write-Output 'Actual Reminders C# passed: legacy private-state migration, public projection, self/target add, owner-only list, show/hide and complete/restore/delete. Only synthetic reminder data was used.'
 
 $launch = [EngineTest.SyntheticLaunch]::new()
 Run-Engine $launch @{ streamLaunchMode = 'initialize' }
