@@ -2,7 +2,7 @@
 
 User priorities recorded 2026-11-05. Numbers match the feature list shown in chat. All listed features are vital except 11/22 (later) and 18 (drop). Writing Challenge remains separately parked and is excluded from this list.
 
-There are 24 vital features: eight have independent module implementations, and 16 remaining feature areas need migration or verification. Published does not by itself prove the old server can stop. This checklist is the acceptance scope; the dependency/source audit remains in legacy-migration-status.md.
+There are 24 vital features: nine have independent module implementations, and 15 remaining feature areas need migration or verification. Published does not by itself prove the old server can stop. This checklist is the acceptance scope; the dependency/source audit remains in legacy-migration-status.md.
 
 | # | Feature | Priority | Acceptance / current work |
 | --- | --- | --- | --- |
@@ -10,10 +10,10 @@ There are 24 vital features: eight have independent module implementations, and 
 | 2 | Pokemon encounters | Vital | Published; user accepted. Preserve encounter/throw behavior and settings. |
 | 3 | Controller display | Vital | Published; user accepted. Preserve native lifecycle and layout. |
 | 4 | Video player | Vital | Published; verify actual media links, playback and layout in final cutover. |
-| 5 | Spotify controls | Vital | Core published; chat adapter, scene/session behavior and launch/fade integration still need verification. |
-| 6 | Countdown | Vital | Published; controlled import/visual acceptance and launch integration remain. |
-| 7 | Stream-launch automation | Vital | Migrate launch/countdown/Spotify startup and fades; replace remaining old-server clock/API dependency. |
-| 8 | Going-live announcements and bookkeeping | Vital | Retain existing follow-up actions and identities; audit all dependencies. No automatic live announcement test. |
+| 5 | Spotify controls | Vital | Core published. Its autonomous fade and shared scene/countdown session behavior pass isolated test mode; chat adapter and controlled account acceptance remain. |
+| 6 | Countdown | Vital | Published and integrated with Stream Launch; controlled Streamer.bot import/visual acceptance remains. |
+| 7 | Stream-launch automation | Vital | Stream Launch 1.0.0 independently owns launch configuration, guarded OBS startup, Countdown handoff, Spotify startup/fade timing and online-event deduplication. Actual C# and hidden packaged controls pass synthetic tests; publication, explicit import/review and an intentional real-stream acceptance remain. |
+| 8 | Going-live announcements and bookkeeping | Vital | The new launch module invokes an explicitly configured existing private follow-up only after OBS confirms streaming. The installed native broadcaster/webhook/session/reward action and Walk Ons reset were audited as having no old HTTP-server dependency and are deliberately not exported. Controlled live delivery acceptance remains; never automate it in tests. |
 | 9 | Bot chat routing | Vital | Chat Routing 1.0.1 implements the compatible Twitch bot-message/reply contract; actual C# and package tests pass with synthetic sinks. Import and controlled live account/reply acceptance remain. |
 | 10 | On-stream chatbox | Vital | Live Chatbox (chat-core) 1.0.0 preserves the existing renderer and appearance URL options with live pronouns/PluralMind, moderation and synthetic tests, without the archive or old server. Isolated service/browser checks pass. User accepted the two-chatbox setup (ticker and normal) on 2026-11-05. Each source retains its own appearance query with the shared Appearance field empty; this feature no longer awaits visual acceptance. |
 | 11 | Chat archive | Later | Private history, search, retention and export do not block switchover. Preserve existing data; do not delete or publicly bundle it. |
@@ -44,7 +44,7 @@ There are 24 vital features: eight have independent module implementations, and 
 ## Dependency order
 
 1. Establish the shared bot chat-routing contract and the live chatbox/enrichment boundary without requiring the deferred archive. These underpin reminders and announcements and may be consumed by walk-ons/shoutouts/Spotify.
-2. Migrate the complete stream-launch workflow, announcements/bookkeeping and Spotify startup/fades around the already-published countdown/music modules. Preserve action identities and remove the old Node fade-clock dependency. Use isolated/dry-run adapters; starting a real stream or sending public messages is not a build test.
+2. Publish/import/review the completed Stream Launch package, then perform one operator-intended stream acceptance of Countdown, Spotify and the retained private follow-up. The implementation preserves action identities and no longer uses the old Node fade clock. Synthetic coverage is complete; starting a real stream or sending public messages is never a build test.
 3. Migrate viewer interactions: Reminders, Wheel, named/language timers, redeem checklist, walk-ons and shoutout clips. Each migration includes private-data compatibility and combined-overlay integration.
 4. Migrate production tools: Reactive guests, cameras, audio routing, Scene Links, phone controls, widgets/bouncing avatar and the used local-AI integration. Adjust source-level ordering if dependency tracing reveals further shared prerequisites.
 5. Rehearse all 24 vital features through the modern host/dock/overlay with the legacy server stopped. Resolve every remaining old URL, caller, service process or action dependency before the production switch. OBS/Streamer.bot and external applications remain separate dependencies as needed.

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "id": "stream-launch",
+  "name": "Stream Launch",
+  "version": "1.0.0",
+  "description": "Guarded stream startup, Countdown integration, Spotify fades and existing private follow-up actions.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "streamerbot": {
+    "requiredActions": [
+      "Stream - Launch Engine",
+      "Stream - Configure Launch",
+      "Stream - Launch",
+      "Stream - Online Fallback",
+      "Stream - Initialize Launch",
+      "Stream - Launch Health"
+    ],
+    "importFile": "streamerbot/stream-launch.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "countdown": "^1.1.0",
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {
+      "spotify": "^2.0.1"
+    },
+    "capabilities": {},
+    "companion": ">=1.3.0"
+  },
+  "web": {
+    "root": "web"
+  },
+  "ui": {
+    "id": "stream-launch",
+    "name": "Stream Launch",
+    "category": "Stream",
+    "order": 11,
+    "dockPage": "/launch/index.html",
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [
+      "Stream - Configure Launch",
+      "Stream - Launch",
+      "Stream - Initialize Launch",
+      "Stream - Launch Health"
+    ],
+    "dependencies": [
+      "universal-dock",
+      "countdown",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "spotify",
+      "private-followup-action"
+    ],
+    "settings": [
+      "duration",
+      "finishedText",
+      "startingSoonScene",
+      "enabled",
+      "fallbackEnabled",
+      "spotifyEnabled",
+      "followupEnabled",
+      "followupAction"
+    ],
+    "tests": [
+      {
+        "id": "preflight",
+        "name": "Launch readiness (no stream or announcement)",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check readiness",
+            "feature": "streamLaunch",
+            "command": "Launch Health",
+            "args": {}
+          }
+        ]
+      }
+    ],
+    "transport": {
+      "feature": "streamLaunch",
+      "stateKey": "portable.streamLaunch.state",
+      "actionPrefix": "Stream"
+    }
+  }
+}

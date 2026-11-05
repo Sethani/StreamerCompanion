@@ -5,12 +5,14 @@ $routingSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/
 $pokemonSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/pokemon-encounters/streamerbot/pokemon-bridge.cs')
 $countdownSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/countdown/streamerbot/countdown-engine.cs')
 $chatSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/chat-routing/streamerbot/chat-routing.cs')
+$launchSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/stream-launch/streamerbot/launch-engine.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
 $pokemonSource = $pokemonSource.Replace('public class CPHInline {', ('public class PokemonInline {' + $fields))
 $countdownSource = $countdownSource.Replace('public class CPHInline {', ('public class CountdownInline {' + $fields))
 $chatSource = $chatSource.Replace('public class CPHInline {', ('public class ChatInline {' + $fields))
+$launchSource = $launchSource.Replace('public class CPHInline {', ('public class LaunchInline {' + $fields))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
@@ -20,7 +22,19 @@ public class FakeCPH {
  public Dictionary<string,object> Arguments = new Dictionary<string,object>();
  public List<string> Actions = new List<string>();
  public void SetArgument(string key,object value){Arguments[key]=value;}
- public bool RunAction(string name,bool immediate){Actions.Add(name);return true;}
+ public bool RunAction(string name,bool immediate){Actions.Add(name);if(name=="Countdown - Start" && !FailCountdown)Globals["portable.countdown.state"]="{\"payload\":{\"status\":\"running\",\"endTimeMs\":"+(ClockMs+Int64.Parse(Arguments["durationSeconds"].ToString())*1000)+"}}";return !FailCountdown;}
+ public long ClockMs = 2000000000000;
+ public bool Streaming = false, Connected = true, NeverStream = false, FailCountdown = false;
+ public int StreamDelayMs = 0; public long StreamAtMs = 0;
+ public List<string> ObsCalls = new List<string>();
+ public HashSet<string> MissingActions = new HashSet<string>();
+ public bool ActionExists(string name){return !MissingActions.Contains(name);}
+ public bool ObsIsConnected(){return Connected;}
+ public bool ObsIsStreaming(){if(!NeverStream && StreamAtMs>0 && ClockMs>=StreamAtMs)Streaming=true;return Streaming;}
+ public void ObsSetScene(string name){Scene=name;ObsCalls.Add("scene");}
+ public void ObsStartStreaming(){ObsCalls.Add("start");if(!NeverStream){StreamAtMs=ClockMs+StreamDelayMs;if(StreamDelayMs==0)Streaming=true;}}
+ public void Wait(int ms){ClockMs+=ms;}
+ public string ObsSendRaw(string type,string data){return "{\"scenes\":[{\"sceneName\":\"Synthetic Scene\"}]}";}
  public string Scene = "Synthetic Scene";
  public T GetGlobalVar<T>(string key,bool persisted){return Globals.ContainsKey(key)?(T)Globals[key]:default(T);}
  public void SetGlobalVar(string key,object value,bool persisted){Globals[key]=value;}
@@ -36,6 +50,17 @@ $references = @((Get-ChildItem -LiteralPath (Join-Path $PSHOME 'ref') -Filter '*
 # Keep using directives scoped to separate namespaces so each original source remains unchanged.
 $combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace EngineTest {' + $videoSource + '}' + "`n" + 'namespace EngineTest {' + $routingSource + '}' + "`n" + 'namespace EngineTest {' + $pokemonSource + '}' + "`n" + 'namespace EngineTest {' + $countdownSource + '}'
 $combined += "`nnamespace EngineTest {" + $chatSource + "}"
+$combined += "`nnamespace EngineTest {" + $launchSource + "}"
+$combined += @'
+namespace EngineTest {
+ public class SyntheticLaunch : LaunchInline {
+  public System.Collections.Generic.List<string> Requests = new System.Collections.Generic.List<string>();
+  public bool FailSpotify = false;
+  protected override long Now(){return CPH.ClockMs;}
+  protected override Newtonsoft.Json.Linq.JObject SpotifyRequest(string route){Requests.Add(route);if(FailSpotify && route!="/health")throw new System.Exception("Synthetic failure");return Newtonsoft.Json.Linq.JObject.Parse("{\"service\":\"spotify\",\"configured\":true}");}
+ }
+}
+'@
 Add-Type -TypeDefinition $combined -ReferencedAssemblies $references -CompilerOptions '/nowarn:1701,1702'
 function Assert-True($Condition, [string]$Message) { if (-not $Condition) { throw $Message } }
 function Run-Engine($Engine, [hashtable]$Arguments) {
@@ -151,3 +176,66 @@ Run-Engine $chat @{ chatMessage = 'Do not log this body'; chatTargets = 'youtube
 Assert-True ($chat.CPH.Actions.Count -eq $before) 'Empty, unresolved and unsupported-platform requests must not send'
 Assert-True ($chat.CPH.Errors.Count -eq 2 -and -not (($chat.CPH.Errors -join ' ') -match 'Do not log this body')) 'Diagnostics must omit message contents'
 Write-Output 'Actual Chat Routing C# passed with a recording sink: plain/reply/fallback, empty arguments and unsupported targets. No network or live chat call was made.'
+
+$launch = [EngineTest.SyntheticLaunch]::new()
+Run-Engine $launch @{ streamLaunchMode = 'initialize' }
+$config = $launch.CPH.Globals['portable.streamLaunch.config'] | ConvertFrom-Json
+Assert-True (-not $config.enabled -and -not $config.fallbackEnabled -and -not $config.followupEnabled -and $config.startingSoonScene -eq '') 'Fresh launch automation must be inert with no personal scene seed'
+Assert-True ($launch.CPH.Actions.Count -eq 0 -and $launch.CPH.ObsCalls.Count -eq 0) 'Initialize may not perform launch effects'
+Run-Engine $launch @{}
+Assert-True ($launch.CPH.ObsCalls.Count -eq 0) 'An unknown mode must not start OBS'
+$launch.CPH.Globals['portable.streamLaunch.config'] = '{"durationSeconds":60,"finishedText":"Legacy finish","startingSoonScene":"Synthetic Scene","retained":"private preference"}'
+Run-Engine $launch @{ streamLaunchMode = 'initialize' }
+$config = $launch.CPH.Globals['portable.streamLaunch.config'] | ConvertFrom-Json
+Assert-True ($config.enabled -and $config.followupEnabled -and $config.retained -eq 'private preference' -and $config.durationSeconds -eq 60) 'Existing settings must migrate without loss and preserve follow-up behavior'
+$before = $launch.CPH.Globals['portable.streamLaunch.config']
+Run-Engine $launch @{ streamLaunchMode = 'configure'; config = '{"durationSeconds":-1}' }
+Assert-True ($launch.CPH.Globals['portable.streamLaunch.config'] -eq $before) 'Invalid launch save must be atomic'
+Run-Engine $launch @{ streamLaunchMode = 'launch' }
+$state = ($launch.CPH.Globals['portable.streamLaunch.state'] | ConvertFrom-Json).payload
+Assert-True ($state.status -eq 'complete' -and $state.followup -eq 'requested' -and $state.spotify -eq 'started') 'Launch must complete with explicit optional-step outcomes'
+Assert-True (($launch.CPH.Actions -join ',') -eq 'Countdown - Start,Stream - Announce and Bookkeeping') 'Launch must use Countdown and retained private hook only'
+Assert-True (($launch.CPH.ObsCalls -join ',') -eq 'scene,start') 'Only manual launch may select scene and start streaming'
+Assert-True ($launch.Requests.Contains('/api/spotify/stream-start?durationSeconds=60')) 'Spotify must use its standalone countdown/fade endpoint'
+$before = $launch.CPH.Actions.Count
+Run-Engine $launch @{ streamLaunchMode = 'fallback' }
+Run-Engine $launch @{ streamLaunchMode = 'launch' }
+Assert-True ($launch.CPH.Actions.Count -eq $before) 'Duplicate fallback/already-live manual requests must not repeat countdown or hooks'
+$failure = [EngineTest.SyntheticLaunch]::new()
+$failure.CPH.Globals['portable.streamLaunch.config'] = $launch.CPH.Globals['portable.streamLaunch.config']
+$failure.CPH.NeverStream = $true
+Run-Engine $failure @{ streamLaunchMode = 'launch' }
+$state = ($failure.CPH.Globals['portable.streamLaunch.state'] | ConvertFrom-Json).payload
+Assert-True ($state.status -eq 'error' -and -not $failure.CPH.Actions.Contains('Stream - Announce and Bookkeeping')) 'Failed OBS startup must never announce'
+Assert-True (-not ($failure.Requests -join ',').Contains('/api/spotify/stream-start')) 'Failed OBS startup must not start Spotify'
+$missing = [EngineTest.SyntheticLaunch]::new()
+$missing.CPH.Globals['portable.streamLaunch.config'] = $launch.CPH.Globals['portable.streamLaunch.config']
+[void]$missing.CPH.MissingActions.Add('Stream - Announce and Bookkeeping')
+Run-Engine $missing @{ streamLaunchMode = 'launch' }
+Assert-True ($missing.CPH.Actions.Count -eq 0 -and $missing.CPH.ObsCalls.Count -eq 0) 'A missing required private hook must fail before any launch effects'
+$partial = [EngineTest.SyntheticLaunch]::new()
+$partial.CPH.Globals['portable.streamLaunch.config'] = $launch.CPH.Globals['portable.streamLaunch.config']
+$partial.FailSpotify = $true
+Run-Engine $partial @{ streamLaunchMode = 'launch' }
+$state = ($partial.CPH.Globals['portable.streamLaunch.state'] | ConvertFrom-Json).payload
+Assert-True ($state.status -eq 'partial' -and $partial.CPH.Actions.Contains('Stream - Announce and Bookkeeping')) 'Spotify failure must be visible while preserving private follow-up dispatch'
+$external = [EngineTest.SyntheticLaunch]::new()
+$external.CPH.Globals['portable.streamLaunch.config'] = $launch.CPH.Globals['portable.streamLaunch.config']
+$external.CPH.Streaming = $true
+Run-Engine $external @{ streamLaunchMode = 'fallback' }
+Assert-True ($external.CPH.ObsCalls.Count -eq 0 -and $external.CPH.Actions.Count -eq 2) 'A real external-online fallback may run integration without changing OBS scene/start'
+Run-Engine $external @{ streamLaunchMode = 'fallback' }
+Assert-True ($external.CPH.Actions.Count -eq 2) 'Duplicate external events must not rerun follow-up'
+Write-Output 'Actual Stream Launch C# passed against recording OBS/action/HTTP adapters: inert startup, migration, validation, ordering, OBS confirmation/failure, missing hook, Spotify partial failure and fallback deduplication. No real OBS/chat/Spotify request was made.'
+
+$delayed = [EngineTest.SyntheticLaunch]::new()
+$delayed.CPH.Globals['portable.streamLaunch.config'] = $launch.CPH.Globals['portable.streamLaunch.config']
+$delayed.CPH.StreamDelayMs = 2000
+Run-Engine $delayed @{ streamLaunchMode = 'launch' }
+Assert-True ($delayed.Requests.Contains('/api/spotify/stream-start?durationSeconds=58')) 'Spotify must receive remaining countdown time after OBS confirmation, not restart a second full clock'
+$interrupted = [EngineTest.SyntheticLaunch]::new()
+$interrupted.CPH.Globals['portable.streamLaunch.config'] = $launch.CPH.Globals['portable.streamLaunch.config']
+$interrupted.CPH.Globals['portable.streamLaunch.state'] = '{"payload":{"status":"starting","launchId":"synthetic-interrupted"}}'
+Run-Engine $interrupted @{ streamLaunchMode = 'initialize' }
+Assert-True ((($interrupted.CPH.Globals['portable.streamLaunch.state'] | ConvertFrom-Json).payload.status) -eq 'interrupted' -and $interrupted.CPH.Actions.Count -eq 0 -and $interrupted.CPH.ObsCalls.Count -eq 0) 'Restart must report interrupted launch without replaying it'
+Write-Output 'Remaining-time alignment and interrupted-launch preservation passed.'

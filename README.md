@@ -13,7 +13,8 @@ Current build: [Windows preview 1.3.0 preview 1](https://github.com/Sethani/Stre
 - **Archipelago**: Controller-populated room dropdown and game-slot checkboxes, per-room selections, progress/logic/activity and one stable OBS URL. Requires host 1.2.2 and Controller Room API 2.2; see [setup](modules/archipelago/README.md). No room parsing or analysis worker is bundled.
 - **Pokemon Encounters 1.7**: the original encounter design, type/ball icons and live throw tests; included in the combined overlay. See [setup and notices](modules/pokemon-encounters/README.md).
 - **Controller 1.1**: native XInput and the existing local controller drawing, with layout controls and a synthetic live test; no Streamer.bot import. See [setup](modules/controller-input/README.md).
-- **Countdown 1.1**: saved presets and start/pause/resume/clear using preserved Streamer.bot timer globals, with the original combined-overlay design. Stream launch remains a separate legacy feature. See [setup](modules/countdown/README.md).
+- **Countdown 1.1**: saved presets and start/pause/resume/clear using preserved Streamer.bot timer globals, with the original combined-overlay design. See [setup](modules/countdown/README.md).
+- **Stream Launch 1.0**: guarded OBS startup around Countdown, optional Spotify startup/fading, and an existing private announcement/bookkeeping action. It preserves the established launch action IDs without packaging private hooks or adding an overlay/service. See [setup and safety boundaries](modules/stream-launch/README.md).
 - **Universal Dock / Overlay / Source Modules**: packaged controls, operator Tests, a transparent overlay and preserved Streamer.bot scene routing.
 - **Video 2.2**: its own editor/renderer and explicitly selected private media. The catalogue installs its three browser dependencies. See [installation and migration](modules/video/README.md).
 

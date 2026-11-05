@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "name": "Stream Launch",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Standalone launch orchestration",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "65abb8f2-9852-4495-92ea-65ec53930f33",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Stream - Launch Engine",
+        "group": "Stream Launch",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "4d0fdb50-4661-451f-9d4c-4a49dae86314",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "name": "Standalone stream launch",
+            "description": "Guarded OBS/countdown launch with optional Spotify and private follow-up",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Net.Http.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "sourceFile": "launch-engine.cs",
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": ""
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "78ee4b70-c130-473b-8eff-ea27d26b055c",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Stream - Configure Launch",
+        "group": "Stream Launch",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "586d5df0-3393-403b-ae91-9e494539e060",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "streamLaunchMode",
+            "value": "configure",
+            "autoType": false
+          },
+          {
+            "id": "0fc796e9-ceb5-4a4c-93d6-bd909ae902b1",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "65abb8f2-9852-4495-92ea-65ec53930f33",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "be4b86a3-0d20-4664-bb2a-d7aa04c4ca8d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Stream - Launch",
+        "group": "Stream Launch",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "a6d75c65-8276-4159-9a44-2f7b138056fc",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "streamLaunchMode",
+            "value": "launch",
+            "autoType": false
+          },
+          {
+            "id": "ae7dfa23-287c-44d6-9991-e27bee208ac1",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "65abb8f2-9852-4495-92ea-65ec53930f33",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "e9529337-96f1-48b1-aced-fe30915bdb3b",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Stream - Online Fallback",
+        "group": "Stream Launch",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "c5cded85-5f0d-4287-aa85-5e4bdcf15a6f",
+            "type": 154,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "id": "19939c22-ec2e-4103-8348-69ed0cc6287f",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "streamLaunchMode",
+            "value": "fallback",
+            "autoType": false
+          },
+          {
+            "id": "92fa03c9-cca2-40a2-8658-6745f6546f9c",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "65abb8f2-9852-4495-92ea-65ec53930f33",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "b792f202-9de6-4ad3-800a-e91fe383cdb5",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Stream - Initialize Launch",
+        "group": "Stream Launch",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "266bfcb3-8321-4387-aa17-d4a3975b760a",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "id": "b01dee2c-8efb-43a4-bca6-bfa7fe245d29",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "streamLaunchMode",
+            "value": "initialize",
+            "autoType": false
+          },
+          {
+            "id": "93c87927-26fb-4bea-9e3f-46bd52d791c6",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "65abb8f2-9852-4495-92ea-65ec53930f33",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "845758b8-1246-418d-b1fd-33a8f553380d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Stream - Launch Health",
+        "group": "Stream Launch",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "804c8b72-c433-48ab-94c5-cb4634dc682f",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "streamLaunchMode",
+            "value": "health",
+            "autoType": false
+          },
+          {
+            "id": "cc06217c-a5f4-4aab-a8bd-91b01740ff32",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "65abb8f2-9852-4495-92ea-65ec53930f33",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

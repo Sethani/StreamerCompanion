@@ -1,0 +1,33 @@
+const assert=require('node:assert/strict'),path=require('node:path');
+const {app,BrowserWindow}=require('electron'),{fixture}=require('./launch-fixture');
+const bundle=path.resolve(process.argv[2]),temporary=path.resolve(process.argv[3]);
+const {CompanionHost}=require(path.join(bundle,'resources/app.asar/src/companion-host'));
+app.setPath('userData',temporary);app.commandLine.appendSwitch('disable-gpu');let test,window,failed=false;
+async function wait(check,label){const until=Date.now()+12000;while(Date.now()<until){if(await check())return;await new Promise(r=>setTimeout(r,30));}throw Error('Timed out: '+label);}
+async function main(){await app.whenReady();test=await fixture(temporary,CompanionHost);
+ window=new BrowserWindow({show:false,width:650,height:800,webPreferences:{contextIsolation:true,nodeIntegration:false,backgroundThrottling:false}});
+ window.webContents.session.webRequest.onBeforeRequest((request,callback)=>callback({cancel:!request.url.startsWith(test.base+'/')&&!request.url.startsWith('ws://127.0.0.1:'+test.websocket.address().port+'/')}));
+ await window.loadURL(test.base+'/api/public/assets/stream-launch/launch/index.html');const run=code=>window.webContents.executeJavaScript(code);
+ await wait(()=>run("document.getElementById('duration').value==='180' && document.getElementById('connection').textContent==='Streamer.bot connected'"),'saved launch configuration');
+ assert.equal(await run("document.getElementById('scene').value"),'Fixture B');assert.equal(test.calls.length,0,'No action may run on page load');
+ assert.deepEqual(await run("[...document.getElementById('scene').options].map(o=>o.value)"),['','Fixture A','Fixture B']);
+ await run("document.getElementById('health').click()");await wait(()=>test.calls.length===1,'read-only readiness action');assert.equal(test.calls[0].action.name,'Stream - Launch Health');
+ await wait(()=>run("!document.getElementById('health').disabled"),'readiness completion');
+ await run("document.getElementById('duration').value='240';document.getElementById('duration').dispatchEvent(new Event('input',{bubbles:true}))");
+ test.publish({...test.payload(),config:{...test.payload().config,durationSeconds:999,startingSoonScene:'Fixture A'}});
+ await new Promise(r=>setTimeout(r,100));assert.equal(await run("document.getElementById('duration').value"),'240');assert.equal(await run("document.getElementById('launch').disabled"),true);
+ await run("document.getElementById('launch-form').requestSubmit()");await wait(()=>test.payload().config.durationSeconds===240,'save configuration');
+ await wait(()=>run("!document.getElementById('launch').disabled"),'saved ready state');
+ const saved=JSON.parse(test.calls.find(c=>c.action.name==='Stream - Configure Launch').args.config);assert.equal(saved.startingSoonScene,'Fixture B');assert.equal(saved.followupAction,'Stream - Announce and Bookkeeping');
+ const before=test.calls.length;await run("window.confirm=()=>false;document.getElementById('launch').click()");await new Promise(r=>setTimeout(r,100));assert.equal(test.calls.length,before,'Cancelled confirmation must be inert');
+ await run("window.confirm=()=>true;document.getElementById('launch').click()");await wait(()=>test.calls.some(c=>c.action.name==='Stream - Launch'),'explicit launch request to synthetic sink');
+ await wait(()=>run("document.getElementById('status').textContent==='complete' && document.getElementById('launch').disabled"),'live-state duplicate guard');
+ test.publish({...test.payload(),status:'configured',preflight:{...test.payload().preflight,ready:false,problems:['The configured private follow-up action is unavailable.'],obsStreaming:false}});
+ await wait(()=>run("document.getElementById('problems').textContent.includes('follow-up')"),'readiness problems');assert.equal(await run("document.getElementById('launch').disabled"),true);
+ for(const socket of test.websocket.clients)socket.close();await wait(()=>run("document.getElementById('connection').textContent.includes('unavailable')"),'disconnect');
+ assert.equal(await run("document.getElementById('launch').disabled"),true);await wait(()=>run("document.getElementById('connection').textContent==='Streamer.bot connected'"),'reconnect');
+ assert.equal(test.calls.filter(c=>c.action.name==='Stream - Launch').length,1,'Reconnect must never repeat launch');
+ assert.ok(test.calls.every(c=>['Stream - Launch Health','Stream - Configure Launch','Stream - Launch'].includes(c.action.name)));
+ console.log('Hidden Stream Launch passed: saved configuration, sorted scene picker, read-only readiness, dirty edit preservation, save, cancelled/confirmed explicit launch, already-live/missing-hook guards and reconnect without replay. All actions went to a synthetic sink.');
+}
+main().catch(error=>{console.error(error.stack);failed=true;}).finally(async()=>{window?.destroy();await test?.close();app.exit(failed?1:0);});
