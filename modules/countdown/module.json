@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 2,
+  "id": "countdown",
+  "name": "Countdown",
+  "version": "1.1.0",
+  "description": "Start, pause, resume and clear a countdown in the combined overlay using Streamer.bot state.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Countdown - Engine",
+      "Countdown - Initialize",
+      "Countdown - Start",
+      "Countdown - Pause",
+      "Countdown - Resume",
+      "Countdown - Clear",
+      "Countdown - Configure",
+      "Countdown - Health"
+    ],
+    "importFile": "streamerbot/countdown.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {
+      "universal-overlay": "^1.0.0",
+      "source-modules": "^1.0.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.2.2"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "ui": {
+    "id": "countdown",
+    "name": "Countdown",
+    "category": "Stream",
+    "order": 10,
+    "dockPage": "/countdown/index.html",
+    "ownership": "streamerbot",
+    "packagedOverlay": true,
+    "overlays": [
+      "countdown"
+    ],
+    "actions": [
+      "Countdown - Initialize",
+      "Countdown - Start",
+      "Countdown - Pause",
+      "Countdown - Resume",
+      "Countdown - Clear",
+      "Countdown - Configure",
+      "Countdown - Health"
+    ],
+    "dependencies": [
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "universal-overlay",
+      "source-modules"
+    ],
+    "settings": [
+      "duration",
+      "finishedText"
+    ],
+    "tests": [
+      {
+        "id": "health",
+        "name": "Countdown health",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check timer",
+            "feature": "countdown",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      }
+    ],
+    "transport": {
+      "feature": "countdown",
+      "stateKey": "portable.countdown.state",
+      "actionPrefix": "Countdown"
+    }
+  }
+}

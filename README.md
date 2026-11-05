@@ -11,10 +11,13 @@ Current build: [Windows preview 1.2.2 preview 1](https://github.com/Sethani/Stre
 - **Update Probe**: a harmless local service for exercising install/update/restart behavior. No stream integrations, credentials or overlays.
 - **Spotify Music**: independently hosted OAuth, playback and music-session service. Configure your own Spotify application and authorization. Viewer chat integration is optional and requires your own Chat Routing actions.
 - **Archipelago**: Controller-populated room dropdown and game-slot checkboxes, per-room selections, progress/logic/activity and one stable OBS URL. Requires host 1.2.2 and Controller Room API 2.2; see [setup](modules/archipelago/README.md). No room parsing or analysis worker is bundled.
+- **Pokemon Encounters 1.7**: the original encounter design, type/ball icons and live throw tests; included in the combined overlay. See [setup and notices](modules/pokemon-encounters/README.md).
+- **Controller 1.1**: native XInput and the existing local controller drawing, with layout controls and a synthetic live test; no Streamer.bot import. See [setup](modules/controller-input/README.md).
+- **Countdown 1.1**: saved presets and start/pause/resume/clear using preserved Streamer.bot timer globals, with the original combined-overlay design. Stream launch remains a separate legacy feature. See [setup](modules/countdown/README.md).
 - **Universal Dock / Overlay / Source Modules**: packaged controls, operator Tests, a transparent overlay and preserved Streamer.bot scene routing.
 - **Video 2.2**: its own editor/renderer and explicitly selected private media. The catalogue installs its three browser dependencies. See [installation and migration](modules/video/README.md).
 
-Pokemon and Chat Core are not in this first public batch: their bundled artwork/library notices need a separate redistribution review. Other legacy features will migrate in batches; see [the migration checklist](docs/MIGRATION.md).
+Chat Core's bundled helper and the other legacy features still need individual migration/review. See [the current dependency audit and ordered backlog](docs/legacy-migration-status.md) and [migration checklist](docs/MIGRATION.md). Migrated visual features join the combined OBS overlay; internal renderer pages do not require adding separate browser sources.
 
 ## Run or build
 

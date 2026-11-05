@@ -3,10 +3,12 @@ $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $videoSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/video/streamerbot/video---engine-0.cs')
 $routingSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/source-modules/streamerbot/module-routing.cs')
 $pokemonSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/pokemon-encounters/streamerbot/pokemon-bridge.cs')
+$countdownSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/countdown/streamerbot/countdown-engine.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
 $pokemonSource = $pokemonSource.Replace('public class CPHInline {', ('public class PokemonInline {' + $fields))
+$countdownSource = $countdownSource.Replace('public class CPHInline {', ('public class CountdownInline {' + $fields))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,7 @@ public class FakeCPH {
 $references = @((Get-ChildItem -LiteralPath (Join-Path $PSHOME 'ref') -Filter '*.dll').FullName) + (Join-Path $PSHOME 'Newtonsoft.Json.dll')
 # Add-Type's in-memory assemblies can be shared by compiling all three units together.
 # Keep using directives scoped to separate namespaces so each original source remains unchanged.
-$combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace EngineTest {' + $videoSource + '}' + "`n" + 'namespace EngineTest {' + $routingSource + '}' + "`n" + 'namespace EngineTest {' + $pokemonSource + '}'
+$combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace EngineTest {' + $videoSource + '}' + "`n" + 'namespace EngineTest {' + $routingSource + '}' + "`n" + 'namespace EngineTest {' + $pokemonSource + '}' + "`n" + 'namespace EngineTest {' + $countdownSource + '}'
 Add-Type -TypeDefinition $combined -ReferencedAssemblies $references -CompilerOptions '/nowarn:1701,1702'
 function Assert-True($Condition, [string]$Message) { if (-not $Condition) { throw $Message } }
 function Run-Engine($Engine, [hashtable]$Arguments) {
@@ -88,3 +90,40 @@ Assert-True ($config.modules.pokemon.scenes[0] -eq 'Synthetic Scene' -and $confi
 Run-Engine $pokemon @{ pokemonMode = 'message'; userName = 'ordinaryviewer'; message = 'A wild Weedle appears Catch it using !pokecatch' }
 Assert-True ($pokemon.CPH.Errors.Count -eq 0) 'Rejected viewer imitation must be inert'
 Write-Output 'Actual Video, Source Modules and Pokemon C# compiled against a synthetic CPH adapter; preserved globals, validation, guarded Stop and Pokemon initialization passed. No live HTTP/chat call was made.'
+
+$countdown = [EngineTest.CountdownInline]::new()
+Run-Engine $countdown @{ countdownMode = 'initialize' }
+$config = $countdown.CPH.Globals['portable.countdown.config'] | ConvertFrom-Json
+Assert-True ($config.durationSeconds -eq 300) 'Countdown defaults must be clean'
+Run-Engine $countdown @{ countdownMode = 'start'; durationSeconds = '60'; finishedText = 'Synthetic done' }
+$state = $countdown.CPH.Globals['portable.countdown.state'] | ConvertFrom-Json
+Assert-True ($state.payload.status -eq 'running' -and $state.payload.remainingMs -eq 60000) 'Countdown Start must save running state'
+$end = $state.payload.endTimeMs
+Run-Engine $countdown @{ countdownMode = 'initialize' }
+$state = $countdown.CPH.Globals['portable.countdown.state'] | ConvertFrom-Json
+Assert-True ($state.payload.endTimeMs -eq $end) 'Initialize must preserve active timer'
+Run-Engine $countdown @{ countdownMode = 'configure'; durationSeconds = '12'; finishedText = 'Next timer' }
+$state = $countdown.CPH.Globals['portable.countdown.state'] | ConvertFrom-Json
+Assert-True ($state.payload.endTimeMs -eq $end -and $state.payload.finishedText -eq 'Synthetic done') 'Save preset must not restart or alter current timer message'
+Run-Engine $countdown @{ countdownMode = 'pause' }
+$state = $countdown.CPH.Globals['portable.countdown.state'] | ConvertFrom-Json
+Assert-True ($state.payload.status -eq 'paused' -and $state.payload.remainingMs -gt 0 -and $null -eq $state.payload.endTimeMs) 'Pause must freeze remaining duration'
+Run-Engine $countdown @{ countdownMode = 'resume' }
+$state = $countdown.CPH.Globals['portable.countdown.state'] | ConvertFrom-Json
+Assert-True ($state.payload.status -eq 'running' -and $null -ne $state.payload.endTimeMs) 'Resume must restore end timestamp'
+$before = $countdown.CPH.Globals['portable.countdown.state']
+$beforeConfig = $countdown.CPH.Globals['portable.countdown.config']
+Run-Engine $countdown @{ countdownMode = 'start'; durationSeconds = '-1' }
+Assert-True ($countdown.CPH.Globals['portable.countdown.state'] -eq $before -and $countdown.CPH.Globals['portable.countdown.config'] -eq $beforeConfig) 'Invalid countdown input must be atomic'
+Run-Engine $countdown @{ countdownMode = 'clear' }
+$state = $countdown.CPH.Globals['portable.countdown.state'] | ConvertFrom-Json
+Assert-True ($state.payload.status -eq 'idle') 'Clear must hide countdown'
+Run-Engine $countdown @{ countdownMode = 'start'; durationSeconds = '0' }
+$state = $countdown.CPH.Globals['portable.countdown.state'] | ConvertFrom-Json
+Assert-True ($state.payload.status -eq 'finished' -and $state.payload.remainingMs -eq 0) 'Zero duration must display finished text'
+$countdown.CPH.Globals['portable.countdown.config'] = '{"durationSeconds":44,"finishedText":"Legacy","retained":"synthetic"}'
+Run-Engine $countdown @{ countdownMode = 'initialize' }
+$config = $countdown.CPH.Globals['portable.countdown.config'] | ConvertFrom-Json
+Assert-True ($config.retained -eq 'synthetic' -and $config.durationSeconds -eq 44) 'Countdown initialization must preserve existing preferences'
+Assert-True ($countdown.CPH.Errors.Count -eq 1) 'Only deliberate invalid countdown must log an error'
+Write-Output 'Actual Countdown C# passed: clean defaults, active-state preservation, preset/start/pause/resume/clear/finish and invalid-input atomicity. No live action was invoked.'

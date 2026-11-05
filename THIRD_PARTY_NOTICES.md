@@ -17,4 +17,4 @@ The Windows app is packaged with Electron, distributed under MIT with additional
 
 Streamer.bot is a separately installed dependency. This project uses its documented APIs and distributes its own action definitions; no Streamer.bot executable, DLL or proprietary integration source is bundled. Assembly references in the action source refer to the user's installed environment and do not include those assemblies.
 
-No Pokemon images, personal media, copied client library, chat archive data or user credentials are included in this initial public batch.
+Pokemon Encounters contains 45 PokeAPI/sprites images verified against a pinned source revision. Their exact source URLs/hashes and unchanged upstream notice are packaged with that module; see [its asset provenance](modules/pokemon-encounters/reviewed-assets.json) and [upstream copyright/CC0 notice](modules/pokemon-encounters/third-party/pokeapi-sprites-licence.txt). First-party MIT does not relabel those image rights. No personal media, copied chat helper library, chat archive data or user credentials are bundled.

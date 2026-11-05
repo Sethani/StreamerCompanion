@@ -1,0 +1,325 @@
+{
+  "meta": {
+    "name": "Countdown",
+    "author": "Sethani",
+    "version": "1.1.0",
+    "description": "Portable countdown controls and the existing stream overlay design.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "080ec8c3-09cf-4378-852f-30027217e64a",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Engine",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Countdown state engine",
+            "description": "Portable timer state and saved preferences",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "sourceFile": "countdown-engine.cs",
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "0cc35fcb-8c61-4540-8c79-538ac31a0d9a",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "489eff3f-9c92-494a-b090-470f77a9e22f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Initialize",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "972a7a64-521d-488d-b32f-87e29a0a5b47",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "countdownMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "4972e982-c2b1-4976-9d1d-62ffbafd5a66",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "080ec8c3-09cf-4378-852f-30027217e64a",
+            "runImmedately": true,
+            "id": "eae1d11a-b531-432a-b5e3-d7b714c2ef49",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "80cca7de-b3f1-4bc1-9575-bd023bde4fa4",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Start",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "countdownMode",
+            "value": "start",
+            "autoType": false,
+            "id": "16252620-7e18-4953-a232-8e81b21db03b",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "080ec8c3-09cf-4378-852f-30027217e64a",
+            "runImmedately": true,
+            "id": "0103a1dc-4227-4b4e-902c-026f49b28e56",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3f1a7639-fce3-4e65-8463-69c7cce9cb4c",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Pause",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "countdownMode",
+            "value": "pause",
+            "autoType": false,
+            "id": "c9f6ec28-a5f5-4ba4-a54f-400a9a6987d6",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "080ec8c3-09cf-4378-852f-30027217e64a",
+            "runImmedately": true,
+            "id": "5d7705cf-472a-4ef1-bac8-80b863d2c41f",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "2b6b58b1-3498-4cd4-ad1d-1669df7c66c5",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Resume",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "countdownMode",
+            "value": "resume",
+            "autoType": false,
+            "id": "b9661285-f03e-416f-91ac-b89a87eea076",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "080ec8c3-09cf-4378-852f-30027217e64a",
+            "runImmedately": true,
+            "id": "e1057d6b-0a51-46b7-9470-c17f952c85b1",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "85fa649b-3743-493c-8ea7-719df3f7767f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Clear",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "countdownMode",
+            "value": "clear",
+            "autoType": false,
+            "id": "519b6b09-bb80-4037-99be-539782281a16",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "080ec8c3-09cf-4378-852f-30027217e64a",
+            "runImmedately": true,
+            "id": "1d2b87f5-aa05-4ba0-9925-45358373aa87",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "5b6a6ea5-a633-4723-974b-aa8da1b9e57b",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Configure",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "countdownMode",
+            "value": "configure",
+            "autoType": false,
+            "id": "9cf8a0d1-aa27-429a-ab91-21c772af78df",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "080ec8c3-09cf-4378-852f-30027217e64a",
+            "runImmedately": true,
+            "id": "461d14f0-08bc-4c57-99c9-3d0ae4514aa4",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "1a5d746d-74e8-4cec-a933-140bcd231ec0",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Countdown - Health",
+        "group": "Countdown",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "countdownMode",
+            "value": "health",
+            "autoType": false,
+            "id": "c2cf5162-a13d-44ef-ad54-3c8b015c16e9",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "080ec8c3-09cf-4378-852f-30027217e64a",
+            "runImmedately": true,
+            "id": "a77266a1-9564-47ea-97dc-584d8141be50",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}
