@@ -1,0 +1,1985 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@500;800&display=swap" rel="stylesheet">
+
+    <style>
+        body,
+        html,
+        #chat {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        @keyframes append-animate {
+            from {
+                height: 0;
+                opacity: 0;
+            }
+
+            to {
+                height: auto;
+                opacity: 1;
+            }
+        }
+
+        @keyframes chat {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .chat-message {
+            animation: append-animate .3s linear;
+            transition: max-height 0.3s ease-out;
+            height: auto;
+            word-break: normal;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            hyphenate-character: "»";
+        }
+
+        .msg-badges {
+            vertical-align: middle;
+        }
+
+        .msg-user::after {
+            content: ": ";
+        }
+
+        .msg-pronoun {
+            padding: 0rem 0.3rem;
+        }
+
+        .msg-badges>img {
+            width: 1rem;
+            box-shadow: 0 0 2px black;
+        }
+
+        .msg-text>img {
+            vertical-align: middle;
+            width: 1.4rem;
+        }
+
+        .msg-text>.announcement {
+            font-weight: bold;
+        }
+
+        .msg-timestamp {
+            padding: 0rem 0.2em;
+            font-size: 0.8em;
+        }
+
+        .msg-user {
+            font-weight: bold;
+
+        }
+
+        #version-notice {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #ffc39a;
+            padding: 1rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #950000;
+            box-sizing: border-box;
+        }
+
+        #connection-status {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #410000;
+            background-color: #ff827c;
+            box-sizing: border-box;
+        }
+    </style>
+
+    <style type="text" id="enable-bubbles">
+        #chat {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .chat-message {
+            margin: 0 5px 5px 5px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 2px solid #ffe0f0;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .msg-text,
+        .msg-user {
+            padding: 0.4rem;
+            display: block;
+        }
+
+        .msg-user {
+            background: #ffe0f0;
+            font-weight: bold;
+            color: black;
+        }
+
+        .msg-pronoun {
+            right: 1em;
+            position: absolute;
+        }
+
+        .msg-timestamp {
+            border: 1px solid transparent;
+            border-radius: 1rem;
+            background-color: rgba(0, 0, 0, 0.6);
+            margin-right: 0.25rem;
+            vertical-align: middle;
+            padding: 0.1rem 0.3rem;
+            color: white;
+            font-size: .6rem;
+        }
+
+        .msg-user {
+            font-weight: normal;
+        }
+
+        .msg-user::after {
+            content: "";
+        }
+
+        .msg-text>.announcement {
+            display: block;
+        }
+    </style>
+
+    <style id="enable-horizontal" type="text">
+        #chat {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            white-space: nowrap;
+        }
+
+        .chat-message {
+            margin-left: 1rem;
+            float: left;
+        }
+
+        .msg-user, .msg-text {
+            padding: 0.4rem;
+        }
+    </style>
+
+    <style id="horizontal-bubbles" type="text">
+        .msg-pronoun {
+            position: inherit;
+        }
+
+        .msg-user {
+            text-align: right;
+        }
+
+        .msg-text>.announcement {
+            display: inline;
+        }
+    </style>
+
+    <style id="user-styles" type="text/css"></style>
+</head>
+
+<body>
+    <div id="chat"></div>
+    <div id="version-notice" style="display: none;"></div>
+    <div id="connection-status" style="display: none;"></div>
+
+    <script>
+        window.CHAT_CORE_DEFAULTS = __CHAT_BOOTSTRAP__;
+        const CHAT_PARAMETERS = new URLSearchParams(window.CHAT_CORE_DEFAULTS.appearance || "");
+        const explicitParameters = new URLSearchParams(window.location.search);
+        for(const key of new Set(explicitParameters.keys())) CHAT_PARAMETERS.set(key,explicitParameters.get(key));
+        const debug = () => {};
+        const STREAMCHAT_VERSION = '0.3.4';
+        const STREAMCHAT_GH_USER = 'izzy';
+        const STREAMCHAT_GH_REPO = 'stream-chat';
+
+        class ConnectionStatus {
+
+            /**
+            * @type {number}
+            * @value 0
+            */
+            static DISCONNECTED = 0;
+
+            /**
+            * @type {number}
+            * @value 1
+            */
+            static CONNECTING = 1;
+
+            /**
+            * @type {number}
+            * @value 2
+            */
+            static CONNECTED = 2;
+
+            /**
+            * @type {number}
+            * @value 3
+            */
+            static ERROR = 3;
+
+            /**
+            * @type {Object.<string, number>}
+            */
+            status = {
+                'StreamerBot': ConnectionStatus.DISCONNECTED,
+                'BeanBot': ConnectionStatus.DISCONNECTED
+            }
+
+            update() {
+                let status = ConnectionStatus.CONNECTED;
+                for (let key in this.status) {
+                    if (!config['plugins'].hasOwnProperty(key.toLowerCase()) || config['plugins'][key.toLowerCase()]['enabled'] == false) {
+                        continue;
+                    }
+
+                    if (this.status[key] == ConnectionStatus.DISCONNECTED) {
+                        status = ConnectionStatus.DISCONNECTED;
+                        break;
+                    } else if (this.status[key] == ConnectionStatus.CONNECTING) {
+                        status = ConnectionStatus.CONNECTING;
+                    }
+                }
+
+                let status_text = "",
+                    status_div = document.getElementById("connection-status");
+
+                switch (status) {
+                    case ConnectionStatus.DISCONNECTED:
+                        status_text = "disconnected. Is your bot running?";
+                        status_div.style.display = "block";
+                        break;
+                    case ConnectionStatus.CONNECTING:
+                        status_text = "connecting";
+                        status_div.style.display = "block";
+                        break;
+                    case ConnectionStatus.CONNECTED:
+                        status_div.style.display = "none";
+                        break;
+                    case ConnectionStatus.ERROR:
+                        status_text = "experiencing an error";
+                        status_div.style.display = "block";
+                        break;
+                }
+
+                status_div.innerText = "You are currently " + status_text;
+
+            }
+        }
+
+        const PLUGIN_LIST = Object.keys(new ConnectionStatus().status);
+        window.CONNECTION_STATUS = new Proxy(new ConnectionStatus(), {
+            get(target, name, receiver) {
+                if (PLUGIN_LIST.includes(name)) {
+                    return Reflect.get(target['status'], name, receiver);
+                } else {
+                    return Reflect.get(target, name, receiver);
+                }
+            },
+
+            set(target, name, value, receiver) {
+                if (PLUGIN_LIST.includes(name)) {
+                    target['status'][name] = value;
+                    target.update();
+                } else {
+                    return Reflect.set(target, name, value, receiver);
+                }
+            }
+        });
+
+        /**
+         * Checks the current version of streamchat against the latest release on GitHub.
+         * @returns {string} A message indicating whether the current version is up to date or not.
+         */
+        async function version_check() {
+            const res = await fetch(`https://api.github.com/repos/${STREAMCHAT_GH_USER}/${STREAMCHAT_GH_REPO}/releases/latest`)
+                .then(response => response.json())
+                .then(data => {
+                    const version = data.tag_name.replace(/^v/i, "");
+                    const version_parts = version.split('.');
+                    const current_version_parts = STREAMCHAT_VERSION.split('.');
+                    let upToDate = true;
+
+                    if (version_parts[0] > current_version_parts[0]) {
+                        debug(`${STREAMCHAT_GH_REPO} version ${STREAMCHAT_VERSION} is outdated. There is a major update to version ${data.tag_name} available.`);
+                        upToDate = false;
+                    } else if ((version_parts[0] === current_version_parts[0] && version_parts[1] > current_version_parts[1]) ||
+                        (version_parts[0] === current_version_parts[0] && version_parts[1] === current_version_parts[1] && version_parts[2] > current_version_parts[2])) {
+                        console.debug(`${STREAMCHAT_GH_REPO} version ${STREAMCHAT_VERSION} is outdated. Please update to version ${data.tag_name}`);
+                        upToDate = false;
+                    } else {
+                        console.debug(`${STREAMCHAT_GH_REPO} version ${STREAMCHAT_VERSION} is up to date or newer than the latest release ${data.tag_name}`);
+                    }
+
+                    return { version: version, upToDate: upToDate, error: null };
+                }).catch(error => {
+
+                    console.error(error);
+                    return { version: 'unknown', upToDate: true, error: error };
+                });
+            return res;
+        }
+
+        function getRnd(max, min = 0) {
+            return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        /**
+         * @param {string} p The search parameter name
+         * @param {boolean} d The default value
+         * @returns {boolean} The value of the search parameter, or the default value if the parameter is not set.
+         */
+        function searchParamIsTrue(p, d = false) {
+            let v = CHAT_PARAMETERS.get(p);
+            if (v === undefined || v === null) {
+                return d;
+            }
+
+            return String(v).toLowerCase() === 'true' || String(v) === '1';
+        }
+
+        function searchParamOrDefault(p, d = null) {
+            let v = CHAT_PARAMETERS.get(p);
+            if (v === null) {
+                return d;
+            }
+            return v;
+        }
+
+        function htmlentities(str) {
+            return str.replace(/[\u00A0-\u9999<>\&]/gim, (i) => {
+                return '&#' + i.charCodeAt(0) + ';';
+            });
+        }
+
+        /**
+         * @param {string} tag The HTML tag name
+         * @param {object} attributes Attributes for the HTML tag
+         * @param {string} text The innerText of the HTML tag
+         * @returns {string}
+         */
+        function createElement(tag, attributes, text = false) {
+            let element = document.createElement(tag);
+
+            if (attributes !== undefined) {
+                for (let key in attributes) {
+                    element.setAttribute(key, attributes[key]);
+                }
+            }
+
+            if (text !== undefined && text !== false) {
+                element.innerText = text;
+            }
+
+            return element;
+        }
+
+        function parseURL() {
+            let url = new URL(document.URL); url.search = CHAT_PARAMETERS.toString();
+
+            direction = 'vertical';
+            if (url.searchParams.get("direction") !== null) {
+                direction = url.searchParams.get("direction").toLowerCase() === 'horizontal' ? 'horizontal' :
+                    'vertical';
+            }
+
+            const get_color = (p, d = null) => {
+                let u = url.searchParams.get(p);
+                if (u === null) {
+                    return d;
+                }
+                let c = {
+                    r: u.slice(0, 2),
+                    g: u.slice(2, 4),
+                    b: u.slice(4, 6)
+                };
+                return c;
+            }
+            let colors = {
+                'page_background': get_color('background'),
+                'text_background': get_color('bubble_color'),
+                'text': get_color('text_color'),
+                'message': get_color('msg_color'),
+                'announcement': {
+                    'text': get_color('announcement_color'),
+                    'background': get_color('announcement_bg_color'),
+                },
+                'highlight': {
+                    'text': get_color('highlight_color'),
+                    'background': get_color('highlight_bg_color'),
+                },
+                'default': get_color('default_color', {
+                    r: 'ff',
+                    g: 'e0',
+                    b: 'f0'
+                }),
+                'pastel': searchParamIsTrue("pastel"),
+                'bubble_border': get_color("bubble_border_color"),
+            }
+
+            let cmdprefix = null;
+            if (url.searchParams.get("cmdprefix") !== null) {
+                cmdprefix = url.searchParams.get("cmdprefix");
+            }
+
+            let bot_list = [];
+            if (url.searchParams.get("bots") !== null) {
+                bot_list = url.searchParams.get("bots").toLowerCase().split(',');
+            }
+
+            // TODO: Implement different timestamp formats
+            let timestamp = false;
+            let timestamp_locale = 'en-US';
+            let timestamp_options = {
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+
+            if (url.searchParams.get("timestamp") !== null) {
+                timestamp = searchParamIsTrue("timestamp");
+            }
+
+            if (url.searchParams.get("timestamp_locale") !== null) {
+                timestamp_locale = url.searchParams.get("timestamp_locale");
+            }
+
+            // Streamer.Bot specific configuration
+            let streamerbotEnabled = true;
+            let streamerbotConfig = {
+                'enabled': false,
+                'twitch': false,
+                'youtube': false,
+                'websocket': '',
+            };
+            if (streamerbotEnabled === searchParamIsTrue("sb_enabled", true)) {
+                let sb_ws_uri = 'ws://127.0.0.1:8080/';
+                if (url.searchParams.get("sb_ws_uri") !== null) {
+                    sb_ws_uri = decodeURI(url.searchParams.get("sb_ws_uri"));
+                }
+
+                streamerbotConfig = {
+                    'enabled': streamerbotEnabled,
+                    'twitch': searchParamIsTrue("sb_twitch", true),
+                    'youtube': searchParamIsTrue("sb_youtube", true),
+                    'websocket': sb_ws_uri
+                }
+            }
+
+            // Bean.Bot specific configuration
+            let beanbotEnabled = true;
+            let beanbotConfig = {
+                'enabled': false,
+                'twitch': false,
+                'websocket': 'ws://localhost:6969/',
+            };
+            return {
+                'plugins': {
+                    'streamerbot': streamerbotConfig,
+                    'beanbot': {
+                        'enabled': searchParamIsTrue("bb_enabled"),
+                    },
+                    'pluralmind': {
+                        'enabled': searchParamIsTrue("pluralmind", true),
+                        'cdn': searchParamOrDefault("pluralmind_cdn", "https://cdn.jsdelivr.net/npm/pluralmind@2"),
+                        'initial_wait_ms': parseInt(searchParamOrDefault("pluralmind_initial_wait_ms", 700)),
+                    },
+                    'chatcore': {
+                        'enabled': true,
+                        'events': new URL("/api/chat-core/events", window.location.href).href,
+                        'display_delay_ms': parseInt(searchParamOrDefault("chat_core_delay_ms", 200)),
+                    }
+                },
+                'ui': {
+                    'direction': direction,
+                    'bubbles': {
+                        'enabled': searchParamIsTrue("bubbles"),
+                        'border': {
+                            'radius': searchParamOrDefault("bubble_border_radius", null),
+                            'size': searchParamOrDefault("bubble_border_size", null),
+                        }
+                    },
+                    'colors': colors,
+                    'timestamp': {
+                        'enabled': searchParamIsTrue("timestamp"),
+                        'locale': timestamp_locale,
+                        'options': timestamp_options,
+                    },
+                    'fade_duration': searchParamOrDefault("fade_duration", false),
+                    'max_messages': searchParamOrDefault("max_messages", 200),
+                    'pronouns': searchParamIsTrue("pronouns", true),
+                    'highlights': searchParamIsTrue("highlights", true),
+                    'announcements': searchParamIsTrue("announcements", true),
+                    'badges': {
+                        'enabled': searchParamIsTrue("badges", true),
+                        'left': searchParamIsTrue("badges_left"),
+                    },
+                    'emote_size': searchParamOrDefault('emote_size', '1.4rem'),
+                    'font': {
+                        'family': searchParamOrDefault("fontfamily", "Open Sans"),
+                        'size': searchParamOrDefault("fontsize", "large")
+                    },
+                },
+                'exclusion': {
+                    'cmdprefix': cmdprefix,
+                    'bots': bot_list,
+                },
+                'debug': false,
+                'version': {
+                    'current': STREAMCHAT_VERSION,
+                    'check': false,
+                    'alert': searchParamIsTrue("version_alert", false),
+                }
+            }
+        }
+
+        const config = parseURL();
+
+        console.debug(`Starting stream chat version ${STREAMCHAT_VERSION}`);
+        console.debug(['Loaded config', config]);
+
+        let socket, pronouns_users = {},
+            pluralmind_load_promise = null,
+            pluralmind_systems = {},
+            pronouns;
+
+        // Fill the pronoun cache
+        // TODO: Handle errors on this
+        // Enrichment is owned by the live service; the browser never looks up viewers.
+
+        /**
+         * Get the pronoun for a user and cache it for future use
+         *
+         * @param {string} user The user to get the pronoun for
+         * @returns {string} The pronoun for the user
+         */
+        async function fetch_pronoun(user) {
+            user = user.toLowerCase();
+
+            if (user in pronouns_users) {
+                return pronouns_users[user];
+            } else {
+                return fetch(`https://pronouns.alejo.io/api/users/${user}`).then(response => response.json()).then(
+                    data => {
+                        pronouns_users[user] = data[0];
+                        return data;
+                    }).catch(() => {
+                        return '';
+                    });
+            }
+
+        }
+
+        /**
+         * Get the pronoun for a user.
+         * This is a wrapper for fetch_pronoun() that returns either the pronoun or false when pronouns are disabled,
+         * when pronouns for the user aren't set or the API is unavailable.
+         *
+         * @param {string} user The user to get the pronoun for
+         * @returns {string|bool} The pronoun for the user
+         */
+        function get_pronoun(user) {
+            user = user.toLowerCase();
+
+            if (config['ui']['pronouns'] === true && (user in pronouns_users && pronouns_users[user] !== undefined)) {
+                const pronoun_id = pronouns_users[user]['pronoun_id'];
+                if (!pronoun_id) {
+                    return false;
+                }
+
+                if (pronoun_id === "any") {
+                    return "Any";
+                }
+
+                const pronoun = Array.isArray(pronouns)
+                    ? pronouns.find(p => p.name === pronoun_id)
+                    : null;
+                return pronoun && pronoun.display ? pronoun.display : get_fallback_pronoun_display(pronoun_id);
+            } else {
+                return false;
+            }
+        }
+
+        function get_fallback_pronoun_display(pronoun_id) {
+            const fallback_pronouns = {
+                ask: "Ask Me",
+                avoid: "Avoid Pronouns",
+                hethem: "He/They",
+                theyhe: "They/He",
+                shethem: "She/They",
+                theyshe: "They/She",
+                heshe: "He/She",
+                shehe: "She/He",
+                heit: "He/It",
+                ithe: "It/He",
+                sheit: "She/It",
+                itshe: "It/She",
+                theyit: "They/It",
+                itthey: "It/They",
+                xethey: "Xe/They",
+                theyxe: "They/Xe",
+                faethey: "Fae/They",
+                theyfae: "They/Fae",
+                any: "Any",
+                other: "Other",
+            };
+
+            if (fallback_pronouns[pronoun_id]) {
+                return fallback_pronouns[pronoun_id];
+            }
+
+            const pronoun_parts = {
+                he: "He",
+                him: "Him",
+                she: "She",
+                her: "Her",
+                they: "They",
+                them: "Them",
+                it: "It",
+                its: "Its",
+                xe: "Xe",
+                xem: "Xem",
+                fae: "Fae",
+                faer: "Faer",
+                ve: "Ve",
+                ver: "Ver",
+                ae: "Ae",
+                aer: "Aer",
+                zie: "Zie",
+                hir: "Hir",
+                per: "Per",
+                e: "E",
+                em: "Em",
+            };
+            const part_names = Object.keys(pronoun_parts).sort((a, b) => b.length - a.length);
+            for (const first of part_names) {
+                if (!pronoun_id.startsWith(first)) {
+                    continue;
+                }
+                const second = pronoun_id.slice(first.length);
+                if (pronoun_parts[second]) {
+                    return `${pronoun_parts[first]}/${pronoun_parts[second]}`;
+                }
+            }
+
+            return false;
+        }
+
+        function normalize_twitch_login(user) {
+            if (user === null || user === undefined) {
+                return '';
+            }
+
+            return user.toString().trim().replace(/^@+/, '').toLowerCase();
+        }
+
+        function with_timeout(promise, ms, fallback = null) {
+            return Promise.race([
+                promise,
+                new Promise((resolve) => setTimeout(() => resolve(fallback), ms))
+            ]);
+        }
+
+        function load_pluralmind() {
+            if (config['plugins']['pluralmind']['enabled'] !== true) {
+                return Promise.resolve(null);
+            }
+
+            if (window.pluralmind) {
+                return Promise.resolve(window.pluralmind);
+            }
+
+            if (pluralmind_load_promise !== null) {
+                return pluralmind_load_promise;
+            }
+
+            pluralmind_load_promise = new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = config['plugins']['pluralmind']['cdn'];
+                script.async = true;
+                script.onload = () => resolve(window.pluralmind || null);
+                script.onerror = () => {
+                    console.warn('PluralMind could not be loaded; keeping normal chat rendering.');
+                    resolve(null);
+                };
+                document.head.appendChild(script);
+            });
+
+            return pluralmind_load_promise;
+        }
+
+        async function get_pluralmind_system(user_id, author) {
+            const pluralmind = await load_pluralmind();
+            if (!pluralmind || typeof pluralmind.getSystem !== 'function') {
+                return null;
+            }
+
+            const lookup_keys = [user_id, normalize_twitch_login(author)].filter(Boolean);
+            for (const key of lookup_keys) {
+                if (pluralmind_systems.hasOwnProperty(key)) {
+                    return pluralmind_systems[key];
+                }
+
+                const system = await pluralmind.getSystem(key);
+                pluralmind_systems[key] = system || null;
+                if (system) {
+                    return system;
+                }
+            }
+
+            return null;
+        }
+
+        async function get_pluralmind_proxy(user_id, author, message) {
+            try {
+                const pluralmind = await load_pluralmind();
+                if (!pluralmind || typeof pluralmind.getProxiedMessage !== 'function') {
+                    return null;
+                }
+
+                const system = await get_pluralmind_system(user_id, author);
+                if (!system) {
+                    return null;
+                }
+
+                return pluralmind.getProxiedMessage(system, message) || null;
+            } catch (error) {
+                console.warn('PluralMind lookup failed; keeping normal chat rendering.', error);
+                return null;
+            }
+        }
+
+        /**
+         * Get the text colour for a user.
+         * TODO: change color to RGB object
+         *
+         * @param {Color} color The user's text color
+         * @returns {string} The calculated color according to settings
+         */
+        function get_text_color(color, noDefault = false) {
+            // TODO pastel mode for text color
+            if (config['ui']['colors']['text'] && noDefault === false) {
+                return config['ui']['colors']['text'];
+            }
+
+            let color_r = parseInt((color.r), 16);
+            let color_g = parseInt((color.g), 16);
+            let color_b = parseInt((color.b), 16);
+
+            let brightness = Math.round(((parseInt(color_r) * 299) +
+                (parseInt(color_g) * 587) +
+                (parseInt(color_b) * 114)) / 1000);
+
+            if (brightness < 125) {
+                return {
+                    r: 'FF',
+                    g: 'FF',
+                    b: 'FF'
+                };
+            } else {
+                return {
+                    r: '00',
+                    g: '00',
+                    b: '00'
+                };
+            }
+        }
+
+        /**
+         * Get the background color for a user.
+         * @param {Color} color An RGB tuple of the user's text color
+         * @param {string} override_source Config attribute to take for overrides
+         * @returns {Color} The background color for the user
+         */
+        function get_user_color(color, override_source = "text_background") {
+            // TODO pastel mode for background color
+            if (config['ui']['colors'][override_source]) {
+                return config['ui']['colors'][override_source];
+            }
+
+            if (color === null || color === undefined) {
+                return config['ui']['colors']['default'];
+            } else {
+                return color;
+            }
+        }
+
+        /**
+         * Returns a normalized version of the given color as RGB struct.
+         * @param {string} color A string containing a color in hexadecimal RGB notation
+         * @returns {Color} The normalized color tuple
+         */
+        function get_color(color) {
+            if (color === null || color === undefined) {
+                return config['ui']['colors']['default'];
+            } else {
+                color = color.replace('#', '');
+                return {
+                    r: color.slice(0, 2),
+                    g: color.slice(2, 4),
+                    b: color.slice(4, 6)
+                };
+            }
+        }
+
+        /**
+         * Returns a hex code from an RGB color struct.
+         * @param {Color} color An RGB color struct
+         * @returns {string} A hex color code
+         */
+        function get_color_hex(color) {
+            if (color === 'transparent') {
+                return 'transparent';
+            } else if (color === null || color === undefined) {
+                return get_color_hex(config['ui']['colors']['default']);
+            } else {
+                return `#${color.r}${color.g}${color.b}`;
+            }
+        }
+
+        /**
+         * Enum to differenciate between different highlight styles
+         * Currently only used for Twitch messages
+         */
+        const Highlights = {
+            None: Symbol('None'),
+            Highlight: Symbol('Highlight'),
+            //Mention: Symbol('Mention'), // TODO: Might be worth implementing this?
+            Announcement: Symbol('Announcement'),
+        };
+
+        let add_message = (id, message, author, color, timestamp, badges = [], highlight = Highlights.None) => {
+            let background_color = get_user_color(color);
+            let text_color = get_text_color(background_color);
+
+            let el_badges = createElement('span', { 'class': 'msg-badges' });
+            let el_pronoun = createElement('span', { 'class': 'msg-pronoun' }, author['pronoun']);
+            let el_message = createElement('span', { 'class': 'msg-text' });
+            let el_user = createElement('span', { 'class': 'msg-user' }, author.name);
+
+            let div_message = createElement('div', {
+                'id': id,
+                'data-user-id': author['id'],
+                'class': 'chat-message',
+            });
+
+            let message_class = [];
+            if (highlight !== Highlights.None) {
+                if (highlight === Highlights.Highlight && config['ui']['highlights'] === true) {
+                    div_message.classList.add('highlight');
+                } else if (highlight === Highlights.Announcement) {
+                    div_message.classList.add('announcement');
+                }
+            }
+
+            // TODO: omg this code is a mess and needs to get some a e s t h e t i c s
+            // For one, if we have user configs for some colours, we don't need to overwrite them
+            // Also, we should probably use CSS variables for some things
+            // Alternatively maybe just a data attribute with the user's color like
+            // data-user-color="#123456" and then use that in the CSS with color: attr(data-user-color)
+            // which would be a lot cleaner and would get the style issues out of the JS code
+            if (config['ui']['bubbles']['enabled'] === true) {
+                div_message.classList.add('bubble');
+            }
+
+            // For announcements we want the background to be filled
+            if (config['ui']['announcements'] === true &&
+                (highlight === Highlights.Announcement || highlight === Highlights.Highlight)) {
+
+                let config_key = highlight === Highlights.Announcement ? 'announcement' : 'highlight';
+
+                if (config['ui']['colors'][config_key]['background']) {
+                    background_color = config['ui']['colors'][config_key]['background'];
+                } else {
+                    background_color = get_user_color(color);
+                }
+
+                if (config['ui']['colors'][config_key]['text']) {
+                    text_color = config['ui']['colors'][config_key]['text'];
+                } else {
+                    // We calculate the text color based on the new background color
+                    // If we don't do this, the text might be completely unreadable
+                    // Second parameter is noDefault to prevent getting the default
+                    // text color which might or might not work with the new background
+                    text_color = get_text_color(background_color, true);
+                }
+
+                if (config['ui']['bubbles']['enabled'] === true) {
+                    // Announcement/Highlight styling for message bubbles
+                    div_message.style.color = get_color_hex(text_color);
+
+                    if (config['ui']['colors']['bubble_border']) {
+                        div_message.style.borderColor = get_color_hex(config['ui']['colors']['bubble_border']);
+                    } else {
+                        div_message.style.borderColor = get_color_hex(background_color);
+                    }
+
+                    el_user.style.color = get_color_hex(text_color);
+                    el_user.style.backgroundColor = get_color_hex(background_color);
+                } else {
+                    // Announcement/Highlight styling for regular text messages
+                    div_message.style.color = get_color_hex(text_color);
+                    el_message.style.color = get_color_hex(text_color);
+                }
+
+                div_message.style.backgroundColor = get_color_hex(background_color);
+
+                // TODO: For announcement, get an enum for the colour of the announcement
+                //       and add a CSS class with nice colours and gradients
+            } else {
+
+                // Everything specific for anything that's not announcement or highlight
+                if (config['ui']['bubbles']['enabled'] === true) {
+                    if (!config['ui']['colors']['bubble_border']) {
+                        div_message.style.borderColor = get_color_hex(background_color);
+                    }
+
+                    el_user.style.backgroundColor = get_color_hex(background_color);
+
+                } else {
+                    // If we don't use bubbles, we don't use the user colour as background
+                    if (!config['ui']['colors']['text_color']) {
+                        text_color = get_user_color(color, "text_color");
+                    }
+                }
+
+                el_user.style.color = get_color_hex(text_color);
+            }
+
+            if (config['ui']['badges']['enabled'] === true && badges.length > 0) {
+                for (let badge of badges) {
+                    let el_badge = createElement('img', {
+                        'src': badge["url"],
+                    });
+                    el_badges.appendChild(el_badge);
+                }
+
+                // Add badges to the user line
+                if (config['ui']['badges']['left'] === false) {
+                    el_user.appendChild(el_badges);
+                } else {
+                    el_user.prepend(el_badges);
+                }
+            }
+
+            el_message.innerHTML = message;
+
+            // Add the timestamp
+            if (config['ui']['timestamp']['enabled'] === true) {
+                let el_timestamp = createElement('span', { 'class': 'msg-timestamp' },
+                    new Date().toLocaleTimeString(config['ui']['timestamp']['locale'],
+                        config['ui']['timestamp']['options'])
+                );
+                if (config['ui']['bubbles']['enabled'] === false) {
+                    div_message.appendChild(el_timestamp);
+                } else {
+                    el_user.prepend(el_timestamp);
+                }
+            }
+
+            // Add the pronoun to the user line
+            if (author['pronoun']) {
+                el_user.appendChild(el_pronoun);
+            }
+
+            // Adds the user line and message to the message div
+            div_message.appendChild(el_user);
+            div_message.appendChild(el_message);
+
+            document.getElementById('chat').appendChild(div_message);
+
+            const element = document.getElementById('chat');
+            element.scrollTop = element.scrollHeight;
+
+            return div_message;
+        }
+
+        function update_twitch_message(id, message, author, color) {
+            const div_message = document.getElementById(id);
+            if (!div_message) {
+                return;
+            }
+
+            const el_user = div_message.querySelector('.msg-user');
+            const el_message = div_message.querySelector('.msg-text');
+            const el_badges = el_user ? el_user.querySelector('.msg-badges') : null;
+            const el_timestamp = el_user ? el_user.querySelector('.msg-timestamp') : null;
+
+            if (!el_user || !el_message) {
+                return;
+            }
+
+            const background_color = get_user_color(color);
+            const text_color = get_text_color(background_color);
+
+            el_user.textContent = author.name;
+
+            if (el_badges) {
+                if (config['ui']['badges']['left'] === false) {
+                    el_user.appendChild(el_badges);
+                } else {
+                    el_user.prepend(el_badges);
+                }
+            }
+
+            if (el_timestamp) {
+                el_user.prepend(el_timestamp);
+            }
+
+            if (author.pronoun) {
+                el_user.appendChild(createElement('span', { 'class': 'msg-pronoun' }, author.pronoun));
+            }
+
+            if (config['ui']['bubbles']['enabled'] === true) {
+                el_user.style.backgroundColor = get_color_hex(background_color);
+            }
+
+            el_user.style.color = get_color_hex(text_color);
+            el_message.innerHTML = message;
+        }
+
+        let StreamerBot = {
+            'message': {
+                'twitch': async (msg_id, user_id, author, author_color, message, emotes = [], role = 0,
+                    badges = [], highlight = Highlights.None, pronoun = false, login = false, core_enriched = false) => {
+                    // TODO handle cheermotes
+
+                    if (skip_message(message, author)) {
+                        return;
+                    }
+
+                    const original_author = author;
+                    const lookup_author = login || author;
+                    const original_author_color = author_color;
+                    const original_message = message;
+                    const pluralmind_promise = !core_enriched && config['plugins']['pluralmind']['enabled'] === true
+                        ? get_pluralmind_proxy(user_id, lookup_author, original_message)
+                        : Promise.resolve(null);
+
+                    if (pronoun === false && !core_enriched) {
+                        await fetch_pronoun(lookup_author);
+                        pronoun = get_pronoun(lookup_author);
+                    }
+
+                    const pluralmind_initial_wait_ms = Number.isFinite(config['plugins']['pluralmind']['initial_wait_ms'])
+                        ? config['plugins']['pluralmind']['initial_wait_ms']
+                        : 700;
+                    const pluralmind_proxy = await with_timeout(pluralmind_promise, pluralmind_initial_wait_ms, null);
+
+                    if (pluralmind_proxy) {
+                        author = pluralmind_proxy.member && pluralmind_proxy.member.name
+                            ? pluralmind_proxy.member.name
+                            : author;
+                        author_color = pluralmind_proxy.color || author_color;
+                        message = pluralmind_proxy.body || message;
+                        pronoun = pluralmind_proxy.pronouns || pronoun;
+                        emotes = [];
+                    }
+
+                    author = {
+                        name: author,
+                        id: user_id,
+                        pronoun: pronoun === false ? false : `(${pronoun})`,
+                    }
+
+                    if (emotes.length === 0) {
+                        // XSS protection for the message
+                        message = htmlentities(message);
+                    } else {
+                        let message_index = 0;
+                        let message_new = '';
+
+                        for (const emote in emotes.sort((a, b) => { if (a.startIndex > b.startIndex) { return 1; } else { return -1; } })) {
+                            const el_emote = document.createElement('img');
+                            // The replace call is a workaround for FFZ emotes, see #35
+                            // https://github.com/izzy/stream-chat/issues/35#issuecomment-1484156496
+                            el_emote.src = emotes[emote].imageUrl.replace('https:https', 'https');;
+                            if (parseInt(config['ui']['emote_size']) > 0) {
+                                el_emote.style.height = `${config['ui']['emote_size']}`;
+                                el_emote.style.width = 'auto';
+                            }
+
+                            // Add the text before the emote to the message, html escaped
+                            // then add the emote as img element
+                            message_new +=
+                                htmlentities(message.substring(message_index, emotes[emote].startIndex))
+                                + el_emote.outerHTML;
+
+                            // This is the index of the next character after the emote
+                            // so we can continue the loop from there
+                            message_index = emotes[emote].endIndex + 1;
+                        }
+                        message_new += htmlentities(message.substring(message_index));
+                        message = message_new;
+                    }
+
+                    if (badges.length > 0) {
+                        badges = badges.map(badge => {
+                            return {
+                                url: badge["imageUrl"]
+                            };
+                        });
+                    }
+
+                    if (Highlights.Announcement === highlight) {
+                        message = '<span class="announcement">📢 Announcement: </span>' + message;
+                    }
+
+                    let color = get_color(author_color);
+                    add_message(msg_id, message, author, color, 0, badges, highlight);
+
+                    if (!core_enriched && !pluralmind_proxy && config['plugins']['pluralmind']['enabled'] === true) {
+                        pluralmind_promise
+                            .then((delayed_proxy) => {
+                                if (!delayed_proxy) {
+                                    return;
+                                }
+
+                                const proxied_author = {
+                                    name: delayed_proxy.member && delayed_proxy.member.name
+                                        ? delayed_proxy.member.name
+                                        : original_author,
+                                    id: user_id,
+                                    pronoun: delayed_proxy.pronouns
+                                        ? `(${delayed_proxy.pronouns})`
+                                        : author.pronoun,
+                                };
+                                const proxied_color = get_color(delayed_proxy.color || original_author_color);
+                                const proxied_message = htmlentities(delayed_proxy.body || original_message);
+
+                                update_twitch_message(msg_id, proxied_message, proxied_author, proxied_color);
+                            })
+                            .catch((error) => {
+                                console.warn('PluralMind delayed lookup failed; keeping normal chat rendering.', error);
+                            });
+                    }
+                },
+                'youtube': (message_id, user_id, user_name, message, timestamp, owner, moderator, sponsor,
+                    verified) => {
+                    // TODO: Add message
+                    // TODO: Add youtube logo as badge
+                    // TODO: Add badges for owner, moderator, sponsor, verified
+
+                    let author = {
+                        name: user_name,
+                        id: user_id,
+                        pronoun: false,
+                    }
+
+                    let color = get_user_color({
+                        r: 'FF',
+                        g: '00',
+                        b: '00'
+                    });
+                    let badges = [{
+                        'url': 'https://yt3.ggpht.com/IkpeJf1g9Lq0WNjvSa4XFq4LVNZ9IP5FKW8yywXb12djo1OGdJtziejNASITyq4L0itkMNw=w24-h24-c-k-nd'
+                    }];
+                    message = htmlentities(message);
+
+                    const yt_emote_width = '28';
+                    const yt_emote_height = '28';
+
+                    if (parseInt(config['ui']['emote_size']) > 0) {
+                        const yt_emote_width = config['ui']['emote_size'];
+                        const yt_emote_height = config['ui']['emote_size'];
+                    }
+
+                    const yt_emotes = {
+                        ':hand-pink-waving:': `https://yt3.ggpht.com/KOxdr_z3A5h1Gb7kqnxqOCnbZrBmxI2B_tRQ453BhTWUhYAlpg5ZP8IKEBkcvRoY8grY91Q=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-smiling:': `https://yt3.ggpht.com/cktIaPxFwnrPwn-alHvnvedHLUJwbHi8HCK3AgbHpphrMAW99qw0bDfxuZagSY5ieE9BBrA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-red-droopy-eyes:': `https://yt3.ggpht.com/oih9s26MOYPWC_uL6tgaeOlXSGBv8MMoDrWzBt-80nEiVSL9nClgnuzUAKqkU9_TWygF6CI=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-purple-crying:': `https://yt3.ggpht.com/g6_km98AfdHbN43gvEuNdZ2I07MmzVpArLwEvNBwwPqpZYzszqhRzU_DXALl11TchX5_xFE=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':text-green-game-over:': `https://yt3.ggpht.com/cr36FHhSiMAJUSpO9XzjbOgxhtrdJNTVJUlMJeOOfLOFzKleAKT2SEkZwbqihBqfTXYCIg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-turqouise-waving:': `https://yt3.ggpht.com/uNSzQ2M106OC1L3VGzrOsGNjopboOv-m1bnZKFGuh0DxcceSpYHhYbuyggcgnYyaF3o-AQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-green-smiling:': `https://yt3.ggpht.com/G061SAfXg2bmG1ZXbJsJzQJpN8qEf_W3f5cb5nwzBYIV58IpPf6H90lElDl85iti3HgoL3o=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-orange-frowning:': `https://yt3.ggpht.com/Ar8jaEIxzfiyYmB7ejDOHba2kUMdR37MHn_R39mtxqO5CD4aYGvjDFL22DW_Cka6LKzhGDk=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':eyes-purple-crying:': `https://yt3.ggpht.com/FrYgdeZPpvXs-6Mp305ZiimWJ0wV5bcVZctaUy80mnIdwe-P8HRGYAm0OyBtVx8EB9_Dxkc=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-fuchsia-wide-eyes:': `https://yt3.ggpht.com/zdcOC1SMmyXJOAddl9DYeEFN9YYcn5mHemJCdRFQMtDuS0V-IyE-5YjNUL1tduX1zs17tQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':cat-orange-whistling:': `https://yt3.ggpht.com/0ocqEmuhrKCK87_J21lBkvjW70wRGC32-Buwk6TP4352CgcNjL6ug8zcsel6JiPbE58xhq5g=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-wide-eyes:': `https://yt3.ggpht.com/2Ht4KImoWDlCddiDQVuzSJwpEb59nZJ576ckfaMh57oqz2pUkkgVTXV8osqUOgFHZdUISJM=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-orange-raised-eyebrow:': `https://yt3.ggpht.com/JbCfmOgYI-mO17LPw8e_ycqbBGESL8AVP6i7ZsBOVLd3PEpgrfEuJ9rEGpP_unDcqgWSCg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-fuchsia-tongue-out:': `https://yt3.ggpht.com/EURfJZi_heNulV3mfHzXBk8PIs9XmZ9lOOYi5za6wFMCGrps4i2BJX9j-H2gK6LIhW6h7sY=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-orange-biting-nails:': `https://yt3.ggpht.com/HmsXEgqUogkQOnL5LP_FdPit9Z909RJxby-uYcPxBLNhaPyqPTcGwvGaGPk2hzB_cC0hs_pV=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-red-heart-shape:': `https://yt3.ggpht.com/I0Mem9dU_IZ4a9cQPzR0pUJ8bH-882Eg0sDQjBmPcHA6Oq0uXOZcsjPvPbtormx91Ha2eRA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-fuchsia-poop-shape:': `https://yt3.ggpht.com/_xlyzvSimqMzhdhODyqUBLXIGA6F_d5en2bq-AIfc6fc3M7tw2jucuXRIo5igcW3g9VVe3A=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-purple-wide-eyes:': `https://yt3.ggpht.com/5RDrtjmzRQKuVYE_FKPUHiGh7TNtX5eSNe6XzcSytMsHirXYKunxpyAsVacTFMg0jmUGhQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':glasses-purple-yellow-diamond:': `https://yt3.ggpht.com/EnDBiuksboKsLkxp_CqMWlTcZtlL77QBkbjz_rLedMSDzrHmy_6k44YWFy2rk4I0LG6K2KI=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-pink-tears:': `https://yt3.ggpht.com/RL5QHCNcO_Mc98SxFEblXZt9FNoh3bIgsjm0Kj8kmeQJWMeTu7JX_NpICJ6KKwKT0oVHhAA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':body-blue-raised-arms:': `https://yt3.ggpht.com/2Jds3I9UKOfgjid97b_nlDU4X2t5MgjTof8yseCp7M-6ZhOhRkPGSPfYwmE9HjCibsfA1Uzo=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':hand-orange-covering-eyes:': `https://yt3.ggpht.com/y8ppa6GcJoRUdw7GwmjDmTAnSkeIkUptZMVQuFmFaTlF_CVIL7YP7hH7hd0TJbd8p9w67IM=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':trophy-yellow-smiling:': `https://yt3.ggpht.com/7tf3A_D48gBg9g2N0Rm6HWs2aqzshHU4CuVubTXVxh1BP7YDBRC6pLBoC-ibvr-zCl_Lgg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':eyes-pink-heart-shape:': `https://yt3.ggpht.com/5vzlCQfQQdzsG7nlQzD8eNjtyLlnATwFwGvrMpC8dgLcosNhWLXu8NN9qIS3HZjJYd872dM=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-turquoise-covering-eyes:': `https://yt3.ggpht.com/H2HNPRO8f4SjMmPNh5fl10okSETW7dLTZtuE4jh9D6pSmaUiLfoZJ2oiY-qWU3Owfm1IsXg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':hand-green-crystal-ball:': `https://yt3.ggpht.com/qZfJrWDEmR03FIak7PMNRNpMjNsCnOzD9PqK8mOpAp4Kacn_uXRNJNb99tE_1uyEbvgJReF2=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-turquoise-drinking-coffee:': `https://yt3.ggpht.com/myqoI1MgFUXQr5fuWTC9mz0BCfgf3F8GSDp06o1G7w6pTz48lwARjdG8vj0vMxADvbwA1dA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':body-green-covering-eyes:': `https://yt3.ggpht.com/UR8ydcU3gz360bzDsprB6d1klFSQyVzgn-Fkgu13dIKPj3iS8OtG1bhBUXPdj9pMwtM00ro=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':goat-turquoise-white-horns:': `https://yt3.ggpht.com/jMnX4lu5GnjBRgiPtX5FwFmEyKTlWFrr5voz-Auko35oP0t3-zhPxR3PQMYa-7KhDeDtrv4=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':hand-purple-blue-peace:': `https://yt3.ggpht.com/-sC8wj6pThd7FNdslEoJlG4nB9SIbrJG3CRGh7-bNV0RVfcrJuwiWHoUZ6UmcVs7sQjxTg4=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-question-mark:': `https://yt3.ggpht.com/Wx4PMqTwG3f4gtR7J9Go1s8uozzByGWLSXHzrh3166ixaYRinkH_F05lslfsRUsKRvHXrDk=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-covering-eyes:': `https://yt3.ggpht.com/kj3IgbbR6u-mifDkBNWVcdOXC-ut-tiFbDpBMGVeW79c2c54n5vI-HNYCOC6XZ9Bzgupc10=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-purple-smiling-fangs:': `https://yt3.ggpht.com/k1vqi6xoHakGUfa0XuZYWHOv035807ARP-ZLwFmA-_NxENJMxsisb-kUgkSr96fj5baBOZE=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-purple-sweating:': `https://yt3.ggpht.com/tRnrCQtEKlTM9YLPo0vaxq9mDvlT0mhDld2KI7e_nDRbhta3ULKSoPVHZ1-bNlzQRANmH90=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-purple-smiling-tears:': `https://yt3.ggpht.com/MJV1k3J5s0hcUfuo78Y6MKi-apDY5NVDjO9Q7hL8fU4i0cIBgU-cU4rq4sHessJuvuGpDOjJ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-star-eyes:': `https://yt3.ggpht.com/m_ANavMhp6cQ1HzX0HCTgp_er_yO2UA28JPbi-0HElQgnQ4_q5RUhgwueTpH-st8L3MyTA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-heart-eyes:': `https://yt3.ggpht.com/M9tzKd64_r3hvgpTSgca7K3eBlGuyiqdzzhYPp7ullFAHMgeFoNLA0uQ1dGxj3fXgfcHW4w=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-three-eyes:': `https://yt3.ggpht.com/nSQHitVplLe5uZC404dyAwv1f58S3PN-U_799fvFzq-6b3bv-MwENO-Zs1qQI4oEXCbOJg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-droopy-eyes:': `https://yt3.ggpht.com/hGPqMUCiXGt6zuX4dHy0HRZtQ-vZmOY8FM7NOHrJTta3UEJksBKjOcoE6ZUAW9sz7gIF_nk=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':planet-orange-purple-ring:': `https://yt3.ggpht.com/xkaLigm3P4_1g4X1JOtkymcC7snuJu_C5YwIFAyQlAXK093X0IUjaSTinMTLKeRZ6280jXg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-turquoise-speaker-shape:': `https://yt3.ggpht.com/WTFFqm70DuMxSC6ezQ5Zs45GaWD85Xwrd9Sullxt54vErPUKb_o0NJQ4kna5m7rvjbRMgr3A=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':octopus-red-waving:': `https://yt3.ggpht.com/L9Wo5tLT_lRQX36iZO_fJqLJR4U74J77tJ6Dg-QmPmSC_zhVQ-NodMRc9T0ozwvRXRaT43o=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':pillow-turquoise-hot-chocolate:': `https://yt3.ggpht.com/cAR4cehRxbn6dPbxKIb-7ShDdWnMxbaBqy2CXzBW4aRL3IqXs3rxG0UdS7IU71OEU7LSd20q=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':hourglass-purple-sand-orange:': `https://yt3.ggpht.com/MFDLjasPt5cuSM_tK5Fnjaz_k08lKHdX_Mf7JkI6awaHriC3rGL7J_wHxyG6PPhJ8CJ6vsQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':fish-orange-wide-eyes:': `https://yt3.ggpht.com/iQLKgKs7qL3091VHgVgpaezc62uPewy50G_DoI0dMtVGmQEX5pflZrUxWfYGmRfzfUOOgJs=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':popcorn-yellow-striped-smile:': `https://yt3.ggpht.com/TW_GktV5uVYviPDtkCRCKRDrGlUc3sJ5OHO81uqdMaaHrIQ5-sXXwJfDI3FKPyv4xtGpOlg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':penguin-blue-waving-tear:': `https://yt3.ggpht.com/p2u7dcfZau4_bMOMtN7Ma8mjHX_43jOjDwITf4U9adT44I-y-PT7ddwPKkfbW6Wx02BTpNoC=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':clock-turquoise-looking-up:': `https://yt3.ggpht.com/tDnDkDZykkJTrsWEJPlRF30rmbek2wcDcAIymruOvSLTsUFIZHoAiYTRe9OtO-80lDfFGvo=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-red-smiling-live:': `https://yt3.ggpht.com/14Pb--7rVcqnHvM7UlrYnV9Rm4J-uojX1B1kiXYvv1my-eyu77pIoPR5sH28-eNIFyLaQHs=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':hands-yellow-heart-red:': `https://yt3.ggpht.com/qWSu2zrgOKLKgt_E-XUP9e30aydT5aF3TnNjvfBL55cTu1clP8Eoh5exN3NDPEVPYmasmoA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':volcano-green-lava-orange:': `https://yt3.ggpht.com/_IWOdMxapt6IBY5Cb6LFVkA3J77dGQ7P2fuvYYv1-ahigpVfBvkubOuGLSCyFJ7jvis-X8I=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-turquoise-waving-speech:': `https://yt3.ggpht.com/gafhCE49PH_9q-PuigZaDdU6zOKD6grfwEh1MM7fYVs7smAS_yhYCBipq8gEiW73E0apKTzi=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-orange-tv-shape:': `https://yt3.ggpht.com/EVK0ik6dL5mngojX9I9Juw4iFh053emP0wcUjZH0whC_LabPq-DZxN4Jg-tpMcEVfJ0QpcJ4=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-blue-spam-shape:': `https://yt3.ggpht.com/hpwvR5UgJtf0bGkUf8Rn-jTlD6DYZ8FPOFY7rhZZL-JHj_7OPDr7XUOesilRPxlf-aW42Zg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-fuchsia-flower-shape:': `https://yt3.ggpht.com/o9kq4LQ0fE_x8yxj29ZeLFZiUFpHpL_k2OivHbjZbttzgQytU49Y8-VRhkOP18jgH1dQNSVz=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-blue-holding-pencil:': `https://yt3.ggpht.com/TKgph5IHIHL-A3fgkrGzmiNXzxJkibB4QWRcf_kcjIofhwcUK_pWGUFC4xPXoimmne3h8eQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':body-turquoise-yoga-pose:': `https://yt3.ggpht.com/GW3otW7CmWpuayb7Ddo0ux5c-OvmPZ2K3vaytJi8bHFjcn-ulT8vcHMNcqVqMp1j2lit2Vw=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':location-yellow-teal-bars:': `https://yt3.ggpht.com/YgeWJsRspSlAp3BIS5HMmwtpWtMi8DqLg9fH7DwUZaf5kG4yABfE1mObAvjCh0xKX_HoIR23=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-turquoise-writing-headphones:': `https://yt3.ggpht.com/DC4KrwzNkVxLZa2_KbKyjZTUyB9oIvH5JuEWAshsMv9Ctz4lEUVK0yX5PaMsTK3gGS-r9w=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-turquoise-wizard-wand:': `https://yt3.ggpht.com/OiZeNvmELg2PQKbT5UCS0xbmsGbqRBSbaRVSsKnRS9gvJPw7AzPp-3ysVffHFbSMqlWKeQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-blue-eating-spaghetti:': `https://yt3.ggpht.com/AXZ8POmCHoxXuBaRxX6-xlT5M-nJZmO1AeUNo0t4o7xxT2Da2oGy347sHpMM8shtUs7Xxh0=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-turquoise-music-note:': `https://yt3.ggpht.com/-K6oRITFKVU8V4FedrqXGkV_vTqUufVCQpBpyLK6w3chF4AS1kzT0JVfJxhtlfIAw5jrNco=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-pink-swaying-hair:': `https://yt3.ggpht.com/L8cwo8hEoVhB1k1TopQaeR7oPTn7Ypn5IOae5NACgQT0E9PNYkmuENzVqS7dk2bYRthNAkQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-blue-speaking-microphone:': `https://yt3.ggpht.com/FMaw3drKKGyc6dk3DvtHbkJ1Ki2uD0FLqSIiFDyuChc1lWcA9leahX3mCFMBIWviN2o8eyc=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':rocket-red-countdown-liftoff:': `https://yt3.ggpht.com/lQZFYAeWe5-SJ_fz6dCAFYz1MjBnEek8DvioGxhlj395UFTSSHqYAmfhJN2i0rz3fDD5DQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-purple-rain-drops:': `https://yt3.ggpht.com/woHW5Jl2RD0qxijnl_4vx4ZhP0Zp65D4Ve1DM_HrwJW-Kh6bQZoRjesGnEwjde8F4LynrQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-pink-drinking-tea:': `https://yt3.ggpht.com/WRLIgKpnClgYOZyAwnqP-Edrdxu6_N19qa8gsB9P_6snZJYIMu5YBJX8dlM81YG6H307KA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-purple-stage-event:': `https://yt3.ggpht.com/YeVVscOyRcDJAhKo2bMwMz_B6127_7lojqafTZECTR9NSEunYO5zEi7R7RqxBD7LYLxfNnXe=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':face-purple-open-box:': `https://yt3.ggpht.com/7lJM2sLrozPtNLagPTcN0xlcStWpAuZEmO2f4Ej5kYgSp3woGdq3tWFrTH30S3mD2PyjlQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-yellow-podium-blue:': `https://yt3.ggpht.com/N28nFDm82F8kLPAa-jY_OySFsn3Ezs_2Bl5kdxC8Yxau5abkj_XZHYsS3uYKojs8qy8N-9w=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':baseball-white-cap-out:': `https://yt3.ggpht.com/8DaGaXfaBN0c-ZsZ-1WqPJ6H9TsJOlUUQQEoXvmdROphZE9vdRtN0867Gb2YZcm2x38E9Q=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':whistle-red-blow:': `https://yt3.ggpht.com/DBu1ZfPJTnX9S1RyKKdBY-X_CEmj7eF6Uzl71j5jVBz5y4k9JcKnoiFtImAbeu4u8M2X8tU=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-turquoise-crowd-surf:': `https://yt3.ggpht.com/Q0wFvHZ5h54xGSTo-JeGst6InRU3yR6NdBRoyowaqGY66LPzdcrV2t-wBN21kBIdb2TeNA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':finger-red-number-one:': `https://yt3.ggpht.com/Hbk0wxBzPTBCDvD_y4qdcHL5_uu7SeOnaT2B7gl9GLB4u8Ecm9OaXCGSMMUBFeNGl5Q3fHJ2=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':text-yellow-goal:': `https://yt3.ggpht.com/tnHp8rHjXecGbGrWNcs7xss_aVReaYE6H-QWRCXYg_aaYszHXnbP_pVADnibUiimspLvgX0L=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':medal-yellow-first-red:': `https://yt3.ggpht.com/EEHiiIalCBKuWDPtNOjjvmEZ-KRkf5dlgmhe5rbLn8aZQl-pNz_paq5UjxNhCrI019TWOQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':person-blue-wheelchair-race:': `https://yt3.ggpht.com/ZepxPGk5TwzrKAP9LUkzmKmEkbaF5OttNyybwok6mJENw3p0lxDXkD1X2_rAwGcUM0L-D04=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':card-red-penalty:': `https://yt3.ggpht.com/uRDUMIeAHnNsaIaShtRkQ6hO0vycbNH_BQT7i3PWetFJb09q88RTjxwzToBy9Cez20D7hA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':stopwatch-blue-hand-timer:': `https://yt3.ggpht.com/DCvefDAiskRfACgolTlvV1kMfiZVcG50UrmpnRrg3k0udFWG2Uo9zFMaJrJMSJYwcx6fMgk=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':yt:': `https://yt3.ggpht.com/IkpeJf1g9Lq0WNjvSa4XFq4LVNZ9IP5FKW8yywXb12djo1OGdJtziejNASITyq4L0itkMNw=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':oops:': `https://yt3.ggpht.com/PFoVIqIiFRS3aFf5-bt_tTC0WrDm_ylhF4BKKwgqAASNb7hVgx_adFP-XVhFiJLXdRK0EQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':buffering:': `https://yt3.ggpht.com/5gfMEfdqO9CiLwhN9Mq7VI6--T2QFp8AXNNy5Fo7btfY6fRKkThWq35SCZ6SPMVCjg-sUA=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':stayhome:': `https://yt3.ggpht.com/_1FGHypiub51kuTiNBX1a0H3NyFih3TnHX7bHU06j_ajTzT0OQfMLl9RI1SiQoxtgA2Grg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':dothefive:': `https://yt3.ggpht.com/-nM0DOd49969h3GNcl705Ti1fIf1ZG_E3JxcOUVV-qPfCW6jY8xZ98caNLHkVSGRTSEb7Y9y=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':elbowbump:': `https://yt3.ggpht.com/2ou58X5XuhTrxjtIM2wew1f-HKRhN_T5SILQgHE-WD9dySzzJdGwL4R1gpKiJXcbtq6sjQ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':goodvibes:': `https://yt3.ggpht.com/2CvFOwgKpL29mW_C51XvaWa7Eixtv-3tD1XvZa1_WemaDDL2AqevKbTZ1rdV0OWcnOZRag=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':thanksdoc:': `https://yt3.ggpht.com/bUnO_VwXW2hDf-Da8D64KKv6nBJDYUBuo13RrOg141g2da8pi9-KClJYlUDuqIwyPBfvOO8=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':videocall:': `https://yt3.ggpht.com/k5v_oxUzRWmTOXP0V6WJver6xdS1lyHMPcMTfxn23Md6rmixoR5RZUusFbZi1uZwjF__pv4=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':virtualhug:': `https://yt3.ggpht.com/U1TjOZlqtS58NGqQhE8VWDptPSrmJNkrbVRp_8jI4f84QqIGflq2Ibu7YmuOg5MmVYnpevc=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':yougotthis:': `https://yt3.ggpht.com/s3uOe4lUx3iPIt1h901SlMp_sKCTp3oOVj1JV8izBw_vDVLxFqk5dq-3NX-nK_gnUwVEXld3=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':sanitizer:': `https://yt3.ggpht.com/EJ_8vc4Gl-WxCWBurHwwWROAHrPzxgePodoNfkRY1U_I8L1O2zlqf7-wfUtTeyzq2qHNnocZ=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':takeout:': `https://yt3.ggpht.com/FizHI5IYMoNql9XeP7TV3E0ffOaNKTUSXbjtJe90e1OUODJfZbWU37VqBbTh-vpyFHlFIS0=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':hydrate:': `https://yt3.ggpht.com/tpgZgmhX8snKniye36mnrDVfTnlc44EK92EPeZ0m9M2EPizn1vKEGJzNYdp7KQy6iNZlYDc1=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':chillwcat:': `https://yt3.ggpht.com/y03dFcPc1B7CO20zgQYzhcRPka5Bhs6iSg57MaxJdhaLidFvvXBLf_i4_SHG7zJ_2VpBMNs=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':chillwdog:': `https://yt3.ggpht.com/Ir9mDxzUi0mbqyYdJ3N9Lq7bN5Xdt0Q7fEYFngN3GYAcJT_tccH1as1PKmInnpt2cbWOam4=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':elbowcough:': `https://yt3.ggpht.com/DTR9bZd1HOqpRJyz9TKiLb0cqe5Hb84Yi_79A6LWlN1tY-5kXqLDXRmtYVKE9rcqzEghmw=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':learning:': `https://yt3.ggpht.com/ZuBuz8GAQ6IEcQc7CoJL8IEBTYbXEvzhBeqy1AiytmhuAT0VHjpXEjd-A5GfR4zDin1L53Q=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':washhands:': `https://yt3.ggpht.com/qXUeUW0KpKBc9Z3AqUqr_0B7HbW1unAv4qmt7-LJGUK_gsFBIaHISWJNt4n3yvmAnQNZHE-u=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':socialdist:': `https://yt3.ggpht.com/igBNi55-TACUi1xQkqMAor-IEXmt8He56K7pDTG5XoTsbM-rVswNzUfC5iwnfrpunWihrg=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`,
+                        ':shelterin:': `https://yt3.ggpht.com/gjC5x98J4BoVSEPfFJaoLtc4tSBGSEdIlfL2FV4iJG9uGNykDP9oJC_QxAuBTJy6dakPxVeC=w${yt_emote_width}-h${yt_emote_height}-c-k-nd`
+                    };
+
+                    for (const e in yt_emotes) {
+                        let el_emote = document.createElement('img');
+                        el_emote.src = yt_emotes[e];
+                        el_emote.style = `height: ${yt_emote_height}px; width: ${yt_emote_width}px;`;
+
+                        message = message.replaceAll(e, el_emote.outerHTML);
+                    }
+
+                    add_message(message_id, message, author, color, timestamp, badges, Highlights.None);
+                }
+            },
+        }
+
+        let BeanBot = {
+            'message': {
+                'twitch': (message) => {
+                    console.log(message);
+                }
+            }
+        }
+
+        /**
+         * Checks if a message should be skipped.
+         * @param {string} message The message to check
+         * @param {string} user The user name to check
+         * @returns {boolean} True if the message should be skipped, false otherwise
+         */
+        function skip_message(message, user) {
+            if ((config['exclusion']['cmdprefix'] !== false && message.startsWith(config['exclusion']['cmdprefix'])) ||
+                (config['exclusion']['bots'].includes(user.toLowerCase()))) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function remove_old_messages() {
+            let chat = document.getElementById('chat');
+            let messages = chat.getElementsByClassName('chat-message');
+            let messages_to_remove = [];
+
+            // Remove old messages when there are more than the max_messages setting
+            if (config['ui']['max_messages'] !== false) {
+                let max_messages = config['ui']['max_messages'];
+                if (messages.length > max_messages) {
+                    for (let i = 0; i < messages.length - max_messages; i++) {
+                        messages_to_remove.push(messages[i]);
+                    }
+                }
+            }
+
+            for (let i = 0; i < messages.length; i++) {
+
+                // Remove messages that are outside the bounding box
+                // bottom when vertical scrolling is enabled,
+                // right when horizontal scrolling is enabled
+                if ((config['ui']['direction'] === 'vertical' && messages[i].getBoundingClientRect().bottom < 0) ||
+                    (config['ui']['direction'] === 'horizontal' && messages[i].getBoundingClientRect().right < 0)
+                ) {
+                    messages_to_remove.push(messages[i]);
+                }
+
+                // Remove messages that are older than the max age (fade_duration)
+                else if (parseInt(config['ui']['fade_duration']) > 0 && window.getComputedStyle(messages[i]).opacity ===
+                    "0") {
+                    messages_to_remove.push(messages[i]);
+                }
+            }
+
+            for (let message of messages_to_remove) {
+                chat.removeChild(message);
+            }
+        }
+
+        function remove_messages_by_user_id(user_id) {
+            console.debug('Removing messages by user id: ' + user_id);
+
+            let chat = document.getElementById('chat');
+            let messages = chat.getElementsByClassName('chat-message');
+            let messages_to_remove = [];
+
+            for (let i = 0; i < messages.length; i++) {
+                if (String(messages[i].dataset.userId) === String(user_id)) {
+                    messages_to_remove.push(messages[i]);
+                }
+            }
+
+            for (let message of messages_to_remove) {
+                chat.removeChild(message);
+            }
+        }
+
+        function remove_messages_by_message_id(message_id) {
+            console.debug('Removing messages by message id: ' + message_id);
+
+            let chat = document.getElementById('chat');
+            let messages = chat.getElementsByClassName('chat-message');
+            let messages_to_remove = [];
+
+            for (let i = 0; i < messages.length; i++) {
+                if (messages[i].id === message_id) {
+                    messages_to_remove.push(messages[i]);
+                }
+            }
+
+            for (let message of messages_to_remove) {
+                chat.removeChild(message);
+            }
+        }
+
+        function initializeTheme() {
+            // Set up the UI
+            if (config['ui']['bubbles']['enabled'] === true) {
+                document.getElementById('enable-bubbles').removeAttribute('type');
+            }
+
+            if (config['ui']['direction'] === 'horizontal') {
+                document.getElementById('enable-horizontal').removeAttribute('type');
+            }
+
+            if (config['ui']['bubbles']['enabled'] === true && config['ui']['direction'] === 'horizontal') {
+                document.getElementById('horizontal-bubbles').removeAttribute('type');
+            }
+
+            // Create a new CSS style element and add it to the DOM
+            const customStyle = document.getElementById('user-styles').sheet;
+
+            // Function to add a new rule to the custom style element if the user
+            // configuration has a value for it
+            function addCSSRule(config_item, selector, op, important = false) {
+                if (config_item != null) {
+                    // If we deal with a color, convert it to normalized hex value
+                    if (op.includes('color')) {
+                        config_item = get_color_hex(config_item);
+                    }
+
+                    // Add !important to the end of the rule if we need to
+                    // This must happen *after* the color conversion above
+                    if (important === true) {
+                        config_item += ' !important';
+                    }
+
+                    // Add the rule to the style element
+                    customStyle.insertRule(`${selector} { ${op}: ${config_item}; }`);
+                    console.debug(`Added CSS rule: ${selector} { ${op}: ${config_item}; }`)
+                }
+            }
+
+            // Add the custom CSS defined by the user configuration to the style element
+            // we defined above
+
+            // We define some variables to make the code and reduce mistakes made
+            // with class names
+            let announce = ".announcement",
+                message = ".chat-message",
+                username = ".msg-user",
+                bubble = ".bubble",
+                highlight = ".highlight";
+
+            // Rules for sizes and fonts
+            addCSSRule(config['ui']['font']['family'], 'body', 'font-family');
+            addCSSRule(config['ui']['font']['size'], 'body', 'font-size');
+            addCSSRule(config['ui']['emote_size'], `${message} > img`, 'width');
+
+            // Rules for colors
+            //addCSSRule(config['ui']['colors']['default'], `${message}.defaultcolor`, 'color');
+            addCSSRule(config['ui']['colors']['page_background'], 'body', 'background-color');
+
+            // Some colors are applied to different elements depending on the bubble settings
+            if (config['ui']['bubbles']['enabled'] === true) {
+                addCSSRule(config['ui']['colors']['bubble_border'], bubble, 'border-color');
+                addCSSRule(config['ui']['bubbles']['border']['radius'], bubble, 'border-radius');
+                addCSSRule(config['ui']['bubbles']['border']['size'], bubble, 'border-width');
+
+                addCSSRule(config['ui']['colors']['text_background'], username, 'background-color');
+                addCSSRule(config['ui']['colors']['message'], message, 'color');
+                addCSSRule(config['ui']['colors']['text'], username, 'color');
+            } else {
+                addCSSRule(config['ui']['colors']['text'], `${message}:not(${highlight}, ${announce}) ${username}`, 'color', true);
+                addCSSRule(config['ui']['colors']['message'], `${message}:not(${highlight}, ${announce})`, 'color', true);
+            }
+
+            // Rules for animations
+            addCSSRule(config['ui']['fade_duration'], message, "transition: max-height 0.3s ease-out; animation: chat 1s ease " + config['ui']['fade_duration'] + "s 1 normal forwards; margin-left: 0.5rem; float: left;");
+
+            // Rules for announcements
+            addCSSRule(config['ui']['colors']['announcement']['text'], announce, 'color', true);
+            addCSSRule(config['ui']['colors']['announcement']['text'], `${announce} ${username}`, 'color', true);
+            addCSSRule(config['ui']['colors']['announcement']['background'], announce, 'background-color');
+
+            // Rules for highlights
+            addCSSRule(config['ui']['colors']['highlight']['text'], highlight, 'color', true);
+            addCSSRule(config['ui']['colors']['highlight']['text'], `${highlight} ${username}`, 'color', true);
+            addCSSRule(config['ui']['colors']['highlight']['background'], highlight, 'background-color');
+
+        }
+
+        let chatCoreSource = null;
+        let chatCoreActive = false;
+        const pendingChatCoreMessages = new Map();
+        const seenCoreMessages = new Map();
+        function markCore(id) { seenCoreMessages.set(id,Date.now()); while(seenCoreMessages.size>2000)seenCoreMessages.delete(seenCoreMessages.keys().next().value); }
+        function projectCore(payload) {
+            if(payload.pluralmind && !config.plugins.pluralmind.enabled) payload={...payload,user:{...payload.originalUser,pronouns:payload.normalPronouns || ""},text:payload.originalText,emotes:payload.originalEmotes || []};
+            if(!config.ui.pronouns)payload={...payload,user:{...payload.user,pronouns:""}};
+            return payload;
+        }
+
+        function renderChatCoreMessage(payload) {
+            if (!payload || !payload.messageId || !payload.user) {
+                return;
+            }
+            if(!window.CHAT_CORE_DEFAULTS.enabled) return;
+            if(skip_message(payload.originalText ?? payload.text,payload.originalUser?.displayName || payload.user.displayName))return;
+            payload=projectCore(payload);
+            if(payload.platform==='youtube') { if(config.plugins.streamerbot.youtube)StreamerBot.message.youtube(payload.messageId,payload.user.id,payload.user.displayName,payload.text,payload.isBroadcaster,payload.isModerator,payload.isSubscriber,payload.isVerified); setTimeout(remove_old_messages,400); return; }
+            if(!config.plugins.streamerbot.twitch || (payload.messageType==='announcement' && !config.ui.announcements))return;
+            const highlight = payload.messageType === 'announcement'
+                ? Highlights.Announcement
+                : (payload.isHighlighted ? Highlights.Highlight : Highlights.None);
+            StreamerBot['message']['twitch'](
+                payload.messageId,
+                payload.user.id,
+                payload.user.displayName,
+                payload.user.colour,
+                payload.text,
+                payload.emotes || [],
+                payload.role || 0,
+                payload.badges || [],
+                highlight,
+                payload.user.pronouns || false,
+                payload.user.login || false,
+                true
+            );
+        }
+
+        function formatCoreText(payload) {
+            let result="",position=0;
+            for(const emote of [...(payload.emotes||[])].sort((a,b)=>a.startIndex-b.startIndex)) {
+                if(!Number.isInteger(emote.startIndex)||!Number.isInteger(emote.endIndex)||emote.startIndex<position||emote.endIndex>=payload.text.length)continue;
+                let url;try{url=new URL(emote.imageUrl);}catch(_){continue;}if(url.protocol!=="https:")continue;
+                const img=document.createElement("img");img.src=url.href;img.style.height=config.ui.emote_size;img.style.width="auto";
+                result+=htmlentities(payload.text.slice(position,emote.startIndex))+img.outerHTML;position=emote.endIndex+1;
+            }
+            result+=htmlentities(payload.text.slice(position));
+            return payload.messageType==="announcement"?'<span class="announcement">📢 Announcement: </span>'+result:result;
+        }
+
+        function updateChatCoreMessage(payload) {
+            payload=projectCore(payload);
+            if (!payload || !payload.messageId || !payload.user) {
+                return;
+            }
+            const author = {
+                name: payload.user.displayName,
+                id: payload.user.id,
+                pronoun: payload.user.pronouns ? `(${payload.user.pronouns})` : false,
+            };
+            update_twitch_message(
+                payload.messageId,
+                formatCoreText(payload),
+                author,
+                get_color(payload.user.colour)
+            );
+        }
+
+        function queueChatCoreMessage(payload) {
+            if (!payload || !payload.messageId) {
+                return;
+            }
+            if(!window.CHAT_CORE_DEFAULTS.enabled || seenCoreMessages.has(payload.messageId))return;
+            markCore(payload.messageId);
+            const configuredDelay = Number(config['plugins']['chatcore']['display_delay_ms']);
+            const delay = Number.isFinite(configuredDelay) ? Math.max(0, Math.min(1000, configuredDelay)) : 200;
+            const pending = { payload, timer: null };
+            pending.timer = setTimeout(() => {
+                if (pendingChatCoreMessages.get(payload.messageId) !== pending) {
+                    return;
+                }
+                pendingChatCoreMessages.delete(payload.messageId);
+                renderChatCoreMessage(pending.payload);
+                setTimeout(remove_old_messages,400);
+            }, delay);
+            const previous = pendingChatCoreMessages.get(payload.messageId);
+            if (previous) clearTimeout(previous.timer);
+            pendingChatCoreMessages.set(payload.messageId, pending);
+        }
+
+        function receiveChatCoreUpdate(payload) {
+            const pending = payload && pendingChatCoreMessages.get(payload.messageId);
+            if (pending) {
+                pending.payload = payload;
+                return;
+            }
+            updateChatCoreMessage(payload);
+        }
+
+        function deleteChatCoreMessage(messageId) {
+            markCore(messageId);
+            const pending = pendingChatCoreMessages.get(messageId);
+            if (pending) {
+                clearTimeout(pending.timer);
+                pendingChatCoreMessages.delete(messageId);
+            }
+            remove_messages_by_message_id(messageId);
+        }
+
+        // One service-owned feed; EventSource reconnects without opening parallel bot sockets.
+        function initializeConnections() {
+            if (chatCoreSource) return;
+            chatCoreSource = new EventSource('/api/chat-core/events');
+            const receive = (event, handler) => { try { handler(JSON.parse(event.data)); } catch (_) {} };
+            chatCoreSource.addEventListener('ready', event => receive(event, data => applyCoreConfiguration(data.config)));
+            chatCoreSource.addEventListener('configuration', event => receive(event, applyCoreConfiguration));
+            chatCoreSource.addEventListener('message', event => receive(event, queueChatCoreMessage));
+            chatCoreSource.addEventListener('message-update', event => receive(event, receiveChatCoreUpdate));
+            chatCoreSource.addEventListener('message-delete', event => receive(event, data => deleteChatCoreMessage(data.messageId)));
+            chatCoreSource.addEventListener('user-delete', event => receive(event, data => {
+                for (const [id,pending] of pendingChatCoreMessages) if(pending.payload.user?.id === data.userId) deleteChatCoreMessage(id);
+                remove_messages_by_user_id(data.userId);
+            }));
+            chatCoreSource.addEventListener('chat-clear', event => receive(event, data => {
+                if(data.synthetic) {
+                    for(const [id,pending] of pendingChatCoreMessages)if(id.startsWith('twitch:test-'))deleteChatCoreMessage(id);
+                    for(const node of document.querySelectorAll('.chat-message'))if(node.id.startsWith('twitch:test-'))node.remove();
+                    return;
+                }
+                for(const [id,pending] of pendingChatCoreMessages)if(!data.platform||id.startsWith(data.platform+':'))deleteChatCoreMessage(id);
+                for(const node of document.querySelectorAll('.chat-message'))if(!data.platform||node.id.startsWith(data.platform+':'))node.remove();
+            }));
+            // Connection details belong in Settings, never in the live picture.
+            chatCoreSource.onerror = () => {};
+        }
+        function applyCoreConfiguration(value) {
+            if (!value) return;
+            window.CHAT_CORE_DEFAULTS = {...window.CHAT_CORE_DEFAULTS,...value};
+            if(!value.enabled) {
+                for(const pending of pendingChatCoreMessages.values())clearTimeout(pending.timer);
+                pendingChatCoreMessages.clear();document.getElementById('chat').replaceChildren();
+            }
+        }
+        applyCoreConfiguration(window.CHAT_CORE_DEFAULTS);
+
+        initializeTheme();
+        setInterval(remove_old_messages,1000);
+        if (config["debug"] === true) {
+            // Debugging is used in the Overlay generator live preview
+            const messages = [
+                "Are you a robot?",
+                "How are you?",
+                "Happy birthday!",
+            ];
+
+            const badges = [
+                [{
+                    "name": "vip",
+                    "version": "1",
+                    "imageUrl": "https://static-cdn.jtvnw.net/badges/v1/b817aba4-fad8-49e2-b88a-7cc744dfa6ec/3"
+                },
+                {
+                    "name": "subscriber",
+                    "version": "0",
+                    "imageUrl": "https://static-cdn.jtvnw.net/badges/v1/5d9f2208-5dd8-11e7-8513-2ff4adfae661/3"
+                }
+                ],
+                [{
+                    "name": "premium",
+                    "version": "1",
+                    "imageUrl": "https://static-cdn.jtvnw.net/badges/v1/bbbe0db0-a598-423e-86d0-f9fb98ca1933/3"
+                }],
+                [{
+                    "name": "broadcaster",
+                    "version": "1",
+                    "imageUrl": "https://static-cdn.jtvnw.net/badges/v1/5527c58c-fb7d-422d-b71b-f309dcb85cc1/3"
+                },
+                {
+                    "name": "subscriber",
+                    "version": "0",
+                    "imageUrl": "https://static-cdn.jtvnw.net/badges/v1/5d9f2208-5dd8-11e7-8513-2ff4adfae661/3"
+                },
+                {
+                    "name": "glhf-pledge",
+                    "version": "1",
+                    "imageUrl": "https://static-cdn.jtvnw.net/badges/v1/3158e758-3cb4-43c5-94b3-7639810451c5/3"
+                }
+                ]
+            ]
+            const emotes = [{
+                id: "555555597",
+                type: "Twitch",
+                name: ";p",
+                startIndex: 3,
+                endIndex: 4,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555597/default/dark/2.0",
+            },
+            {
+                id: "555555593",
+                type: "Twitch",
+                name: ":p",
+                startIndex: 6,
+                endIndex: 7,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555593/default/dark/2.0",
+            },
+            {
+                id: "555555562",
+                type: "Twitch",
+                name: ">(",
+                startIndex: 12,
+                endIndex: 13,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555562/default/dark/2.0",
+            },
+            {
+                id: "555555563",
+                type: "Twitch",
+                name: ":|",
+                startIndex: 15,
+                endIndex: 16,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555563/default/dark/2.0",
+            },
+            {
+                id: "6",
+                type: "Twitch",
+                name: "O_o",
+                startIndex: 18,
+                endIndex: 20,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/6/default/dark/2.0",
+            },
+            {
+                id: "555555557",
+                type: "Twitch",
+                name: ":-)",
+                startIndex: 33,
+                endIndex: 35,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555557/default/dark/2.0",
+            },
+            {
+                id: "555555599",
+                type: "Twitch",
+                name: "R)",
+                startIndex: 0,
+                endIndex: 1,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555599/default/dark/2.0",
+            },
+            {
+                id: "555555589",
+                type: "Twitch",
+                name: ";)",
+                startIndex: 9,
+                endIndex: 10,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555589/default/dark/2.0",
+            },
+            {
+                id: "555555578",
+                type: "Twitch",
+                name: "B-)",
+                startIndex: 22,
+                endIndex: 24,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555578/default/dark/2.0",
+            },
+            {
+                id: "555555580",
+                type: "Twitch",
+                name: ":O",
+                startIndex: 26,
+                endIndex: 27,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555580/default/dark/2.0",
+            },
+            {
+                id: "555555559",
+                type: "Twitch",
+                name: ":-(",
+                startIndex: 29,
+                endIndex: 31,
+                imageUrl: "https://static-cdn.jtvnw.net/emoticons/v2/555555559/default/dark/2.0",
+            },
+            ];
+
+            const names = [
+                "Taylor Garcia",
+                "Ellen Schwartz",
+                "Rebecca Mcintosh",
+                "Journey Robles",
+                "Rhett Acosta",
+                "Logan Burnett",
+                "Rigoberto Robertson",
+                "Keshawn Miles",
+                "Cyrus Ball",
+                "Janet Braun",
+                "Hadassah Bennett",
+                "Joanna Cole",
+            ];
+
+            const colors = [{
+                r: "B0",
+                g: "BF",
+                b: "1A"
+            },
+            {
+                r: "00",
+                g: "48",
+                b: "BA"
+            },
+            {
+                r: "7C",
+                g: "B9",
+                b: "E8"
+            },
+            {
+                r: "C0",
+                g: "E8",
+                b: "D5"
+            },
+            {
+                r: "B2",
+                g: "84",
+                b: "BE"
+            },
+            {
+                r: "72",
+                g: "A0",
+                b: "C1"
+            },
+            {
+                r: "DB",
+                g: "2D",
+                b: "43"
+            },
+            {
+                r: "ED",
+                g: "EA",
+                b: "E0"
+            },
+            {
+                r: "C4",
+                g: "62",
+                b: "10"
+            },
+            {
+                r: "F0",
+                g: "F8",
+                b: "FF"
+            },
+            {
+                r: "EF",
+                g: "DE",
+                b: "CD"
+            },
+            {
+                r: "9F",
+                g: "2B",
+                b: "68"
+            },
+            {
+                r: "E5",
+                g: "2B",
+                b: "50"
+            },
+            {
+                r: "AB",
+                g: "27",
+                b: "4F"
+            },
+            {
+                r: "F1",
+                g: "9C",
+                b: "BB"
+            },
+            {
+                r: "3B",
+                g: "7A",
+                b: "57"
+            },
+            {
+                r: "D3",
+                g: "21",
+                b: "2D"
+            },
+                null,
+            ];
+
+            setInterval(() => {
+                let pronoun = "";
+                if (pronouns) {
+                    const rnd = getRnd(pronouns.length - 1);
+                    pronoun = pronouns[rnd].display;
+                }
+                let messagesEmote;
+                let username = names[getRnd(names.length - 1)];
+                const message = (() => {
+                    let message = messages[getRnd(messages.length - 1)];
+                    if (!!getRnd(1)) {
+                        messagesEmote = Array(getRnd(10)).fill(undefined).map(() => {
+                            return emotes[getRnd(emotes.length - 1)];
+                        });
+                        messagesEmote.forEach(({
+                            name
+                        }) => {
+                            message = `${message} ${name}`;
+                        });
+                    }
+                    return message;
+                })();
+
+                if (skip_message(message, username) === true) {
+                    return;
+                }
+
+                if (Math.random() < 0.5 &&
+                    config["plugins"]["streamerbot"]["enabled"] === true &&
+                    config["plugins"]["streamerbot"]["twitch"] === true) {
+                    let highlightkeys = Object.keys(Highlights);
+                    StreamerBot["message"]["twitch"](
+                        String(Math.random()),
+                        Math.floor(Math.random() * 10000000),
+                        username,
+                        get_color_hex(colors[getRnd(colors.length - 1)]),
+                        message,
+                        messagesEmote,
+                        getRnd(4, 0),
+                        badges[getRnd(badges.length - 1)],
+                        Highlights[highlightkeys[highlightkeys.length * Math.random() << 0]],
+                        pronoun
+                    );
+                } else if (config["plugins"]["streamerbot"]["enabled"] === true && config["plugins"]["streamerbot"]["youtube"] === true) {
+                    StreamerBot["message"]["youtube"](String(Math.random()), Math.floor(Math.random() *
+                        10000000), username, message, 0, false, false, false, false);
+                }
+
+                remove_old_messages();
+            }, 2000);
+        } else {
+            initializeConnections();
+        }
+
+        if (config["version"]["check"] === true && config["debug"] === false) {
+            version_check().then(version => {
+                let version_el = document.getElementById("version-notice");
+                let message = '';
+                let display = 'none';
+                let timeout = 60000;
+
+                console.log(version);
+                if (version.upToDate === false) {
+                    display = "block";
+                    message = `You are using version ${STREAMCHAT_VERSION} of ${STREAMCHAT_GH_REPO}.` +
+                        `There is a new version available. Please update to the latest version ${version.version}.`;
+                } else if (version.error) {
+                    display = "block";
+                    message = `There was an error checking for updates. Error: ${version.error}`;
+                    timeout = 10000;
+                }
+
+                if (config["version"]["alert"] === true && message !== '') {
+                    alert(message);
+                } else {
+                    version_el.style.display = display;
+                    version_el.innerHTML = message;
+
+                    setTimeout(() => {
+                        version_el.style.display = "none";
+                    }, timeout);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

@@ -2,7 +2,7 @@
 
 User priorities recorded 2026-11-05. Numbers match the feature list shown in chat. All listed features are vital except 11/22 (later) and 18 (drop). Writing Challenge remains separately parked and is excluded from this list.
 
-There are 24 vital features: six already have published modules, and 18 remaining feature areas need migration or verification. Published does not by itself prove the old server can stop. This checklist is the acceptance scope; the dependency/source audit remains in legacy-migration-status.md.
+There are 24 vital features: eight have independent module implementations, and 16 remaining feature areas need migration or verification. Published does not by itself prove the old server can stop. This checklist is the acceptance scope; the dependency/source audit remains in legacy-migration-status.md.
 
 | # | Feature | Priority | Acceptance / current work |
 | --- | --- | --- | --- |
@@ -15,7 +15,7 @@ There are 24 vital features: six already have published modules, and 18 remainin
 | 7 | Stream-launch automation | Vital | Migrate launch/countdown/Spotify startup and fades; replace remaining old-server clock/API dependency. |
 | 8 | Going-live announcements and bookkeeping | Vital | Retain existing follow-up actions and identities; audit all dependencies. No automatic live announcement test. |
 | 9 | Bot chat routing | Vital | Chat Routing 1.0.1 implements the compatible Twitch bot-message/reply contract; actual C# and package tests pass with synthetic sinks. Import and controlled live account/reply acceptance remain. |
-| 10 | On-stream chatbox | Vital | Preserve live chat display, pronouns and PluralMind enrichment. Must work without the deferred history/search archive. |
+| 10 | On-stream chatbox | Vital | Live Chatbox (chat-core) 1.0.0 preserves the existing renderer and appearance URL options with live pronouns/PluralMind, moderation and synthetic tests, without the archive or old server. Isolated service/browser checks pass; existing-source URL cutover and live visual acceptance remain. |
 | 11 | Chat archive | Later | Private history, search, retention and export do not block switchover. Preserve existing data; do not delete or publicly bundle it. |
 | 12 | Reminders | Vital | Extract backlog commands/controls and selected on-stream display after chat routing; preserve own-list/moderator privacy and existing data. |
 | 13 | Wheel | Vital | Extract profiles, entries, spins/results and appearance; include combined-overlay integration. |

@@ -1,0 +1,17 @@
+{
+  "renderer": {
+    "source": "https://github.com/izzy/stream-chat",
+    "license": "MIT",
+    "copyright": "2022 Izzy",
+    "localBaseSha256": "ddddb265c5b2a6b4b19c16c65f8fd9d29fb42376e01a2760087335497421dbe8",
+    "changes": "First-party live service adapter and enrichment; existing CSS and presentation retained.",
+    "presentationCssSha256": "2d2044fbc5258ad02db35abf0af8030fd1fde45ce8f45bc9ce3c1bb7bf6e92db"
+  },
+  "pluralmind": {
+    "version": "2.1.1",
+    "source": "https://registry.npmjs.org/pluralmind/-/pluralmind-2.1.1.tgz",
+    "license": "MIT",
+    "copyright": "2026 leahinmoonlight",
+    "sha256": "82d30bffcc2ea2e2c2d4bab3372ee3fd9e9a503b94d58d2fb89c9fbcae274a7b"
+  }
+}

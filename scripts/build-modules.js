@@ -33,6 +33,12 @@ function buildModules(ids, options = {}) {
       if (!/^third-party\/[a-z0-9-]+\.txt$/.test(review.notice || "")) throw new Error("Reviewed assets require an upstream notice.");
       zip.addFile(review.notice, textBytes(path.join(source, review.notice)));
     }
+    const notices = path.join(source, 'third-party');
+    if (fs.existsSync(notices)) for (const entry of fs.readdirSync(notices, { withFileTypes: true }).sort((a,b) => a.name.localeCompare(b.name, 'en'))) {
+      if (!entry.isFile() || entry.isSymbolicLink() || !/^[a-z0-9-]+\.txt$/.test(entry.name)) throw new Error('Unsafe third-party notice.');
+      if (reviewedAssets.size && 'third-party/' + entry.name === review.notice) continue;
+      zip.addFile('third-party/' + entry.name, textBytes(path.join(notices, entry.name)));
+    }
     const service = path.join(source, "service");
     const addService = (directory, prefix) => {
       for (const entry of fs.readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name, "en"))) {

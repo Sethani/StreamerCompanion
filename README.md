@@ -17,7 +17,7 @@ Current build: [Windows preview 1.3.0 preview 1](https://github.com/Sethani/Stre
 - **Universal Dock / Overlay / Source Modules**: packaged controls, operator Tests, a transparent overlay and preserved Streamer.bot scene routing.
 - **Video 2.2**: its own editor/renderer and explicitly selected private media. The catalogue installs its three browser dependencies. See [installation and migration](modules/video/README.md).
 
-Chat Core's bundled helper and the other legacy features still need individual migration/review. See [the current dependency audit and ordered backlog](docs/legacy-migration-status.md) and [migration checklist](docs/MIGRATION.md). Migrated visual features join the combined OBS overlay; internal renderer pages do not require adding separate browser sources.
+Live Chatbox now provides the existing chat design, moderation and pronoun/PluralMind enrichment without the deferred archive. See [setup and source cutover](modules/chat-core/README.md). The other legacy features still need individual migration/review. See [the current dependency audit and ordered backlog](docs/legacy-migration-status.md) and [migration checklist](docs/MIGRATION.md). Migrated feature overlays join the combined OBS overlay; the existing Chatbox source keeps its separate placement. Internal renderer pages do not require adding extra browser sources.
 
 ## Run or build
 
