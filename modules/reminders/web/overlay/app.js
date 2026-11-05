@@ -1,4 +1,0 @@
-"use strict";
-const transport=StreamingTransport.create(),layer=document.getElementById("reminders-layer"),title=document.getElementById("reminders-title"),list=document.getElementById("reminders-list");let state=null,connected=false;
-function render(){const display=state?.display||{},items=Array.isArray(display.items)?display.items:[],visible=connected&&Boolean(display.visible)&&items.length>0&&(!display.hideAtMs||Date.now()<Number(display.hideAtMs));layer.hidden=!visible;layer.className=visible?"reminders-layer":"reminders-layer idle";if(!visible)return;title.textContent=display.title||"Reminders";list.replaceChildren(...items.map(entry=>{const item=document.createElement("li");item.textContent=entry.message||"";return item;}));}
-transport.subscribe("reminders",event=>{state=event.payload;render();});transport.subscribe("connection",health=>{connected=health.connected;if(!connected)state=null;render();});transport.connect();render();setInterval(render,250);

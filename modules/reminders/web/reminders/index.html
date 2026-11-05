@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reminders</title><link rel="stylesheet" href="styles.css"></head><body><main>
-<header><div><h1>Reminders</h1><p id="status">Connecting</p></div><div class="actions"><button id="initialize" type="button">Load/migrate saved reminders</button><button id="show-all" type="button">Show all</button><button id="hide" type="button">Hide overlay</button></div></header>
-<p class="privacy">The backlog stays in Streamer.bot. Only reminders selected with Show or Show all enter the overlay projection.</p>
-<section class="tools"><label>Filter target<input id="filter" type="search" placeholder="Twitch name" autocomplete="off"></label><label>Overlay seconds<input id="duration" type="number" min="5" max="300" value="30"></label><button id="refresh" type="button">Refresh</button></section>
+<header><div><h1>Reminders</h1><p id="status">Connecting</p></div><div class="actions"><button id="initialize" type="button">Load/migrate saved reminders</button></div></header>
+<p class="privacy">The private reminder backlog is managed only in this dock panel. It is not registered as an OBS overlay.</p>
+<section class="tools"><label>Filter target<input id="filter" type="search" placeholder="Twitch name" autocomplete="off"></label><button id="refresh" type="button">Refresh</button></section>
 <section><div class="heading"><h2>Unresolved</h2><span id="count">0</span></div><div id="items" class="items"><p class="empty">Load saved reminders to begin.</p></div></section>
 <section><details><summary>Completed history <span id="completed-count">0</span></summary><div id="completed" class="items"></div></details></section>
 <details class="limits"><summary>Current limits</summary><dl id="config"></dl></details>

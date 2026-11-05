@@ -2,8 +2,8 @@
   "meta": {
     "name": "Reminders",
     "author": "Sethani",
-    "version": "1.0.0",
-    "description": "Private reminder backlogs and selected overlay display",
+    "version": "1.0.1",
+    "description": "Private reminder backlogs and dock management",
     "autoRunAction": null,
     "minimumVersion": null
   },
@@ -30,7 +30,7 @@
             "enabled": true,
             "index": 0,
             "name": "Reminder backlog state and privacy engine",
-            "description": "Preserves the private backlog and publishes only the selected overlay projection",
+            "description": "Preserves the private backlog and publishes only content-free readiness",
             "references": [
               "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
               "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
@@ -238,88 +238,6 @@
         "collapsedGroups": []
       },
       {
-        "id": "0ad167de-6020-4113-a035-fd199cc2b185",
-        "queue": null,
-        "enabled": true,
-        "excludeFromHistory": false,
-        "excludeFromPending": false,
-        "name": "Reminders - Show",
-        "group": "Reminders",
-        "alwaysRun": false,
-        "randomAction": false,
-        "concurrent": false,
-        "triggers": [
-          {
-            "id": "47e56aa9-bdfa-4a5c-9a4a-10db9c04e215",
-            "type": 401,
-            "enabled": true,
-            "commandId": "815dc620-1327-4737-99d4-62ca867b6b33",
-            "exclusions": []
-          }
-        ],
-        "subActions": [
-          {
-            "id": "6c0cca65-ed22-4c4f-95e7-e4182845aca9",
-            "weight": 0,
-            "type": 123,
-            "parentId": null,
-            "enabled": true,
-            "index": 0,
-            "variableName": "reminderMode",
-            "value": "show",
-            "autoType": false
-          },
-          {
-            "id": "60e1b05c-42b5-4e35-bb9a-731aff102166",
-            "weight": 0,
-            "type": 4,
-            "parentId": null,
-            "enabled": true,
-            "index": 1,
-            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
-            "runImmedately": true
-          }
-        ],
-        "collapsedGroups": []
-      },
-      {
-        "id": "81f15099-c246-4773-a787-da56fd45fb1a",
-        "queue": null,
-        "enabled": true,
-        "excludeFromHistory": false,
-        "excludeFromPending": false,
-        "name": "Reminders - Hide",
-        "group": "Reminders",
-        "alwaysRun": false,
-        "randomAction": false,
-        "concurrent": false,
-        "triggers": [],
-        "subActions": [
-          {
-            "id": "9327565e-1d9f-42a3-9553-7d8b1e371914",
-            "weight": 0,
-            "type": 123,
-            "parentId": null,
-            "enabled": true,
-            "index": 0,
-            "variableName": "reminderMode",
-            "value": "hide",
-            "autoType": false
-          },
-          {
-            "id": "5ef69150-fa38-40a0-8e50-ac8094b0398b",
-            "weight": 0,
-            "type": 4,
-            "parentId": null,
-            "enabled": true,
-            "index": 1,
-            "actionId": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
-            "runImmedately": true
-          }
-        ],
-        "collapsedGroups": []
-      },
-      {
         "id": "b23640a6-d8ea-4681-b39b-6ad3e962c36c",
         "queue": null,
         "enabled": true,
@@ -476,30 +394,6 @@
         "grantType": 0,
         "permittedUsers": [],
         "permittedGroups": []
-      },
-      {
-        "id": "815dc620-1327-4737-99d4-62ca867b6b33",
-        "name": "Reminders - Show",
-        "enabled": true,
-        "include": true,
-        "mode": 0,
-        "command": "!remshow",
-        "regexExplicitCapture": false,
-        "location": 0,
-        "ignoreBotAccount": true,
-        "ignoreInternal": true,
-        "sources": 1,
-        "persistCounter": false,
-        "persistUserCounter": false,
-        "caseSensitive": false,
-        "globalCooldown": 2,
-        "userCooldown": 3,
-        "group": "Reminders",
-        "grantType": 0,
-        "permittedUsers": [],
-        "permittedGroups": [
-          "Moderators"
-        ]
       }
     ],
     "websocketServers": [],

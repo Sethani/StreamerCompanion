@@ -190,7 +190,7 @@ Run-Engine $reminders @{ reminderMode = 'initialize' }
 $private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
 $public = ($reminders.CPH.Globals['portable.reminders.state'] | ConvertFrom-Json).payload
 Assert-True (@($private.items).Count -eq 2 -and $private.retained -eq 'private-field' -and $private.config.retained -eq 'synthetic') 'Reminder initialization must preserve legacy items, completion history and unknown private fields'
-Assert-True ($null -eq $public.items -and $null -eq $public.config -and @($public.display.items).Count -eq 1) 'Public reminder state must contain only the selected display projection'
+Assert-True ($public.ready -and $public.moduleVersion -eq '1.0.1' -and $null -eq $public.items -and $null -eq $public.config -and $null -eq $public.display) 'Public reminder state must contain only content-free readiness'
 Run-Engine $reminders @{ reminderMode = 'add'; userName = 'viewer_one'; user = 'Viewer One'; rawInput = 'Synthetic self reminder' }
 $private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
 Assert-True (@($private.items).Count -eq 3 -and $reminders.CPH.Arguments['chatMessage'] -eq 'Reminder added to your backlog.') 'Self add must persist and prepare a generic chat acknowledgement'
@@ -199,10 +199,6 @@ $private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-J
 Assert-True (@($private.items).Count -eq 4 -and $reminders.CPH.Arguments['chatMessage'] -eq 'Reminder added for viewer_two.') 'Targeted add must not reveal the target backlog'
 Run-Engine $reminders @{ reminderMode = 'list-mine'; userName = 'viewer_two' }
 Assert-True ($reminders.CPH.Arguments['chatMessage'].Contains('Synthetic target only') -and -not $reminders.CPH.Arguments['chatMessage'].Contains('Synthetic self reminder')) 'List Mine must return only the requester''s unresolved reminders'
-Run-Engine $reminders @{ reminderMode = 'show'; target = 'viewer_two'; durationSeconds = '10' }
-$private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
-$public = ($reminders.CPH.Globals['portable.reminders.state'] | ConvertFrom-Json).payload
-Assert-True (@($public.display.items).Count -eq 1 -and $public.display.items[0].message -eq 'Synthetic target only' -and $null -eq $public.items) 'Targeted Show must publish only selected open items'
 $targetId = @($private.items | Where-Object message -eq 'Synthetic target only')[0].id
 Run-Engine $reminders @{ reminderMode = 'complete'; id = $targetId; userName = 'operator' }
 $private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
@@ -213,15 +209,14 @@ Assert-True (($private.items | Where-Object id -eq $targetId).status -eq 'open')
 Run-Engine $reminders @{ reminderMode = 'delete'; id = $targetId }
 $private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
 Assert-True ($null -eq ($private.items | Where-Object id -eq $targetId)) 'Delete must remove only the selected record'
-Run-Engine $reminders @{ reminderMode = 'hide' }
 $public = ($reminders.CPH.Globals['portable.reminders.state'] | ConvertFrom-Json).payload
-Assert-True (-not $public.display.visible -and @($public.display.items).Count -eq 0) 'Hide must clear the public display projection without clearing private items'
+Assert-True ($public.ready -and $null -eq $public.items -and $null -eq $public.config -and $null -eq $public.display) 'Lifecycle changes must keep public state content-free'
 $beforePrivate = $reminders.CPH.Globals['portable.reminders.private']
 Run-Engine $reminders @{ reminderMode = 'health' }
 Assert-True ($reminders.CPH.Globals['portable.reminders.private'] -eq $beforePrivate) 'Health must not rewrite or expose the private backlog'
 Run-Engine $reminders @{ reminderMode = 'list-mine' }
 Assert-True ($reminders.CPH.Arguments['chatMessage'] -eq 'I could not identify whose reminders to list.') 'Missing chat identity must fail without selecting another viewer'
-Write-Output 'Actual Reminders C# passed: legacy private-state migration, public projection, self/target add, owner-only list, show/hide and complete/restore/delete. Only synthetic reminder data was used.'
+Write-Output 'Actual Reminders C# passed: legacy private-state migration, content-free public readiness, self/target add, owner-only list and complete/restore/delete. Only synthetic reminder data was used; no overlay behavior exists.'
 
 $launch = [EngineTest.SyntheticLaunch]::new()
 Run-Engine $launch @{ streamLaunchMode = 'initialize' }
