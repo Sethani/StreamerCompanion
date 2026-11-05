@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "name": "Chat Routing",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Shared bot chat and reply routing",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "c783e11d-61c0-4586-90f3-d5baba254a35",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Chat - All Platforms",
+        "group": "Chat Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "afe50a5d-bcd6-4fe7-8833-57b83410f7f1",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "chatMode",
+            "value": "all",
+            "autoType": false
+          },
+          {
+            "id": "dff9cf12-bbcb-4695-83fe-04629e485c77",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "c10e1f0b-87c1-4721-926b-57491a9381eb",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "dcac5dec-c796-4b8b-9cb6-4271ef4c2f53",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Chat - Twitch",
+        "group": "Chat Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "4b1d1a95-71d9-4837-9b37-769592fc3d01",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "variableName": "chatMode",
+            "value": "twitch",
+            "autoType": false
+          },
+          {
+            "id": "ba36bdaa-8911-44bd-b5d2-d191ff841851",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1,
+            "actionId": "c10e1f0b-87c1-4721-926b-57491a9381eb",
+            "runImmedately": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "c10e1f0b-87c1-4721-926b-57491a9381eb",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Chat - Engine",
+        "group": "Chat Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "50e55a41-259b-4253-8b06-a5be17ac2de1",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "name": "Chat routing validation",
+            "description": "Compatible bot routing without startup sends",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll"
+            ],
+            "sourceFile": "chat-routing.cs",
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": ""
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "5bf31166-2963-4689-b7b7-f17c93de6479",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Chat - Twitch Send",
+        "group": "Chat Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "b47a5d8c-d3a6-48a9-9792-a6ad46a728d0",
+            "weight": 0,
+            "type": 120,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "input": "%chatIsReply%",
+            "operation": 0,
+            "value": true,
+            "autoType": true,
+            "subActions": [
+              {
+                "id": "5dc74b93-bace-4a33-b255-dfbab78cab3d",
+                "weight": 0,
+                "type": 99901,
+                "parentId": "b47a5d8c-d3a6-48a9-9792-a6ad46a728d0",
+                "enabled": true,
+                "index": 0,
+                "random": false,
+                "subActions": [
+                  {
+                    "id": "c80b0179-91a6-4623-8894-6f367782aa93",
+                    "weight": 0,
+                    "type": 560,
+                    "parentId": "5dc74b93-bace-4a33-b255-dfbab78cab3d",
+                    "enabled": true,
+                    "index": 0,
+                    "text": "%chatMessage%",
+                    "useBot": true,
+                    "fallback": true,
+                    "replyId": "%chatReplyId%"
+                  }
+                ]
+              },
+              {
+                "id": "7556a33c-f6ee-4220-8efb-3cadd571f509",
+                "weight": 0,
+                "type": 99902,
+                "parentId": "b47a5d8c-d3a6-48a9-9792-a6ad46a728d0",
+                "enabled": true,
+                "index": 1,
+                "random": false,
+                "subActions": [
+                  {
+                    "id": "fde0ee8f-39d6-4ffd-8fcc-eb7e257f45db",
+                    "weight": 0,
+                    "type": 10,
+                    "parentId": "7556a33c-f6ee-4220-8efb-3cadd571f509",
+                    "enabled": true,
+                    "index": 0,
+                    "text": "%chatMessage%",
+                    "useBot": true,
+                    "fallback": true,
+                    "pin": false,
+                    "pinToStreamEnd": false
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "commands": [],
+    "queues": [],
+    "timers": []
+  }
+}

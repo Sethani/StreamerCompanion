@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 2,
+  "id": "chat-routing",
+  "name": "Chat Routing",
+  "version": "1.0.0",
+  "description": "Shared bot-account chat and reply routing for installed Streamer.bot modules.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "provides": [
+    "chat-routing"
+  ],
+  "streamerbot": {
+    "requiredActions": [
+      "Chat - All Platforms",
+      "Chat - Twitch",
+      "Chat - Engine",
+      "Chat - Twitch Send"
+    ],
+    "importFile": "streamerbot/chat-routing.sb"
+  },
+  "dependencies": {
+    "modules": {},
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.2.2"
+  },
+  "ui": {
+    "id": "chat-routing",
+    "name": "Chat Routing",
+    "category": "Chat",
+    "order": 1,
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [],
+    "dependencies": [
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [],
+    "settings": [],
+    "tests": []
+  }
+}

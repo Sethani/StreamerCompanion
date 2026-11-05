@@ -4,17 +4,23 @@ $videoSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/vi
 $routingSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/source-modules/streamerbot/module-routing.cs')
 $pokemonSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/pokemon-encounters/streamerbot/pokemon-bridge.cs')
 $countdownSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/countdown/streamerbot/countdown-engine.cs')
+$chatSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/chat-routing/streamerbot/chat-routing.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
 $pokemonSource = $pokemonSource.Replace('public class CPHInline {', ('public class PokemonInline {' + $fields))
 $countdownSource = $countdownSource.Replace('public class CPHInline {', ('public class CountdownInline {' + $fields))
+$chatSource = $chatSource.Replace('public class CPHInline {', ('public class ChatInline {' + $fields))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
 public class FakeCPH {
  public Dictionary<string,object> Globals = new Dictionary<string,object>();
  public List<string> Errors = new List<string>();
+ public Dictionary<string,object> Arguments = new Dictionary<string,object>();
+ public List<string> Actions = new List<string>();
+ public void SetArgument(string key,object value){Arguments[key]=value;}
+ public bool RunAction(string name,bool immediate){Actions.Add(name);return true;}
  public string Scene = "Synthetic Scene";
  public T GetGlobalVar<T>(string key,bool persisted){return Globals.ContainsKey(key)?(T)Globals[key]:default(T);}
  public void SetGlobalVar(string key,object value,bool persisted){Globals[key]=value;}
@@ -29,6 +35,7 @@ $references = @((Get-ChildItem -LiteralPath (Join-Path $PSHOME 'ref') -Filter '*
 # Add-Type's in-memory assemblies can be shared by compiling all three units together.
 # Keep using directives scoped to separate namespaces so each original source remains unchanged.
 $combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace EngineTest {' + $videoSource + '}' + "`n" + 'namespace EngineTest {' + $routingSource + '}' + "`n" + 'namespace EngineTest {' + $pokemonSource + '}' + "`n" + 'namespace EngineTest {' + $countdownSource + '}'
+$combined += "`nnamespace EngineTest {" + $chatSource + "}"
 Add-Type -TypeDefinition $combined -ReferencedAssemblies $references -CompilerOptions '/nowarn:1701,1702'
 function Assert-True($Condition, [string]$Message) { if (-not $Condition) { throw $Message } }
 function Run-Engine($Engine, [hashtable]$Arguments) {
@@ -127,3 +134,20 @@ $config = $countdown.CPH.Globals['portable.countdown.config'] | ConvertFrom-Json
 Assert-True ($config.retained -eq 'synthetic' -and $config.durationSeconds -eq 44) 'Countdown initialization must preserve existing preferences'
 Assert-True ($countdown.CPH.Errors.Count -eq 1) 'Only deliberate invalid countdown must log an error'
 Write-Output 'Actual Countdown C# passed: clean defaults, active-state preservation, preset/start/pause/resume/clear/finish and invalid-input atomicity. No live action was invoked.'
+
+$chat = [EngineTest.ChatInline]::new()
+Run-Engine $chat @{ chatMessage = 'Synthetic message'; chatTargets = 'all' }
+Assert-True ($chat.CPH.Actions.Count -eq 1 -and $chat.CPH.Actions[0] -eq 'Chat - Twitch Send') 'Plain messages must use the native adapter'
+Assert-True (-not $chat.CPH.Arguments['chatIsReply']) 'Plain message must reset reply state'
+Run-Engine $chat @{ chatMessage = 'Synthetic reply'; chatIsReply = 'true'; chatReplyId = 'fixture-id' }
+Assert-True ($chat.CPH.Arguments['chatIsReply'] -and $chat.CPH.Arguments['chatReplyId'] -eq 'fixture-id') 'Reply arguments must survive routing'
+Run-Engine $chat @{ chatMessage = 'Synthetic fallback'; chatIsReply = '1'; chatReplyId = '%chatReplyId%' }
+Assert-True (-not $chat.CPH.Arguments['chatIsReply']) 'Missing/unresolved reply ID must become a plain message'
+$before = $chat.CPH.Actions.Count
+Run-Engine $chat @{}
+Run-Engine $chat @{ chatMessage = '   ' }
+Run-Engine $chat @{ chatMessage = '%chatMessage%' }
+Run-Engine $chat @{ chatMessage = 'Do not log this body'; chatTargets = 'youtube' }
+Assert-True ($chat.CPH.Actions.Count -eq $before) 'Empty, unresolved and unsupported-platform requests must not send'
+Assert-True ($chat.CPH.Errors.Count -eq 2 -and -not (($chat.CPH.Errors -join ' ') -match 'Do not log this body')) 'Diagnostics must omit message contents'
+Write-Output 'Actual Chat Routing C# passed with a recording sink: plain/reply/fallback, empty arguments and unsupported targets. No network or live chat call was made.'
