@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "universal-dock",
   "name": "Universal Dock",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Installed module controls, shared Streamer.bot transport, and operator tests.",
   "author": "Sethani",
   "license": "MIT",
@@ -35,6 +35,6 @@
     "modules": {},
     "optionalModules": {},
     "capabilities": {},
-    "companion": ">=1.2.0"
+    "companion": ">=1.3.0"
   }
 }

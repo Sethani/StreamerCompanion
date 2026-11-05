@@ -92,7 +92,7 @@ async function main() {
   await desktop.ready;
   assert.equal(desktop.window.isVisible(), false);
   const execute = (source) => desktop.window.webContents.executeJavaScript(source);
-  await waitFor(() => execute("document.querySelectorAll('#services .service').length === 1 && document.querySelector('#streamerbot').textContent === 'Streamer.bot connected'"), "initial desktop refresh");
+  await waitFor(() => execute("document.querySelectorAll('#modules .service').length === 1 && document.querySelector('#streamerbot').textContent === 'Streamer.bot connected'"), "initial desktop refresh");
   assert.equal(await execute("[...document.querySelectorAll('#modules button')].some(button=>button.textContent==='Import into Streamer.bot…')"), true, "A ready module must still expose its import for action-code upgrades");
   const importButton = "[...document.querySelectorAll('#modules button')].find(button=>button.textContent==='Import into Streamer.bot…')";
   await execute(importButton + ".click()");
@@ -115,22 +115,22 @@ async function main() {
   const defaultIcon = await app.getFileIcon(process.execPath, { size: "normal" });
   assert.equal(packagedIcon.isEmpty(), false);
   assert.equal(packagedIcon.toPNG().equals(defaultIcon.toPNG()), false, "Windows executable must use the custom icon, not Electron's default");
-  const labels = await execute("[...document.querySelectorAll('#services .actions button')].map(b=>b.textContent)");
-  assert.deepEqual(labels, ["Start", "Stop", "Restart", "Settings"]);
-  const dependencyText = await execute("document.querySelector('#services .service-meta').textContent");
+  const labels = await execute("[...document.querySelectorAll('#modules .actions button')].map(b=>b.textContent)");
+  for (const label of ['Start','Stop','Restart','Settings']) assert.ok(labels.includes(label));
+  const dependencyText = await execute("document.querySelector('#modules .service-meta').textContent");
   assert.ok(dependencyText.includes("Required: embedded-node"));
   assert.ok(dependencyText.includes("Optional: smoke-extra"));
   assert.ok(dependencyText.includes("Optional unavailable: smoke-extra"));
-  assert.equal(await execute("document.querySelector('#services .actions button:last-child').disabled"), true);
+  assert.equal(await execute("[...document.querySelectorAll('#modules .actions button')].find(b=>b.textContent==='Settings').disabled"), true);
   async function click(label) {
-    await execute("[...document.querySelectorAll('#services .actions button')].find(b=>b.textContent===" + JSON.stringify(label) + ").click()");
+    await execute("[...document.querySelectorAll('#modules .actions button')].find(b=>b.textContent===" + JSON.stringify(label) + ").click()");
   }
   await click("Start");
-  await waitFor(() => execute("document.querySelector('#services .status').textContent === 'Running'"), "service Start through IPC");
+  await waitFor(() => execute("document.querySelector('#modules .badges').textContent.includes('running')"), "service Start through IPC");
   await click("Settings");
   await waitFor(() => opened.length === 1, "generic settings handler");
   assert.equal(opened[0], "http://127.0.0.1:" + servicePort + "/settings");
-  await execute("document.querySelector('#services .autostart input').click()");
+  await execute("document.querySelector('#modules .autostart input').click()");
   await waitFor(() => desktop.host.services.config.autoStart["desktop-fixture"] === true, "automatic-start preference");
   const previousPid = desktop.host.services.get("desktop-fixture").process.pid;
   await click("Restart");
@@ -140,9 +140,9 @@ async function main() {
   }, "service Restart through IPC");
 
   await execute("window.confirm = () => true; document.querySelector('#catalog-check').click()");
-  await waitFor(() => execute("document.querySelector('#catalog .status')?.textContent === 'Update available'"), "catalogue update comparison");
-  await execute("document.querySelector('#catalog .actions button').click()");
-  await waitFor(() => execute("document.querySelector('#services h3').textContent.includes('1.1.0')"), "confirmed catalogue update through sandboxed IPC");
+  await waitFor(() => execute("document.querySelector('#catalog .badges')?.textContent === 'Update available'"), "catalogue update comparison");
+  await execute("document.querySelector('#catalog .quick button').click()");
+  await waitFor(() => execute("document.querySelector('#modules .row-toggle').textContent.includes('1.1.0')"), "confirmed catalogue update through sandboxed IPC");
   await waitFor(async () => !desktop.host.installing && await execute("document.querySelector('#feedback').textContent.includes('Installed Smoke fixture 1.1.0')"), "catalogue operation completion before picker installation");
   assert.equal(desktop.host.registry.readManifest("desktop-fixture").version, "1.1.0");
   const upgrade = fixture("1.2.0");
@@ -154,16 +154,16 @@ async function main() {
   zip.writeZip(packageFile);
   electron.dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [packageFile] });
   await execute("document.querySelector('#install').click()");
-  await waitFor(() => execute("document.querySelector('#services h3').textContent.includes('1.2.0')"), "hot installation UI refresh");
+  await waitFor(() => execute("document.querySelector('#modules .row-toggle').textContent.includes('1.2.0')"), "hot installation UI refresh");
   await waitFor(async () => !desktop.host.installing && await execute("document.querySelector('#feedback').textContent === 'Module package installed and checked.'"), "picker installation completion");
   assert.equal(desktop.host.registry.readManifest("desktop-fixture").version, "1.2.0");
   assert.equal((await desktop.host.services.get("desktop-fixture").state()).status, "running");
-  await execute("document.querySelector('#services details').open = true");
+  await execute("document.querySelector('#modules details').open = true");
   await new Promise((resolve) => setTimeout(resolve, 2200));
-  assert.equal(await execute("document.querySelector('#services details').open"), true, "Periodic refresh should preserve log expansion");
+  assert.equal(await execute("document.querySelector('#modules details').open"), true, "Periodic refresh should preserve log expansion");
   assert.deepEqual(errors, [], "Renderer/preload errors");
   await click("Stop");
-  await waitFor(() => execute("document.querySelector('#services .status').textContent === 'stopped'"), "service Stop through IPC");
+  await waitFor(() => execute("document.querySelector('#modules .badges').textContent.includes('stopped')"), "service Stop through IPC");
   await click("Start");
   await waitFor(() => desktop.host.services.get("desktop-fixture").status === "running", "start before quit cleanup check");
   await new Promise((resolve) => websocket.close(resolve));

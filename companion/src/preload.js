@@ -1,6 +1,8 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("companion", {
+  uiPreferences: () => ipcRenderer.invoke('companion:ui-preferences'),
+  setFavorite: (id, favorite) => ipcRenderer.invoke('companion:favorite', { id, favorite }),
   moduleLink: (id, target, copy = false) => ipcRenderer.invoke("companion:module-link", { id, target, copy }),
   importMedia: (id) => ipcRenderer.invoke("companion:import-media", id),
   list: () => ipcRenderer.invoke("companion:list"),

@@ -64,6 +64,8 @@ function createDesktop(options) {
   });
 
   ipcMain.handle("companion:list", () => host.listModules());
+  ipcMain.handle('companion:ui-preferences', () => host.uiPreferences.read());
+  ipcMain.handle('companion:favorite', (_event, { id, favorite }) => host.uiPreferences.setFavorite(id, favorite));
   ipcMain.handle("companion:refresh", () => host.listModules());
   ipcMain.handle("companion:module-link", async (_event, { id, target, copy }) => {
     const module = (await host.listModules()).modules.find((item) => item.id === id);

@@ -7,6 +7,7 @@ const { ControlApi } = require("./control-api");
 const { ModuleCatalog } = require("./catalog");
 const { moduleStates } = require("./module-state");
 const { WebAssets } = require("./web-assets");
+const { UiPreferences } = require('./ui-preferences');
 
 // Application-independent orchestration. Personal services are registered by main.js.
 class CompanionHost {
@@ -15,6 +16,7 @@ class CompanionHost {
     this.installing = false;
     this.version = options.version || require("../package.json").version;
     this.dataDirectory = options.dataDirectory || this.app.getPath("userData");
+    this.uiPreferences = new UiPreferences(this.dataDirectory);
     this.registry = new CompanionRegistry({
       dataDirectory: path.join(this.dataDirectory, "modules"),
       streamerBotUrl: options.streamerBotUrl || "ws://127.0.0.1:8080/"
@@ -33,7 +35,8 @@ class CompanionHost {
       listCatalog: () => this.catalog.inventory(),
       checkCatalog: () => this.catalog.check(),
       installCatalog: (id) => this.installCatalogModule(id),
-      publicAssets: (request, response, url) => this.webAssets.handle(request, response, url)
+      publicAssets: (request, response, url) => this.webAssets.handle(request, response, url),
+      uiPreferences: this.uiPreferences
     });
     this.webAssets = new WebAssets({ registry: this.registry, dataDirectory: this.dataDirectory, port: () => this.controlApi.port, moduleStates: () => this.moduleState() });
     this.catalog = new ModuleCatalog({
@@ -66,7 +69,7 @@ class CompanionHost {
     const status = await this.moduleState();
     const ui = new Map(this.publicInstalledModules(status.states).modules.map((item) => [item.packageId, item]));
     const manifests = new Map(this.registry.manifests().map((item) => [item.manifest.id, item.manifest]));
-    return { ...status.registry, modules: status.registry.modules.map((item) => ({ ...item, ...status.states.get(item.id), ui: ui.get(item.id) || null, hasMedia: manifests.get(item.id)?.media?.kind === "video" })) };
+    return { ...status.registry, modules: status.registry.modules.map((item) => ({ ...item, ...status.states.get(item.id), category: manifests.get(item.id)?.ui?.category || 'Other', dependencies: manifests.get(item.id)?.dependencies || {}, ui: ui.get(item.id) || null, hasMedia: manifests.get(item.id)?.media?.kind === "video" })) };
   }
 
   async listServices() {

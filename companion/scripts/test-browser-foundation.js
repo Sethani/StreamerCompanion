@@ -36,7 +36,7 @@ async function fixture(temporary, Host = CompanionHost) {
     socket.send(JSON.stringify({ id: message.id, status: "ok", ...response }));
   }));
   const reservation = http.createServer(); reservation.listen(0, "127.0.0.1"); await once(reservation, "listening"); const port = reservation.address().port; await new Promise((resolve) => reservation.close(resolve));
-  const host = new Host({ version: "1.2.0", dataDirectory: path.join(temporary, "data"), controlApiPort: port, streamerBotUrl: "ws://127.0.0.1:" + websocket.address().port + "/", catalogFetch: async (url) => {
+  const host = new Host({ version: require("../package.json").version, dataDirectory: path.join(temporary, "data"), controlApiPort: port, streamerBotUrl: "ws://127.0.0.1:" + websocket.address().port + "/", catalogFetch: async (url) => {
     const entry = catalog.modules.find((item) => item.package.url === url);
     if (!entry) throw new Error("Unexpected network request in isolated test.");
     return new Response(fs.readFileSync(path.join(output, path.basename(new URL(url).pathname))));
@@ -101,11 +101,11 @@ async function main() {
     assert.equal((await host.moduleState()).states.get("video").state, "ready");
     const items = host.registry.manifests(); assert.equal(moduleStates(items, "1.1.1", [], test.allActions, true).states.get("video").state, "incompatible");
     const mismatch = structuredClone(items); mismatch.find((item) => item.manifest.id === "universal-dock").manifest.version = "2.0.0";
-    assert.equal(moduleStates(mismatch, "1.2.0", [], test.allActions, true).states.get("video").state, "missing-dependency");
+    assert.equal(moduleStates(mismatch, "1.3.0", [], test.allActions, true).states.get("video").state, "missing-dependency");
     const cycle = structuredClone(items); cycle.find((item) => item.manifest.id === "universal-dock").manifest.dependencies.modules.video = "*";
-    assert.equal(moduleStates(cycle, "1.2.0", [], test.allActions, true).states.get("universal-overlay").state, "missing-dependency");
-    assert.equal(moduleStates(items, "1.2.0", [], [], false).states.get("universal-dock").state, "ready");
-    assert.equal(moduleStates(items, "1.2.0", [], [], false).states.get("source-modules").state, "verification-unavailable");
+    assert.equal(moduleStates(cycle, "1.3.0", [], test.allActions, true).states.get("universal-overlay").state, "missing-dependency");
+    assert.equal(moduleStates(items, "1.3.0", [], [], false).states.get("universal-dock").state, "ready");
+    assert.equal(moduleStates(items, "1.3.0", [], [], false).states.get("source-modules").state, "verification-unavailable");
     fs.mkdirSync(path.join(host.registry.dataDirectory, "broken")); fs.writeFileSync(path.join(host.registry.dataDirectory, "broken/module.json"), "bad json");
     assert.equal((await host.listModules()).modules.find((item) => item.id === "broken").state, "broken");
     assert.equal(test.calls.length, 0, "Installing and checking packages must never execute a Streamer.bot action");

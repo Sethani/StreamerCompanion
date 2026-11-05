@@ -17,6 +17,9 @@ async function main() {
     fs.copyFileSync(path.join(root, "src", file), destination);
   }
   const original = require("../package.json");
+  for (const file of ['ui-preferences.js', 'renderer/navigation.js']) {
+    fs.copyFileSync(path.join(root, 'src', file), path.join(stage, 'src', file));
+  }
   fs.mkdirSync(path.join(stage, "assets"));
   for (const name of ["companion-icon.png", "companion-icon.ico"]) fs.copyFileSync(path.join(root, "assets", name), path.join(stage, "assets", name));
   const manifest = { name: original.name, productName: original.productName, version: original.version, author: original.author, license: original.license, description: original.description, main: original.main, dependencies: original.dependencies };

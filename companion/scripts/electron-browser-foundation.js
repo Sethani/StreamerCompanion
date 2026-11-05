@@ -33,8 +33,8 @@ async function main() {
   test.broadcast({ schemaVersion: 1, feature: "moduleRouting", revision: 1, payload: { version: 1, modules: {}, currentScene: "Synthetic Scene" } });
   const dock = window(); await dock.loadURL(test.base + "/api/public/assets/universal-dock/dock/index.html");
   const executeDock = (source) => dock.webContents.executeJavaScript(source);
-  await waitFor(() => executeDock("document.querySelectorAll('#module option').length===2"), "manifest dock entries");
-  await executeDock("document.getElementById('module').value='video';document.getElementById('module').dispatchEvent(new Event('change'))");
+  await waitFor(() => executeDock("document.querySelectorAll('#choices .choice').length===2"), "manifest dock entries");
+  await executeDock("[...document.querySelectorAll('#choices .choose')].find(b=>b.textContent.startsWith('Video Player ·')).click()");
   await waitFor(() => executeDock("document.querySelector('iframe').contentDocument?.getElementById('refresh-media')!=null"), "Video editor from package");
   await waitFor(() => executeDock("document.querySelector('iframe').contentDocument.getElementById('status').textContent.includes('Connected')"), "editor Streamer.bot state");
   await executeDock("document.querySelector('iframe').contentDocument.getElementById('refresh-media').click()");

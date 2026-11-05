@@ -15,6 +15,8 @@ class ControlApi {
     this.checkCatalog = options.checkCatalog;
     this.installCatalog = options.installCatalog;
     this.publicAssets = options.publicAssets;
+    this.uiPreferences = options.uiPreferences;
+    this.uiCsrf = crypto.randomBytes(32).toString('hex');
     this.authPath = path.join(this.dataDirectory, "companion-api.json");
     this.server = null;
     this.token = this.loadToken();
@@ -71,6 +73,23 @@ class ControlApi {
 
   async handle(request, response) {
     const url = new URL(request.url, "http://127.0.0.1:" + this.port);
+    if (url.pathname.startsWith('/api/ui/')) {
+      const host = String(request.headers.host || '');
+      const origin = String(request.headers.origin || '');
+      const local = ['127.0.0.1:' + this.port, 'localhost:' + this.port].includes(host);
+      if (!this.uiPreferences || !local || (origin && origin !== 'http://' + host) || request.headers['sec-fetch-site'] === 'cross-site') return this.json(response, 403, { error: 'Same-origin local requests only.' });
+      if (request.method === 'GET' && url.pathname === '/api/ui/preferences') return this.json(response, 200, { ...this.uiPreferences.read(), csrf: this.uiCsrf });
+      const match = /^\/api\/ui\/favorites\/([a-z0-9][a-z0-9-]{0,127})$/.exec(url.pathname);
+      if (request.method === 'PUT' && match) {
+        if (origin !== 'http://' + host || request.headers['x-companion-csrf'] !== this.uiCsrf) return this.json(response, 403, { error: 'Invalid preference write token.' });
+        let size = 0; const chunks = [];
+        for await (const chunk of request) { size += chunk.length; if (size > 1024) return this.json(response, 413, { error: 'Preference request too large.' }); chunks.push(chunk); }
+        let value; try { value = JSON.parse(Buffer.concat(chunks).toString()); } catch (_) { return this.json(response, 400, { error: 'Invalid preference request.' }); }
+        if (!value || Object.keys(value).length !== 1 || typeof value.favorite !== 'boolean') return this.json(response, 400, { error: 'Expected a favorite boolean.' });
+        return this.json(response, 200, this.uiPreferences.setFavorite(match[1], value.favorite));
+      }
+      return this.json(response, 404, { error: 'Not found' });
+    }
     if (this.publicAssets && await this.publicAssets(request, response, url)) return;
     if (request.method === "GET" && url.pathname === "/health") return this.json(response, 200, { service: "streaming-companion-control", ready: true, port: this.port });
     if (request.method === "GET" && url.pathname === "/api/public/modules") {

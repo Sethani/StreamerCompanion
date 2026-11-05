@@ -4,7 +4,7 @@ An experimental Windows desktop host for independently installable Streamer.bot 
 
 This is the canonical source for the new host and the modules migrated here. The earlier personal integration project remains a migration laboratory and private configuration store; it is not bundled into this application.
 
-Current build: [Windows preview 1.2.2 preview 1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.2.2-preview.1). It supports the independently distributed Archipelago room/slot picker and retains the existing icon, guided imports and legacy-overlay compatibility fixes. Install modules separately from its catalogue.
+Current build: [Windows preview 1.3.0 preview 1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.3.0-preview.1). Installed, Catalogue and Settings tabs provide alphabetical categories, compact expandable rows, search, status filters and shared favorites. Universal Dock 1.1.0 adds matching searchable navigation. Upgrade the app before updating the dock; existing installed data and OBS URLs are retained. See [navigation and upgrade details](docs/COMPANION_NAVIGATION.md). Install modules separately from the catalogue.
 
 ## What is available
 

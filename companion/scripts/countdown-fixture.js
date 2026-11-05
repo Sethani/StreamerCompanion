@@ -30,7 +30,7 @@ async function fixture(directory, Host = require("../src/companion-host").Compan
   }));
   const reservation = http.createServer(); reservation.listen(0, "127.0.0.1"); await once(reservation, "listening"); const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
   const wsUrl = "ws://127.0.0.1:" + websocket.address().port + "/";
-  const host = new Host({ version: "1.2.2", dataDirectory: path.join(directory, "data"), controlApiPort: port, streamerBotUrl: wsUrl, catalogFetch: async url => { const entry = catalog.modules.find(item => item.package.url === url); if (!entry) throw new Error("No external requests in fixture"); return new Response(fs.readFileSync(path.join(output, path.basename(new URL(url).pathname)))); } });
+  const host = new Host({ version: require("../package.json").version, dataDirectory: path.join(directory, "data"), controlApiPort: port, streamerBotUrl: wsUrl, catalogFetch: async url => { const entry = catalog.modules.find(item => item.package.url === url); if (!entry) throw new Error("No external requests in fixture"); return new Response(fs.readFileSync(path.join(output, path.basename(new URL(url).pathname)))); } });
   host.catalog.catalog = catalog; host.start(); await once(host.controlApi.server, "listening");
   await host.installCatalogModule("countdown"); await host.installCatalogModule("source-modules"); await host.installCatalogModule("universal-overlay");
   return { host, calls, globals, catalog, output, websocket, wsUrl, base: "http://127.0.0.1:" + port, command, publish, payload: () => payload, setActions: value => { actions = value; }, allActions,
