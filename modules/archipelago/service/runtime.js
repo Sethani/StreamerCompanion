@@ -150,7 +150,7 @@ function createService(options = {}) {
         const origin = String(request.headers.origin || "");
         if (/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(origin)) { response.setHeader("Access-Control-Allow-Origin", origin); response.setHeader("Vary", "Origin"); }
       }
-      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.7", ready: true, configured: !!config.roomId, brokerConnected: connected });
+      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.8", ready: true, configured: !!config.roomId, brokerConnected: connected });
       if (request.method === "GET" && url.pathname === "/api/public/state") return json(response, 200, publicState());
       const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/app.js": "app.js", "/styles.css": "styles.css", "/overlay.js": "overlay.js", "/overlay.css": "overlay.css" };
       if (request.method === "GET" && pages[url.pathname]) {
@@ -163,6 +163,11 @@ function createService(options = {}) {
       let length = 0; const chunks = [];
       for await (const chunk of request) { length += chunk.length; if (length > 65536) throw new Error("Settings request is too large."); chunks.push(chunk); }
       const input = chunks.length ? JSON.parse(Buffer.concat(chunks)) : {};
+      if (url.pathname === "/api/overlay") {
+        if (typeof input.enabled !== "boolean") throw new Error("Choose whether the overlay is enabled.");
+        config.enabled = input.enabled; if (!config.enabled) testEvent = null; save();
+        return json(response, 200, settings());
+      }
       if (url.pathname === "/api/test-item") {
         if (input.clear === true) { testEvent = null; return json(response, 200, { status: "cleared" }); }
         if (!config.enabled) throw new Error("Enable and save the overlay before testing it live.");

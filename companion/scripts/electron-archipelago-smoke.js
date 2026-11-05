@@ -12,7 +12,7 @@ async function main() {
   await app.whenReady();
   buildModules(["archipelago"], { output: path.join(temporary, "packages") });
   const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") });
-  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.7.streammodule")); registry.commit(staged); registry.finalize(staged);
+  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.8.streammodule")); registry.commit(staged); registry.finalize(staged);
   test = await fixture(temporary, path.join(registry.moduleDirectory("archipelago"), "service/runtime.js"));
   const settings = hiddenWindow(), overlay = hiddenWindow();
   await settings.loadURL(test.base + "/settings"); await overlay.loadURL(test.base + "/overlay");
@@ -28,7 +28,13 @@ async function main() {
   assert.equal(await view("document.querySelector('.archipelago-summary').textContent.includes('Synthetic B')"), false);
   assert.equal(await view("document.querySelector('.archipelago-summary').textContent.includes('Glitched')"), false, "Unsupported glitched counts must not be claimed");
   assert.equal(await view("getComputedStyle(document.documentElement).backgroundColor"), "rgba(0, 0, 0, 0)", "OBS canvas must remain transparent");
-  assert.equal(await view("getComputedStyle(document.querySelector('.archipelago-box')).backgroundColor"), "rgba(34, 34, 34, 0.34)", "Preserve legacy translucent box");
+  assert.equal(await view("getComputedStyle(document.querySelector('.archipelago-box')).backgroundColor"), "rgba(0, 0, 0, 0)", "Overlay panel must be transparent");
+  const composite = hiddenWindow();
+  await composite.loadURL("data:text/html," + encodeURIComponent('<!doctype html><style>html,body{margin:0;background:rgb(36,104,172);height:100%}iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent}</style><iframe src="' + test.base + '/overlay"></iframe>'));
+  await waitFor(async () => { const frame = composite.webContents.mainFrame.frames.find(frame => frame.url === test.base + "/overlay"); return frame && frame.executeJavaScript("!document.getElementById('overlay').hidden"); }, "overlay visible over colored scene");
+  const scenePixel = async (x, y) => [...(await composite.webContents.capturePage({ x, y, width: 1, height: 1 })).toBitmap()].slice(0, 3);
+  assert.deepEqual(await scenePixel(800, 100), [172, 104, 36], "Embedded canvas must preserve the scene pixels");
+  assert.deepEqual(await scenePixel(400, (await composite.webContents.executeJavaScript("innerHeight")) - 2), [172, 104, 36], "Panel padding must preserve the scene pixels");
   await view("window.savedProgressTrack=document.querySelector('.archipelago-progress-track');void 0");
   const timeline = await view("window.savedProgressTrack.getAnimations()[0].currentTime");
   test.state.snapshots.alpha.enriched.dashboard.players[0].checksDone = 6; await test.service.poll();
@@ -113,6 +119,16 @@ async function main() {
   await new Promise((resolve) => setTimeout(resolve, 10)); await demoView("document.querySelector('.demo-controls button').click()");
   assert.notEqual(await demoView("document.querySelector('.archipelago-event').dataset.event"), demoId);
   assert.equal(test.state.actions.length, baseline + 1, "Preview must not invoke a broker action");
+  await execute("document.getElementById('max-events').value='7';document.getElementById('max-events').dispatchEvent(new Event('change',{bubbles:true}))");
+  test.state.unavailable = true; await test.service.poll();
+  const profilesBeforeToggle = JSON.stringify(test.service.settings().config.profiles), brokerReadsBeforeToggle = test.state.requests.length;
+  await execute("document.getElementById('toggle-overlay').click()");
+  await waitFor(() => !test.service.settings().config.enabled, "top switch disables immediately while Controller offline");
+  await waitFor(() => view("document.getElementById('overlay').hidden"), "disabled overlay hides waiting messages");
+  assert.equal(JSON.stringify(test.service.settings().config.profiles), profilesBeforeToggle);
+  assert.equal(test.state.requests.length, brokerReadsBeforeToggle, "Switch must not contact offline Controller");
+  assert.equal(await execute("document.getElementById('max-events').value"), "7", "Unsaved display edits survive immediate toggle");
+  assert.equal(await execute("document.getElementById('toggle-overlay').textContent"), "Enable overlay");
   assert.ok(windows.every((window) => !window.isVisible()));
   console.log("Hidden Archipelago UI passed: legacy transparent summary/event design, stable nodes/animations, no page rotation, dropped-read tolerance, safe waiting states, room/slot picker and confirmed actions.");
 }

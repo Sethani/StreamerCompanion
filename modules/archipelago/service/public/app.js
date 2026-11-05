@@ -14,6 +14,10 @@ const element = (tag, text, className) => { const node = document.createElement(
   function count() { $("slot-count").textContent = `${document.querySelectorAll('[data-slot]:checked').length} selected · ${state.slots.length} reported game slots`; }
   function render(next) {
     state = next;
+    $("toggle-overlay").textContent = next.config.enabled ? "Disable overlay" : "Enable overlay";
+    $("toggle-overlay").setAttribute("aria-pressed", String(next.config.enabled));
+    $("toggle-overlay").disabled = busy;
+    $("overlay-status").textContent = next.config.enabled ? "Overlay enabled" : "Overlay disabled - nothing is shown on stream";
     $("connection").textContent = next.connected ? "Controller connected" : "Controller unavailable"; $("connection").classList.toggle("bad", !next.connected);
     $("room-status").textContent = next.error || next.notice || "";
     const current = next.rooms.find((room) => room.id === next.config.roomId);
@@ -53,6 +57,11 @@ const element = (tag, text, className) => { const node = document.createElement(
     $("save").disabled = busy || !next.config.roomId;
   }
   async function perform(work) { if (busy) return; busy = true; try { await work(); } catch (error) { note(error.message, true); } finally { busy = false; if (state) render(state); } }
+  $("toggle-overlay").onclick = () => perform(async () => {
+    const next = await api("/api/overlay", { enabled: !state.config.enabled });
+    $("enabled").checked = next.config.enabled; render(next);
+    note((next.config.enabled ? "Overlay enabled." : "Overlay disabled.") + (dirty ? " Unsaved display edits are kept." : " Room and display choices are retained."));
+  });
   $("room").onchange = () => perform(async () => {
     if (dirty && !confirm("Discard unsaved display changes before switching rooms?")) { $("room").value = state.config.roomId; return; }
     const roomId = $("room").value; dirty = false; render(await api("/api/settings", { roomId })); note(roomId ? "Choose slots and save the display." : "No room selected.");
@@ -82,7 +91,7 @@ const element = (tag, text, className) => { const node = document.createElement(
   $("clear-live-test").onclick = () => perform(async () => { await api("/api/test-item", { clear: true }); note("Live test cleared."); });
   $("test-item").href = location.origin + "/overlay?demo=item";
   $("overlay-url").value = location.origin + "/overlay";
-  $("copy-overlay").onclick = async () => { try { await navigator.clipboard.writeText($("overlay-url").value); note("OBS browser source URL copied."); } catch (_) { $("overlay-url").select(); note("Press Ctrl+C to copy the selected overlay URL."); } };
+  $("copy-overlay").onclick = async () => { try { await navigator.clipboard.writeText($("overlay-url").value); note("Renderer URL copied."); } catch (_) { $("overlay-url").select(); note("Press Ctrl+C to copy the selected overlay URL."); } };
   $("import-key").onclick = () => $("key-file").click();
   $("key-file").onchange = async (event) => { const file = event.target.files[0]; if (!file) return; if (file.size > 8192) { note("Choose the small text file containing only your API key.", true); return; } $("api-key").value = (await file.text()).replace(/^\uFEFF/, "").trim(); event.target.value = ""; note("API key file loaded. Save connection to apply it."); };
   $("connection-form").onsubmit = (event) => { event.preventDefault(); perform(async () => {

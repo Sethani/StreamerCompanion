@@ -51,7 +51,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.7.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.8.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");
@@ -112,9 +112,16 @@ async function main() {
     await service.update({ roomId: "beta" }); assert.deepEqual(service.settings().config.profiles.beta.slots, ["1:1"]);
     await service.update({ profile: { slots: ["1:1"], slotDisplay: { "1:1": { progress: false, logic: true } }, display: { hideCompletedLogic: true, showBK: false } } });
     await testRequest();
+    assert.equal((await fetch(base + "/api/overlay", { method: "POST", body: JSON.stringify({ enabled: false }) })).status, 403);
+    state.unavailable = true; await service.poll();
+    const beforeToggle = JSON.stringify(service.settings().config.profiles), readsBeforeToggle = state.requests.length;
+    const switched = await fetch(base + "/api/overlay", { method: "POST", headers: { "X-Companion-CSRF": service.csrf }, body: JSON.stringify({ enabled: false }) });
+    assert.equal(switched.status, 200); assert.equal(service.publicState().enabled, false); assert.equal(service.publicState().testEvent, null);
+    assert.equal(state.requests.length, readsBeforeToggle); assert.equal(JSON.stringify(service.settings().config.profiles), beforeToggle);
     await test.close(); test = null;
     restarted = await fixture(root, path.join(registry.moduleDirectory("archipelago"), "service/runtime.js"));
     assert.equal(restarted.service.settings().config.roomId, "beta"); assert.deepEqual(restarted.service.settings().config.profiles.beta.slots, ["1:1"]); assert.equal(restarted.service.settings().hasToken, true); assert.equal(restarted.service.publicState().events.length, 0);
+    assert.equal(restarted.service.settings().config.enabled, false, "Immediate overlay switch persists across restart");
     assert.equal(restarted.service.publicState().testEvent, null, "Tests must not replay after restart");
     assert.deepEqual(restarted.service.settings().config.profiles.beta.slotDisplay["1:1"], { progress: false, logic: true });
     assert.equal(restarted.service.settings().config.profiles.beta.display.hideCompletedLogic, true);
