@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 2,
+  "id": "controller-input",
+  "name": "Controller",
+  "version": "1.1.0",
+  "description": "Native controller input and the existing gamepad display in the combined stream overlay.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "streamerbot": {
+    "requiredActions": []
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {
+      "universal-overlay": "^1.0.0",
+      "source-modules": "^1.0.0"
+    },
+    "capabilities": {
+      "windows": "required",
+      "powershell": "required",
+      "embedded-node": "required"
+    },
+    "companion": ">=1.2.2"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/runtime.js",
+    "port": 3126,
+    "healthPath": "/health",
+    "healthService": "controller-input",
+    "settingsPath": "/settings",
+    "overlayPath": "/overlay",
+    "provides": [
+      "controller-input"
+    ]
+  },
+  "ui": {
+    "id": "controller",
+    "name": "Controller",
+    "category": "Effects",
+    "order": 45,
+    "dockPage": "/settings",
+    "ownership": "node",
+    "packagedOverlay": true,
+    "overlays": [
+      "controller"
+    ],
+    "actions": [],
+    "dependencies": [
+      "universal-dock"
+    ],
+    "optionalDependencies": [
+      "universal-overlay",
+      "source-modules"
+    ],
+    "settings": [
+      "enabled",
+      "position",
+      "size",
+      "scale",
+      "controllerIndex"
+    ],
+    "tests": []
+  }
+}

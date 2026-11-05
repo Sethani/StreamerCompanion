@@ -1,0 +1,49 @@
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent}
+#controller-box{position:absolute;transform-origin:top left}#controller-box[hidden]{display:none}
+.controller-local {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 700px;
+  height: 500px;
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.controller-local.active + * { display: none; }
+.controller-local.active ~ #controller-frame,
+.controller-local.active + #controller-frame { visibility: hidden; }
+#controller-frame.local-active { visibility: hidden; }
+
+.controller-body {
+  position: absolute;
+  left: 70px;
+  top: 100px;
+  width: 560px;
+  height: 330px;
+  border: 8px solid #080a0b;
+  border-radius: 42% 42% 32% 32% / 38% 38% 58% 58%;
+  background: #202426;
+  box-shadow: inset 0 12px 22px rgba(255,255,255,.08), 0 10px 24px rgba(0,0,0,.45);
+}
+
+.controller-disconnected { position:absolute; left:225px; top:214px; z-index:8; padding:18px 24px; border-radius:6px; background:#e31919; color:#fff; font:700 25px system-ui,sans-serif; }
+.controller-local.connected .controller-disconnected { display:none; }
+.stick { position:absolute; width:86px; height:86px; border-radius:50%; background:#101314; border:5px solid #080a0b; box-shadow:inset 0 5px 9px rgba(255,255,255,.12); }
+.stick i { position:absolute; inset:12px; border-radius:50%; background:#252b2d; border:3px solid #090b0c; transition:transform 40ms linear; }
+.stick-left { left:105px; top:82px; }.stick-right { right:132px; bottom:54px; }
+.dpad { position:absolute; left:118px; bottom:48px; width:105px; height:105px; }
+.dpad b { position:absolute; display:grid; place-items:center; width:38px; height:38px; background:#111516; color:#667072; font:700 18px system-ui; }
+.dpad [data-button="12"]{left:33px;top:0}.dpad [data-button="13"]{left:33px;bottom:0}.dpad [data-button="14"]{left:0;top:33px}.dpad [data-button="15"]{right:0;top:33px}
+.face-buttons { position:absolute; right:82px; top:66px; width:126px; height:126px; }
+.face-buttons b { position:absolute; display:grid; place-items:center; width:42px; height:42px; border-radius:50%; background:#101314; border:3px solid #080a0b; font:800 20px system-ui; }
+.button-y{left:42px;top:0;color:#e3c537}.button-a{left:42px;bottom:0;color:#53b86a}.button-x{left:0;top:42px;color:#4ba2dc}.button-b{right:0;top:42px;color:#df5959}
+.shoulder,.trigger { position:absolute; top:-25px; width:145px; height:42px; display:grid; place-items:center; border:4px solid #080a0b; border-radius:18px 18px 7px 7px; background:#171b1d; color:#aab2b4; font:700 15px system-ui; }
+.shoulder-left{left:38px}.shoulder-right{right:38px}.trigger{top:-62px;width:105px;height:35px}.trigger-left{left:58px}.trigger-right{right:58px}
+.menu,.guide { position:absolute; display:grid; place-items:center; border-radius:50%; background:#111516; border:3px solid #080a0b; color:#8c9698; font:700 13px system-ui; }
+.menu{top:120px;width:36px;height:28px;border-radius:12px}.menu-back{left:238px}.menu-start{right:238px}.guide{left:257px;top:61px;width:46px;height:46px}
+.controller-local [data-button].pressed { filter:brightness(2); transform:scale(.9); box-shadow:0 0 14px rgba(255,255,255,.85); }
+.controller-local .trigger.pressed,.controller-local .shoulder.pressed { transform:translateY(5px); }
+
+
+#test-label{position:absolute;left:260px;top:40px;color:#fff;font:700 24px system-ui}#test-label[hidden]{display:none}

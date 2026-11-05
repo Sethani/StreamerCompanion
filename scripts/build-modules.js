@@ -46,7 +46,7 @@ function buildModules(ids, options = {}) {
             zip.addFile(assetPath, bytes);
             continue;
           }
-          if (!/\.(js|cjs|mjs|html|css|json)$/.test(entry.name)) throw new Error("Service asset needs redistribution review: " + entry.name);
+          if (!/\.(js|cjs|mjs|html|css|json|ps1)$/.test(entry.name)) throw new Error("Service asset needs redistribution review: " + entry.name);
           zip.addFile(prefix + entry.name, textBytes(path.join(directory, entry.name)));
         }
       }
