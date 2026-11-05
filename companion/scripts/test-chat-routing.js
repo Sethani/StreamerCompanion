@@ -5,17 +5,20 @@ const { buildModules } = require('../../scripts/build-modules');
 const output = fs.mkdtempSync(path.join(os.tmpdir(), 'chat-routing-'));
 try {
   buildModules(['chat-routing'], { output });
-  const zip = new AdmZip(path.join(output, 'chat-routing-1.0.0.streammodule'));
+  const zip = new AdmZip(path.join(output, 'chat-routing-1.0.1.streammodule'));
   const manifest = JSON.parse(zip.readAsText('module.json'));
   const bytes = Buffer.from(zip.readAsText(manifest.streamerbot.importFile), 'base64');
   assert.equal(bytes.subarray(0, 4).toString(), 'SBAE');
   const exported = JSON.parse(zlib.gunzipSync(bytes.subarray(4)));
+  assert.equal(exported.version, 24);
+  assert.equal(exported.exportedFrom, '1.0.7');
+  assert.equal(exported.minimumVersion, '1.0.0-alpha.1');
   const actions = exported.data.actions, ids = new Set(actions.map(a => a.id));
   assert.deepEqual(actions.map(a => a.name), manifest.streamerbot.requiredActions);
   assert.equal(actions.find(a => a.name === 'Chat - All Platforms').id, 'c783e11d-61c0-4586-90f3-d5baba254a35');
   assert.equal(actions.find(a => a.name === 'Chat - Twitch').id, 'dcac5dec-c796-4b8b-9cb6-4271ef4c2f53');
   assert.equal(exported.meta.autoRunAction, null);
-  for (const key of ['commands', 'queues', 'timers']) assert.deepEqual(exported.data[key], []);
+  for (const key of ['commands', 'queues', 'timers', 'websocketServers', 'websocketClients']) assert.deepEqual(exported.data[key], []);
   const native = [];
   function inspect(items) { for (const sub of items) {
     if (sub.type === 4) assert.ok(ids.has(sub.actionId));

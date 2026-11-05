@@ -8,6 +8,19 @@ const { buildModules } = require("../../scripts/build-modules");
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "companion-build-"));
 try {
   const options = { output: temporary };
+  // Reproduce the rejected Chat Routing 1.0.0 shape without changing source files.
+  const readFileSync = fs.readFileSync;
+  const chatExport = path.resolve(__dirname, '../../modules/chat-routing/streamerbot/export.json');
+  try {
+    fs.readFileSync = function(file, ...args) {
+      const result = readFileSync.call(fs, file, ...args);
+      if (path.resolve(String(file)) !== chatExport) return result;
+      const legacy = JSON.parse(result);
+      delete legacy.version; delete legacy.exportedFrom; delete legacy.minimumVersion;
+      return JSON.stringify(legacy);
+    };
+    assert.throws(() => buildModules(['chat-routing'], options), /export format metadata/);
+  } finally { fs.readFileSync = readFileSync; }
   const first = buildModules(undefined, options);
   const second = buildModules(undefined, options);
   assert.deepEqual(first, second, "Identical module source must produce identical release hashes");
@@ -26,6 +39,10 @@ try {
       const bytes = Buffer.from(zip.readAsText(manifest.streamerbot.importFile), "base64");
       assert.equal(bytes.subarray(0, 4).toString(), "SBAE");
       const exported = JSON.parse(zlib.gunzipSync(bytes.subarray(4)));
+      assert.equal(exported.version, 24);
+      assert.ok(exported.exportedFrom);
+      assert.ok(exported.minimumVersion);
+      for (const key of ['actions', 'queues', 'commands', 'websocketServers', 'websocketClients', 'timers']) assert.ok(Array.isArray(exported.data[key]));
       assert.equal(exported.meta.author, "Sethani");
       assert.equal(exported.meta.version, manifest.version);
       const names = exported.data.actions.map((action) => action.name).sort();

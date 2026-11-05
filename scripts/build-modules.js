@@ -56,6 +56,10 @@ function buildModules(ids, options = {}) {
     if (manifest.streamerbot.importFile) {
       const exportRoot = path.join(source, "streamerbot");
       const exported = JSON.parse(fs.readFileSync(path.join(exportRoot, "export.json"), "utf8"));
+      if (exported.version !== 24 || typeof exported.exportedFrom !== "string" || !exported.exportedFrom || typeof exported.minimumVersion !== "string" || !exported.minimumVersion) throw new Error("Missing or unsupported Streamer.bot export format metadata: " + id);
+      for (const collection of ["actions", "queues", "commands", "websocketServers", "websocketClients", "timers"]) {
+        if (!Array.isArray(exported.data?.[collection])) throw new Error("Missing Streamer.bot export collection " + collection + ": " + id);
+      }
       const compile = (value) => {
         if (!value || typeof value !== "object") return;
         if (value.sourceFile) {

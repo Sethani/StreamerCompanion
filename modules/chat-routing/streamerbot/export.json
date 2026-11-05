@@ -2,7 +2,7 @@
   "meta": {
     "name": "Chat Routing",
     "author": "Sethani",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Shared bot chat and reply routing",
     "autoRunAction": null,
     "minimumVersion": null
@@ -199,6 +199,11 @@
     ],
     "commands": [],
     "queues": [],
-    "timers": []
-  }
+    "timers": [],
+    "websocketServers": [],
+    "websocketClients": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
 }

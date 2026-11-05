@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "chat-routing",
   "name": "Chat Routing",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shared bot-account chat and reply routing for installed Streamer.bot modules.",
   "author": "Sethani",
   "license": "MIT",

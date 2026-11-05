@@ -18,7 +18,7 @@ async function main() {
     host = new CompanionHost({ dataDirectory: root, controlApiPort: port, streamerBotUrl: 'ws://127.0.0.1:' + websocket.address().port + '/' });
     host.start(); await once(host.controlApi.server, 'listening');
     const inventory = await host.catalog.check(); assert.equal(inventory.error, '');
-    const entry = inventory.modules.find(item => item.id === 'chat-routing'); assert.equal(entry.version, '1.0.0'); assert.equal(entry.problem, '');
+    const entry = inventory.modules.find(item => item.id === 'chat-routing'); assert.equal(entry.version, '1.0.1'); assert.equal(entry.problem, '');
     await host.installCatalogModule('chat-routing');
     const state = async () => (await host.listModules()).modules.find(item => item.id === 'chat-routing').state;
     assert.equal(await state(), 'streamerbot-required');
