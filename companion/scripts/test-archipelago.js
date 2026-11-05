@@ -51,7 +51,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.6.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.7.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");
@@ -60,6 +60,9 @@ async function main() {
     assert.equal(service.publicState().enabled, false); assert.equal(service.settings().rooms.length, 2); assert.equal(state.actions.length, 0);
     assert.equal((await fetch(base + "/api/settings")).status, 403);
     assert.equal((await fetch(base + "/api/settings", { method: "POST", body: "{}" })).status, 403);
+    assert.equal((await fetch(base + "/health", { headers: { Origin: "http://127.0.0.1:7474" } })).headers.get("access-control-allow-origin"), "http://127.0.0.1:7474");
+    assert.equal((await fetch(base + "/health", { headers: { Origin: "https://example.invalid" } })).headers.get("access-control-allow-origin"), null);
+    assert.equal((await fetch(base + "/api/settings", { headers: { Origin: "http://127.0.0.1:7474" } })).headers.get("access-control-allow-origin"), null);
     const html = await (await fetch(base + "/settings")).text(); assert.ok(html.includes('name="companion-csrf"')); assert.ok(!html.includes("synthetic-private-key"));
     await service.update({ token: "synthetic-private-key", roomId: "alpha" });
     await service.update({ enabled: true, profile: { slots: ["0:1", "1:1"] } });

@@ -51,3 +51,7 @@ Item notifications prefer explicit sender/receiver roles and resolved item/locat
 Save-file restoration messages and unstructured item events without any participant or item metadata are excluded from stream activity. Restored received-item counts are operational state, not new deliveries. Controller's enriched sender/receiver, item/location and partial-resolution contract is supported; cheat items can name a receiver without inventing a sender.
 
 Controller events marked `audience: operations` or `displayEligible: false` are always excluded from the overlay, regardless of selected activity types. Older event payloads remain supported.
+
+## Existing combined overlay bridge
+
+The personal legacy combined overlay can now explicitly embed this renderer for Archipelago alone, suppressing its own old Archipelago renderer. It keeps the existing OBS source URL and scene/module routing, retains the iframe between health polls, and hides it while the module is offline without falling back to old room data. This private compatibility bridge is separate from the public Universal Overlay; it does not pull the personal monolith into the module. Version 1.0.7 permits read-only health/public-state GET responses to HTTP loopback origins; private settings/actions still require their existing controls and CSRF protection. Keep Companion and the Archipelago service running. Refresh the existing combined source after applying the bridge; remove or hide a separate direct Archipelago source to avoid duplicate output.
