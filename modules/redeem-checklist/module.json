@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 2,
+  "id": "redeem-checklist",
+  "name": "Redeem Checklist",
+  "version": "1.0.0",
+  "description": "Private dock management for pending channel-point requests with coordinated Named Timers language routing.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Redeems - Engine",
+      "Redeems - Initialize",
+      "Redeems - Health",
+      "Redeems - Add",
+      "Redeems - Resolve",
+      "Redeems - Route Managed Redemption",
+      "Redeems - Check Timers and Retry",
+      "Redeems - Resolve Requested",
+      "Redeems - Trigger Adapter"
+    ],
+    "importFile": "streamerbot/redeem-checklist.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "named-timers": "^1.0.0",
+      "universal-dock": "^1.1.0"
+    },
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.3.0"
+  },
+  "web": {
+    "root": "web"
+  },
+  "ui": {
+    "id": "redeems",
+    "name": "Redeem Checklist",
+    "category": "People",
+    "order": 50,
+    "dockPage": "/redeems/index.html",
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [
+      "Redeems - Initialize",
+      "Redeems - Health",
+      "Redeems - Add",
+      "Redeems - Resolve",
+      "Redeems - Route Managed Redemption",
+      "Redeems - Check Timers and Retry",
+      "Redeems - Resolve Requested"
+    ],
+    "dependencies": [
+      "named-timers",
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [],
+    "settings": [
+      "managedRewardMap",
+      "liveCategory",
+      "writingCategory"
+    ],
+    "tests": [
+      {
+        "id": "health",
+        "name": "Checklist state (no resolution or chat action)",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check state",
+            "feature": "redeems",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      }
+    ],
+    "transport": {
+      "feature": "redeems",
+      "stateKey": "portable.redeems.state",
+      "actionPrefix": "Redeems"
+    }
+  }
+}

@@ -4,6 +4,8 @@ Audited 2026-11-06 against the installed Streamer.bot configuration and the pers
 
 Implementation update, 2026-11-06: the safe first slice is published as Named Timers 1.0.0, imported, Ready and accepted for the ordinary command/chat/combined-overlay flow. It preserves the generic identities and state contracts, packages the copied renderer and read-only dock, and adds triggerless language handoff actions. Source, actual C#, focused hidden-browser, full host, real released-package and combined-overlay checks pass. The installed redeem router remains authoritative until the Redeem Checklist migration.
 
+Handoff update, 2026-11-06: Redeem Checklist 1.0.0 now implements the other half of the boundary. Its preserved wildcard router delegates language rewards to `Named Timers - Queue Language`, and its preserved five-second action delegates completion to `Named Timers - Check Languages`. Source, actual C#, package and hidden-dock checks pass without a live redemption. The handoff is not authoritative until Redeem Checklist is published and imported.
+
 ## Outcome
 
 The generic named-timer core can be extracted as a standalone `named-timers` module. The language-timer lifecycle cannot be declared fully independent until the Redeem Checklist migration follows: the installed all-rewards router currently decides whether a redemption is a language timer or a checklist item, and its five-second checker combines language fulfillment with retrying the old checklist backlog.

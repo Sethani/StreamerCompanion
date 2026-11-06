@@ -1,0 +1,220 @@
+{
+  "meta": {
+    "name": "Redeem Checklist",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Private channel-point checklist and Named Timers language handoff",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "8969edcf-4d3f-492c-a2b8-b576b276a600",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Engine",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "adf5cf0c-b77a-4842-a6a2-c7785c8b13e3",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "name": "Redeem checklist state and routing engine",
+            "description": "Preserves private installed records and delegates language rewards without Node callbacks",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "sourceFile": "redeem-checklist-engine.cs",
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": ""
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "0d2e4fe8-5aa1-492a-8a8f-d0babac60f3a",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Initialize",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [{ "id": "e735c3fb-09e2-4ac7-bcdd-d819da35d48c", "type": 706, "enabled": true, "exclusions": [] }],
+        "subActions": [
+          { "variableName": "redeemMode", "value": "initialize", "autoType": false, "id": "1004f5fa-46e9-4301-a91a-7f2867dc922f", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "8969edcf-4d3f-492c-a2b8-b576b276a600", "runImmedately": true, "id": "8727a391-8748-47fc-b84f-243ad03ebfbe", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "6a9b168e-9258-4e0d-b196-ef9fe58b47c8",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Health",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "redeemMode", "value": "health", "autoType": false, "id": "c029a343-aa92-4907-b72d-37e47726bd0e", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "8969edcf-4d3f-492c-a2b8-b576b276a600", "runImmedately": true, "id": "c5ddea31-624e-43ea-9975-090e607bd621", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d2d86b99-b667-4d9c-8264-2340ec410241",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Add",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "redeemMode", "value": "add", "autoType": false, "id": "2b22f801-a4b5-45d3-ae0b-6840aab4e002", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "8969edcf-4d3f-492c-a2b8-b576b276a600", "runImmedately": true, "id": "1b0a2d8c-7225-4feb-be91-7abed351e31d", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "e001a1a2-a82c-4ab2-ba89-7fbd7e6d062f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Resolve",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "redeemMode", "value": "resolve", "autoType": false, "id": "fb9c5b67-93e8-4c91-ac9f-512cd455139f", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "8969edcf-4d3f-492c-a2b8-b576b276a600", "runImmedately": true, "id": "b244bb13-a979-486f-8f25-58c992e85faf", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d994ff16-ecf4-48db-a6e5-8779be0d3ed4",
+        "queue": "5c24a526-3732-4486-b149-2cce42b771b1",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Route Managed Redemption",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [{ "rewardId": null, "id": "e2a4f15b-1d4a-4f9e-8e31-22349aeeb075", "type": 112, "enabled": true, "exclusions": [] }],
+        "subActions": [
+          { "variableName": "redeemMode", "value": "route", "autoType": false, "id": "08ed0837-8eff-4e23-8800-b78598b2479a", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "8969edcf-4d3f-492c-a2b8-b576b276a600", "runImmedately": true, "id": "eea34a6c-dcd6-40b3-b3d9-47927df4ce51", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 },
+          {
+            "input": "%redeemRouteKind%", "operation": 0, "value": "language", "autoType": false,
+            "subActions": [
+              { "random": false, "subActions": [{ "actionId": "a4a349ca-73eb-4671-9829-decc44435997", "runImmedately": true, "id": "3cbb57df-c328-47e1-89e0-d4e121b09804", "weight": 0, "type": 4, "parentId": "5bad7972-13a1-4606-90f1-b0717086093f", "enabled": true, "index": 0 }], "id": "5bad7972-13a1-4606-90f1-b0717086093f", "weight": 0, "type": 99901, "parentId": "5f6d80a0-3b2b-4b88-9806-bcb7ad541348", "enabled": true, "index": 0 },
+              { "random": false, "subActions": [], "id": "4eb67073-024d-44a3-a9a4-e323b3e96918", "weight": 0, "type": 99902, "parentId": "5f6d80a0-3b2b-4b88-9806-bcb7ad541348", "enabled": true, "index": 1 }
+            ],
+            "id": "5f6d80a0-3b2b-4b88-9806-bcb7ad541348", "weight": 0, "type": 120, "parentId": null, "enabled": true, "index": 2
+          },
+          {
+            "input": "%redeemRouteKind%", "operation": 0, "value": "checklist", "autoType": false,
+            "subActions": [
+              { "random": false, "subActions": [{ "actionId": "d2d86b99-b667-4d9c-8264-2340ec410241", "runImmedately": true, "id": "5245d10f-2b15-42f4-b192-a780a1b071da", "weight": 0, "type": 4, "parentId": "f7e8ef47-58b7-4b7c-859b-51b4bdce5f82", "enabled": true, "index": 0 }], "id": "f7e8ef47-58b7-4b7c-859b-51b4bdce5f82", "weight": 0, "type": 99901, "parentId": "cab75fea-7723-4506-b74d-02a55bd645f8", "enabled": true, "index": 0 },
+              { "random": false, "subActions": [], "id": "fefab02a-abcf-4c8d-a4eb-974dcb1f5d24", "weight": 0, "type": 99902, "parentId": "cab75fea-7723-4506-b74d-02a55bd645f8", "enabled": true, "index": 1 }
+            ],
+            "id": "cab75fea-7723-4506-b74d-02a55bd645f8", "weight": 0, "type": 120, "parentId": null, "enabled": true, "index": 3
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "c4f6a8f4-ccb0-4839-bf48-ade7555aa0e7",
+        "queue": "5c24a526-3732-4486-b149-2cce42b771b1",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Check Timers and Retry",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [{ "timerId": "f132eb8a-f46b-4057-9653-dc19acbb9258", "id": "48c4792f-a361-498b-b899-de6be3d629dc", "type": 701, "enabled": true, "exclusions": [] }],
+        "subActions": [
+          { "variableName": "redeemMode", "value": "migrate", "autoType": false, "id": "fb272750-c53f-4dd6-9484-be1fc0f6c605", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "8969edcf-4d3f-492c-a2b8-b576b276a600", "runImmedately": true, "id": "0f232ac9-522c-4e86-a4d2-25bb5aaf5742", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 },
+          { "actionId": "e7f47207-78c4-47b0-9ac8-f6810b29126b", "runImmedately": true, "id": "643d65f1-750b-4289-9606-a7ffd74be813", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 2 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "783c74cc-d913-4803-bc43-02ff67f79450",
+        "queue": "5c24a526-3732-4486-b149-2cce42b771b1",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Resolve Requested",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "actionId": "e001a1a2-a82c-4ab2-ba89-7fbd7e6d062f", "runImmedately": true, "id": "55d65f57-ed63-4e6f-a334-d33505c03b78", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 0 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "7de0634e-1e6b-4641-8b7c-7edf0ef8b6f9",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Redeems - Trigger Adapter",
+        "group": "Redeems",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "rewardTitle", "value": "Custom redeem", "autoType": false, "id": "58aa7738-0a0f-4d86-a485-2c62993fbfc1", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "variableName": "category", "value": "live", "autoType": false, "id": "4b0a5d6c-8fc9-4f38-be87-aac0467011e6", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 1 },
+          { "actionId": "d2d86b99-b667-4d9c-8264-2340ec410241", "runImmedately": true, "id": "921aecb2-9040-49ff-b39a-0cafa38c5b3a", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 2 }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [{ "id": "5c24a526-3732-4486-b149-2cce42b771b1", "blocking": true, "name": "Redeem Manager" }],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

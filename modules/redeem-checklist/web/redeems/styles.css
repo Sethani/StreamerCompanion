@@ -1,0 +1,29 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #101417; color: #edf4f2; font: 14px/1.4 "Segoe UI", system-ui, sans-serif; }
+main { display: grid; gap: 12px; padding: 12px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+h1, h2, p { margin: 0; }
+h1 { font-size: 19px; }
+h2 { display: flex; justify-content: space-between; font-size: 14px; }
+h2 span { color: #91aaa3; font-weight: 500; }
+#status, .privacy { color: #91aaa3; font-size: 12px; }
+.list, .history { display: grid; gap: 7px; margin-top: 7px; }
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; border: 1px solid #34444a; border-radius: 7px; background: #1b2328; padding: 9px; }
+.item-title { font-weight: 700; }
+.meta, .input, .empty, .history-row { color: #a9bbb6; font-size: 12px; }
+.input { margin-top: 4px; color: #e6d59a; white-space: pre-wrap; }
+.actions { display: flex; align-items: center; gap: 5px; }
+button { min-height: 31px; border: 1px solid #367a6c; border-radius: 5px; background: #245c50; color: #edf4f2; cursor: pointer; padding: 4px 8px; }
+button.secondary { border-color: #53636a; background: #28343a; }
+button.refund { border-color: #8e5959; background: #653737; }
+button:disabled { cursor: default; opacity: .5; }
+.error { color: #ffabab; }
+.empty { border: 1px dashed #34444a; border-radius: 7px; padding: 10px; }
+details { border-top: 1px solid #34444a; padding-top: 8px; }
+summary { cursor: pointer; color: #a9bbb6; }
+dialog { max-width: min(420px, calc(100vw - 24px)); border: 1px solid #53636a; border-radius: 7px; background: #1b2328; color: #edf4f2; }
+dialog::backdrop { background: rgba(0, 0, 0, .65); }
+dialog form { display: grid; gap: 12px; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 7px; }
+#feedback { min-height: 18px; color: #91aaa3; }
+@media (max-width: 480px) { .item { grid-template-columns: 1fr; } .actions { justify-content: flex-end; } }

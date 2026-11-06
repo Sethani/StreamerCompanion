@@ -1,0 +1,9 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Redeem Checklist</title><link rel="stylesheet" href="styles.css"></head><body><main>
+<header><div><h1>Redeem Checklist</h1><p id="status">Connecting</p></div><button id="refresh" type="button">Refresh</button></header>
+<p class="privacy">Private operator checklist. It is never registered as an OBS overlay.</p>
+<section><h2>Do on stream <span id="live-count">0</span></h2><div id="live-list" class="list"><div class="empty">Loading…</div></div></section>
+<section><h2>Writing backlog <span id="writing-count">0</span></h2><div id="writing-list" class="list"><div class="empty">Loading…</div></div></section>
+<details><summary>Recent resolutions</summary><div id="history-list" class="history"></div></details>
+<p id="feedback" role="status"></p>
+</main><dialog id="confirm-dialog"><form method="dialog"><h2 id="confirm-title">Confirm</h2><p id="confirm-message"></p><div class="dialog-actions"><button value="cancel" class="secondary">Cancel</button><button id="confirm-submit" value="confirm">Confirm</button></div></form></dialog>
+<script src="../../universal-dock/shared/streamerbot-transport.js"></script><script src="app.js"></script></body></html>
