@@ -2,7 +2,7 @@
 
 Audited 2026-11-06 against the installed Streamer.bot configuration and the personal legacy source. This is a read-only extraction audit. No timer action was invoked, no global was changed, no redemption was fulfilled or refunded, and no OBS source was changed.
 
-Implementation update, 2026-11-06: the safe first slice is published as Named Timers 1.0.0 and installed in Preview as `streamerbot-required`. It preserves the generic identities and state contracts, packages the copied renderer and read-only dock, and adds triggerless language handoff actions. Source, actual C#, focused hidden-browser, full host, real released-package and combined-overlay checks pass without live actions. Streamer.bot import and controlled acceptance are still separate gates; the installed redeem router remains authoritative until the Redeem Checklist migration.
+Implementation update, 2026-11-06: the safe first slice is published as Named Timers 1.0.0, imported, Ready and accepted for the ordinary command/chat/combined-overlay flow. It preserves the generic identities and state contracts, packages the copied renderer and read-only dock, and adds triggerless language handoff actions. Source, actual C#, focused hidden-browser, full host, real released-package and combined-overlay checks pass. The installed redeem router remains authoritative until the Redeem Checklist migration.
 
 ## Outcome
 
@@ -119,7 +119,7 @@ Do not add a new timer editor or change command syntax, duration semantics, appe
 
 Confirmed findings are the installed IDs/call graph, five-second schedule, command permission, global/envelope schemas, serial language queue, renderer behavior, routing mode, private-path/reward boundaries and current empty/inactive live-state counts.
 
-Unchecked behavior includes a real language redemption/fulfilment, simultaneous ordinary timer completions in production, import replacement of the shared timed schedule, the packaged renderer inside the live combined source and operation with the old server stopped. Those are controlled acceptance checks, not audit claims.
+Unchecked behavior includes a real language redemption/fulfilment, simultaneous ordinary timer completions in production, direct-action compatibility and operation with the old server stopped. Those are controlled acceptance checks, not audit claims.
 
 Implementation decisions applied to 1.0.0:
 
