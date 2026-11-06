@@ -26,7 +26,7 @@ The following entries were inventoried from personal public/modules/registry.jso
 
 | Entry | Declared owner/dependencies | Next verification |
 | --- | --- | --- |
-| Wheel | Wheel 2.1.0 directly packages the installed schema-2 engine, editor, renderer, exact result sound and six stable core action IDs; existing Sub Spin/Selfcare modes remain compatible and a seventh inert trigger adapter is added | Source/package/C#/hidden-desktop fidelity tests pass. Publish/install, explicit import, combined-overlay visual acceptance and controlled existing/new-trigger acceptance remain; personal result-chat actions stay private |
+| Wheel | Published and installed Wheel 2.1.0 directly packages the installed schema-2 engine, editor, renderer, exact result sound and six stable core action IDs; existing Sub Spin/Selfcare modes remain compatible and a seventh inert trigger adapter is added | Source/package/C#/hidden-desktop/released-package fidelity tests pass. Explicit import, combined-overlay visual acceptance and controlled existing/new-trigger acceptance remain; personal result-chat actions stay private |
 | Reactive guests (vital) / Stream Together (dropped) | Streamer.bot; external browser/guest URLs | Migrate Reactive only; preserve old Stream Together data without treating it as a cutover requirement |
 | Walk-ons / shoutout clips | Streamer.bot; media/chat/clip integrations | Media portability, chat API and trigger/action references |
 | Cameras / audio routing (vital); TTRPG (later) | Streamer.bot plus OBS WebSocket | Complete camera/audio migration; defer TTRPG-specific cards/layouts |
