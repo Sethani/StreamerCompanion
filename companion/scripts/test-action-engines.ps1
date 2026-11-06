@@ -226,7 +226,7 @@ $wheel.CPH.Globals['portable.wheel.profiles'] = '{"schemaVersion":2,"moduleVersi
 Run-Engine $wheel @{ wheelActionMode = 'initialize' }
 $wheelConfig = $wheel.CPH.Globals['portable.wheel.profiles'] | ConvertFrom-Json
 $wheelState = $wheel.CPH.Globals['portable.wheel.state'] | ConvertFrom-Json
-Assert-True ($wheelConfig.moduleVersion -eq '2.1.0' -and @($wheelConfig.profiles.PSObject.Properties).Count -eq 3) 'Wheel initialize must retain existing profiles while upgrading the module version'
+Assert-True ($wheelConfig.moduleVersion -eq '2.1.1' -and @($wheelConfig.profiles.PSObject.Properties).Count -eq 3) 'Wheel initialize must retain existing profiles while upgrading the module version'
 Assert-True ($wheelConfig.position.anchor -eq 'bottom-right' -and $wheelConfig.appearance.opacityPercent -eq 71) 'Wheel initialize must preserve placement and appearance'
 Assert-True ($wheelState.payload.status -eq 'idle' -and $wheelState.feature -eq 'wheel') 'Wheel initialize must publish idle state'
 $beforeWait = $wheel.CPH.ClockMs

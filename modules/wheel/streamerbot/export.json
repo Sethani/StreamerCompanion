@@ -2,7 +2,7 @@
   "meta": {
     "name": "Wheel",
     "author": "Sethani",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "Established Wheel editor, renderer and trigger-ready adapter",
     "autoRunAction": null,
     "minimumVersion": null

@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 public class CPHInline {
   private const string ConfigKey = "portable.wheel.profiles";
   private const string StateKey = "portable.wheel.state";
-  private const string ModuleVersion = "2.1.0";
+  private const string ModuleVersion = "2.1.1";
   private string Arg(string key){try{return args.ContainsKey(key)&&args[key]!=null?args[key].ToString().Trim():"";}catch{return "";}}
   private string Read(string key){try{return CPH.GetGlobalVar<string>(key,true)??"";}catch{return "";}}
   private void Broadcast(JObject value){try{CPH.WebsocketBroadcastJson(value.ToString(Formatting.None));}catch{}}

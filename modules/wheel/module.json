@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "wheel",
   "name": "Wheel",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Weighted profile wheels with the established editor, animation, result sound and trigger-ready Streamer.bot adapter.",
   "author": "Sethani",
   "license": "MIT",
