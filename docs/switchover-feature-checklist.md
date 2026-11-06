@@ -2,15 +2,15 @@
 
 User priorities recorded 2026-11-05. Numbers match the feature list shown in chat. All listed features are vital except 11/22 (later) and 18 (drop). Writing Challenge remains separately parked and is excluded from this list.
 
-There are 24 vital features: ten have independent module implementations, and 14 remaining feature areas need migration or verification. Published does not by itself prove the old server can stop. This checklist is the acceptance scope; the dependency/source audit remains in legacy-migration-status.md.
+There are 24 vital features: 14 now have independent or deliberately retained implementations, and ten feature areas still need public extraction. Published does not by itself prove the old server can stop. This checklist is the acceptance scope; the dependency/source audit remains in legacy-migration-status.md.
 
 | # | Feature | Priority | Acceptance / current work |
 | --- | --- | --- | --- |
 | 1 | Archipelago | Vital | Published; retain accepted behavior and verify the final modern overlay without the legacy server. |
 | 2 | Pokemon encounters | Vital | Published; user accepted. Preserve encounter/throw behavior and settings. |
 | 3 | Controller display | Vital | Published; user accepted. Preserve native lifecycle and layout. |
-| 4 | Video player | Vital | Published; verify actual media links, playback and layout in final cutover. |
-| 5 | Spotify controls | Vital | Core published. Its autonomous fade and shared scene/countdown session behavior pass isolated test mode; chat adapter and controlled account acceptance remain. |
+| 4 | Video player | Vital | Published and accepted by the user with actual media/playback/layout on 2026-11-06. Preserve accepted links and behavior in the final old-server-off rehearsal. |
+| 5 | Spotify controls | Vital | Published and accepted by the user on 2026-11-06. Its autonomous fade and shared scene/countdown session behavior also pass isolated test mode. Preserve account settings and accepted behavior in the final rehearsal. |
 | 6 | Countdown | Vital | Published and integrated with Stream Launch; controlled Streamer.bot import/visual acceptance remains. |
 | 7 | Stream-launch automation | Vital | Stream Launch 1.0.0 is published and independently owns launch configuration, guarded OBS startup, Countdown handoff, Spotify startup/fade timing and online-event deduplication. Actual C#, hidden packaged controls and released-package installation pass; explicit import/review and an intentional real-stream acceptance remain. |
 | 8 | Going-live announcements and bookkeeping | Vital | The new launch module invokes an explicitly configured existing private follow-up only after OBS confirms streaming. The installed native broadcaster/webhook/session/reward action and Walk Ons reset were audited as having no old HTTP-server dependency and are deliberately not exported. Controlled live delivery acceptance remains; never automate it in tests. |
