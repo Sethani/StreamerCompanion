@@ -1,0 +1,720 @@
+{
+  "meta": {
+    "name": "Named Timers",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Established named timer command, state publisher, renderer and inert language handoff",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Named Timers - Engine",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "ac0cab5e-6912-4c9f-85e2-ca1bc80d4310",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "name": "Named and language timer state engine",
+            "description": "Preserves timer_end globals and the serial language queue without private reward configuration",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "sourceFile": "named-timers-engine.cs",
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": ""
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3b280c62-b97e-4bd1-9bb1-907b6191adb4",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Named Timers - Initialize",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "dafd8d20-d991-4c6e-9061-082c3e18a935",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "9a92f870-f578-48ee-a2d6-12fe9f86c4fc",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "551758b1-07bf-44a9-85d5-600f2507a057",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "7ddf8b47-a208-4c84-9b41-90338b7f2aab",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Named Timers - Health",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "health",
+            "autoType": false,
+            "id": "ce5ed977-263f-485a-b871-0f32bb2d2247",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "2c9c6eb0-426c-41d8-b19d-4fffc93b1372",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3b530a98-e76e-44dd-b00d-30dfa3ea4978",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Timer_Add",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "variables": {
+              "timerSeconds": "10",
+              "timerTitle": "hydration"
+            },
+            "id": "1d6a9b3d-9210-4ada-88b6-966ae37b255d",
+            "type": 702,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "add",
+            "autoType": false,
+            "id": "6b493be8-a775-4a5a-8f62-24bf75b2a5f3",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "218906d0-2a2d-4a9d-a110-21b4f5501de3",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          },
+          {
+            "actionId": "c783e11d-61c0-4586-90f3-d5baba254a35",
+            "runImmedately": true,
+            "id": "64a54bdd-3556-468f-8c60-0db22087d4f1",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 2
+          },
+          {
+            "actionId": "9a509d5f-f78c-4ad2-a296-5d0fac075261",
+            "runImmedately": true,
+            "id": "ef089f93-d4aa-42e3-84cf-314748c04a11",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 3
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "522e56d5-d0b8-495d-ac40-1993cc160734",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Timer_Check",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "timerId": "f132eb8a-f46b-4057-9653-dc19acbb9258",
+            "id": "bbd975e7-a63c-4804-ad32-7bf51a8cac35",
+            "type": 701,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "check",
+            "autoType": false,
+            "id": "885f90ac-a840-4e9c-ac63-f5e124b153c6",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "42ea4a94-3d6b-4500-bdc7-791b8a1404da",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          },
+          {
+            "input": "%chatShouldSend%",
+            "operation": 0,
+            "value": "True",
+            "autoType": true,
+            "subActions": [
+              {
+                "random": false,
+                "subActions": [
+                  {
+                    "actionId": "c783e11d-61c0-4586-90f3-d5baba254a35",
+                    "runImmedately": true,
+                    "id": "15ff4588-cb23-4a27-89c9-c891270a70fc",
+                    "weight": 0,
+                    "type": 4,
+                    "parentId": "8a965c84-df11-4976-825b-8fd03b467506",
+                    "enabled": true,
+                    "index": 0
+                  }
+                ],
+                "id": "8a965c84-df11-4976-825b-8fd03b467506",
+                "weight": 0,
+                "type": 99901,
+                "parentId": "970dd218-6da5-449e-ba2c-7cacf12e0bff",
+                "enabled": true,
+                "index": 0
+              },
+              {
+                "random": false,
+                "subActions": [],
+                "id": "dae16532-f3a4-463d-924d-5a58af76dd4f",
+                "weight": 0,
+                "type": 99902,
+                "parentId": "970dd218-6da5-449e-ba2c-7cacf12e0bff",
+                "enabled": true,
+                "index": 1
+              }
+            ],
+            "id": "970dd218-6da5-449e-ba2c-7cacf12e0bff",
+            "weight": 0,
+            "type": 120,
+            "parentId": null,
+            "enabled": true,
+            "index": 2
+          },
+          {
+            "actionId": "9a509d5f-f78c-4ad2-a296-5d0fac075261",
+            "runImmedately": true,
+            "id": "1afc1a3d-cea3-4977-983f-20c0b91ad707",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 3
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "91c9981d-eb92-454f-9f08-742fb8fdc460",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Timer_Command",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "commandId": "9c24c6b5-8887-44fc-9f10-56dc20930bd9",
+            "id": "8eef17ed-2838-4896-959f-283f328b72e9",
+            "type": 401,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "command",
+            "autoType": false,
+            "id": "5b13d05a-f6e1-4497-81e5-450d12ef4336",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "58304d6f-0553-4fba-94e8-7a1154539f71",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          },
+          {
+            "input": "%chatShouldSend%",
+            "operation": 0,
+            "value": "True",
+            "autoType": true,
+            "subActions": [
+              {
+                "random": false,
+                "subActions": [
+                  {
+                    "actionId": "c783e11d-61c0-4586-90f3-d5baba254a35",
+                    "runImmedately": true,
+                    "id": "04468d72-6e15-44de-bbaf-05d7ee0e1915",
+                    "weight": 0,
+                    "type": 4,
+                    "parentId": "19b6874d-3b57-48d6-b78a-bd45e559362e",
+                    "enabled": true,
+                    "index": 0
+                  }
+                ],
+                "id": "19b6874d-3b57-48d6-b78a-bd45e559362e",
+                "weight": 0,
+                "type": 99901,
+                "parentId": "8a411b13-2a8c-4873-ac2d-505ff204bf94",
+                "enabled": true,
+                "index": 0
+              },
+              {
+                "random": false,
+                "subActions": [],
+                "id": "6b3cd37e-75f2-48ac-bec8-0615dc49d3fd",
+                "weight": 0,
+                "type": 99902,
+                "parentId": "8a411b13-2a8c-4873-ac2d-505ff204bf94",
+                "enabled": true,
+                "index": 1
+              }
+            ],
+            "id": "8a411b13-2a8c-4873-ac2d-505ff204bf94",
+            "weight": 0,
+            "type": 120,
+            "parentId": null,
+            "enabled": true,
+            "index": 2
+          },
+          {
+            "input": "%timerCommandValid%",
+            "operation": 0,
+            "value": "True",
+            "autoType": true,
+            "subActions": [
+              {
+                "random": false,
+                "subActions": [
+                  {
+                    "actionId": "3b530a98-e76e-44dd-b00d-30dfa3ea4978",
+                    "runImmedately": true,
+                    "id": "88046ca9-563b-4b5b-a7e4-c4e25142f766",
+                    "weight": 0,
+                    "type": 4,
+                    "parentId": "5b7871ad-4515-4e90-93c6-44a0f3267dc6",
+                    "enabled": true,
+                    "index": 0
+                  }
+                ],
+                "id": "5b7871ad-4515-4e90-93c6-44a0f3267dc6",
+                "weight": 0,
+                "type": 99901,
+                "parentId": "2ce3f792-343f-4642-84a8-9e9c84ae44dd",
+                "enabled": true,
+                "index": 0
+              },
+              {
+                "random": false,
+                "subActions": [],
+                "id": "02c030e7-5dc0-4c39-9b0f-0dc06d565bce",
+                "weight": 0,
+                "type": 99902,
+                "parentId": "2ce3f792-343f-4642-84a8-9e9c84ae44dd",
+                "enabled": true,
+                "index": 1
+              }
+            ],
+            "id": "2ce3f792-343f-4642-84a8-9e9c84ae44dd",
+            "weight": 0,
+            "type": 120,
+            "parentId": null,
+            "enabled": true,
+            "index": 3
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "9a509d5f-f78c-4ad2-a296-5d0fac075261",
+        "queue": "fe555921-a201-4f70-9f74-002879328c1c",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Timers - Publish Overlay State",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "publish",
+            "autoType": false,
+            "id": "8ffbb3eb-25d6-4b40-9cc1-9334d53692c2",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "2f4d6a3a-0517-4e07-98e0-bd30ee5902ea",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "a4a349ca-73eb-4671-9829-decc44435997",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Named Timers - Queue Language",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "language-queue",
+            "autoType": false,
+            "id": "6cac2c9d-3de3-40bc-90e8-fb2410588bed",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "a8251f43-191c-49dc-be14-f338a0a9e5d5",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          },
+          {
+            "actionId": "c783e11d-61c0-4586-90f3-d5baba254a35",
+            "runImmedately": true,
+            "id": "b78bf289-dd04-455a-9b17-2b2226a090cd",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 2
+          },
+          {
+            "actionId": "9a509d5f-f78c-4ad2-a296-5d0fac075261",
+            "runImmedately": true,
+            "id": "93b75c72-a2ea-4d42-9121-ed996ad7ef81",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 3
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "e7f47207-78c4-47b0-9ac8-f6810b29126b",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Named Timers - Check Languages",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "namedTimersMode",
+            "value": "language-check",
+            "autoType": false,
+            "id": "5f6962c0-0f16-4f00-88a7-e77225348978",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+            "runImmedately": true,
+            "id": "4236f881-f477-4a59-aec6-b38c05ab2fb7",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          },
+          {
+            "input": "%chatShouldSend%",
+            "operation": 0,
+            "value": "True",
+            "autoType": true,
+            "subActions": [
+              {
+                "random": false,
+                "subActions": [
+                  {
+                    "actionId": "c783e11d-61c0-4586-90f3-d5baba254a35",
+                    "runImmedately": true,
+                    "id": "87f7b773-4643-41b0-a0ea-6a740fe48bfa",
+                    "weight": 0,
+                    "type": 4,
+                    "parentId": "46e73350-f963-4dd1-9ed8-efa1b3e1eb70",
+                    "enabled": true,
+                    "index": 0
+                  }
+                ],
+                "id": "46e73350-f963-4dd1-9ed8-efa1b3e1eb70",
+                "weight": 0,
+                "type": 99901,
+                "parentId": "c6281774-53c8-4ddd-bfe6-7cb6ddd315c1",
+                "enabled": true,
+                "index": 0
+              },
+              {
+                "random": false,
+                "subActions": [],
+                "id": "8b23bd7f-cc81-4cf9-a54a-531d6e1934b8",
+                "weight": 0,
+                "type": 99902,
+                "parentId": "c6281774-53c8-4ddd-bfe6-7cb6ddd315c1",
+                "enabled": true,
+                "index": 1
+              }
+            ],
+            "id": "c6281774-53c8-4ddd-bfe6-7cb6ddd315c1",
+            "weight": 0,
+            "type": 120,
+            "parentId": null,
+            "enabled": true,
+            "index": 2
+          },
+          {
+            "actionId": "9a509d5f-f78c-4ad2-a296-5d0fac075261",
+            "runImmedately": true,
+            "id": "10ef3f8c-d912-4333-99e0-5c0f5d25d360",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 3
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "1b914cdc-6295-4e67-8597-c40561b8a998",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Named Timers - Language Trigger Adapter",
+        "group": "Language Timers",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "language",
+            "value": "dutch",
+            "autoType": false,
+            "id": "ba23ed41-e065-4de6-bfad-a104a9ed8745",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "variableName": "durationSeconds",
+            "value": 300,
+            "autoType": true,
+            "id": "e83c18f0-e3a4-402e-8cc1-c0250ddd6d0d",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          },
+          {
+            "actionId": "a4a349ca-73eb-4671-9829-decc44435997",
+            "runImmedately": true,
+            "id": "477a8d17-ec57-4e58-8be6-9178ff71092a",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 2
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [
+      {
+        "id": "fe555921-a201-4f70-9f74-002879328c1c",
+        "blocking": true,
+        "name": "Named Timers State"
+      }
+    ],
+    "commands": [
+      {
+        "id": "9c24c6b5-8887-44fc-9f10-56dc20930bd9",
+        "name": "timer",
+        "enabled": true,
+        "include": false,
+        "mode": 0,
+        "command": "!timer",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 0,
+        "userCooldown": 0,
+        "group": "basic",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [
+          "Moderators"
+        ]
+      }
+    ],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": [
+      {
+        "id": "f132eb8a-f46b-4057-9653-dc19acbb9258",
+        "name": "timer_check",
+        "enabled": true,
+        "repeat": true,
+        "interval": 5,
+        "randomInterval": false,
+        "upperInterval": 0,
+        "lines": 0,
+        "counter": 0
+      }
+    ]
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

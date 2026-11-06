@@ -2,6 +2,8 @@
 
 Audited 2026-11-06 against the installed Streamer.bot configuration and the personal legacy source. This is a read-only extraction audit. No timer action was invoked, no global was changed, no redemption was fulfilled or refunded, and no OBS source was changed.
 
+Implementation update, 2026-11-06: the safe first slice is now implemented as Named Timers 1.0.0. It preserves the generic identities and state contracts, packages the copied renderer and read-only dock, and adds triggerless language handoff actions. Source, actual C#, focused hidden-browser, full host and combined-overlay checks pass without live actions. Publication, Streamer.bot import and controlled acceptance are still separate gates; the installed redeem router remains authoritative until the Redeem Checklist migration.
+
 ## Outcome
 
 The generic named-timer core can be extracted as a standalone `named-timers` module. The language-timer lifecycle cannot be declared fully independent until the Redeem Checklist migration follows: the installed all-rewards router currently decides whether a redemption is a language timer or a checklist item, and its five-second checker combines language fulfillment with retrying the old checklist backlog.
@@ -119,9 +121,9 @@ Confirmed findings are the installed IDs/call graph, five-second schedule, comma
 
 Unchecked behavior includes a real language redemption/fulfilment, simultaneous ordinary timer completions in production, import replacement of the shared timed schedule, the packaged renderer inside the live combined source and operation with the old server stopped. Those are controlled acceptance checks, not audit claims.
 
-Decisions before implementation:
+Implementation decisions applied to 1.0.0:
 
-- Whether to preserve the current last-message-only behavior when several ordinary timers finish together or deliberately send every completion. Fidelity default: preserve it for 1.0.0.
-- Whether the private French reference-file launch stays as a private wrapper or becomes a configurable local follow-up. Recommendation: keep it private and outside the public module.
-- Whether Named Timers and Redeem Checklist publish separately but cut over together, or publish in one coordinated batch. Recommendation: separate packages with a coordinated language/redeem cutover.
+- The current last-message-only behavior when several ordinary timers finish together is preserved for 1.0.0.
+- The private French reference-file launch remains outside the public module.
+- Named Timers and Redeem Checklist are separate packages; their language-routing authority changes only in a coordinated cutover.
 

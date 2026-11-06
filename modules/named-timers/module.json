@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "id": "named-timers",
+  "name": "Named Timers",
+  "version": "1.0.0",
+  "description": "Named and queued language timers using the established Streamer.bot globals, chat command and transparent overlay.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Named Timers - Engine",
+      "Named Timers - Initialize",
+      "Named Timers - Health",
+      "Timer_Add",
+      "Timer_Check",
+      "Timer_Command",
+      "Timers - Publish Overlay State",
+      "Named Timers - Queue Language",
+      "Named Timers - Check Languages",
+      "Named Timers - Language Trigger Adapter"
+    ],
+    "importFile": "streamerbot/named-timers.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "chat-routing": "^1.0.1",
+      "universal-dock": "^1.1.0"
+    },
+    "optionalModules": {
+      "source-modules": "^1.0.0",
+      "universal-overlay": "^1.0.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.3.0"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "ui": {
+    "id": "timers",
+    "name": "Named Timers",
+    "category": "Activities",
+    "order": 30,
+    "dockPage": "/timers/index.html",
+    "ownership": "streamerbot",
+    "packagedOverlay": true,
+    "overlays": [
+      "timers"
+    ],
+    "actions": [
+      "Named Timers - Initialize",
+      "Named Timers - Health",
+      "Timer_Add",
+      "Timer_Check",
+      "Timer_Command",
+      "Timers - Publish Overlay State",
+      "Named Timers - Queue Language",
+      "Named Timers - Check Languages"
+    ],
+    "dependencies": [
+      "chat-routing",
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "source-modules",
+      "universal-overlay"
+    ],
+    "settings": [
+      "command",
+      "timerSeconds",
+      "timerTitle",
+      "languageQueue"
+    ],
+    "tests": [
+      {
+        "id": "health",
+        "name": "Named timer state",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Republish saved timers",
+            "feature": "timers",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      }
+    ],
+    "transport": {
+      "feature": "timers",
+      "stateKey": "portable.timers.state",
+      "actionPrefix": "Named Timers"
+    }
+  }
+}
