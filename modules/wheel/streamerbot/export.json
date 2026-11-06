@@ -1,0 +1,168 @@
+{
+  "meta": {
+    "name": "Wheel",
+    "author": "Sethani",
+    "version": "2.1.0",
+    "description": "Established Wheel editor, renderer and trigger-ready adapter",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "425a7551-e745-4463-8ac6-b86973a0dd89",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Wheel - Engine",
+        "group": "Wheel",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Wheel state, configuration, and selection engine",
+            "description": "Preserves Wheel 2 profiles, selection, timing, state and personal adapter compatibility",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "sourceFile": "wheel-engine.cs",
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "77f05cf6-8d1e-46b0-8815-95645b6a41a2",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "650df2b6-1d9d-4581-8824-5fbb5420ae02",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Wheel - Initialize",
+        "group": "Wheel",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [{ "id": "fe08d771-40c5-4f7a-995c-a97de0c4955f", "type": 706, "enabled": true, "exclusions": [] }],
+        "subActions": [
+          { "variableName": "wheelActionMode", "value": "initialize", "autoType": false, "id": "0ec6ffe7-7e31-4a12-aa35-417acd184a76", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "425a7551-e745-4463-8ac6-b86973a0dd89", "runImmedately": true, "id": "3d57968b-a2e7-4939-8f3f-fdae2aca5e13", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "1e704ee5-0507-46d2-aafa-971dbdb1157d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Wheel - Configure",
+        "group": "Wheel",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "wheelActionMode", "value": "configure", "autoType": false, "id": "c9d185ef-6d24-455a-b011-4596d3425170", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "425a7551-e745-4463-8ac6-b86973a0dd89", "runImmedately": true, "id": "0ef47015-1e0e-417c-ab26-d0b06a045d54", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "db35c68e-4e0d-4bd3-8794-94e128fe701c",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Wheel - Health",
+        "group": "Wheel",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "wheelActionMode", "value": "health", "autoType": false, "id": "0bcfdb3f-62a9-4f6c-a923-d52f8b1206cb", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "425a7551-e745-4463-8ac6-b86973a0dd89", "runImmedately": true, "id": "ca7f998e-7498-4e05-ad7c-407a060dbdcf", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "71fb2daf-73a8-4a30-94cd-0e93241e3b8b",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Wheel - Spin",
+        "group": "Wheel",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "wheelActionMode", "value": "spin", "autoType": false, "id": "cbf2776a-309a-4f01-8dc7-971f7f8a8475", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "425a7551-e745-4463-8ac6-b86973a0dd89", "runImmedately": true, "id": "265dc986-a83e-4e4b-b5be-c48af97c0ea4", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "37a5e8b8-9602-4819-9bd1-b22f8acc8e65",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Wheel - Clear",
+        "group": "Wheel",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "wheelActionMode", "value": "clear", "autoType": false, "id": "9b96ad3b-179a-4df6-bf2d-38c49b608d74", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "actionId": "425a7551-e745-4463-8ac6-b86973a0dd89", "runImmedately": true, "id": "1d5d9db7-0c81-459d-9f78-f37900d3f880", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 1 }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "6345ce4f-6d79-4d32-9b44-65e3da3b01de",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Wheel - Trigger Adapter",
+        "group": "Wheel",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          { "variableName": "profile", "value": "self-care", "autoType": false, "id": "aab4c95b-d9f1-4ebd-8a63-4faf1c800643", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 0 },
+          { "variableName": "wheelActionMode", "value": "trigger-spin", "autoType": false, "id": "ddbf4ea7-19e7-4634-a7e5-c1a974ddd394", "weight": 0, "type": 123, "parentId": null, "enabled": true, "index": 1 },
+          { "actionId": "425a7551-e745-4463-8ac6-b86973a0dd89", "runImmedately": true, "id": "f9af252c-4115-452b-8862-b9e006a2ec8c", "weight": 0, "type": 4, "parentId": null, "enabled": true, "index": 2 }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "upstream": "Original download URL unknown; redistribution confirmed by the project owner",
+  "revision": "sha256:02ba23f3c3b9f6c3c5b1935d8115b418d9d82ec87a914b27ac03d47b3043203f",
+  "notice": "third-party/wheel-result-sound.txt",
+  "files": [
+    {
+      "path": "web/overlay/WheelResult.mp3",
+      "source": "Free-use/open-source download retained from the legacy Wheel module; upstream URL unavailable",
+      "sha256": "02ba23f3c3b9f6c3c5b1935d8115b418d9d82ec87a914b27ac03d47b3043203f"
+    }
+  ]
+}

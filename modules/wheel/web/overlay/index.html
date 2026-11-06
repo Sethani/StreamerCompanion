@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spin Wheel Source</title>
+  <link rel="stylesheet" href="./styles.css?v=2">
+</head>
+<body>
+  <main id="overlay" class="overlay idle">
+    <div class="wheel-wrap">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="900" height="900"></canvas>
+      <div id="result" class="result"></div>
+    </div>
+    <audio id="result-sound" src="./WheelResult.mp3" preload="auto"></audio>
+  </main>
+  <script src="../../universal-dock/shared/streamerbot-transport.js?v=2"></script>
+  <script src="./app.js?v=2"></script>
+</body>
+</html>

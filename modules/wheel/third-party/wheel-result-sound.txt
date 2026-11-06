@@ -1,0 +1,8 @@
+Wheel result sound notice
+
+WheelResult.mp3 is the result sound used by the established Wheel module. The project owner confirms that it was downloaded as an open-source/free-use sound and permits its redistribution with Streamer Companion. The original download page, author, and specific licence identifier were not retained in the legacy repository and could not be recovered from file metadata, repository history, filename, or SHA-256 search.
+
+The packaged bytes are preserved unchanged from the legacy module. SHA-256:
+02ba23f3c3b9f6c3c5b1935d8115b418d9d82ec87a914b27ac03d47b3043203f
+
+If the upstream source is identified later, update this notice with its author, URL, and exact terms. This notice does not relicense third-party audio under the repository's MIT licence.

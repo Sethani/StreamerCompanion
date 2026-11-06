@@ -7,6 +7,7 @@ $countdownSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'module
 $chatSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/chat-routing/streamerbot/chat-routing.cs')
 $launchSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/stream-launch/streamerbot/launch-engine.cs')
 $remindersSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/reminders/streamerbot/reminders-engine.cs')
+$wheelSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/wheel/streamerbot/wheel-engine.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
@@ -15,6 +16,7 @@ $countdownSource = $countdownSource.Replace('public class CPHInline {', ('public
 $chatSource = $chatSource.Replace('public class CPHInline {', ('public class ChatInline {' + $fields))
 $launchSource = $launchSource.Replace('public class CPHInline {', ('public class LaunchInline {' + $fields))
 $remindersSource = $remindersSource.Replace('public class CPHInline {', ('public class RemindersInline {' + $fields))
+$wheelSource = $wheelSource.Replace('public class CPHInline {', ('public class WheelInline {' + $fields))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
@@ -54,6 +56,7 @@ $combined = 'namespace EngineTest {' + $fakeSource + '}' + "`n" + 'namespace Eng
 $combined += "`nnamespace EngineTest {" + $chatSource + "}"
 $combined += "`nnamespace EngineTest {" + $launchSource + "}"
 $combined += "`nnamespace EngineTest {" + $remindersSource + "}"
+$combined += "`nnamespace EngineTest {" + $wheelSource + "}"
 $combined += @'
 namespace EngineTest {
  public class SyntheticLaunch : LaunchInline {
@@ -217,6 +220,31 @@ Assert-True ($reminders.CPH.Globals['portable.reminders.private'] -eq $beforePri
 Run-Engine $reminders @{ reminderMode = 'list-mine' }
 Assert-True ($reminders.CPH.Arguments['chatMessage'] -eq 'I could not identify whose reminders to list.') 'Missing chat identity must fail without selecting another viewer'
 Write-Output 'Actual Reminders C# passed: legacy private-state migration, content-free public readiness, self/target add, owner-only list and complete/restore/delete. Only synthetic reminder data was used; no overlay behavior exists.'
+
+$wheel = [EngineTest.WheelInline]::new()
+$wheel.CPH.Globals['portable.wheel.profiles'] = '{"schemaVersion":2,"moduleVersion":"2.0.0","activeProfile":"synthetic","profiles":{"synthetic":{"name":"Synthetic","entries":[{"label":"Only result","weight":1}],"settings":{"minSpinSeconds":1,"maxSpinSeconds":1,"holdSeconds":2}},"subredeem":{"name":"Synthetic sub","entries":[{"label":"Sub result","weight":1}],"settings":{"minSpinSeconds":1,"maxSpinSeconds":1,"holdSeconds":2}},"self-care":{"name":"Synthetic care","entries":[{"label":"Care result","weight":1}],"settings":{"minSpinSeconds":1,"maxSpinSeconds":1,"holdSeconds":2}}},"position":{"anchor":"bottom-right","offsetX":4,"offsetY":-3,"sizePercent":88},"appearance":{"opacityPercent":71,"labelSize":29,"labelColour":"#ffffff","borderColour":"#eeeeee","pointerColour":"#dddddd","resultColour":"#cccccc","resultBackground":"#141414","resultOpacityPercent":77,"palette":["#e85d75","#4682d9"]}}'
+Run-Engine $wheel @{ wheelActionMode = 'initialize' }
+$wheelConfig = $wheel.CPH.Globals['portable.wheel.profiles'] | ConvertFrom-Json
+$wheelState = $wheel.CPH.Globals['portable.wheel.state'] | ConvertFrom-Json
+Assert-True ($wheelConfig.moduleVersion -eq '2.1.0' -and @($wheelConfig.profiles.PSObject.Properties).Count -eq 3) 'Wheel initialize must retain existing profiles while upgrading the module version'
+Assert-True ($wheelConfig.position.anchor -eq 'bottom-right' -and $wheelConfig.appearance.opacityPercent -eq 71) 'Wheel initialize must preserve placement and appearance'
+Assert-True ($wheelState.payload.status -eq 'idle' -and $wheelState.feature -eq 'wheel') 'Wheel initialize must publish idle state'
+$beforeWait = $wheel.CPH.ClockMs
+Run-Engine $wheel @{ wheelActionMode = 'trigger-spin'; profile = 'synthetic'; userName = 'synthetic-user' }
+$wheelState = $wheel.CPH.Globals['portable.wheel.state'] | ConvertFrom-Json
+Assert-True ($wheelState.payload.status -eq 'spinning' -and $wheelState.payload.currentSpin.profile -eq 'synthetic' -and $wheelState.payload.currentSpin.user -eq 'synthetic-user') 'Trigger adapter must use the selected profile and triggering user'
+Assert-True ($wheel.CPH.Arguments['result'] -eq 'Only result' -and $wheel.CPH.ClockMs -eq ($beforeWait + 1000)) 'Trigger adapter must expose result and wait for selection completion'
+Run-Engine $wheel @{ wheelActionMode = 'selfcare-spin'; userName = 'synthetic-user' }
+$wheelState = $wheel.CPH.Globals['portable.wheel.state'] | ConvertFrom-Json
+Assert-True ($wheelState.payload.currentSpin.profile -eq 'self-care' -and $wheel.CPH.Arguments['result'] -eq 'Care result') 'Existing Selfcare wheel adapter mode must remain compatible'
+Run-Engine $wheel @{ wheelActionMode = 'sub-spin'; userName = 'synthetic-user' }
+$wheelState = $wheel.CPH.Globals['portable.wheel.state'] | ConvertFrom-Json
+Assert-True ($wheelState.payload.currentSpin.profile -eq 'subredeem' -and $wheel.CPH.Arguments['result'] -eq 'Sub result') 'Existing Sub Spin adapter mode must remain compatible'
+Run-Engine $wheel @{ wheelActionMode = 'clear' }
+$wheelState = $wheel.CPH.Globals['portable.wheel.state'] | ConvertFrom-Json
+Assert-True ($wheelState.payload.status -eq 'idle' -and $null -eq $wheelState.payload.currentSpin) 'Wheel Clear must hide the current spin'
+Assert-True ($wheel.CPH.Errors.Count -eq 0) 'Valid Wheel lifecycle must not log errors'
+Write-Output 'Actual Wheel C# passed: installed schema/profile preservation, exact adapter compatibility, generic trigger adapter, result argument, wait timing and Clear. Synthetic state only; no live trigger or chat action was invoked.'
 
 $launch = [EngineTest.SyntheticLaunch]::new()
 Run-Engine $launch @{ streamLaunchMode = 'initialize' }

@@ -16,6 +16,7 @@ Current build: [Windows preview 1.3.0 preview 1](https://github.com/Sethani/Stre
 - **Countdown 1.1**: saved presets and start/pause/resume/clear using preserved Streamer.bot timer globals, with the original combined-overlay design. See [setup](modules/countdown/README.md).
 - **Stream Launch 1.0**: guarded OBS startup around Countdown, optional Spotify startup/fading, and an existing private announcement/bookkeeping action. It preserves the established launch action IDs without packaging private hooks or adding an overlay/service. See [setup and safety boundaries](modules/stream-launch/README.md).
 - **Reminders 1.0.1**: persistent viewer backlogs, owner-only chat lookup and private dock-only management. It deliberately has no OBS renderer or combined-overlay registration. Existing records remain in Streamer.bot and are never packaged. See [privacy and migration](modules/reminders/README.md).
+- **Wheel 2.1**: the established two-profile editor, weighted selection, exact transparent canvas renderer and result sound, with compatibility for the existing personal adapters plus an inert trigger-ready template. See [migration and trigger setup](modules/wheel/README.md).
 - **Universal Dock / Overlay / Source Modules**: packaged controls, operator Tests, a transparent overlay and preserved Streamer.bot scene routing.
 - **Video 2.2**: its own editor/renderer and explicitly selected private media. The catalogue installs its three browser dependencies. See [installation and migration](modules/video/README.md).
 

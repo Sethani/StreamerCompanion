@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "id": "wheel",
+  "name": "Wheel",
+  "version": "2.1.0",
+  "description": "Weighted profile wheels with the established editor, animation, result sound and trigger-ready Streamer.bot adapter.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Wheel - Engine",
+      "Wheel - Initialize",
+      "Wheel - Configure",
+      "Wheel - Health",
+      "Wheel - Spin",
+      "Wheel - Clear",
+      "Wheel - Trigger Adapter"
+    ],
+    "importFile": "streamerbot/wheel.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.0"
+    },
+    "optionalModules": {
+      "source-modules": "^1.0.0",
+      "universal-overlay": "^1.0.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.3.0"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "ui": {
+    "id": "wheel",
+    "name": "Wheel",
+    "category": "Activities",
+    "order": 20,
+    "dockPage": "/wheel/control.html",
+    "ownership": "streamerbot",
+    "packagedOverlay": true,
+    "overlays": [
+      "wheel"
+    ],
+    "actions": [
+      "Wheel - Initialize",
+      "Wheel - Configure",
+      "Wheel - Health",
+      "Wheel - Spin",
+      "Wheel - Clear"
+    ],
+    "dependencies": [
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "source-modules",
+      "universal-overlay"
+    ],
+    "settings": [
+      "profiles",
+      "entries",
+      "spinDuration",
+      "resultHold",
+      "position",
+      "size",
+      "appearance",
+      "palette"
+    ],
+    "tests": [
+      {
+        "id": "health",
+        "name": "Wheel health",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check configuration",
+            "feature": "wheel",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      },
+      {
+        "id": "spin",
+        "name": "Wheel",
+        "level": "mutating",
+        "fields": [
+          {
+            "id": "profile",
+            "label": "Profile slug",
+            "type": "text",
+            "placeholder": "self-care"
+          },
+          {
+            "id": "user",
+            "label": "Optional user",
+            "type": "text",
+            "placeholder": "Test user"
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Spin",
+            "feature": "wheel",
+            "command": "Spin",
+            "args": {
+              "profile": {
+                "field": "profile",
+                "trim": true
+              },
+              "user": {
+                "field": "user",
+                "trim": true
+              }
+            }
+          },
+          {
+            "label": "Clear",
+            "className": "secondary",
+            "feature": "wheel",
+            "command": "Clear",
+            "args": {}
+          }
+        ]
+      }
+    ],
+    "transport": {
+      "feature": "wheel",
+      "stateKey": "portable.wheel.state",
+      "actionPrefix": "Wheel"
+    }
+  }
+}

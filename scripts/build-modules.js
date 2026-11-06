@@ -45,6 +45,14 @@ function buildModules(ids, options = {}) {
         if (entry.isSymbolicLink()) throw new Error("Service symlinks are not distributable.");
         if (entry.isDirectory()) addService(path.join(directory, entry.name), prefix + entry.name + "/");
         else {
+          if (/\.(mp3|ogg|wav)\.b64$/.test(entry.name)) {
+            const assetPath = prefix + entry.name.slice(0, -4), reviewed = reviewedAssets.get(assetPath);
+            const encoded = fs.readFileSync(path.join(directory, entry.name), "utf8").trim();
+            const bytes = Buffer.from(encoded, "base64");
+            if (!reviewed || bytes.toString("base64") !== encoded || crypto.createHash("sha256").update(bytes).digest("hex") !== reviewed.sha256) throw new Error("Unreviewed, invalid or changed audio: " + assetPath);
+            zip.addFile(assetPath, bytes);
+            continue;
+          }
           if (entry.name.endsWith(".png")) {
             const assetPath = prefix + entry.name, reviewed = reviewedAssets.get(assetPath);
             const bytes = fs.readFileSync(path.join(directory, entry.name));
