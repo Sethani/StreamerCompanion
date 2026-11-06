@@ -6,7 +6,7 @@ Audited 2026-11-06 against the installed Streamer.bot configuration, the persona
 
 Redeem Checklist is independently extractable as a private Universal Dock module. The coordinated language handoff is implemented in the package: the established wildcard router classifies the private installed reward map, delegates language items to Named Timers and sends checklist items to the portable checklist. The established five-second action delegates language completion to Named Timers and migrates any old Node backlog locally instead of calling port 3124.
 
-The package is not authoritative until it is imported. Until then, the installed mixed router/checker remains live. Import replaces those actions by stable IDs; running both old and new routers as separate actions would risk duplicate queueing.
+Version 1.0.0 is now published and installed in Preview as `streamerbot-required`. It is not authoritative until it is imported. Until then, the installed mixed router/checker remains live. Import replaces those actions by stable IDs; running both old and new routers as separate actions would risk duplicate queueing.
 
 ## Installed component inventory
 
@@ -43,8 +43,8 @@ No reward ID/title/prompt, viewer identity/input, redemption ID, history record 
 
 ## Verification status and remaining gates
 
-Confirmed in source/package tests: stable identities and trigger ownership, Named Timers delegation, local backlog migration, no private seeds/port/service/overlay, deterministic package construction and dependency/import states. Actual C# passes in-place history preservation, deduplication, category routing, managed-map routing, language arguments and success/failure resolution against synthetic Twitch sinks. Hidden packaged-host acceptance passes private rendering and confirmation gating without live actions.
+Confirmed in source/package tests: stable identities and trigger ownership, Named Timers delegation, local backlog migration, no private seeds/port/service/overlay, deterministic package construction and dependency/import states. Actual C# passes in-place history preservation, deduplication, category routing, managed-map routing, language arguments and success/failure resolution against synthetic Twitch sinks. Hidden packaged-host acceptance passes private rendering and confirmation gating without live actions. The real GitHub release also passes catalogue/hash/dependency installation in the packaged Companion host without executing an action.
 
 Unchecked until controlled operator acceptance: importing over the installed mixed actions, preservation of the 14 real history records, one ordinary checklist redemption, one explicit complete or refund, one language redemption through the new delegation path and operation with port 3124 stopped. These are not automated because they can change Twitch state or expose viewer history.
 
-The safe order is publish, released-package verification, Preview installation as import-required, backup, import once, restart Streamer.bot, confirm Ready/history, then perform explicit operator tests. The old router/checker should not remain as additional enabled copies.
+Publication, released-package verification and Preview installation are complete. The remaining safe order is backup, import once, restart Streamer.bot, confirm Ready/history, then perform explicit operator tests. The old router/checker should not remain as additional enabled copies.
