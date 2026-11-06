@@ -2,7 +2,7 @@
 
 Audited 2026-11-06 against the installed Streamer.bot configuration and the personal legacy source. This is a read-only extraction audit. No timer action was invoked, no global was changed, no redemption was fulfilled or refunded, and no OBS source was changed.
 
-Implementation update, 2026-11-06: the safe first slice is now implemented as Named Timers 1.0.0. It preserves the generic identities and state contracts, packages the copied renderer and read-only dock, and adds triggerless language handoff actions. Source, actual C#, focused hidden-browser, full host and combined-overlay checks pass without live actions. Publication, Streamer.bot import and controlled acceptance are still separate gates; the installed redeem router remains authoritative until the Redeem Checklist migration.
+Implementation update, 2026-11-06: the safe first slice is published as Named Timers 1.0.0 and installed in Preview as `streamerbot-required`. It preserves the generic identities and state contracts, packages the copied renderer and read-only dock, and adds triggerless language handoff actions. Source, actual C#, focused hidden-browser, full host, real released-package and combined-overlay checks pass without live actions. Streamer.bot import and controlled acceptance are still separate gates; the installed redeem router remains authoritative until the Redeem Checklist migration.
 
 ## Outcome
 
