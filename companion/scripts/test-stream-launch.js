@@ -25,9 +25,16 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'stream-la
   const start=await get('/api/spotify/stream-start?durationSeconds=2');assert.equal(start.playback,'preserved-active-session');assert.equal(start.fade.status,'armed');
   await get('/api/spotify/scene?scene=Fixture%20Other');assert.equal((await get('/health')).testPlayback.pauseCount,0,'Scene leave must preserve countdown-owned music');
   await wait(async()=>{const health=await get('/health');return !health.fade.enabled&&health.testPlayback.volume===15;},'autonomous Spotify fade');
-  const health=await get('/health');assert.equal(health.testPlayback.startCount,1);assert.equal(health.testPlayback.isPlaying,true);
+  let health=await get('/health');assert.equal(health.testPlayback.startCount,1);assert.equal(health.testPlayback.isPlaying,true);
+  // A streamer may pause Spotify after selecting Starting Soon so pre-stream
+  // music is not audible locally. Stream start must observe the real paused
+  // state instead of trusting the still-owned scene session.
+  await get('/api/spotify/test/playback?playing=false');
+  const restarted=await get('/api/spotify/stream-start?durationSeconds=2');
+  assert.equal(restarted.playback,'started');
+  health=await get('/health');assert.equal(health.testPlayback.startCount,2);assert.equal(health.testPlayback.isPlaying,true);
   await spotify.stop();assert.equal((await spotify.probe(200)).ready,false);
-  console.log('Stream Launch package passed: preserved action identities, safe trigger/export boundaries, no private/monolith dependency, import/Ready states and no overlay/service. Existing Spotify runtime passed autonomous fade and shared scene/countdown ownership in isolated test mode.');
+  console.log('Stream Launch package passed: preserved action identities, safe trigger/export boundaries, no private/monolith dependency, import/Ready states and no overlay/service. Spotify passed autonomous fade, shared scene/countdown ownership, and restart-after-manual-pause in isolated test mode.');
  }finally{await spotify?.stop();await test?.close();fs.rmSync(root,{recursive:true,force:true});}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

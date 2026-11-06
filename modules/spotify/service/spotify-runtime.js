@@ -201,7 +201,10 @@ async function startCountdown(durationSeconds) {
   const duration = Math.max(0, Number(durationSeconds) || 0);
   let session = runtime.playbackSession;
   let result;
-  if (!session || !session.startedByService) {
+  const ownedPlaybackIsActive = session && session.startedByService
+    ? (await playbackState()).isPlaying
+    : false;
+  if (!ownedPlaybackIsActive) {
     result = await startPlaylist(duration);
     session = session || createPlaybackSession(true);
     session.startedByService = true;
@@ -420,6 +423,10 @@ const server = http.createServer(async (request, response) => {
     if (request.method === "GET" && url.pathname === "/spotify/settings") {
       const page = fs.readFileSync(path.join(__dirname, "spotify-settings.html"));
       response.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Content-Length": page.length, "Cache-Control": "no-store" }); return response.end(page);
+    }
+    if (testMode && request.method === "GET" && url.pathname === "/api/spotify/test/playback") {
+      testPlayback.isPlaying = url.searchParams.get("playing") === "true";
+      return json(response, 200, { playing: testPlayback.isPlaying });
     }
     if (request.method === "GET" && url.pathname === "/api/spotify/stream-start") return json(response, 200, await startCountdown(clamp(url.searchParams.get("durationSeconds"), 0, 86400, 0)));
     if (request.method === "GET" && url.pathname === "/api/spotify/countdown/release") { runtime.fade = null; releaseCountdown(url.searchParams.get("preserve") !== "false"); return json(response, 200, { released: true, playbackOwnership: runtime.playbackSession }); }

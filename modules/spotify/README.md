@@ -23,7 +23,7 @@ Provides Spotify playback, countdown fading, scene-owned music, `!song`, `!playl
 
 ## Behaviour
 
-Configured scenes start music only when playback is not already active. Music is paused on leaving only when the scene session started it. Countdown playback and scene playback share ownership so leaving Starting Soon does not interrupt an active countdown handoff.
+Configured scenes start music only when playback is not already active. Music is paused on leaving only when the scene session started it. Countdown playback and scene playback share ownership so leaving Starting Soon does not interrupt an active countdown handoff. If playback is manually paused after entering Starting Soon, the later stream-start handoff observes that paused state and starts the configured playlist again before arming the fade.
 
 `!song`, `!playlist`, and automatic announcements are individually optional. Streamer.bot sends all public messages through `Chat - All Platforms`; service errors remain private.
 
