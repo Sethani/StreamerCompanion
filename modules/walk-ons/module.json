@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "id": "walk-ons",
+  "name": "Walk Ons",
+  "version": "2.1.0",
+  "description": "First-chat viewer entrances with private audio, weighted pools, optional video, and once-per-stream eligibility.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Walk Ons - Engine",
+      "Walk Ons - Initialize",
+      "Walk Ons - Health",
+      "Walk Ons - Configure",
+      "Walk Ons - Upsert",
+      "Walk Ons - Delete",
+      "Walk Ons - Add",
+      "Walk Ons - Remove",
+      "Walk Ons - List",
+      "Walk Ons - Chat Watcher",
+      "Walk Ons - Reset Session",
+      "Walk Ons - Test",
+      "Walk-on Sound - Engine",
+      "Walk-on Sound - Initialize",
+      "Walk-on Sound - Play",
+      "Walk-on Sound - Stop"
+    ],
+    "importFile": "streamerbot/walk-ons.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.1"
+    },
+    "optionalModules": {
+      "source-modules": "^1.0.0",
+      "universal-overlay": "^1.0.0",
+      "video": "^2.2.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.3.1"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "media": {
+    "kind": "audio"
+  },
+  "ui": {
+    "id": "walk-ons",
+    "name": "Walk Ons",
+    "category": "People",
+    "order": 30,
+    "dockPage": "/walkons/index.html",
+    "ownership": "streamerbot",
+    "packagedOverlay": true,
+    "overlays": [
+      "walkonsound"
+    ],
+    "actions": [
+      "Walk Ons - Initialize",
+      "Walk Ons - Health",
+      "Walk Ons - Configure",
+      "Walk Ons - Upsert",
+      "Walk Ons - Delete",
+      "Walk Ons - Reset Session",
+      "Walk Ons - Test",
+      "Walk-on Sound - Play",
+      "Walk-on Sound - Stop"
+    ],
+    "dependencies": [
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "source-modules",
+      "universal-overlay",
+      "video"
+    ],
+    "settings": [
+      "people",
+      "sounds",
+      "weights",
+      "volume",
+      "oncePerStream"
+    ],
+    "tests": [
+      {
+        "id": "health",
+        "name": "Walk-ons health",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check health",
+            "feature": "walkOns",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      },
+      {
+        "id": "person",
+        "name": "Configured walk-on",
+        "level": "mutating",
+        "fields": [
+          {
+            "id": "login",
+            "label": "Configured Twitch login",
+            "type": "text",
+            "placeholder": "username"
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Test",
+            "feature": "walkOns",
+            "command": "Test",
+            "args": {
+              "login": {
+                "field": "login"
+              }
+            }
+          },
+          {
+            "label": "Reset eligibility",
+            "className": "secondary",
+            "feature": "walkOns",
+            "command": "Reset Session",
+            "args": {
+              "login": {
+                "field": "login"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transport": {
+      "feature": "walkOns",
+      "stateKey": "portable.walkOns.state",
+      "actionPrefix": "Walk Ons"
+    },
+    "transports": [
+      {
+        "feature": "walkonSound",
+        "stateKey": "portable.walkonSound.state",
+        "actionPrefix": "Walk-on Sound"
+      }
+    ]
+  }
+}

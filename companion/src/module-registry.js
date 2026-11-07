@@ -52,7 +52,7 @@ class CompanionRegistry {
       if (manifest.web.overlayPage) page(manifest.web.overlayPage);
       for (const link of manifest.ui?.links || []) { if (!link.name || typeof link.name !== "string") throw new Error("Browser link name required."); page(link.path); }
     }
-    if (manifest.media && manifest.media.kind !== "video") throw new Error("Unsupported module media type.");
+    if (manifest.media && !["video", "audio"].includes(manifest.media.kind)) throw new Error("Unsupported module media type.");
     if (manifest.service) {
       if (manifest.schemaVersion < 2) throw new Error("Service modules require package schema 2.");
       if (manifest.service.apiVersion !== 1) throw new Error("Module requires an unsupported Companion service API version.");

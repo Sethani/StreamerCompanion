@@ -35,7 +35,7 @@ async function main(){
  await control("document.getElementById('clear-test').click()");await waitFor(()=>view("!document.querySelector('#chat').textContent.includes('Test Member')"),'clear synthetic only');
  await control("document.querySelector('[name=appearance]').value='http://old.invalid/chat/chat.html?bubbles=true&fontsize=30px&bots=ignored&token=private';document.querySelector('[name=enabled]').checked=false;document.getElementById('settings').requestSubmit()");
  await waitFor(()=>!test.service.config().enabled,'disable/save');assert.equal(test.service.config().appearance.includes('private'),false);
- assert.equal(await control("document.querySelector('[name=appearance]').value.includes('token')"),false);
+ await waitFor(()=>control("!document.querySelector('[name=appearance]').value.includes('token')"),'sanitized appearance reflected in settings');
  await control("document.querySelector('[name=enabled]').checked=true;document.getElementById('settings').requestSubmit()");await waitFor(()=>test.service.status().subscribed,'re-enable');
  const loaded=once(overlay.webContents,'did-finish-load');overlay.reload();await loaded;
  await waitFor(()=>view("getComputedStyle(document.body).fontSize==='30px' && chatCoreSource?.readyState===1"),'saved appearance and connected feed without old query');

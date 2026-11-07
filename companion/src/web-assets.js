@@ -2,7 +2,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 
-const TYPES = { ".html": "text/html; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".mp4": "video/mp4", ".webm": "video/webm", ".m4v": "video/mp4", ".mov": "video/quicktime" };
+const TYPES = { ".html": "text/html; charset=utf-8", ".js": "application/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".mp4": "video/mp4", ".webm": "video/webm", ".m4v": "video/mp4", ".mov": "video/quicktime", ".mp3": "audio/mpeg", ".wav": "audio/wav", ".ogg": "audio/ogg", ".m4a": "audio/mp4" };
+const MEDIA = {
+  video: { extensions: [".mp4", ".webm", ".m4v", ".mov"], description: "video" },
+  audio: { extensions: [".mp3", ".wav", ".ogg", ".m4a"], description: "audio" }
+};
 
 function inside(root, relative) {
   if (typeof relative !== "string" || !relative || relative.includes("\\") || /[\x00-\x1f:]/.test(relative) || relative.split("/").some((part) => !part || part === "." || part === ".." || /[. ]$/.test(part))) throw Object.assign(new Error("Invalid asset path."), { statusCode: 400 });
@@ -41,15 +45,16 @@ class WebAssets {
   listMedia(id) { return this.index(id).map((item) => ({ ...item, src: "http://127.0.0.1:" + this.port() + "/api/public/media/" + encodeURIComponent(id) + "/" + encodeURIComponent(item.filename), enabled: true })); }
   importMedia(id, files) {
     const manifest = this.registry.readManifest(id);
-    if (manifest?.media?.kind !== "video") throw new Error("This module does not accept video media.");
-    if (!Array.isArray(files) || !files.length) throw new Error("Choose a supported video file.");
-    for (const file of files) if (![".mp4", ".webm", ".m4v", ".mov"].includes(path.extname(file).toLowerCase()) || !fs.statSync(file).isFile()) throw new Error("Choose a supported video file.");
+    const media = MEDIA[manifest?.media?.kind];
+    if (!media) throw new Error("This module does not accept media.");
+    if (!Array.isArray(files) || !files.length) throw new Error("Choose a supported " + media.description + " file.");
+    for (const file of files) if (!media.extensions.includes(path.extname(file).toLowerCase()) || !fs.statSync(file).isFile()) throw new Error("Choose a supported " + media.description + " file.");
     const directory = this.mediaDirectory(id); fs.mkdirSync(directory, { recursive: true });
     const entries = this.index(id);
     const created = [];
     try { for (const file of files) {
       const extension = path.extname(file).toLowerCase();
-      if (![".mp4", ".webm", ".m4v", ".mov"].includes(extension) || !fs.statSync(file).isFile()) throw new Error("Choose a supported video file.");
+      if (!media.extensions.includes(extension) || !fs.statSync(file).isFile()) throw new Error("Choose a supported " + media.description + " file.");
       const mediaId = crypto.randomUUID(); const filename = mediaId + extension;
       fs.copyFileSync(file, path.join(directory, filename));
       created.push(path.join(directory, filename));
@@ -68,7 +73,7 @@ class WebAssets {
     const manifest = this.registry.readManifest(id);
     if (!manifest) throw Object.assign(new Error("Module not installed."), { statusCode: 404 });
     if (kind === "media") {
-      if (manifest.media?.kind !== "video") throw Object.assign(new Error("No media for this module."), { statusCode: 404 });
+      if (!MEDIA[manifest.media?.kind]) throw Object.assign(new Error("No media for this module."), { statusCode: 404 });
       if (!encoded) {
         const body = Buffer.from(JSON.stringify({ media: this.listMedia(id) }));
         response.writeHead(200, { "Content-Type": "application/json", "Content-Length": body.length, "Cache-Control": "no-store" }); response.end(request.method === "HEAD" ? undefined : body); return true;

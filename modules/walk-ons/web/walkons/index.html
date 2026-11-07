@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Walk Ons</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main>
+    <section class="toolbar">
+      <div><h1>Walk Ons</h1><p id="status">Loading…</p></div>
+      <div class="actions"><button id="refresh-media" type="button">Refresh audio</button><button id="refresh" type="button" class="secondary">Refresh state</button></div>
+    </section>
+    <section class="settings">
+      <h2>Behaviour</h2>
+      <label class="checkbox"><input id="once-per-stream" type="checkbox" checked> Once per person per stream</label>
+      <button id="save-settings" type="button">Save behaviour</button>
+      <button id="reset-session" type="button" class="secondary">Reset all eligibility</button>
+    </section>
+    <form id="walkon-form" autocomplete="off">
+      <label>Twitch login<input id="login" placeholder="username" required></label>
+      <label>Type<select id="type"><option value="sound">Sound</option><option value="soundpool">Weighted sound pool</option><option value="video">Video</option></select></label>
+      <label id="sound-row">Sound<select id="sound-value"></select></label>
+      <fieldset id="sound-pool-row" hidden>
+        <legend>Weighted sounds</legend>
+        <div class="pool-heading"><span>Random selection pool</span><button id="add-pool-sound" type="button">Add sound</button></div>
+        <div id="sound-pool"></div><p class="help">A weight of 3 is three times as likely as a weight of 1.</p>
+      </fieldset>
+      <label id="video-row" hidden>Video<select id="video-value"></select></label>
+      <label>Title<input id="title" placeholder="Optional title for videos"></label>
+      <label>Volume <output id="volume-output">100%</output><input id="volume" type="range" min="0" max="1" step="0.05" value="1"></label>
+      <label class="checkbox"><input id="enabled" type="checkbox" checked> Enabled</label>
+      <div class="actions"><button type="submit">Save</button><button id="clear" type="button" class="secondary">Clear</button></div>
+    </form>
+    <section><h2>Configured</h2><ul id="walkon-list"></ul></section>
+  </main>
+  <script src="../../universal-dock/shared/streamerbot-transport.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

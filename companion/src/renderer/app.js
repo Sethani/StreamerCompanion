@@ -43,7 +43,7 @@ function updateInstalled(entry, item) {
   slot(actions, 'import', 'Import into Streamer.bot…', async () => { const result = await window.companion.openImport(item.id); feedback(result.operation === 'copied' ? 'Import code copied. In Streamer.bot click Import, paste into Import String, review and import the actions, then refresh Companion.' : 'Drag the selected file into Streamer.bot’s Import String box, review and import, then refresh Companion.'); }, Boolean(item.hasImport));
   slot(actions, 'docs', 'Documentation', () => window.companion.openDocs(item.id), Boolean(item.hasDocumentation));
   slot(actions, 'overlay', 'Copy overlay URL', () => window.companion.moduleLink(item.id, 'overlay', true), Boolean(item.ui?.extensionOverlayUrl));
-  slot(actions, 'media', 'Add media', async () => { const result = await window.companion.importMedia(item.id); if (!result.canceled) feedback('Media copied privately. Refresh media in the module controls.'); }, Boolean(item.hasMedia));
+  slot(actions, 'media', item.mediaKind === 'audio' ? 'Import audio' : 'Add media', async () => { const result = await window.companion.importMedia(item.id); if (!result.canceled) feedback('Media copied privately. Refresh media in the module controls.'); }, Boolean(item.hasMedia));
   const links = item.ui?.links || [];
   for (const [index, link] of links.entries()) slot(actions, 'link-' + index, link.name, () => window.companion.moduleLink(item.id, 'link-' + index));
   for (const node of actions.children) if (node.dataset.action?.startsWith('link-')) node.hidden = Number(node.dataset.action.slice(5)) >= links.length;

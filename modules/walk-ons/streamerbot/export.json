@@ -1,0 +1,770 @@
+{
+  "meta": {
+    "name": "Walk Ons",
+    "author": "Sethani",
+    "version": "2.1.0",
+    "description": "First-chat viewer entrances with private Companion audio, weighted pools, and optional video.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Engine",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Walk-on roster and first-chat engine",
+            "description": "Owns public walk-on configuration, weighted selection, and private session eligibility.",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "5d5bae11-ce01-4534-9766-2f583fd13c48",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "walk-ons-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "797c8387-eec5-4ad6-ab21-90087878a8a7",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Initialize",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "594d8ac8-ed54-434c-a926-46b476ebcdd0",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "7b8a8f26-3b81-460d-ac12-3a3a17f947ec",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "17814de4-ea03-480b-93f5-5c0729008144",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "67c4d969-dd53-476e-9741-787f3f863651",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Health",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "health",
+            "autoType": false,
+            "id": "e6b228d6-ff45-4fb7-a2d9-60473d772779",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "629b8c34-d891-4b60-b2cc-08409408d1dc",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "398eb54a-67fc-4b62-b17f-d73584502b91",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Configure",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "configure",
+            "autoType": false,
+            "id": "6d219103-4183-4efa-8ae5-bca9d40a5bd4",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "17f12551-19f9-40ce-8d8b-932c534454b1",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "1b67e346-f797-49b1-b980-cc31f2e1f442",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Upsert",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "upsert",
+            "autoType": false,
+            "id": "013fa2f5-29f5-48f3-aa1a-8a09ca0e9a4b",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "bafe52c2-b748-42aa-9d90-f07a4e3e61aa",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "acaf2cf0-4b7d-4925-99a1-194ee2ddf5ee",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Delete",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "delete",
+            "autoType": false,
+            "id": "66a41e2a-52ca-4a7d-95dd-52e34a1de0af",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "68013e34-6b06-449b-8fa6-b87ed98c5b95",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "61dfe17d-2cd6-4c08-a768-095859a4f943",
+        "queue": "5f83ca16-0a7e-4ee9-b652-5ee6750223cc",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Add",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "commandId": "4e7c8d93-4092-476d-bf7b-49eed0b33686",
+            "id": "00bce248-ae4d-4f74-a92e-bc8e1e98c506",
+            "type": 401,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "add",
+            "autoType": false,
+            "id": "74727ac8-2363-43ee-bc9b-55ab8d995885",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "01494bef-4811-4a4d-87d9-aaff3f6d4173",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "15ce924c-effa-418d-bdc4-832b7061df06",
+        "queue": "5f83ca16-0a7e-4ee9-b652-5ee6750223cc",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Remove",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "commandId": "94b47ae9-4eef-403d-8f4e-1e5b326cc1bd",
+            "id": "39b9dd16-c04d-449c-ac97-53cd7bf7e496",
+            "type": 401,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "remove",
+            "autoType": false,
+            "id": "8e24e8c5-3adb-4495-811b-1cc3ca9a1926",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "8756d629-5f6f-4cc4-b293-820e23d7e99a",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "aec7f550-89c9-4aa9-a58e-7003af30dc78",
+        "queue": "5f83ca16-0a7e-4ee9-b652-5ee6750223cc",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - List",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "commandId": "42a80f6a-bb4b-459c-b752-40771b9255db",
+            "id": "edc57b5e-9f8e-4f7b-b30f-e43a36680803",
+            "type": 401,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "list",
+            "autoType": false,
+            "id": "05586d03-5d11-44d4-b750-c41ae6534169",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "12ac7fa5-9f32-4a63-ba7d-ba5c99fbc586",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "766609f1-0b00-4805-a7f3-b0369ba244f9",
+        "queue": "5f83ca16-0a7e-4ee9-b652-5ee6750223cc",
+        "enabled": true,
+        "excludeFromHistory": true,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Chat Watcher",
+        "group": "Walk Ons",
+        "alwaysRun": true,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "25e329b6-39e8-402f-939f-72d75765e563",
+            "type": 133,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "watch",
+            "autoType": false,
+            "id": "5410a90b-325b-4973-a80f-77c8e1eac43f",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "a3399927-b630-40ac-b94e-3ae6a265edc4",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "fb01f2b6-646c-4f19-b3e6-67557f330d67",
+        "queue": "5f83ca16-0a7e-4ee9-b652-5ee6750223cc",
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Reset Session",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "commandId": "b7d91a93-e73b-4648-aaf6-edad9e4c0156",
+            "id": "c5c62381-90bf-4948-b706-712344c3fef6",
+            "type": 401,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "reset",
+            "autoType": false,
+            "id": "421ece49-85d4-47ab-956f-54ec9dd6c20c",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "13d132fb-3bcf-4c53-90cc-93ed2bd55d4b",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "75744c13-b2d7-4a44-af5f-8f5263da7b9f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk Ons - Test",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "walkOnsMode",
+            "value": "test",
+            "autoType": false,
+            "id": "7d5dbc5c-daee-49c7-8072-b740439745d8",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
+            "runImmedately": true,
+            "id": "b3ef083e-dd97-4e67-b2ef-ae0a9f2e8373",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3999caa3-0625-419f-be94-eaa3fcee8cb9",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk-on Sound - Engine",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Walk-on sound state and playback engine",
+            "description": "Publishes local audio playback state for the packaged transparent renderer.",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "8886455f-fcf9-4397-bede-f5d0fc20352c",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "walk-on-sound-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "11b4bbee-286a-46d8-9c3f-6d85ec7a3ec3",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk-on Sound - Initialize",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "3a703043-584f-4d9a-bbf4-170e45414fca",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "walkonSoundMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "67d6f647-2c62-4212-a6a6-e313f31b9b65",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "3999caa3-0625-419f-be94-eaa3fcee8cb9",
+            "runImmedately": true,
+            "id": "0683916e-8bab-4f09-a729-9a8b21eaf307",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "7b2a868f-867f-404b-ab47-0e1f58e335d1",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk-on Sound - Play",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "walkonSoundMode",
+            "value": "play",
+            "autoType": false,
+            "id": "6ce9e547-744a-472b-8367-b515a54ed7f9",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "3999caa3-0625-419f-be94-eaa3fcee8cb9",
+            "runImmedately": true,
+            "id": "c53b09ad-27ae-4790-a58d-f586ae6c1adc",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "16f3bce9-9c70-4791-98b5-bef600897957",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Walk-on Sound - Stop",
+        "group": "Walk Ons",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "walkonSoundMode",
+            "value": "stop",
+            "autoType": false,
+            "id": "6bd770ba-328a-4906-949e-bc14b775393e",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "3999caa3-0625-419f-be94-eaa3fcee8cb9",
+            "runImmedately": true,
+            "id": "507f197f-88b8-4ccc-91b2-04d0d949a50e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [
+      {
+        "id": "5f83ca16-0a7e-4ee9-b652-5ee6750223cc",
+        "blocking": true,
+        "name": "Walk Ons"
+      }
+    ],
+    "commands": [
+      {
+        "id": "4e7c8d93-4092-476d-bf7b-49eed0b33686",
+        "name": "Walk Ons - Add",
+        "enabled": true,
+        "include": true,
+        "mode": 0,
+        "command": "!walkonadd",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 5,
+        "userCooldown": 5,
+        "group": "Walk Ons",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [
+          "Moderators"
+        ]
+      },
+      {
+        "id": "42a80f6a-bb4b-459c-b752-40771b9255db",
+        "name": "Walk Ons - List",
+        "enabled": true,
+        "include": true,
+        "mode": 0,
+        "command": "!walkonlist",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 5,
+        "userCooldown": 5,
+        "group": "Walk Ons",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [
+          "Moderators"
+        ]
+      },
+      {
+        "id": "94b47ae9-4eef-403d-8f4e-1e5b326cc1bd",
+        "name": "Walk Ons - Remove",
+        "enabled": true,
+        "include": true,
+        "mode": 0,
+        "command": "!walkonremove",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 5,
+        "userCooldown": 5,
+        "group": "Walk Ons",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [
+          "Moderators"
+        ]
+      },
+      {
+        "id": "b7d91a93-e73b-4648-aaf6-edad9e4c0156",
+        "name": "Walk Ons - Reset Session",
+        "enabled": true,
+        "include": true,
+        "mode": 0,
+        "command": "!walkonreset",
+        "regexExplicitCapture": false,
+        "location": 0,
+        "ignoreBotAccount": true,
+        "ignoreInternal": true,
+        "sources": 1,
+        "persistCounter": false,
+        "persistUserCounter": false,
+        "caseSensitive": false,
+        "globalCooldown": 5,
+        "userCooldown": 5,
+        "group": "Walk Ons",
+        "grantType": 0,
+        "permittedUsers": [],
+        "permittedGroups": [
+          "Moderators"
+        ]
+      }
+    ],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

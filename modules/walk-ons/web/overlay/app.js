@@ -1,0 +1,5 @@
+(()=>{"use strict";const player=document.getElementById("player"),transport=window.StreamingTransport.create();let active=0;
+function stop(){player.pause();player.removeAttribute("src");player.load();active=0}
+transport.subscribe("walkonSound",event=>{const current=event.payload?.current||{};if(!current.visible||!current.src){stop();return}const started=Number(current.startedAtMs||0);if(!started||started===active)return;active=started;player.src=current.src;player.volume=Math.max(0,Math.min(1,Number(current.volume??1)));player.play().catch(error=>transport.execute("walkonSound","Stop",{startedAtMs:started,error:error.message}).catch(()=>{}))});
+player.addEventListener("ended",()=>{const started=active;stop();if(started)transport.execute("walkonSound","Stop",{startedAtMs:started}).catch(()=>{})});player.addEventListener("error",()=>{const started=active,message=player.error?.message||"Audio playback failed.";stop();if(started)transport.execute("walkonSound","Stop",{startedAtMs:started,error:message}).catch(()=>{})});transport.connect();setTimeout(()=>transport.refresh().catch(()=>{}),200);window.addEventListener("beforeunload",()=>transport.close());
+})();

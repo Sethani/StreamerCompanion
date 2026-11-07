@@ -77,8 +77,13 @@ function createDesktop(options) {
     return true;
   });
   ipcMain.handle("companion:import-media", async (_event, id) => {
-    if (registry.readManifest(id)?.media?.kind !== "video") throw new Error("This module does not accept video media.");
-    const selection = await dialog.showOpenDialog(window, { title: "Add video media", properties: ["openFile", "multiSelections"], filters: [{ name: "Videos", extensions: ["mp4", "webm", "m4v", "mov"] }] });
+    const kind = registry.readManifest(id)?.media?.kind;
+    const media = {
+      video: { title: "Add video media", name: "Videos", extensions: ["mp4", "webm", "m4v", "mov"] },
+      audio: { title: "Add audio media", name: "Audio", extensions: ["mp3", "wav", "ogg", "m4a"] }
+    }[kind];
+    if (!media) throw new Error("This module does not accept media.");
+    const selection = await dialog.showOpenDialog(window, { title: media.title, properties: ["openFile", "multiSelections"], filters: [{ name: media.name, extensions: media.extensions }] });
     if (selection.canceled) return { canceled: true };
     return { media: host.webAssets.importMedia(id, selection.filePaths) };
   });

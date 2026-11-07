@@ -1,5 +1,9 @@
 Experimental application release by Sethani, under MIT for first-party code.
 
+Companion 1.3.1 adds private audio media imports for static modules. Audio files are copied under module data, never included in packages, and served only from the loopback public-media route with range support. Installed rows identify audio modules with an **Import audio** control. Existing Video media behavior is unchanged.
+
+Universal Dock 1.1.1 supports more than one state/action transport in a single installed module. Walk Ons 2.1.0 uses that support for its roster and audio player while retaining the same stable Streamer.bot actions, commands and persisted globals. Upgrade Companion first, then Universal Dock. Existing favorites, navigation, service data and automatic-start choices are retained.
+
 Companion 1.3.0 replaces the stacked desktop lists with Installed, Catalogue and Settings tabs. Installed modules appear once, with their service controls attached. Alphabetical category groups, compact expandable rows, accent-insensitive search, status filters and attention/update counts keep larger libraries manageable. Navigation and scroll are remembered locally. Favorites are shared with Universal Dock 1.1.0 through a narrowly scoped local preferences API; the installation bearer token is never exposed to browser pages.
 
 Upgrade the application first, then update Universal Dock to 1.1.0. Its new searchable alphabetical picker preserves the selected controls while browsing or starring modules. Existing OBS dock URLs remain valid. No Streamer.bot reimport is required for this navigation update. Close the previous Companion before opening the new build; installed modules, private data and automatic-start choices use the same preview profile.

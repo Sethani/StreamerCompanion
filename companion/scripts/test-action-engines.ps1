@@ -8,6 +8,8 @@ $chatSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/cha
 $launchSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/stream-launch/streamerbot/launch-engine.cs')
 $remindersSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/reminders/streamerbot/reminders-engine.cs')
 $wheelSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/wheel/streamerbot/wheel-engine.cs')
+$walkOnsSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/walk-ons/streamerbot/walk-ons-engine.cs')
+$walkSoundSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/walk-ons/streamerbot/walk-on-sound-engine.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
@@ -17,6 +19,8 @@ $chatSource = $chatSource.Replace('public class CPHInline {', ('public class Cha
 $launchSource = $launchSource.Replace('public class CPHInline {', ('public class LaunchInline {' + $fields))
 $remindersSource = $remindersSource.Replace('public class CPHInline {', ('public class RemindersInline {' + $fields))
 $wheelSource = $wheelSource.Replace('public class CPHInline {', ('public class WheelInline {' + $fields))
+$walkOnsSource = $walkOnsSource.Replace('public class CPHInline', ('public class WalkOnsInline')).Replace('private const string StateKey', ($fields + ' private const string StateKey'))
+$walkSoundSource = $walkSoundSource.Replace('public class CPHInline', ('public class WalkSoundInline')).Replace('private const string StateKey', ($fields + ' private const string StateKey'))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
@@ -25,8 +29,9 @@ public class FakeCPH {
  public List<string> Errors = new List<string>();
  public Dictionary<string,object> Arguments = new Dictionary<string,object>();
  public List<string> Actions = new List<string>();
+ public System.Action<string> RunActionHook;
  public void SetArgument(string key,object value){Arguments[key]=value;}
- public bool RunAction(string name,bool immediate){Actions.Add(name);if(name=="Countdown - Start" && !FailCountdown)Globals["portable.countdown.state"]="{\"payload\":{\"status\":\"running\",\"endTimeMs\":"+(ClockMs+Int64.Parse(Arguments["durationSeconds"].ToString())*1000)+"}}";return !FailCountdown;}
+ public bool RunAction(string name,bool immediate){Actions.Add(name);if(RunActionHook!=null)RunActionHook(name);if(name=="Countdown - Start" && !FailCountdown)Globals["portable.countdown.state"]="{\"payload\":{\"status\":\"running\",\"endTimeMs\":"+(ClockMs+Int64.Parse(Arguments["durationSeconds"].ToString())*1000)+"}}";return !FailCountdown;}
  public long ClockMs = 2000000000000;
  public bool Streaming = false, Connected = true, NeverStream = false, FailCountdown = false;
  public int StreamDelayMs = 0; public long StreamAtMs = 0;
@@ -57,6 +62,8 @@ $combined += "`nnamespace EngineTest {" + $chatSource + "}"
 $combined += "`nnamespace EngineTest {" + $launchSource + "}"
 $combined += "`nnamespace EngineTest {" + $remindersSource + "}"
 $combined += "`nnamespace EngineTest {" + $wheelSource + "}"
+$combined += "`nnamespace EngineTest {" + $walkOnsSource + "}"
+$combined += "`nnamespace EngineTest {" + $walkSoundSource + "}"
 $combined += @'
 namespace EngineTest {
  public class SyntheticLaunch : LaunchInline {
@@ -308,3 +315,44 @@ $interrupted.CPH.Globals['portable.streamLaunch.state'] = '{"payload":{"status":
 Run-Engine $interrupted @{ streamLaunchMode = 'initialize' }
 Assert-True ((($interrupted.CPH.Globals['portable.streamLaunch.state'] | ConvertFrom-Json).payload.status) -eq 'interrupted' -and $interrupted.CPH.Actions.Count -eq 0 -and $interrupted.CPH.ObsCalls.Count -eq 0) 'Restart must report interrupted launch without replaying it'
 Write-Output 'Remaining-time alignment and interrupted-launch preservation passed.'
+
+$walk = [EngineTest.WalkOnsInline]::new()
+$walk.args = $walk.CPH.Arguments
+$walk.CPH.RunActionHook = [System.Action[string]] { param($name) if ($name -eq 'Walk-on Sound - Play') { $walk.args['walkOnSoundAccepted'] = $true } }
+Run-Engine $walk @{ walkOnsMode = 'initialize' }
+$walkConfig = '{"roster":{"fixture":{"enabled":true,"type":"soundpool","choices":[{"value":"sound-a","weight":3}],"volume":0.4}},"sounds":{"sound-a":{"label":"Synthetic","src":"http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav"}},"settings":{"oncePerStream":true}}'
+Run-Engine $walk @{ walkOnsMode = 'configure'; config = $walkConfig }
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = '!command' }
+Assert-True ($walk.CPH.Actions.Count -eq 0) 'Chat commands must not trigger walk-ons'
+$walk.CPH.Globals['portable.video.state'] = '{"payload":{"current":{"visible":true}}}'
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'hello' }
+Assert-True ($walk.CPH.Actions.Count -eq 0) 'Busy media must skip a walk-on without dispatch'
+$walk.CPH.Globals.Remove('portable.video.state') | Out-Null
+Run-Engine $walk @{ walkOnsMode = 'test'; login = 'fixture' }
+$walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload
+Assert-True ($walkState.session.seen.Count -eq 0 -and $walk.CPH.Actions.Count -eq 1) 'Explicit Test must play without consuming eligibility'
+Assert-True ($walk.CPH.Arguments['src'] -like 'http://127.0.0.1:3135/*' -and $walk.CPH.Arguments['volume'] -eq '0.4') 'Weighted selection must forward private media and volume'
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'hello' }
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'again' }
+$walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload
+Assert-True ($walk.CPH.Actions.Count -eq 2 -and $walkState.session.seen.Count -eq 1) 'First chat plays once and repeated chat stays silent'
+Run-Engine $walk @{ walkOnsMode = 'reset'; login = 'fixture' }
+$walk.CPH.RunActionHook = $null
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'retry' }
+Assert-True ((($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 0) 'Rejected playback must leave the person eligible'
+Run-Engine $walk @{ walkOnsMode = 'initialize' }
+$walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload
+Assert-True ($walkState.config.roster.fixture.type -eq 'soundpool' -and $walkState.config.sounds.'sound-a'.label -eq 'Synthetic') 'Restart must preserve private configuration'
+
+$sound = [EngineTest.WalkSoundInline]::new()
+$sound.args = $sound.CPH.Arguments
+Run-Engine $sound @{ walkonSoundMode = 'play'; id = 'fixture'; src = 'https://example.invalid/private.mp3' }
+Assert-True (-not $sound.CPH.Arguments['walkOnSoundAccepted'] -and -not $sound.CPH.Globals.ContainsKey('portable.walkonSound.state')) 'External audio URLs must be rejected without playback state'
+Run-Engine $sound @{ walkonSoundMode = 'play'; id = 'fixture'; src = 'http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav'; volume = 0 }
+$soundState = ($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload
+Assert-True ($sound.CPH.Arguments['walkOnSoundAccepted'] -and $soundState.current.visible -and $soundState.current.volume -eq 0) 'Companion audio must be accepted and zero volume preserved'
+Run-Engine $sound @{ walkonSoundMode = 'stop'; startedAtMs = 1 }
+Assert-True ((($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload.current.visible)) 'Stale completion must not stop a newer sound'
+Run-Engine $sound @{ walkonSoundMode = 'stop'; startedAtMs = $soundState.current.startedAtMs }
+Assert-True (-not (($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload.current.visible)) 'Matching completion must stop playback'
+Write-Output 'Actual Walk Ons C# passed: command/busy guards, weighted media and volume, Test eligibility, once-per-stream chat, rejected playback retry, restart preservation, URL validation and stale completion protection.'

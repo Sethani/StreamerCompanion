@@ -34,7 +34,10 @@
       const response = await fetch("/api/public/modules", { cache: "no-store" });
       if (!response.ok) throw new Error("Companion is unavailable.");
       this.definition = await response.json(); this.features.clear();
-      for (const module of this.definition.modules) if (module.transport?.feature) this.features.set(module.transport.feature, module);
+      for (const module of this.definition.modules) {
+        const transports = [module.transport, ...(Array.isArray(module.transports) ? module.transports : [])];
+        for (const transport of transports) if (transport?.feature) this.features.set(transport.feature, { ...module, transport });
+      }
     }
     getBackend(feature) { return this.features.has(feature) ? "streamerbot" : "unavailable"; }
     getState(feature) { return this.states.get(feature) || null; }

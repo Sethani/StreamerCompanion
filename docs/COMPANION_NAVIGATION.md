@@ -16,4 +16,4 @@ Favorite writes do not install modules, alter runtime state or start services. C
 
 ## Upgrade
 
-Install Companion 1.3.0 before Universal Dock 1.1.0 (minimum host >=1.3.0). Keep the full application directory; close the previous Companion before launching the new executable. The same preview profile is reused. Update only Universal Dock through the catalogue and refresh its existing OBS dock; its URL and other module packages are unchanged. Navigation changes require no Streamer.bot action import.
+Install Companion 1.3.1 before Universal Dock 1.1.1 (minimum host >=1.3.1). Version 1.1.1 retains the 1.1.0 navigation and adds support for modules with multiple Streamer.bot state/action transports. Keep the full application directory; close the previous Companion before launching the new executable. The same preview profile is reused. Update only Universal Dock through the catalogue and refresh its existing OBS dock; its URL and other module packages are unchanged. The dock update itself requires no Streamer.bot reimport.

@@ -69,7 +69,7 @@ class CompanionHost {
     const status = await this.moduleState();
     const ui = new Map(this.publicInstalledModules(status.states).modules.map((item) => [item.packageId, item]));
     const manifests = new Map(this.registry.manifests().map((item) => [item.manifest.id, item.manifest]));
-    return { ...status.registry, modules: status.registry.modules.map((item) => ({ ...item, ...status.states.get(item.id), category: manifests.get(item.id)?.ui?.category || 'Other', dependencies: manifests.get(item.id)?.dependencies || {}, ui: ui.get(item.id) || null, hasMedia: manifests.get(item.id)?.media?.kind === "video" })) };
+    return { ...status.registry, modules: status.registry.modules.map((item) => ({ ...item, ...status.states.get(item.id), category: manifests.get(item.id)?.ui?.category || 'Other', dependencies: manifests.get(item.id)?.dependencies || {}, ui: ui.get(item.id) || null, hasMedia: ["video", "audio"].includes(manifests.get(item.id)?.media?.kind), mediaKind: manifests.get(item.id)?.media?.kind || "" })) };
   }
 
   async listServices() {

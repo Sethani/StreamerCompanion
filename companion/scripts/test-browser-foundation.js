@@ -104,8 +104,8 @@ async function main() {
     assert.equal(moduleStates(mismatch, "1.3.0", [], test.allActions, true).states.get("video").state, "missing-dependency");
     const cycle = structuredClone(items); cycle.find((item) => item.manifest.id === "universal-dock").manifest.dependencies.modules.video = "*";
     assert.equal(moduleStates(cycle, "1.3.0", [], test.allActions, true).states.get("universal-overlay").state, "missing-dependency");
-    assert.equal(moduleStates(items, "1.3.0", [], [], false).states.get("universal-dock").state, "ready");
-    assert.equal(moduleStates(items, "1.3.0", [], [], false).states.get("source-modules").state, "verification-unavailable");
+    assert.equal(moduleStates(items, "1.3.1", [], [], false).states.get("universal-dock").state, "ready");
+    assert.equal(moduleStates(items, "1.3.1", [], [], false).states.get("source-modules").state, "verification-unavailable");
     fs.mkdirSync(path.join(host.registry.dataDirectory, "broken")); fs.writeFileSync(path.join(host.registry.dataDirectory, "broken/module.json"), "bad json");
     assert.equal((await host.listModules()).modules.find((item) => item.id === "broken").state, "broken");
     assert.equal(test.calls.length, 0, "Installing and checking packages must never execute a Streamer.bot action");
