@@ -1,5 +1,9 @@
 # Stream Launch
 
+Version 1.0.1 adds optional Phone Deck controls: **Go live (guided)** and a launch-progress widget. Guided Go Live dispatches only the existing Stream - Launch action, using saved launch settings; it keeps the mandatory 1.2-second hold and keyboard confirmation. Phone Deck's raw OBS Start remains independent. Progress reports the owner's starting/complete/partial/error/interrupted state and optional-step results, without inventing percentages or claiming completion from dispatch. Commands report Requested because these native actions have no matching request-ID acknowledgement. Configuration/readiness checks remain in this module's existing dock. No card is added automatically, and Phone Deck is not a dependency.
+
+The complete native export is identical to 1.0.0 after version metadata is excluded. Existing imported actions, globals, startup/fallback registrations and private settings remain authoritative; this metadata-only update needs no native reimport/restart or Companion rebuild.
+
 Standalone Streamer.bot launch orchestration with the installed Countdown module, optional Spotify Music and an existing private announcement/bookkeeping action. First-party source: Sethani, MIT. No scene names, webhook, reward IDs, broadcaster identity, playlist, credentials or private action bodies are included.
 
 Install from the catalogue and explicitly import the six actions. The four existing Stream - Launch Engine / Configure Launch / Launch / Online Fallback action IDs and portable.streamLaunch.* configuration/state/handled globals are preserved. Unknown saved configuration fields are retained. New profiles start disabled with an empty scene and no follow-up/fallback automation. Existing launch configuration retains its duration, text and scene; missing new switches migrate to the former enabled Spotify/follow-up/fallback behavior. Review them after import.

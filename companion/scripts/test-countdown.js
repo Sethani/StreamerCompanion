@@ -2,7 +2,7 @@ const assert = require("node:assert/strict"), fs = require("node:fs"), os = requ
 const { fixture } = require("./countdown-fixture");
 async function main() { const root = fs.mkdtempSync(path.join(os.tmpdir(), "countdown-module-")); let test;
   try {
-    test = await fixture(root); const zip = new AdmZip(path.join(test.output, "countdown-1.1.0.streammodule"));
+    test = await fixture(root); const zip = new AdmZip(path.join(test.output, "countdown-1.1.1.streammodule"));
     const bytes = Buffer.from(zip.readAsText("streamerbot/countdown.sb"), "base64"), exported = JSON.parse(zlib.gunzipSync(bytes.subarray(4)));
     const actions = exported.data.actions, ids = new Set(actions.map(action => action.id)); assert.equal(actions.length, 8);
     assert.equal(actions.filter(action => action.triggers.length).length, 1); assert.equal(actions.find(action => action.name === "Countdown - Initialize").triggers[0].type, 706);

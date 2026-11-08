@@ -12,7 +12,7 @@ async function main() {
     host = new CompanionHost({ dataDirectory: root, controlApiPort: await freePort(), streamerBotUrl: "ws://127.0.0.1:" + websocket.address().port + "/" });
     host.start(); await once(host.controlApi.server, "listening");
     const inventory = await host.catalog.check(); assert.equal(inventory.error, "");
-    const entry = inventory.modules.find(item => item.id === "countdown"); assert.equal(entry.version, "1.1.0"); assert.equal(entry.problem, "");
+    const entry = inventory.modules.find(item => item.id === "countdown"); assert.equal(entry.version, "1.1.1"); assert.equal(entry.problem, "");
     await host.installCatalogModule("countdown");
     let modules = (await host.listModules()).modules; assert.equal(modules.find(item => item.id === "countdown").state, "streamerbot-required");
     actions = host.registry.readManifest("countdown").streamerbot.requiredActions; assert.equal(actions.length, 8);

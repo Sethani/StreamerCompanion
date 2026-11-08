@@ -38,6 +38,10 @@ Control IDs are stable within a package ID. `kind` is `button`, `form` or `widge
 
 `confirm: true` on a control requires explicit confirmation before dispatch, enforced server-side as well as in the UI. A saved card may additionally require a hold. `active` may name a projected boolean for button highlighting. `prerequisites` is an AND list of `{ "field": "ready", "equals": true }` or `{ "field": "status", "notEquals": "running" }`, checked against projected state before dispatch. Owner validation remains authoritative.
 
+Session 4 adds `hold: true` (which requires `confirm: true`) for owner-mandated 1.2-second streaming holds and accessible keyboard confirmation. Saved card preferences cannot disable this requirement. Numeric fields may specify `integer: true`; the browser and server reject fractional values before dispatch. These annotations are generic and do not introduce a required provider.
+
+Widgets may provide `displayLabels`, mapping displayed field names to short labels, and a generic `timer` mapping such as `{ "status": "status", "remainingMs": "remainingMs", "endTimeMs": "endTimeMs", "finishedText": "finishedText" }`. Every timer field must be a declared scalar projection; `finishedText` is optional. Running time uses the end timestamp and Companion's sampled host clock plus monotonic elapsed time, so handset clock skew does not alter it. Paused time remains fixed; unknown fields remain Unknown; local expiry draws Finished without invoking an owner action. This is display progress, not a matching execution acknowledgement.
+
 ## Resources and state
 
 Native declarations may specify:

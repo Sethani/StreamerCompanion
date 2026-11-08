@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "stream-launch",
   "name": "Stream Launch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Guarded stream startup, Countdown integration, Spotify fades and existing private follow-up actions.",
   "author": "Sethani",
   "license": "MIT",
@@ -85,6 +85,67 @@
       "feature": "streamLaunch",
       "stateKey": "portable.streamLaunch.state",
       "actionPrefix": "Stream"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "go-live": {
+          "id": "be4b86a3-0d20-4664-bb2a-d7aa04c4ca8d",
+          "args": {}
+        }
+      },
+      "state": {
+        "global": "portable.streamLaunch.state",
+        "fields": {
+          "status": "payload.status",
+          "enabled": "payload.config.enabled",
+          "spotify": "payload.spotify",
+          "followup": "payload.followup",
+          "error": "payload.error"
+        }
+      },
+      "controls": [
+        {
+          "id": "go-live",
+          "name": "Go live (guided)",
+          "kind": "button",
+          "action": "go-live",
+          "confirm": true,
+          "hold": true,
+          "prerequisites": [
+            {
+              "field": "enabled",
+              "equals": true
+            },
+            {
+              "field": "status",
+              "notEquals": "starting"
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "progress",
+          "name": "Launch progress",
+          "kind": "widget",
+          "display": [
+            "status",
+            "spotify",
+            "followup",
+            "error"
+          ],
+          "displayLabels": {
+            "status": "Launch",
+            "spotify": "Music",
+            "followup": "Follow-up",
+            "error": "Details"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }

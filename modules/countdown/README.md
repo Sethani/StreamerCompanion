@@ -1,5 +1,9 @@
 # Countdown
 
+Version 1.1.1 adds optional Phone Deck controls: start the saved timer, 3/5-minute presets, custom whole-second duration/finished text, save settings, pause, resume, clear and a live status widget. Starts/presets retain native behavior, including updating saved duration; Save settings does not restart an active timer. The widget follows the saved end timestamp using Companion's clock, freezes when paused and shows Unknown for unavailable data. Local display expiry sends no native action. These timer controls never launch a stream, play music or announce going live. Dispatch reports Requested, since the existing native actions do not retain matching request-ID results. No cards are added automatically and Phone Deck is not a dependency.
+
+This changes metadata/documentation only. The full native export body matches 1.1.0; existing imports/settings/active timers/combined-overlay rendering are preserved. Existing installations need no native reimport/restart or Companion rebuild.
+
 Start, pause, resume and clear a countdown in the existing combined OBS overlay. Preserves the original centered yellow-to-green text and multiline finished message. First-party code/design: Sethani, MIT. No font files or external assets are bundled; the original Algerian/Georgia/serif font preference is retained.
 
 ## Install

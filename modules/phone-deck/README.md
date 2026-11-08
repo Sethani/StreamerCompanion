@@ -1,4 +1,4 @@
-# Phone Deck — Session 3 development checkpoint
+# Phone Deck — Session 4 development checkpoint
 
 Independent OBS foundation for Companion 1.3.1. This local 2.0.0 package is **not a production cutover or published release**. Keep the existing Phone Deck until Session 6.
 
@@ -31,7 +31,11 @@ Choose **Optional module control** for a button, input form or widget, search fo
 
 Providers use version-1 `ui.phoneDeck` declarations for fields, resources, projected state, prerequisites and native/service owner transport. Only declared actions/fields are dispatched. Definitions and deck revisions prevent stale cards from invoking changed actions. Missing resources are never substituted. Owner commands have separate queues from OBS, scoped uncertainty and durable Phone Deck request records; no mutation is automatically retried. Dispatch alone reports **Requested**. Only a matching owner terminal result reports Completed. Use each card's **Refresh status** to read/reconcile its provider after an unknown outcome.
 
-The framework supports later contributions without a Phone Deck update: native action/state references; bounded, scoped loopback owner APIs with private CSRF; state/list/map/static resource projections; and explicit button/form/widget controls. No Launch, Countdown or other later-session contributions are added yet. See `docs/phone-deck-provider-contract.md` in the source repository for declaration examples and owner acknowledgement requirements.
+The framework supports later contributions without a Phone Deck update: native action/state references; bounded, scoped loopback owner APIs with private CSRF; state/list/map/static resource projections; and explicit button/form/widget controls. Session 4 adds Launch/Countdown; media/audio and subsequent contributions remain later passes. See `docs/phone-deck-provider-contract.md` in the source repository for declaration examples and owner acknowledgement requirements.
+
+Session 4 adds optional Stream Launch 1.0.1 and Countdown 1.1.1 contributions. Add their buttons/forms/widgets explicitly from the module picker. Guided Go Live calls its existing owner with saved settings and always requires the streaming hold/keyboard confirmation, even if an old card has `hold: false`. Raw OBS Start stays independent. Launch progress shows actual owner phases/optional-step outcomes; timer widgets advance locally from the host clock, preserve paused remaining time and show unavailable values as Unknown. Native dispatch remains Requested; visible progress is independent owner state. No native code, overlay, service port or app rebuild is added by these provider updates.
+
+Shared-framework corrections initialize optional connection settings in the UI, synchronize discovery after settings changes, validate whole-number fields, and support generic labelled/clock-based widgets and mandatory holds. Existing layouts, provider references and user drafts remain intact. The next pass adds media/audio contributions; production handoff still waits for Session 6.
 
 Private files: `config.json`, `connection.json`, `providers.json`, `auth.json`, `operations.json`, `tls/`. Never distribute them. Stopping the service closes both listeners, its OBS connection and optional owner connections. The service exits if its Companion parent disappears.
 

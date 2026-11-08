@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "countdown",
   "name": "Countdown",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Start, pause, resume and clear a countdown in the combined overlay using Streamer.bot state.",
   "author": "Sethani",
   "license": "MIT",
@@ -88,6 +88,194 @@
       "feature": "countdown",
       "stateKey": "portable.countdown.state",
       "actionPrefix": "Countdown"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "start": {
+          "id": "80cca7de-b3f1-4bc1-9575-bd023bde4fa4",
+          "args": {}
+        },
+        "preset-3": {
+          "id": "80cca7de-b3f1-4bc1-9575-bd023bde4fa4",
+          "args": {
+            "durationSeconds": 180
+          }
+        },
+        "preset-5": {
+          "id": "80cca7de-b3f1-4bc1-9575-bd023bde4fa4",
+          "args": {
+            "durationSeconds": 300
+          }
+        },
+        "custom": {
+          "id": "80cca7de-b3f1-4bc1-9575-bd023bde4fa4",
+          "args": {
+            "durationSeconds": {
+              "field": "durationSeconds"
+            },
+            "finishedText": {
+              "field": "finishedText"
+            }
+          }
+        },
+        "configure": {
+          "id": "5b6a6ea5-a633-4723-974b-aa8da1b9e57b",
+          "args": {
+            "durationSeconds": {
+              "field": "durationSeconds"
+            },
+            "finishedText": {
+              "field": "finishedText"
+            }
+          }
+        },
+        "pause": {
+          "id": "3f1a7639-fce3-4e65-8463-69c7cce9cb4c",
+          "args": {}
+        },
+        "resume": {
+          "id": "2b6b58b1-3498-4cd4-ad1d-1669df7c66c5",
+          "args": {}
+        },
+        "clear": {
+          "id": "85fa649b-3743-493c-8ea7-719df3f7767f",
+          "args": {}
+        }
+      },
+      "state": {
+        "global": "portable.countdown.state",
+        "fields": {
+          "status": "payload.status",
+          "remainingMs": "payload.remainingMs",
+          "endTimeMs": "payload.endTimeMs",
+          "finishedText": "payload.finishedText"
+        }
+      },
+      "controls": [
+        {
+          "id": "start",
+          "name": "Start saved countdown",
+          "kind": "button",
+          "action": "start",
+          "fields": []
+        },
+        {
+          "id": "preset-3",
+          "name": "Start 3-minute countdown",
+          "kind": "button",
+          "action": "preset-3",
+          "fields": []
+        },
+        {
+          "id": "preset-5",
+          "name": "Start 5-minute countdown",
+          "kind": "button",
+          "action": "preset-5",
+          "fields": []
+        },
+        {
+          "id": "custom",
+          "name": "Start custom countdown",
+          "kind": "form",
+          "action": "custom",
+          "fields": [
+            {
+              "id": "durationSeconds",
+              "label": "Duration (seconds)",
+              "type": "number",
+              "integer": true,
+              "input": true,
+              "required": true,
+              "min": 0,
+              "max": 2147483647
+            },
+            {
+              "id": "finishedText",
+              "label": "Finished text (blank keeps saved text)",
+              "type": "text",
+              "input": true,
+              "maxLength": 500
+            }
+          ]
+        },
+        {
+          "id": "configure",
+          "name": "Save countdown settings",
+          "kind": "form",
+          "action": "configure",
+          "fields": [
+            {
+              "id": "durationSeconds",
+              "label": "Duration (seconds)",
+              "type": "number",
+              "integer": true,
+              "input": true,
+              "required": true,
+              "min": 0,
+              "max": 2147483647
+            },
+            {
+              "id": "finishedText",
+              "label": "Finished text (blank keeps saved text)",
+              "type": "text",
+              "input": true,
+              "maxLength": 500
+            }
+          ]
+        },
+        {
+          "id": "pause",
+          "name": "Pause countdown",
+          "kind": "button",
+          "action": "pause",
+          "prerequisites": [
+            {
+              "field": "status",
+              "equals": "running"
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "resume",
+          "name": "Resume countdown",
+          "kind": "button",
+          "action": "resume",
+          "prerequisites": [
+            {
+              "field": "status",
+              "equals": "paused"
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "clear",
+          "name": "Clear countdown",
+          "kind": "button",
+          "action": "clear",
+          "fields": []
+        },
+        {
+          "id": "status",
+          "name": "Countdown status",
+          "kind": "widget",
+          "display": [
+            "status"
+          ],
+          "timer": {
+            "status": "status",
+            "remainingMs": "remainingMs",
+            "endTimeMs": "endTimeMs",
+            "finishedText": "finishedText"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }

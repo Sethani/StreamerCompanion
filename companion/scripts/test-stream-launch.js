@@ -3,7 +3,7 @@ const AdmZip=require('adm-zip'),{fixture}=require('./launch-fixture'),{Installed
 async function wait(check,label){const until=Date.now()+8000;while(Date.now()<until){if(await check())return;await new Promise(r=>setTimeout(r,50));}throw Error('Timed out: '+label);}
 async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'stream-launch-'));let test,spotify;
  try{
-  test=await fixture(root);const zip=new AdmZip(path.join(test.output,'stream-launch-1.0.0.streammodule')),manifest=JSON.parse(zip.readAsText('module.json'));
+  test=await fixture(root);const zip=new AdmZip(path.join(test.output,'stream-launch-1.0.1.streammodule')),manifest=JSON.parse(zip.readAsText('module.json'));
   const bytes=Buffer.from(zip.readAsText('streamerbot/stream-launch.sb'),'base64'),exported=JSON.parse(zlib.gunzipSync(bytes.subarray(4)));
   assert.equal(exported.version,24);assert.equal(exported.data.actions.length,6);assert.equal(exported.meta.autoRunAction,null);assert.equal(manifest.service,undefined);assert.deepEqual(manifest.ui.overlays,[]);
   const actions=exported.data.actions,ids=new Set(actions.map(a=>a.id));assert.deepEqual(actions.map(a=>a.name),manifest.streamerbot.requiredActions);
