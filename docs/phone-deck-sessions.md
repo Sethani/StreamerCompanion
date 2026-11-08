@@ -10,7 +10,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 | 2 | Complete locally; unpublished | Volume, item/group visibility, recording pause/resume, Studio Mode, preview/transition, replay buffer, virtual camera |
 | 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
-| 5 | Complete; provider publication recorded below | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
+| 5 | Complete; all three providers published | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
 | 6 | Pending; off-stream | Publish 2.0.0 and verified providers; backed-up production HTTPS/pairing/layout handoff |
 | 7 | Pending | Spotify and scoped Source Modules controls |
 | 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
@@ -23,7 +23,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 
 Source is `modules/phone-deck/`. The local artifact is `dist/modules/phone-deck-2.0.0.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. It is a development checkpoint carrying the intended final version, **not a released or production-installed package**. It is absent from the published catalogue. Companion remains 1.3.1.
 
-The archive now contains Sessions 1–5; SHA-256 `ebf863392e838d52e33e77ad967b3210485c1242a08cb35b3175d88f1fe99523`, also in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Session 5 provider candidates are Audio Routing 2.0.1, Wheel 2.1.2 and Video 2.2.1; publication proof follows below. Their full native export bodies match the preceding releases. Earlier checkpoint hashes/source records below are historical and no longer identify the current artifact.
+The archive now contains Sessions 1–5; SHA-256 `ebf863392e838d52e33e77ad967b3210485c1242a08cb35b3175d88f1fe99523`, also in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Session 5 published Audio Routing 2.0.1, Wheel 2.1.2 and Video 2.2.1; publication proof follows below. Their full native export bodies match the preceding releases. Earlier checkpoint hashes/source records below are historical and no longer identify the current artifact.
 
 ## Session 1 checkpoint
 
@@ -105,3 +105,7 @@ Audio Routing 2.0.1 adds native toggle/status with matching acknowledgements and
 Legacy action/form compatibility preserves saved identities, pages, appearance, targets and optional helper IDs. Startup translates only in memory; explicit Save persists reviewed pinned references. Guided launch stays guided, raw Stop stays raw, and legacy countdown Start continues paused/running timers without restarting. Media widgets combine independent Video/Wheel status; OBS widgets show available launch progress. Writing stays parked. Removed resources stay selected and unavailable, without defaults or Node fallback. Future incompatible provider contracts require explicit review/edit.
 
 Full source/C# synthetic checks, all hidden desktop/mobile browser suites and packaged 1.3.1 Node-only runtime acceptance pass. Prior published hashes prove complete native export equality for all three patches. Production configuration/apps/TLS/pairing/listeners remain untouched. Session 6 is next, off-stream, including its remaining 100-card/HTTPS/revocation/service-worker/offline/released-upgrade checks before the backed-up handset handoff. The overall count remains 20/24.
+
+Session 5 publication completed from source `a9a9092962ce5e630f3db8862047c11ff97dca9b`, after Windows/Linux Check `42526045372`. Audio Routing 2.0.1 workflow `42526164242`, SHA-256 `420c17ac311b583cfd790a7ae8036f7ed1cc6e85c08e39aa1ad171c356c28a34`; Wheel 2.1.2 workflow `42526281829`, SHA-256 `cff7e61d2994495789de41f18eda6f9c75cc2d5e6030f8aa3269509d1192e207`; Video 2.2.1 workflow `42526169180`, SHA-256 `d0a5e73d8ee002ea8a5d63aeb11c14c8a265fcb3539e598f117ec275da11a544`. The first pending Wheel run was superseded by GitHub and requeued after the slot cleared. All final workflows and catalogue hashes are verified.
+
+Actual anonymous GitHub upgrades in packaged Companion 1.3.1 passed: preinstalled/imported dependencies, old Ready state, package hashes, complete native-data equality, retained private data/favorites/import readiness, provider declarations and served dock/overlay. The fixture received only GetActions and all test processes were stopped. No HTTP 504/fallback was needed. The release fixture was corrected to import Source Modules before asserting Ready; this changed no runtime package. Phone Deck remains absent from the published catalogue.
