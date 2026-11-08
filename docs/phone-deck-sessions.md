@@ -9,7 +9,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 | 1 | Complete locally; unpublished | Independent OBS foundation and copied grid/editor |
 | 2 | Complete locally; unpublished | Volume, item/group visibility, recording pause/resume, Studio Mode, preview/transition, replay buffer, virtual camera |
 | 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
-| 4 | Implemented and verified; provider publication pending | Stream Launch and Countdown contributions |
+| 4 | Complete; both providers published | Stream Launch and Countdown contributions |
 | 5 | Next; not started | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
 | 6 | Pending; off-stream | Publish 2.0.0 and verified providers; backed-up production HTTPS/pairing/layout handoff |
 | 7 | Pending | Spotify and scoped Source Modules controls |
@@ -23,7 +23,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 
 Source is `modules/phone-deck/`. The local artifact is `dist/modules/phone-deck-2.0.0.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. It is a development checkpoint carrying the intended final version, **not a released or production-installed package**. It is absent from the published catalogue. Companion remains 1.3.1.
 
-The archive now contains Sessions 1–4; its current hash is in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Session 4 selects only Stream Launch 1.0.1 and Countdown 1.1.1 provider packages for independent publication; their full native export bodies match the preceding releases. Earlier checkpoint hashes/source records below are historical and no longer identify the current artifact.
+The archive now contains Sessions 1–4; SHA-256 `c26b7b62c0ca0b29c5a9c25820bc3de121a5025d7f53d21ed7eecbbd71bd1dee`, also in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Only Stream Launch 1.0.1 and Countdown 1.1.1 were published in Session 4; their full native export bodies match the preceding releases. Earlier checkpoint hashes/source records below are historical and no longer identify the current artifact.
 
 ## Session 1 checkpoint
 
@@ -93,3 +93,5 @@ The framework corrections are generic hold/integer validation, labelled/time-bas
 Verification covers exact action IDs/arguments, raw/guided separation, missing confirmation, duplicate/stale requests, missing state/actions, reconnect, preserved configuration, pause/resume and custom/preset/zero durations. Hidden desktop/mobile two-client checks cover settings initialization/save, pointer holds/keyboard confirmation, live/paused/unknown/finished widgets, handset clock skew, partial-launch details and stable drafts/focus/caret/scroll/pages. Full source and actual synthetic C# checks pass. Hash-verified prior GitHub archives prove the entire native export data is identical, so existing imports require no restart/reimport. All effects are synthetic; no real stream, timer, music, announcement or follow-up is used. Released-package upgrade results are recorded after the two single-module workflows complete.
 
 Session 5 is next. The production Phone Deck handoff remains Session 6, and the overall count remains 20/24. Do not repeat physical camera acceptance or remove final-switch Import settings options here.
+
+Publication is complete from source `0e48d7891a6b2ddaeafbd7963cffd47896b1fe10`, after Windows/Linux Check `42521808448`. Countdown workflow `42521958630` published 1.1.1, SHA-256 `b3c22ea079731f08f5e9f121656b448b36ac95178f1f025afaf6c84884d2b617`; Stream Launch workflow `42521961580` published 1.0.1, SHA-256 `f8284fb33ff8677f5e0920d26c1e5dfcc4dbf1b09fb8b557b409035d69c1700e`. Actual anonymous GitHub catalogue/assets passed both upgrades in the existing Companion 1.3.1 runtime: dependency installation, hashes, identical native bodies, retained private data/favorites/import readiness, provider metadata and served dock/overlay. The synthetic Streamer.bot received only GetActions. No HTTP 504 fallback was needed. Phone Deck's absence from the public catalogue is verified; final process inspection found no test processes remaining. Production apps/data/listener ownership are untouched.
