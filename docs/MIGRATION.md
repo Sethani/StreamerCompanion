@@ -1,6 +1,6 @@
 # Legacy migration and retirement
 
-November 8 Shoutout Clips slice: source/package/C#/hidden-browser verification passes for the copied 2.1.0 player. The six stable actions, state, dock and shared-overlay appearance are preserved. Its private caller receives a bounded native-dispatch update; optional AI text stays with the legacy warm service until the Ollama slice. See [the boundary and acceptance record](shoutout-clips-boundary.md). Publication/import and real provider playback must be recorded separately; this is not a whole-system retirement gate.
+Latest extraction, November 8: Shoutout Clips 2.1.0 is published, installed, imported and Ready, with native initialization verified after a user-authorized backed-up restart. The six stable actions, private settings, dock and shared-overlay appearance are preserved. Its private caller now dispatches clips natively; optional AI text stays with the legacy warm service until the Ollama slice. Source/C#/hidden-browser/actual combined-page/released-package checks pass. Real provider playback/audio and a full public shoutout remain to observe. See [the boundary and acceptance record](shoutout-clips-boundary.md); this is not a whole-system retirement gate.
 
 The [user-approved switchover checklist](switchover-feature-checklist.md) now defines the retirement scope: all listed features are vital except Chat Archive/TTRPG (later), Stream Together (drop), and the separately parked Writing Challenge. Keep live chat/enrichment and Reactive/camera controls in scope.
 

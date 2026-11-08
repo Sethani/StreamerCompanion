@@ -16,7 +16,7 @@ Optional warm generation still calls the personal warm-text service. Its failure
 
 ## Distribution and provider boundary
 
-First-party code is Sethani/MIT. The archive contains no viewer list, session data, credential, media, thumbnail or hosted player implementation. Twitch and MustachedManiac are external iframe services, with ownership/terms retained in the package notice. No redistribution permission for third-party code/media is asserted or needed for the package's own files; future bundling requires a separate review.
+First-party code is Sethani/MIT. The archive contains no viewer list, session data, credential, media, thumbnail or hosted player implementation. Twitch and MustachedManiac are external iframe services, with ownership/terms retained in the package notice. This release distributes first-party integration code only and asserts no permission to redistribute third-party code/media; future bundling requires a separate review.
 
 Twitch's documented clip URL supports autoplay, muted and parent parameters. The retained MustachedManiac URL has no verified mute control in this integration. That limitation is documented, not presented as fixed. Real provider playback, audio and restrictions remain separate from intercepted browser tests.
 
@@ -24,4 +24,6 @@ Twitch's documented clip URL supports autoplay, muted and parent parameters. The
 
 Package/inventory tests cover stable IDs, clean exports, shared transport, readiness, assets and repeat installation. Actual C# tests cover saved configuration, restart, limits, repeated clips, stale Stop, failed input/save and concurrent changes. Hidden browser tests cover copied controls/styles, unsaved edits, provider URLs, mute encoding, transparent idle/expiry and a single shared-overlay iframe; remote players are intercepted. The private caller compiles with synthetic Twitch/AI/action adapters and covers concurrent warm dispatch, no clip, failed lookup, unavailable AI and missing player without sending chat.
 
-After release, verify installation from the published package and the backed-up offline action update. Real clip appearance/audio and a complete public shoutout remain explicitly recorded acceptance checks until observed. Do not retire legacy startup/routes or declare the entire cutover complete from this slice alone.
+The published package passed real GitHub catalogue/hash installation in an isolated Companion 1.3.1 runtime. It is installed in the running host and reports Ready. The user-authorized normal Streamer.bot close, backup, bounded offline action update and restart are complete; native initialization reports 2.1.0. Private clip configuration, Walk Ons configuration, favorites and service preferences are unchanged. The existing combined-source page also passed an isolated hidden test confirming single ownership and permissions. See VALIDATION.md for release, backup and source evidence.
+
+Real clip appearance/audio and a complete public shoutout remain explicitly recorded acceptance checks until observed. Do not retire legacy startup/routes or declare the entire cutover complete from this slice alone.
