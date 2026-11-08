@@ -1,5 +1,13 @@
 # First public GitHub update validation
 
+## November 8: Reactive Guests and Cameras extraction
+
+The [boundary audit](reactive-cameras-boundary.md) traced the nine-action Reactive roster/renderer and five-action native Camera router, stale sixteen-entry Node roster, Node inventory dependency, private fallback configuration and competing reconnect ownership. Read-only live inspection found 21 authoritative guests. Synthetic C# reproduction confirmed unconfigured-startup visibility writes, hidden visibility errors and stale cross-module guest selection before the fixes.
+
+Reactive 2.1.0 and Cameras 2.0.0 now build independently with their existing action IDs, state envelopes and private configuration preserved. Reactive copies the lineup/controls into the shared overlay. Cameras adds private mappings, read-only native inventory, scoped validated routing, visible failures, guest-selection reconciliation and a five-second OBS connection observer. Public packages contain no roster, private mapping, provider asset or service. Legacy camera ownership has a separate backed-up handoff; other old-server features remain in use.
+
+Local tests pass: deterministic builds and the complete 21-module regression suite; actual C# tests for fifty concurrent roster additions, inert unconfigured initialization, read-only inventory/mappings, scoped mode changes, OBS failures, selected guest/mirror deletion, item creation/template transforms and one reconnect apply; hidden browsers for the 21-guest editor/lineup, stable focus/rows/frames, unsaved edits, one Camera 2 action, native error feedback and shared-overlay ownership. The actual personal combined-source page also passes an isolated single-renderer test with production ports blocked. No live OBS sources or guest URLs were changed by implementation tests. Publication, private handoff and real hardware/provider acceptance are recorded separately when completed.
+
 ## November 8: Shoutout Clips 2.1.0 extraction
 
 The installed six-action 2.0.0 engine matched its personal installer exactly before extraction. Version 2.1.0 copies its controls, layout and title styling into an independent package, preserves every action ID and saved-state contract, and adds serialized updates plus distinct starts for identical-clip replay. The existing combined-source bridge and Universal Overlay use the packaged renderer with no additional OBS source. The private caller update is limited to native clip dispatch; warm generation remains a documented dependency of the later Ollama slice.

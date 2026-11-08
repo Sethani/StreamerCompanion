@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 2,
+  "id": "reactive",
+  "name": "Reactive Guests",
+  "version": "2.1.0",
+  "description": "The established ordered reactive guest lineup, private roster and presentation controls.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Reactive Guests - Initialize",
+      "Reactive Guests - Save",
+      "Reactive Guests - Toggle",
+      "Reactive Guests - Delete",
+      "Reactive Guests - Assign Camera2",
+      "Reactive Guests - Engine",
+      "Reactive Guests - Health",
+      "Reactive Guests - Configure",
+      "Reactive Guests - Move"
+    ],
+    "importFile": "streamerbot/reactive.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.1"
+    },
+    "optionalModules": {
+      "cameras": "^2.0.0",
+      "source-modules": "^1.0.0",
+      "universal-overlay": "^1.0.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.3.1"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "ui": {
+    "id": "reactive",
+    "name": "Reactive",
+    "category": "People",
+    "order": 10,
+    "dockPage": "/reactive/index.html",
+    "ownership": "streamerbot",
+    "overlays": [
+      "reactive"
+    ],
+    "actions": [
+      "Reactive Guests - Initialize",
+      "Reactive Guests - Save",
+      "Reactive Guests - Toggle",
+      "Reactive Guests - Delete",
+      "Reactive Guests - Assign Camera2",
+      "Reactive Guests - Engine",
+      "Reactive Guests - Health",
+      "Reactive Guests - Configure",
+      "Reactive Guests - Move"
+    ],
+    "dependencies": [
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "cameras",
+      "reactive-image-provider"
+    ],
+    "settings": [
+      "guests",
+      "order",
+      "avatarSize",
+      "maximumWidth",
+      "bottomOffset",
+      "gap"
+    ],
+    "tests": [
+      {
+        "id": "health",
+        "name": "Reactive guest state",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check state",
+            "feature": "reactive",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      },
+      {
+        "id": "visibility",
+        "name": "Reactive guest visibility",
+        "level": "mutating",
+        "fields": [
+          {
+            "id": "id",
+            "label": "Guest ID",
+            "type": "text",
+            "placeholder": "Copy from diagnostics/state"
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Show",
+            "feature": "reactive",
+            "command": "Toggle",
+            "args": {
+              "id": {
+                "field": "id",
+                "trim": true
+              },
+              "enabled": {
+                "literal": true
+              }
+            }
+          },
+          {
+            "label": "Hide",
+            "className": "secondary",
+            "feature": "reactive",
+            "command": "Toggle",
+            "args": {
+              "id": {
+                "field": "id",
+                "trim": true
+              },
+              "enabled": {
+                "literal": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "transport": {
+      "feature": "reactive",
+      "stateKey": "portable.reactive.state",
+      "actionPrefix": "Reactive Guests"
+    },
+    "packagedOverlay": true
+  }
+}

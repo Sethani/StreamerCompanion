@@ -1,0 +1,7 @@
+(() => {
+ const transport=StreamingTransport.create(),layer=document.getElementById('reactive-layer'),root=document.getElementById('reactive-guests'),frames=new Map();
+ function render(state={}){const active=(state.guests||[]).filter(g=>g.enabled&&g.url),p=state.presentation||{};layer.style.bottom=`${Math.max(0,Math.min(400,Number(p.bottomOffsetPx)||0))}px`;root.style.maxWidth=`${Math.max(10,Math.min(100,Number(p.maxWidthPercent)||48))}%`;root.style.gap=`${Math.max(0,Math.min(80,Number(p.gapPx)||0))}px`;root.style.setProperty('--reactive-avatar-size',`${Math.max(40,Math.min(500,Number(p.avatarSizePx)||180))}px`);layer.className=active.length?'reactive-layer':'reactive-layer idle';
+  const ids=new Set(active.map(g=>g.id));for(const[id,node]of frames)if(!ids.has(id)){node.remove();frames.delete(id);}active.forEach((guest,index)=>{let node=frames.get(guest.id);if(!node){node=document.createElement('div');node.className='reactive-guest';node.dataset.guestId=guest.id;const frame=document.createElement('iframe');frame.allow='autoplay; fullscreen';frame.allowFullscreen=true;node.append(frame);root.append(node);frames.set(guest.id,node);}node.style.order=String(index);node.title=guest.name||'';const frame=node.firstElementChild;frame.title=guest.name||'Reactive guest';if(frame.getAttribute('src')!==guest.url)frame.src=guest.url;});
+ }
+ transport.subscribe('reactive',e=>render(e.payload));transport.subscribe('connection',h=>{if(!h.connected)render();});transport.connect();window.addEventListener('beforeunload',()=>transport.close());
+})();

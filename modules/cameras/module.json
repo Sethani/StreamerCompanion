@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 2,
+  "id": "cameras",
+  "name": "Cameras",
+  "version": "2.0.0",
+  "description": "Native OBS camera modes, private source mappings and read-only scene inventory.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Cameras - Initialize",
+      "Cameras - Configure",
+      "Cameras - Reapply",
+      "Cameras - Assign Reactive",
+      "Cameras - Engine",
+      "Cameras - Refresh",
+      "Cameras - Health",
+      "Cameras - Configure Mappings",
+      "Cameras - Sync Reactive",
+      "Cameras - Observe OBS"
+    ],
+    "importFile": "streamerbot/cameras.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.1"
+    },
+    "optionalModules": {
+      "reactive": "^2.1.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.3.1"
+  },
+  "web": {
+    "root": "web"
+  },
+  "ui": {
+    "id": "cameras",
+    "name": "Cameras",
+    "category": "Stream",
+    "order": 20,
+    "dockPage": "/cameras/index.html",
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [
+      "Cameras - Initialize",
+      "Cameras - Configure",
+      "Cameras - Reapply",
+      "Cameras - Assign Reactive",
+      "Cameras - Engine",
+      "Cameras - Refresh",
+      "Cameras - Health",
+      "Cameras - Configure Mappings",
+      "Cameras - Sync Reactive",
+      "Cameras - Observe OBS"
+    ],
+    "dependencies": [
+      "streamerbot-websocket",
+      "obs-websocket"
+    ],
+    "optionalDependencies": [
+      "reactive"
+    ],
+    "settings": [
+      "mainMode",
+      "secondaryMode",
+      "reactiveGuest",
+      "videoSource"
+    ],
+    "tests": [],
+    "transport": {
+      "feature": "cameras",
+      "stateKey": "portable.cameras.state",
+      "actionPrefix": "Cameras"
+    }
+  }
+}

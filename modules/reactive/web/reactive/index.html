@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reactive Guests</title>
+  <link rel="stylesheet" href="./styles.css?v=2">
+</head>
+<body>
+  <main class="container">
+    <section class="panel">
+      <div class="list-header"><span>Lineup appearance</span><button id="reset-appearance" type="button">Reset</button></div>
+      <div class="settings-grid"><label>Avatar size (px)<input id="avatar-size" type="number" min="40" max="500"></label><label>Maximum row width (%)<input id="max-width" type="number" min="10" max="100"></label><label>Bottom offset (px)<input id="bottom-offset" type="number" min="0" max="400"></label><label>Gap (px)<input id="gap" type="number" min="0" max="80"></label></div>
+      <button id="save-appearance" type="button">Save appearance</button>
+    </section>
+    <section class="panel">
+      <form id="guest-form">
+        <input id="guest-id" name="id" type="hidden">
+        <label>
+          Name
+          <input id="guest-name" name="name" type="text" placeholder="Guest name">
+        </label>
+        <label>
+          Reactive URL
+          <input id="guest-url" name="url" type="url" placeholder="https://...">
+        </label>
+        <label class="toggle-row">
+          <input id="guest-enabled" name="enabled" type="checkbox" checked>
+          <span>Show on overlay</span>
+        </label>
+        <div class="action-row">
+          <button type="submit" id="save-button">Save guest</button>
+          <button type="button" id="new-button">New</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="list-header">
+        <span>Guests</span>
+        <span id="guest-count">0 active</span>
+      </div>
+      <ul id="guest-list" class="guest-list"></ul>
+    </section>
+
+    <p id="feedback" class="feedback" aria-live="polite"></p>
+  </main>
+
+  <script src="../../universal-dock/shared/streamerbot-transport.js"></script>
+  <script src="./app.js?v=2"></script>
+</body>
+</html>

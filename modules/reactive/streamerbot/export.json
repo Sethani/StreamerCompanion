@@ -1,0 +1,362 @@
+{
+  "meta": {
+    "name": "Reactive Guests",
+    "author": "Sethani",
+    "version": "2.1.0",
+    "description": "Existing guest lineup and private roster.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "b0f553c6-8532-40ec-a3b9-8638e3f497c9",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Initialize",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "466c18ff-9f5a-4cd1-ad9f-dc37c5f9d128",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "5c50b568-c184-418f-ae60-b52b845ae7d4",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "707f3286-2830-4554-a132-52f06317907f",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "bce27a96-f212-44f2-8fa8-bae8378481b2",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Save",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "save",
+            "autoType": false,
+            "id": "63ce0709-48b5-400b-b803-377f22be08e2",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "f1de263e-732d-4a99-ba99-17668ae78c5a",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "b43f18e2-51a9-42d2-886a-d48af97dbcb1",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Toggle",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "toggle",
+            "autoType": false,
+            "id": "78f51554-3ef2-4dda-9321-4e371ab5906d",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "c43d8aed-bf8c-4aea-9f3f-fffcbb52501e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "b76cf617-1f2d-4418-8748-032cf209a7e2",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Delete",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "delete",
+            "autoType": false,
+            "id": "62591c04-c03d-4ead-9a9d-d5e69cc9d436",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "302f98c4-9a9d-469a-8fc2-0651cc59fa2e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "29a27672-adb6-46a7-9564-8b2625d11559",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Assign Camera2",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "assign-camera2",
+            "autoType": false,
+            "id": "af23fb41-b346-4f23-b7b2-5d4936398ee8",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "4d3e79d2-1b15-4a77-b42e-2ec52635f1c8",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "85b3a086-991b-49b3-a30d-041ab52482e1",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Engine",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Reactive guest state and presentation engine",
+            "description": "Existing reactive guest roster and presentation",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "6c11a2f9-137e-48b8-aed3-57caef467303",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "reactive-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "6d91b767-318f-4584-9ed7-6463b46b31aa",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Health",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "health",
+            "autoType": false,
+            "id": "0d0f644e-7699-47db-9844-d607d25629af",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "5f0a6a9f-7143-4db5-82b0-84e2c73962cf",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "1d0e41e3-49a1-46f1-b60d-a3b143e1194d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Configure",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "configure",
+            "autoType": false,
+            "id": "093696e5-55d1-484d-b47a-33e92df24ac8",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "7517d92e-11a3-418b-8bfa-dba5d590d5bf",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "a34e8e15-7893-4468-b93d-f146cda46e6d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Reactive Guests - Move",
+        "group": "Reactive Guests",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "reactiveActionMode",
+            "value": "move",
+            "autoType": false,
+            "id": "3359e66e-e2e5-48dc-b485-4d2872d9c210",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "85b3a086-991b-49b3-a30d-041ab52482e1",
+            "runImmedately": true,
+            "id": "594266a4-0cfe-4938-8057-13e742f3a696",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

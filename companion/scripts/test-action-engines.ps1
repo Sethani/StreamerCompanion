@@ -450,3 +450,4 @@ Run-Engine $restarted @{ shoutoutClipMode = 'play'; clipId = 'SyntheticClip' }
 Assert-True ($before -eq $restarted.CPH.Globals['portable.shoutoutClip.state']) 'Failed save must not publish accepted playback'
 [EngineTest.ShoutoutRecorder]::ConcurrentState()
 Write-Output 'Actual Shoutout Clips C# passed: saved layout/mute/title preservation, restart, duration limits, repeated clip identity, stale Stop, rejected input/save and concurrent state updates.'
+& (Join-Path $PSScriptRoot 'test-guest-camera-engines.ps1')

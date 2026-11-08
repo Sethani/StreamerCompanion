@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camera Router</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="container">
+    <header class="toolbar">
+      <strong>Cameras</strong>
+      <span id="connection" class="status">Checking OBS</span>
+      <button id="refresh" type="button">Refresh</button>
+      <button id="reapply" type="button">Reapply</button>
+    </header>
+
+    <section class="camera-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <strong>Main Camera</strong>
+          <span id="main-applied" class="applied"></span>
+        </div>
+        <label>
+          Mode
+          <select id="main-mode">
+            <option value="off">Off</option>
+            <option value="monitor">Monitor webcam</option>
+            <option value="laptop">Laptop webcam</option>
+            <option value="png">My PNG tuber</option>
+          </select>
+        </label>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <strong>Camera 2</strong>
+          <span id="secondary-applied" class="applied"></span>
+        </div>
+        <label>
+          Mode
+          <select id="secondary-mode">
+            <option value="off">Off (empty)</option>
+            <option value="laptop">Laptop webcam</option>
+            <option value="reactive">Reactive guest</option>
+            <option value="video">OBS video source</option>
+          </select>
+        </label>
+        <label id="reactive-field" hidden>
+          Reactive guest
+          <select id="reactive-guest"></select>
+        </label>
+        <label id="video-field" hidden>
+          OBS source
+          <select id="video-source"></select>
+        </label>
+      </article>
+    </section>
+
+    <section class="panel effective-panel">
+      <div class="panel-heading">
+        <strong>OBS visibility</strong>
+        <span id="configured" class="applied"></span>
+      </div>
+      <div class="effective-grid">
+        <div><span>Main</span><strong id="main-visible">-</strong></div>
+        <div><span>Camera 2</span><strong id="secondary-visible">-</strong></div>
+      </div>
+    </section>
+
+    <details class="panel" id="source-mappings"><summary>Source mappings</summary><p>Choose existing OBS scenes and inputs. Saving mappings does not switch cameras. Use Reapply when ready.</p>
+      <div class="camera-grid">
+        <label>Main scene<input id="map-mainScene" list="scene-options"></label><label>Camera 2 scene<input id="map-secondaryScene" list="scene-options"></label>
+        <label>Monitor webcam<input id="map-monitor" list="input-options"></label><label>Laptop webcam<input id="map-laptop" list="input-options"></label>
+        <label>My PNG tuber<input id="map-selfPng" list="input-options"></label><label>Guest PNG tuber<input id="map-guestPng" list="input-options"></label>
+        <label>Frame (optional)<input id="map-frame" list="input-options"></label><label>Background (optional)<input id="map-background" list="input-options"></label>
+      </div><datalist id="scene-options"></datalist><datalist id="input-options"></datalist><button id="save-mappings" type="button">Save mappings</button>
+    </details><p id="feedback" class="feedback" aria-live="polite"></p>
+  </main>
+  <script src="../../universal-dock/shared/streamerbot-transport.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

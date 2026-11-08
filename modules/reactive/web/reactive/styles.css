@@ -1,0 +1,159 @@
+html {
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #323232;
+  color: #f0f0f0;
+}
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 8px 12px;
+}
+
+.panel {
+  margin-bottom: 8px;
+  border: 1px solid #666;
+  border-radius: 8px;
+  background: #505050;
+  padding: 8px 10px;
+}
+
+form,
+label {
+  display: grid;
+  gap: 6px;
+}
+
+form {
+  gap: 8px;
+}
+
+label {
+  font-size: 0.8rem;
+}
+
+input,
+button {
+  font: inherit;
+}
+
+input[type="text"],
+input[type="url"] {
+  min-width: 0;
+  border: 1px solid #808080;
+  border-radius: 4px;
+  background: #6a6a6a;
+  color: #f0f0f0;
+  padding: 4px 6px;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-row,
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.action-row {
+  justify-content: flex-start;
+}
+
+.settings-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:9px; margin:10px 0; }
+
+button {
+  border: 1px solid #808080;
+  border-radius: 4px;
+  background: #6a6a6a;
+  color: #f0f0f0;
+  cursor: pointer;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+}
+
+.list-header {
+  color: #dcdcdc;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.guest-list {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guest {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  background: #464646;
+  padding: 6px;
+}
+
+.guest.enabled {
+  border-color: #88b8d8;
+}
+
+.guest-details {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+
+.guest-details span {
+  overflow: hidden;
+  color: #d0d0d0;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-button {
+  background: #704848;
+}
+
+.guest-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.camera-button.active {
+  border-color: #7dd3fc;
+  background: #18506a;
+  color: #fff;
+}
+
+.empty,
+.feedback {
+  color: #d0d0d0;
+  font-size: 0.78rem;
+}
+
+.feedback {
+  min-height: 1rem;
+  margin: 0;
+}
+
+.feedback.error {
+  color: #ffb0b0;
+}

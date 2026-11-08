@@ -1,0 +1,419 @@
+{
+  "meta": {
+    "name": "Cameras",
+    "author": "Sethani",
+    "version": "2.0.0",
+    "description": "Native OBS camera controls with private mappings.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "8ccbbf0a-4841-4679-947e-e1960cdabc57",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Initialize",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "9248dd31-24c7-448f-b782-a748851d57fa",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "0d6e7b1b-52ff-40a3-902c-a42036aae9b7",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "df437b2a-f68f-424b-be0d-3de768ed6975",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "dcb10149-334a-42f4-a357-cd3b972f1c74",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Configure",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "configure",
+            "autoType": false,
+            "id": "ee1e9b97-acc8-40ed-8841-7068addae8ac",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "6b47e382-142e-4cda-9396-4ff9d1e28a22",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "35d0341b-e0a0-4719-8eb4-e7fecbe5b6f4",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Reapply",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "reapply",
+            "autoType": false,
+            "id": "923b2911-405c-4994-a6d7-0a41dae72099",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "f36e1bf7-83cd-4289-a6ad-fd7ba3afda7e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d8ceb47d-55e1-4070-9430-9ec57f9578e7",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Assign Reactive",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "assign-reactive",
+            "autoType": false,
+            "id": "d5a411e7-e774-453b-a1dc-508a9a6dd8d7",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "fad8cc20-5d26-463c-8866-2b6ef50442ff",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Engine",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Cameras - Engine shared code",
+            "description": "Native OBS camera routing and read-only inventory",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "7346608a-4beb-4c6e-9750-129893d7ef9b",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "cameras-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "0c50f430-d089-4f2a-9027-05d12b6680ad",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Refresh",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "refresh",
+            "autoType": false,
+            "id": "31e7a636-76c1-4ce6-9663-ed94b032eca9",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "b52b68b5-68c5-4fb7-8fae-6c23030cb214",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3822c92e-0a76-4592-9b52-528e8f172c0a",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Health",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "health",
+            "autoType": false,
+            "id": "7323a98e-0c02-46fd-a1cc-0ba904f3cb5a",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "b2d6cf1c-bf21-4c8d-a196-a965c3e488d6",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d0368fda-0362-49da-8db4-ab3eb3574ec1",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Configure Mappings",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "mappings",
+            "autoType": false,
+            "id": "29d82cfb-c1d4-451e-8f85-feff255cca3c",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "c31adf8f-7f72-4481-b530-323f6762d226",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "771a23bc-1f1a-4ff3-add4-378113d06316",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Sync Reactive",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "sync",
+            "autoType": false,
+            "id": "84c046ac-a167-4195-8745-12e9a464727d",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "64e17c2c-f324-4f4b-b153-8ce984aaf130",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "fa2441af-44e9-4993-b905-52db0b1602c2",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Cameras - Observe OBS",
+        "group": "Cameras",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "timerId": "d1d55aae-c4a2-4c5c-9b77-a56597f702b3",
+            "id": "752e0910-54b2-484d-a35c-2b5abfb462e5",
+            "type": 701,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "cameraActionMode",
+            "value": "observe",
+            "autoType": false,
+            "id": "bd741d2e-0bd3-4734-a3ea-1a08bb3827ef",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "c22edc69-5ff5-4b5e-86d0-9c887810576d",
+            "runImmedately": true,
+            "id": "bdc9e4b7-37ab-4821-a2f8-b3b65d98013f",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": [
+      {
+        "id": "d1d55aae-c4a2-4c5c-9b77-a56597f702b3",
+        "name": "Companion camera connection observer",
+        "enabled": true,
+        "repeat": true,
+        "interval": 5,
+        "randomInterval": false,
+        "upperInterval": 0,
+        "lines": 0,
+        "counter": 0
+      }
+    ]
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}
