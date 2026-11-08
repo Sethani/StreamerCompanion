@@ -1,0 +1,10 @@
+'use strict';
+const {launchFixture}=require('./phone-deck-launch-fixture');
+const modules=['audio-routing','wheel','video'].map(id=>require('../../modules/'+id+'/module.json'));
+async function mediaFixture(directory){const f=await launchFixture(directory);for(const m of modules){f.modules.push({packageId:m.id,name:m.ui.name,category:m.ui.category,state:'ready',phoneDeck:m.ui.phoneDeck});f.actions.push(...require('../../modules/'+m.id+'/streamerbot/export.json').data.actions.map(a=>({id:a.id,name:a.name,enabled:true})));}
+ const audio={config:{gameAudioVodSafe:true,sourceRouting:{'Synthetic exact input':'gameToggle'}},obsAvailable:true,operation:{requestId:'',status:'ok',error:''}},wheel={status:'idle',activeProfileName:'Synthetic wheel',profiles:[{slug:'synthetic',name:'Synthetic wheel'}],lastResult:null},video={config:{library:{synthetic:{id:'synthetic',label:'Synthetic video',enabled:true,src:'http://127.0.0.1:3135/api/public/media/video/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.mp4'},disabled:{id:'disabled',label:'Disabled',enabled:false,src:'private-fixture-url'}}},current:{visible:false,lastError:''}};
+ for(const [id,payload]of Object.entries({'audioRouting':audio,wheel,video}))f.globals['portable.'+id+'.state']={payload};
+ let mode='ok';f.onAction(m=>{const a=m.args,id=m.action.id;if(id===modules[0].ui.phoneDeck.actions.toggle.id){audio.config.gameAudioVodSafe=!audio.config.gameAudioVodSafe;if(mode==='late'){setTimeout(()=>{audio.operation={requestId:a.requestId,status:'ok'};},200);return;}audio.operation={requestId:mode==='mismatch'?'unrelated':a.requestId,status:mode,error:mode==='ok'?'':'Synthetic routing result'};}else if(id===modules[1].ui.phoneDeck.actions.spin.id){wheel.status='spinning';wheel.activeProfileName='Synthetic wheel';}else if(id===modules[1].ui.phoneDeck.actions.clear.id)wheel.status='idle';else if(id===modules[2].ui.phoneDeck.actions.play.id)video.current={visible:true,id:a.id,title:a.title||'',lastError:''};else if(id===modules[2].ui.phoneDeck.actions.stop.id)video.current={visible:false,lastError:''};});
+ return{...f,mediaModules:modules,audio,wheel,video,audioMode:v=>{mode=v;}};
+}
+module.exports={mediaFixture};

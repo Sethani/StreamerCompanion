@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "video",
   "name": "Video",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Owned video playback, titles, presentation settings, and overlay tests.",
   "configurationRequired": false,
   "documentation": "README.md",
@@ -18,6 +18,97 @@
     "importFile": "streamerbot/video.sb"
   },
   "ui": {
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "play": {
+          "id": "3e7cf840-0545-4076-ad74-bf3fafc263a5",
+          "args": {
+            "id": {
+              "field": "video"
+            },
+            "title": {
+              "field": "title"
+            }
+          }
+        },
+        "stop": {
+          "id": "f95b2c16-2235-413c-9d91-677ffca515cf",
+          "args": {}
+        }
+      },
+      "state": {
+        "global": "portable.video.state",
+        "fields": {
+          "visible": "payload.current.visible",
+          "video": "payload.current.id",
+          "title": "payload.current.title",
+          "error": "payload.current.lastError"
+        }
+      },
+      "resources": {
+        "videos": {
+          "path": "payload.config.library",
+          "id": "id",
+          "label": "label",
+          "filter": {
+            "path": "enabled",
+            "equals": true
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "play",
+          "name": "Play registered video",
+          "kind": "button",
+          "action": "play",
+          "fields": [
+            {
+              "id": "video",
+              "label": "Registered video",
+              "type": "resource",
+              "resource": "videos",
+              "required": true
+            },
+            {
+              "id": "title",
+              "label": "Optional title",
+              "type": "text",
+              "maxLength": 140
+            }
+          ]
+        },
+        {
+          "id": "stop",
+          "name": "Stop video",
+          "kind": "button",
+          "action": "stop",
+          "fields": []
+        },
+        {
+          "id": "status",
+          "name": "Video status",
+          "kind": "widget",
+          "display": [
+            "visible",
+            "video",
+            "title",
+            "error"
+          ],
+          "displayLabels": {
+            "visible": "Playing",
+            "video": "Video",
+            "title": "Title",
+            "error": "Details"
+          },
+          "fields": []
+        }
+      ]
+    },
     "id": "video",
     "name": "Video Player",
     "category": "Effects",

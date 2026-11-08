@@ -1,4 +1,10 @@
-# Phone Deck — Session 4 development checkpoint
+# Phone Deck — Session 5 development checkpoint
+
+Session 5 adds optional Audio Routing, Wheel and Video controls/status. Audio Routing uses its native toggle and matching persisted acknowledgement, including explicit partial failures. Wheel spins a selected saved profile; Video plays a selected enabled registered video by ID, with an optional title. Their existing actions report Requested. Resource removal disables the saved card without choosing a replacement. No media URL, credentials or installation token is sent to phones.
+
+Existing legacy cards are translated in memory to reviewed provider contracts while retaining pages, IDs, ordering, appearance and targets. Startup does not rewrite the saved layout; explicit Save persists the translation. Guided launch remains guided, stop-stream remains raw OBS Stop, and legacy countdown Start resumes a paused timer or leaves a running one alone. Chat forms use Chat Routing's bot account; title/category/custom actions retain their optional native helpers. Existing media widgets combine independent Video/Wheel status; OBS widgets also show available launch progress. Parked Writing cards remain unavailable and never run legacy code. Future incompatible provider changes require a card edit; compatibility hashes never follow a live declaration automatically. Blank/missing saved resources require explicit selection.
+
+This session performs no production handoff. Session 6 owns HTTPS/TLS/pairing/layout transfer, legacy ownership guards and handset acceptance. Keep the current Phone Deck running until then.
 
 Independent OBS foundation for Companion 1.3.1. This local 2.0.0 package is **not a production cutover or published release**. Keep the existing Phone Deck until Session 6.
 

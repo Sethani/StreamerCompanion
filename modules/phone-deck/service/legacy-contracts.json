@@ -1,0 +1,87 @@
+{
+  "stream-launch/go-live": {
+    "packageId": "stream-launch",
+    "controlId": "go-live",
+    "providerRevision": "44d34a17641bc72b6fdb76d694b3ef405c3dee792b4cd5de7f33283879227f2e"
+  },
+  "countdown/start": {
+    "packageId": "countdown",
+    "controlId": "start",
+    "providerRevision": "7440b418dd905a37a97d063d3515bd0429fff49986c7e0d9c9622d6a700c0706"
+  },
+  "countdown/pause": {
+    "packageId": "countdown",
+    "controlId": "pause",
+    "providerRevision": "84fccc044c3b64fe9f33f0aaf8f3c08a2b66c8db1acad50cc59b99915964c1cf"
+  },
+  "countdown/resume": {
+    "packageId": "countdown",
+    "controlId": "resume",
+    "providerRevision": "9351f9f36fa54f8a5767fe6c7ffe4bdf0ab7ca6000b4864f8b9a7e5f14cd9309"
+  },
+  "countdown/clear": {
+    "packageId": "countdown",
+    "controlId": "clear",
+    "providerRevision": "2f05e86d355863ce381738e83df80f1267c92b2f09e8c0ea4dda9590d4fc203a"
+  },
+  "countdown/preset-3": {
+    "packageId": "countdown",
+    "controlId": "preset-3",
+    "providerRevision": "06984e960ce793eb527e11998a8740d084dfd8643d67dd2a4a8a42396394c9cf"
+  },
+  "countdown/preset-5": {
+    "packageId": "countdown",
+    "controlId": "preset-5",
+    "providerRevision": "a4f6a356e53cbbb66fc694ccda7ce9f708026ac54d5b8a0050f4f790e9b7daf2"
+  },
+  "countdown/status": {
+    "packageId": "countdown",
+    "controlId": "status",
+    "providerRevision": "0b6ae8b022264c1775c7f6a4454690709e87898ad997e6d12341c5f03ea60ed5"
+  },
+  "audio-routing/toggle": {
+    "packageId": "audio-routing",
+    "controlId": "toggle",
+    "providerRevision": "99ef58b1fd3dfa2d2ca76709d016e78cf674dd883c6138afcb77a82f3be61a3e"
+  },
+  "wheel/spin": {
+    "packageId": "wheel",
+    "controlId": "spin",
+    "providerRevision": "23551e248669022854a82503c8e83d3c2013c22fee960974609dcabd59c1277b"
+  },
+  "wheel/clear": {
+    "packageId": "wheel",
+    "controlId": "clear",
+    "providerRevision": "23158aa8d235f87441e74cdbea3a557d668f907bbcc32ee85e9444a98309dfb7"
+  },
+  "video/play": {
+    "packageId": "video",
+    "controlId": "play",
+    "providerRevision": "1d2ed6599be4abb8c94153e4b521a05fc262111f5d35280e508f2ec795ee5ab8"
+  },
+  "video/stop": {
+    "packageId": "video",
+    "controlId": "stop",
+    "providerRevision": "7c643a7d9e9355e1f9653c86f69b8c11f4b30230dfeffea1f3f9aa4ea478e40b"
+  },
+  "phone-deck/custom-action": {
+    "packageId": "phone-deck",
+    "controlId": "custom-action",
+    "providerRevision": "e90f8a595e1e72386f4b13bcf74708c9394e4056d2b5f6088bcd5a118661167c"
+  },
+  "phone-deck/title": {
+    "packageId": "phone-deck",
+    "controlId": "title",
+    "providerRevision": "2eec68bb3becc0092345a5b98db11993270011e34649c1c6b2808d5351783534"
+  },
+  "phone-deck/category": {
+    "packageId": "phone-deck",
+    "controlId": "category",
+    "providerRevision": "8e7868da5889d35367392067ecd3df246757a2a833d5c66205616a352b30ccda"
+  },
+  "chat-routing/bot-message": {
+    "packageId": "chat-routing",
+    "controlId": "bot-message",
+    "providerRevision": "5ed97a009a321272ffb65b9f1403b3a1973fadffd227e6a5ce819dc109e65604"
+  }
+}

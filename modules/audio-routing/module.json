@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "audio-routing",
   "name": "Audio Routing",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Existing OBS live/VOD track classifications, explicit Save/Apply and game-audio toggle.",
   "author": "Sethani",
   "license": "MIT",
@@ -31,6 +31,66 @@
     "root": "web"
   },
   "ui": {
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "toggle": {
+          "id": "3a540bdc-8a8a-4353-b9b4-d7f0ec78f5dc",
+          "args": {}
+        }
+      },
+      "state": {
+        "global": "portable.audioRouting.state",
+        "fields": {
+          "gameAudioVodSafe": "payload.config.gameAudioVodSafe",
+          "obsAvailable": "payload.obsAvailable",
+          "status": "payload.operation.status",
+          "error": "payload.operation.error"
+        },
+        "ack": {
+          "path": "payload.operation",
+          "requestId": "requestId",
+          "status": "status"
+        }
+      },
+      "controls": [
+        {
+          "id": "toggle",
+          "name": "Toggle game audio VOD",
+          "kind": "button",
+          "action": "toggle",
+          "active": "gameAudioVodSafe",
+          "prerequisites": [
+            {
+              "field": "obsAvailable",
+              "equals": true
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "status",
+          "name": "Audio routing status",
+          "kind": "widget",
+          "display": [
+            "gameAudioVodSafe",
+            "obsAvailable",
+            "status",
+            "error"
+          ],
+          "displayLabels": {
+            "gameAudioVodSafe": "Game VOD",
+            "obsAvailable": "OBS",
+            "status": "Routing",
+            "error": "Details"
+          },
+          "fields": []
+        }
+      ]
+    },
     "id": "audio-routing",
     "name": "Audio",
     "category": "Stream",

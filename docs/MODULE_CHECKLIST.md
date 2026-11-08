@@ -29,7 +29,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## To do: remaining migration
 
-- [ ] **Phone Deck — Sessions 1–4 implemented; Session 5 next.** OBS foundation, optional framework, guided launch/progress and countdown presets/timer controls pass isolated checks. Only verified provider metadata updates are published; Phone Deck has no production install or handoff yet. Follow the [12-session checkpoints](phone-deck-sessions.md); the existing deck still needs the old server until Session 6. Preserve cards, pairing, TLS, action types and active-state indicators.
+- [ ] **Phone Deck — Sessions 1–5 implemented; Session 6 next.** OBS foundation, optional framework, launch/countdown, Audio Routing/Wheel/Video and legacy-card/combined-widget compatibility pass isolated checks. Only verified provider metadata updates are published; Phone Deck has no production install or handoff yet. Follow the [12-session checkpoints](phone-deck-sessions.md); the existing deck still needs the old server until Session 6. Preserve cards, pairing, TLS, action types and active-state indicators.
 - [ ] **Embedded widgets, including Tangia.** Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
 - [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.

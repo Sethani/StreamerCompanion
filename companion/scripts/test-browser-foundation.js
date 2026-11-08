@@ -86,11 +86,11 @@ async function main() {
     assert.equal(host.webAssets.listMedia("video").length, 1);
     const marker = path.join(host.dataDirectory, "module-data/video/private.txt"); fs.writeFileSync(marker, "preserved");
     host.services.config.autoStart.video = true; host.services.saveConfig();
-    const zip = new AdmZip(path.join(test.output, "video-2.2.0.streammodule")); const manifest = JSON.parse(zip.readAsText("module.json")); manifest.version = "2.2.1"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest)));
+    const zip = new AdmZip(path.join(test.output, "video-2.2.1.streammodule")); const manifest = JSON.parse(zip.readAsText("module.json")); manifest.version = "2.2.2"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest)));
     const upgrade = path.join(temporary, "upgrade.streammodule"); zip.writeZip(upgrade); await host.installModulePackage(upgrade);
     assert.equal(host.webAssets.listMedia("video")[0].src, media[0].src); assert.equal(fs.readFileSync(marker, "utf8"), "preserved"); assert.equal(host.services.config.autoStart.video, true);
-    zip.deleteFile("web/video/index.html"); manifest.version = "2.2.2"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); zip.writeZip(upgrade);
-    await assert.rejects(host.installModulePackage(upgrade), /Browser page/); assert.equal(host.registry.readManifest("video").version, "2.2.1"); assert.equal(host.webAssets.listMedia("video").length, 1);
+    zip.deleteFile("web/video/index.html"); manifest.version = "2.2.3"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); zip.writeZip(upgrade);
+    await assert.rejects(host.installModulePackage(upgrade), /Browser page/); assert.equal(host.registry.readManifest("video").version, "2.2.2"); assert.equal(host.webAssets.listMedia("video").length, 1);
     test.setActions([]);
     const pending = await host.listModules(); assert.equal(pending.modules.find((item) => item.id === "source-modules").state, "streamerbot-required"); assert.equal(pending.modules.find((item) => item.id === "video").state, "missing-dependency");
     assert.equal((await fetch(base + "/api/public/assets/video/video/index.html")).status, 409);

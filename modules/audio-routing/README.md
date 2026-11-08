@@ -1,6 +1,8 @@
 # Audio Routing
 
-Audio Routing 2.0.0 packages the established OBS source classifications and dock controls. Install in Companion and import its six Streamer.bot actions. Open Audio in Universal Dock. No audience overlay, child service or Companion rebuild is required. The existing default OBS connection in Streamer.bot supplies inventory and track operations.
+Audio Routing 2.0.1 packages the established OBS source classifications and dock controls. Install in Companion and import its six Streamer.bot actions. Open Audio in Universal Dock. No audience overlay, child service or Companion rebuild is required. The existing default OBS connection in Streamer.bot supplies inventory and track operations.
+
+2.0.1 adds optional Phone Deck toggle/status declarations. The toggle uses the existing native owner and its persisted matching request acknowledgement; partial routing is reported as partial completion. It preserves classifications and the complete six-track routing rules. This metadata-only update has identical native export data to 2.0.0, so existing installations need no native reimport. Phone Deck is optional and no cards are added automatically.
 
 Existing action IDs and `portable.audioRouting.config` / `portable.audioRouting.state` are retained. Configuration stays version 2. New installations start with an empty source map and game audio enabled for VOD; upgrades never seed personal source names or overwrite saved mappings. Exact source names, including case, are significant. Missing sources retain their classifications.
 

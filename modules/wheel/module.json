@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "wheel",
   "name": "Wheel",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Weighted profile wheels with the established editor, animation, result sound and trigger-ready Streamer.bot adapter.",
   "author": "Sethani",
   "license": "MIT",
@@ -36,6 +36,82 @@
     "overlayPage": "/overlay/index.html"
   },
   "ui": {
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "spin": {
+          "id": "71fb2daf-73a8-4a30-94cd-0e93241e3b8b",
+          "args": {
+            "profile": {
+              "field": "profile"
+            },
+            "user": "phone deck"
+          }
+        },
+        "clear": {
+          "id": "37a5e8b8-9602-4819-9bd1-b22f8acc8e65",
+          "args": {}
+        }
+      },
+      "state": {
+        "global": "portable.wheel.state",
+        "fields": {
+          "status": "payload.status",
+          "profile": "payload.activeProfileName",
+          "result": "payload.lastResult.result"
+        }
+      },
+      "resources": {
+        "profiles": {
+          "path": "payload.profiles",
+          "id": "slug",
+          "label": "name"
+        }
+      },
+      "controls": [
+        {
+          "id": "spin",
+          "name": "Spin wheel",
+          "kind": "button",
+          "action": "spin",
+          "fields": [
+            {
+              "id": "profile",
+              "label": "Wheel profile",
+              "type": "resource",
+              "resource": "profiles",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "clear",
+          "name": "Clear wheel",
+          "kind": "button",
+          "action": "clear",
+          "fields": []
+        },
+        {
+          "id": "status",
+          "name": "Wheel status",
+          "kind": "widget",
+          "display": [
+            "status",
+            "profile",
+            "result"
+          ],
+          "displayLabels": {
+            "status": "Wheel",
+            "profile": "Profile",
+            "result": "Result"
+          },
+          "fields": []
+        }
+      ]
+    },
     "id": "wheel",
     "name": "Wheel",
     "category": "Activities",

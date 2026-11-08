@@ -1,5 +1,7 @@
 # Wheel
 
+2.1.2 adds optional Phone Deck controls to spin a selected existing profile, clear the wheel and view status. Missing profiles remain unavailable. Dispatch uses the established native actions, weights, animation and sound; it reports Requested because those actions have no matching completion acknowledgement. This metadata-only update retains identical native export data to 2.1.1 and needs no native reimport. Phone Deck is optional; existing layouts receive no automatic cards.
+
 Wheel is the direct package extraction of the established Wheel 2 module. It preserves the existing profile editor, weighted selection, timing, placement, appearance, transparent canvas animation, result presentation and result sound. First-party code and design: Sethani, MIT. No credentials, viewer history, OBS profile or installed Streamer.bot state is packaged.
 
 ## Install and migration

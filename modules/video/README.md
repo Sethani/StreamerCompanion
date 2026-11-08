@@ -1,5 +1,7 @@
 # Video Player
 
+2.2.1 adds optional Phone Deck play/stop/status declarations. Play selects an enabled registered video by ID and accepts an optional title; the native owner resolves its saved source, and no source URL reaches the handset. Missing/disabled resources remain unavailable. Native dispatch reports Requested. This metadata-only update retains identical native export data to 2.2.0 and needs no native reimport. Phone Deck is optional and existing layouts receive no automatic cards.
+
 Provides reusable local-video playback in the shared overlay, including an optional title bar, a registered video library, volume and fit controls, positioning, and guarded playback completion.
 
 ## Requirements

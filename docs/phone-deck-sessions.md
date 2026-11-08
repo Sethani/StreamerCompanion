@@ -10,7 +10,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 | 2 | Complete locally; unpublished | Volume, item/group visibility, recording pause/resume, Studio Mode, preview/transition, replay buffer, virtual camera |
 | 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
-| 5 | Next; not started | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
+| 5 | Complete; provider publication recorded below | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
 | 6 | Pending; off-stream | Publish 2.0.0 and verified providers; backed-up production HTTPS/pairing/layout handoff |
 | 7 | Pending | Spotify and scoped Source Modules controls |
 | 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
@@ -23,9 +23,11 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 
 Source is `modules/phone-deck/`. The local artifact is `dist/modules/phone-deck-2.0.0.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. It is a development checkpoint carrying the intended final version, **not a released or production-installed package**. It is absent from the published catalogue. Companion remains 1.3.1.
 
-The archive now contains Sessions 1–4; SHA-256 `c26b7b62c0ca0b29c5a9c25820bc3de121a5025d7f53d21ed7eecbbd71bd1dee`, also in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Only Stream Launch 1.0.1 and Countdown 1.1.1 were published in Session 4; their full native export bodies match the preceding releases. Earlier checkpoint hashes/source records below are historical and no longer identify the current artifact.
+The archive now contains Sessions 1–5; SHA-256 `ebf863392e838d52e33e77ad967b3210485c1242a08cb35b3175d88f1fe99523`, also in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Session 5 provider candidates are Audio Routing 2.0.1, Wheel 2.1.2 and Video 2.2.1; publication proof follows below. Their full native export bodies match the preceding releases. Earlier checkpoint hashes/source records below are historical and no longer identify the current artifact.
 
 ## Session 1 checkpoint
+
+The session sections below retain their historical boundaries; the current checkpoint and next action are in Progress and the Session 5 section.
 
 The existing dark grid, appearance, editor structure, page/card identities, ordering, duplication, icon/colour/size controls and wake-lock option are copied. Save is explicit; polling preserves nodes, focus, caret, scroll, unsaved editor drafts and scene selections. Configuration and execution carry revisions. Conflicts retain the losing draft instead of overwriting it. New defaults contain only OBS controls. Unknown legacy cards and their fields remain intact and unavailable; guided `stream.launch` never becomes raw OBS Start.
 
@@ -48,7 +50,7 @@ Management uses loopback 3142. HTTPS 3125 starts only with private TLS files. Cr
 
 This checkpoint does not provision/trust production TLS, select a LAN hostname, generate QR enrollment, copy private layout/pairing data, install optional helpers, implement providers, publish releases or hand off production ports. Numeric HTTPS pairing is verified using temporary certificates. Service-worker upgrades, broader offline acceptance, 100 synthetic contributions/cards, old-package upgrades and handset identity preservation remain explicit pre-Session-6 work. The current service worker never caches credentials, private API responses or mutations.
 
-Next turn implements **Session 5 only**, using the same isolated testing approach. It adds Audio Routing/Wheel/Video and existing-card/widget compatibility; no provider may become mandatory or automatically add cards. Publish changed provider packages only after their own verification. Do not advertise this local 2.0.0 checkpoint as cutover-ready.
+Next turn implements **Session 6 only**, the dedicated off-stream cutover. Complete the 100-card/HTTPS/revocation/service-worker/offline/released-upgrade acceptance first, then snapshot and transfer the existing handset identity, layout and TLS with rollback. Do not advertise the local 2.0.0 checkpoint as production-installed before that handoff.
 
 Session 6 must snapshot pages/cards, pairing, TLS, host/preferences and relevant OBS state; retain IDs and expiry; guard the legacy owner and restart only its repository server to release HTTPS. Native import/restart is needed only if helper actions change. Confirm the existing phone reconnects without re-pairing. Any real scene/mute acceptance records and restores its original state.
 
@@ -95,3 +97,11 @@ Verification covers exact action IDs/arguments, raw/guided separation, missing c
 Session 5 is next. The production Phone Deck handoff remains Session 6, and the overall count remains 20/24. Do not repeat physical camera acceptance or remove final-switch Import settings options here.
 
 Publication is complete from source `0e48d7891a6b2ddaeafbd7963cffd47896b1fe10`, after Windows/Linux Check `42521808448`. Countdown workflow `42521958630` published 1.1.1, SHA-256 `b3c22ea079731f08f5e9f121656b448b36ac95178f1f025afaf6c84884d2b617`; Stream Launch workflow `42521961580` published 1.0.1, SHA-256 `f8284fb33ff8677f5e0920d26c1e5dfcc4dbf1b09fb8b557b409035d69c1700e`. Actual anonymous GitHub catalogue/assets passed both upgrades in the existing Companion 1.3.1 runtime: dependency installation, hashes, identical native bodies, retained private data/favorites/import readiness, provider metadata and served dock/overlay. The synthetic Streamer.bot received only GetActions. No HTTP 504 fallback was needed. Phone Deck's absence from the public catalogue is verified; final process inspection found no test processes remaining. Production apps/data/listener ownership are untouched.
+
+## Session 5 checkpoint
+
+Audio Routing 2.0.1 adds native toggle/status with matching acknowledgements and explicit partial errors. Wheel 2.1.2 adds existing-profile spin/clear/status. Video 2.2.1 adds enabled registered-ID play/title/stop/status, without exposing source URLs. Wheel/Video dispatch remains Requested. None becomes required or automatically adds cards.
+
+Legacy action/form compatibility preserves saved identities, pages, appearance, targets and optional helper IDs. Startup translates only in memory; explicit Save persists reviewed pinned references. Guided launch stays guided, raw Stop stays raw, and legacy countdown Start continues paused/running timers without restarting. Media widgets combine independent Video/Wheel status; OBS widgets show available launch progress. Writing stays parked. Removed resources stay selected and unavailable, without defaults or Node fallback. Future incompatible provider contracts require explicit review/edit.
+
+Full source/C# synthetic checks, all hidden desktop/mobile browser suites and packaged 1.3.1 Node-only runtime acceptance pass. Prior published hashes prove complete native export equality for all three patches. Production configuration/apps/TLS/pairing/listeners remain untouched. Session 6 is next, off-stream, including its remaining 100-card/HTTPS/revocation/service-worker/offline/released-upgrade checks before the backed-up handset handoff. The overall count remains 20/24.
