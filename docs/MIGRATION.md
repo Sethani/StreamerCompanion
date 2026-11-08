@@ -8,6 +8,8 @@ Current status (2026-11-07): Archipelago, Pokemon, Controller, Video, Spotify, C
 
 Walk Ons 2.1.0, Universal Dock 1.1.1 and Companion 1.3.1 preview 1 were published on 2026-11-07. Released-package installation and checksum/dependency acceptance passed in disposable packaged-host profiles. The local preview already has these versions; refresh the existing combined OBS source and Universal Dock to load the new browser assets. Shoutout Clips is the next extraction.
 
+November 8 corrective update: installed Walk Ons 2.1.1 fixes repeated entrances caused by child-action argument isolation; its backed-up Streamer.bot action update and coordinated restart are complete. Installed Archipelago 1.0.9 uses scoped Controller reads/actions, respects unavailable counts, and permits explicit synchronized `not_governed` targets. Both modules are published and Ready; Companion remains 1.3.1. Source/C#/hidden UI/released-package checks pass, and the Controller handover records the new API. Observe once-per-stream behavior during normal chat; Shoutout Clips remains the next extraction.
+
 The new repository is canonical for the generic host, Video and Spotify source. Existing personal applications/configuration stay intact until each replacement is proven. Never migrate `.env`, OAuth tokens, chat databases, OBS profiles, widget authentication URLs, private media or viewer data through Git or release packages.
 
 ## First release/update gate

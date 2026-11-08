@@ -19,7 +19,7 @@ async function main() {
     manifest.service.port = await freePort(); fs.writeFileSync(manifestFile, JSON.stringify(manifest)); host.registerInstalledServices();
     await host.availableCapabilities(); await host.services.execute("archipelago", "start");
     const base = "http://127.0.0.1:" + manifest.service.port;
-    const html = await (await fetch(base + "/settings")).text(); const csrf = html.match(/name="companion-csrf" content="([^"]+)"/)[1];
+    const html = await (await fetch(base + "/settings")).text(); let csrf = html.match(/name="companion-csrf" content="([^"]+)"/)[1];
     const api = async (body) => { const response = await fetch(base + "/api/settings", { method: body ? "POST" : "GET", headers: { "X-Companion-CSRF": csrf, "Content-Type": "application/json" }, ...(body ? { body: JSON.stringify(body) } : {}) }); assert.equal(response.status, 200); return response.json(); };
     let settings;
     await waitFor(async () => { settings = await api(); return settings.connected || settings.error; });
@@ -31,6 +31,7 @@ async function main() {
     assert.equal((await fetch(base + "/overlay")).status, 200);
     await host.services.setAutoStart("archipelago", true); await host.services.execute("archipelago", "restart");
     const health = await (await fetch(base + "/health")).json(); assert.equal(health.configured, true);
+    csrf = (await (await fetch(base + "/settings")).text()).match(/name="companion-csrf" content="([^"]+)"/)[1];
     await waitFor(async () => { const next = await api(); return next.connected && JSON.stringify(next.config.profiles[testRoom.id].slots) === JSON.stringify(selected); }); assert.equal(host.services.config.autoStart.archipelago, true);
     assert.equal(fs.existsSync(path.join(root, "module-data/archipelago/auth.json")), false, "Passive acceptance must not adopt any real key");
     console.log("Released Archipelago GitHub install passed under the packaged host: verified package/dependency hashes, isolated service start/restart, real passive room/slot discovery, stable overlay, saved selections and automatic-start preference; no broker actions or real credentials used.");
