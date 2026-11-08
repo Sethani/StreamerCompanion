@@ -1,5 +1,13 @@
 # First public GitHub update validation
 
+## November 8: Shoutout Clips 2.1.0 extraction
+
+The installed six-action 2.0.0 engine matched its personal installer exactly before extraction. Version 2.1.0 copies its controls, layout and title styling into an independent package, preserves every action ID and saved-state contract, and adds serialized updates plus distinct starts for identical-clip replay. The existing combined-source bridge and Universal Overlay use the packaged renderer with no additional OBS source. The private caller update is limited to native clip dispatch; warm generation remains a documented dependency of the later Ollama slice.
+
+Local verification passed: deterministic builds across 19 modules; the complete module regression suite; actual C# compilation and saved-state/duration/replay/stale-Stop/concurrency tests; hidden browser tests of copied controls/styles, unsaved edits, transparent idle, provider URLs and single shared-overlay ownership; and private-caller C# tests with synthetic Twitch/AI/action adapters. Hidden browser requests to external players were intercepted. No real chat, official shoutout or media playback was needed. Package scans confirm no media, viewer state or credentials. Remote-player code is not redistributed; its provider boundary and the existing mature-player mute limitation are documented in the package.
+
+Release/install and real provider playback acceptance are recorded below when complete. The [boundary record](shoutout-clips-boundary.md) distinguishes player independence from the remaining warm-text/whole-system retirement work.
+
 ## November 8: Walk Ons 2.1.1 and Archipelago 1.0.9
 
 The reported repeated walk-on was traced to child-action argument isolation: audio played, but its parent logged rejection and did not consume eligibility. Live checks found once-per-stream enabled and an empty ledger; seven rejection entries were counted without reproducing viewer data. The old test incorrectly shared parent/child arguments.

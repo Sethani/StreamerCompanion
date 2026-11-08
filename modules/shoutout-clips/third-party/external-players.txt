@@ -1,0 +1,15 @@
+External hosted players (no redistributed code or media)
+
+Twitch clip embeds: https://clips.twitch.tv/embed
+Documentation: https://dev.twitch.tv/docs/embed/video-and-clips/
+Terms: https://www.twitch.tv/p/en/legal/terms-of-service/
+
+MustachedManiac hosted Twitch Clip Player:
+https://mustachedmaniac.com/widgets/Twitch_Clip_Player
+
+These independent remote services retain their respective ownership and terms.
+Only iframe URLs are constructed by this package. No remote player implementation,
+clip media, thumbnails, personal channel identifiers or credentials are bundled.
+The project's MIT licence covers first-party integration code only. No licence to
+redistribute third-party media or player code is asserted. Availability, autoplay,
+content restrictions and mute support remain subject to the selected provider.

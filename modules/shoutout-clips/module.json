@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 2,
+  "id": "shoutout-clips",
+  "name": "Shoutout Clips",
+  "version": "2.1.0",
+  "description": "Existing Twitch clip presentation, title styling, duration, mute and shared-overlay playback.",
+  "author": "Sethani",
+  "license": "MIT",
+  "configurationRequired": false,
+  "documentation": "README.md",
+  "streamerbot": {
+    "requiredActions": [
+      "Shoutout Clips - Engine",
+      "Shoutout Clips - Initialize",
+      "Shoutout Clips - Health",
+      "Shoutout Clips - Configure",
+      "Shoutout Clips - Play",
+      "Shoutout Clips - Stop"
+    ],
+    "importFile": "streamerbot/shoutout-clips.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.1"
+    },
+    "optionalModules": {
+      "source-modules": "^1.0.0",
+      "universal-overlay": "^1.0.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.3.1"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "ui": {
+    "id": "shoutoutclip",
+    "name": "Shoutout Clips",
+    "category": "Effects",
+    "order": 20,
+    "dockPage": "/shoutout-clips/index.html",
+    "ownership": "streamerbot",
+    "overlays": [
+      "shoutoutClip"
+    ],
+    "actions": [
+      "Shoutout Clips - Configure",
+      "Shoutout Clips - Play",
+      "Shoutout Clips - Stop"
+    ],
+    "dependencies": [
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [],
+    "settings": [
+      "layout",
+      "maximumDuration",
+      "playerMode",
+      "muted",
+      "titleAppearance"
+    ],
+    "tests": [
+      {
+        "id": "clip",
+        "name": "Shoutout clip",
+        "level": "mutating",
+        "fields": [
+          {
+            "id": "clipId",
+            "label": "Twitch clip ID",
+            "type": "text",
+            "placeholder": "Clip slug or ID"
+          },
+          {
+            "id": "channel",
+            "label": "Channel label",
+            "type": "text",
+            "placeholder": "Test streamer"
+          },
+          {
+            "id": "title",
+            "label": "Optional title",
+            "type": "text"
+          },
+          {
+            "id": "duration",
+            "label": "Duration seconds",
+            "type": "number",
+            "min": 1,
+            "max": 60,
+            "value": 15
+          }
+        ],
+        "buttons": [
+          {
+            "label": "Play",
+            "feature": "shoutoutClip",
+            "command": "Play",
+            "args": {
+              "clipId": {
+                "field": "clipId",
+                "trim": true
+              },
+              "channel": {
+                "field": "channel",
+                "trim": true
+              },
+              "title": {
+                "field": "title",
+                "trim": true
+              },
+              "durationMs": {
+                "field": "duration",
+                "number": true,
+                "min": 1,
+                "max": 60,
+                "multiply": 1000
+              },
+              "playerMode": {
+                "literal": "mustached"
+              }
+            }
+          },
+          {
+            "label": "Stop",
+            "className": "secondary",
+            "feature": "shoutoutClip",
+            "command": "Stop",
+            "args": {}
+          }
+        ]
+      },
+      {
+        "id": "health",
+        "name": "Shoutout clips health",
+        "level": "safe",
+        "fields": [],
+        "buttons": [
+          {
+            "label": "Check health",
+            "feature": "shoutoutClip",
+            "command": "Health",
+            "args": {}
+          }
+        ]
+      }
+    ],
+    "packagedOverlay": true,
+    "transport": {
+      "feature": "shoutoutClip",
+      "stateKey": "portable.shoutoutClip.state",
+      "actionPrefix": "Shoutout Clips"
+    }
+  }
+}

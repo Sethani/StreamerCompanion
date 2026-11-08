@@ -10,6 +10,7 @@ $remindersSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'module
 $wheelSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/wheel/streamerbot/wheel-engine.cs')
 $walkOnsSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/walk-ons/streamerbot/walk-ons-engine.cs')
 $walkSoundSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/walk-ons/streamerbot/walk-on-sound-engine.cs')
+$shoutoutSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/shoutout-clips/streamerbot/shoutout-clips-engine.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
 $routingSource = $routingSource.Replace('public class CPHInline {', ('public class RoutingInline {' + $fields))
@@ -21,6 +22,7 @@ $remindersSource = $remindersSource.Replace('public class CPHInline {', ('public
 $wheelSource = $wheelSource.Replace('public class CPHInline {', ('public class WheelInline {' + $fields))
 $walkOnsSource = $walkOnsSource.Replace('public class CPHInline', ('public class WalkOnsInline')).Replace('private const string StateKey', ($fields + ' private const string StateKey'))
 $walkSoundSource = $walkSoundSource.Replace('public class CPHInline', ('public class WalkSoundInline')).Replace('private const string StateKey', ($fields + ' private const string StateKey'))
+$shoutoutSource = $shoutoutSource.Replace('public class CPHInline', 'public class ShoutoutInline').Replace('private const string StateKey', ($fields + ' private const string StateKey'))
 $fakeSource = @'
 using System;
 using System.Collections.Generic;
@@ -65,6 +67,7 @@ $combined += "`nnamespace EngineTest {" + $remindersSource + "}"
 $combined += "`nnamespace EngineTest {" + $wheelSource + "}"
 $combined += "`nnamespace EngineTest {" + $walkOnsSource + "}"
 $combined += "`nnamespace EngineTest {" + $walkSoundSource + "}"
+$combined += "`nnamespace EngineTest {" + $shoutoutSource + "}"
 $combined += @'
 namespace EngineTest {
  public class SyntheticLaunch : LaunchInline {
@@ -100,6 +103,18 @@ namespace EngineTest {
    });
    var payload=Newtonsoft.Json.Linq.JObject.Parse((string)initial.CPH.Globals["portable.walkOns.state"])["payload"];
    if(plays!=1 || ((Newtonsoft.Json.Linq.JArray)payload["session"]["seen"]).Count!=1)throw new System.Exception("Concurrent configuration/chat lost once-per-stream eligibility");
+  }
+ }
+ public static class ShoutoutRecorder {
+  public static void ConcurrentState() {
+   var initial=new ShoutoutInline();initial.args["shoutoutClipMode"]="initialize";initial.Execute();
+   System.Threading.Tasks.Parallel.For(0,32,index=>{
+    var engine=new ShoutoutInline();engine.CPH.Globals=initial.CPH.Globals;
+    engine.args["shoutoutClipMode"]=index%2==0?"play":"configure";
+    engine.args["clipId"]="SyntheticClip";engine.args["config"]="{\"maximumDurationSeconds\":17}";engine.Execute();
+   });
+   var envelope=Newtonsoft.Json.Linq.JObject.Parse((string)initial.CPH.Globals["portable.shoutoutClip.state"]);
+   if((long)envelope["revision"]!=33 || !(bool)envelope["payload"]["clip"]["visible"])throw new System.Exception("Concurrent Shoutout configuration/play lost a state change");
   }
  }
 }
@@ -405,3 +420,33 @@ Assert-True ((($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Js
 Run-Engine $sound @{ walkonSoundMode = 'stop'; startedAtMs = $soundState.current.startedAtMs }
 Assert-True (-not (($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload.current.visible)) 'Matching completion must stop playback'
 Write-Output 'Actual Walk Ons C# passed: command/busy guards, weighted media and volume, Test eligibility, once-per-stream chat, rejected playback retry, restart preservation, URL validation and stale completion protection.'
+
+$clip = [EngineTest.ShoutoutInline]::new()
+Run-Engine $clip @{ shoutoutClipMode = 'initialize' }
+Run-Engine $clip @{ shoutoutClipMode = 'configure'; config = '{"maximumDurationSeconds":17,"clip":{"x":27,"y":31,"width":850,"height":470,"muted":true,"playerMode":"twitch"},"label":{"fontSize":29,"textColour":"#abcdef","backgroundColour":"#123456","backgroundOpacityPercent":0}}' }
+$savedConfig = ($clip.CPH.Globals['portable.shoutoutClip.state'] | ConvertFrom-Json).payload.config | ConvertTo-Json -Depth 10 -Compress
+Run-Engine $clip @{ shoutoutClipMode = 'play'; clipId = 'SyntheticClip'; channel = 'Fixture'; title = 'Synthetic title'; durationMs = 60000 }
+$state = $clip.CPH.Globals['portable.shoutoutClip.state'] | ConvertFrom-Json
+Assert-True ($state.payload.clip.durationMs -eq 17000 -and $state.payload.clip.visible) 'Play must clamp duration to saved maximum'
+Assert-True ($state.payload.config.clip.muted -and $state.payload.config.label.backgroundOpacityPercent -eq 0) 'Mute and transparent title settings must survive playback'
+$firstStart = $state.payload.clip.startedAtMs
+Run-Engine $clip @{ shoutoutClipMode = 'play'; slug = 'SyntheticClip'; durationMs = 1 }
+$second = ($clip.CPH.Globals['portable.shoutoutClip.state'] | ConvertFrom-Json).payload.clip
+Assert-True ($second.startedAtMs -gt $firstStart -and $second.durationMs -eq 1000) 'Same clip replay must have a unique start identity and minimum duration'
+Run-Engine $clip @{ shoutoutClipMode = 'stop'; startedAtMs = $firstStart }
+Assert-True (($clip.CPH.Globals['portable.shoutoutClip.state'] | ConvertFrom-Json).payload.clip.visible) 'Old clip completion must not stop the replay'
+$restarted = [EngineTest.ShoutoutInline]::new()
+$restarted.CPH.Globals = $clip.CPH.Globals
+Run-Engine $restarted @{ shoutoutClipMode = 'initialize' }
+$afterRestart = ($restarted.CPH.Globals['portable.shoutoutClip.state'] | ConvertFrom-Json).payload
+Assert-True (($afterRestart.config | ConvertTo-Json -Depth 10 -Compress) -eq $savedConfig -and $afterRestart.clip.startedAtMs -eq $second.startedAtMs) 'Initialization must preserve settings and current playback'
+Run-Engine $restarted @{ shoutoutClipMode = 'stop'; startedAtMs = $second.startedAtMs }
+Assert-True (-not ($restarted.CPH.Globals['portable.shoutoutClip.state'] | ConvertFrom-Json).payload.clip.visible) 'Matching Stop must clear playback'
+$before = $restarted.CPH.Globals['portable.shoutoutClip.state']
+Run-Engine $restarted @{ shoutoutClipMode = 'play' }
+Assert-True ($before -eq $restarted.CPH.Globals['portable.shoutoutClip.state']) 'Missing clip input must not change state'
+$restarted.CPH.FailPersist = $true
+Run-Engine $restarted @{ shoutoutClipMode = 'play'; clipId = 'SyntheticClip' }
+Assert-True ($before -eq $restarted.CPH.Globals['portable.shoutoutClip.state']) 'Failed save must not publish accepted playback'
+[EngineTest.ShoutoutRecorder]::ConcurrentState()
+Write-Output 'Actual Shoutout Clips C# passed: saved layout/mute/title preservation, restart, duration limits, repeated clip identity, stale Stop, rejected input/save and concurrent state updates.'

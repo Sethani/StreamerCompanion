@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "name": "Shoutout Clips",
+    "author": "Sethani",
+    "version": "2.1.0",
+    "description": "Existing Twitch clip player and shared-overlay presentation.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "6598455d-ea31-4d66-bdaa-45cf7c6d9a63",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Shoutout Clips - Engine",
+        "group": "Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Shoutout clip state and playback engine",
+            "description": "Owns clip presentation state and playback",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "816eece5-be17-4230-948b-26deeebb12da",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "shoutout-clips-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "4fc94614-380a-47a7-ba38-923753db0622",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Shoutout Clips - Initialize",
+        "group": "Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "4be2cea3-afa4-40b9-bf15-663698b472e5",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "shoutoutClipMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "8c23d4b7-d979-450b-bf82-cc19e8d9d657",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "6598455d-ea31-4d66-bdaa-45cf7c6d9a63",
+            "runImmedately": true,
+            "id": "d0f23d68-1254-4973-a668-fdd70f703058",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "459876a1-46a7-4f2c-98f2-c5382ce62a9f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Shoutout Clips - Health",
+        "group": "Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "shoutoutClipMode",
+            "value": "health",
+            "autoType": false,
+            "id": "b623dd55-1c32-4155-8245-0009c4164746",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "6598455d-ea31-4d66-bdaa-45cf7c6d9a63",
+            "runImmedately": true,
+            "id": "2432b7df-2154-4c09-b93d-ebe2218ccd1f",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "9f420571-09ec-4025-9e88-4d7ab0b1b7d4",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Shoutout Clips - Configure",
+        "group": "Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "shoutoutClipMode",
+            "value": "configure",
+            "autoType": false,
+            "id": "b6909e67-3708-4b6d-a146-30f1f4a41b90",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "6598455d-ea31-4d66-bdaa-45cf7c6d9a63",
+            "runImmedately": true,
+            "id": "42d90282-ba22-4282-8470-30ae3740b7ed",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "136a6a6b-47d2-427c-b101-5f84d8cae707",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Shoutout Clips - Play",
+        "group": "Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "shoutoutClipMode",
+            "value": "play",
+            "autoType": false,
+            "id": "aa821d73-5353-46fd-b75f-5f5d8e57d9d0",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "6598455d-ea31-4d66-bdaa-45cf7c6d9a63",
+            "runImmedately": true,
+            "id": "ffce766b-4535-45b6-b242-bc82fd752df9",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "e91420c4-f85a-474d-990a-64cae0a27af3",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Shoutout Clips - Stop",
+        "group": "Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "shoutoutClipMode",
+            "value": "stop",
+            "autoType": false,
+            "id": "9467d5c2-2d94-4bc4-a2a4-8752a0caed18",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "6598455d-ea31-4d66-bdaa-45cf7c6d9a63",
+            "runImmedately": true,
+            "id": "e1c7b6b5-2582-4530-a4f4-008c03fa7f87",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}
