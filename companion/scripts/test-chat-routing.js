@@ -5,7 +5,7 @@ const { buildModules } = require('../../scripts/build-modules');
 const output = fs.mkdtempSync(path.join(os.tmpdir(), 'chat-routing-'));
 try {
   buildModules(['chat-routing'], { output });
-  const zip = new AdmZip(path.join(output, 'chat-routing-1.0.1.streammodule'));
+  const zip = new AdmZip(path.join(output, 'chat-routing-1.0.2.streammodule'));
   const manifest = JSON.parse(zip.readAsText('module.json'));
   const bytes = Buffer.from(zip.readAsText(manifest.streamerbot.importFile), 'base64');
   assert.equal(bytes.subarray(0, 4).toString(), 'SBAE');

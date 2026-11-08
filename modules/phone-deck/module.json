@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 2,
+  "id": "phone-deck",
+  "name": "Phone Deck",
+  "version": "2.0.0",
+  "description": "Phone control surface with an independent OBS foundation and optional module controls in later passes.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "streamerbot": {
+    "requiredActions": [],
+    "optionalActions": [
+      "Phone Deck - Send Chat as Broadcaster",
+      "Phone Deck - Send Chat as Bot",
+      "Phone Deck - Set Stream Title",
+      "Phone Deck - Set Game Category"
+    ],
+    "importFile": "streamerbot/phone-deck.sb"
+  },
+  "dependencies": {
+    "modules": {},
+    "optionalModules": {},
+    "capabilities": {
+      "embedded-node": "required"
+    },
+    "companion": ">=1.3.1"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/runtime.js",
+    "port": 3142,
+    "healthPath": "/health",
+    "healthService": "phone-deck",
+    "settingsPath": "/settings",
+    "provides": [
+      "phone-deck"
+    ]
+  },
+  "ui": {
+    "id": "phone-deck",
+    "name": "Phone Deck",
+    "category": "Stream",
+    "dockPage": "/settings",
+    "ownership": "node",
+    "overlays": [],
+    "actions": [],
+    "dependencies": [],
+    "optionalDependencies": [],
+    "settings": [
+      "obsConnection",
+      "pages",
+      "pairing"
+    ],
+    "tests": [],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "title": {
+          "id": "338db055-2f15-429e-9ed9-5e1cea85041a",
+          "args": {
+            "deckValue": {
+              "field": "value"
+            }
+          }
+        },
+        "category": {
+          "id": "156ff353-6e68-48b2-90b9-0f94c2fb410c",
+          "args": {
+            "deckValue": {
+              "field": "value"
+            }
+          }
+        },
+        "chat-bot": {
+          "id": "5923347d-c45c-40da-ad79-1b3e9a47c2b3",
+          "args": {
+            "deckValue": {
+              "field": "value"
+            }
+          }
+        },
+        "chat-compatibility": {
+          "id": "3e5e95c5-0f2c-436f-829b-f98efda47dc2",
+          "args": {
+            "deckValue": {
+              "field": "value"
+            }
+          }
+        },
+        "custom": {
+          "resourceField": "actionId",
+          "args": {}
+        }
+      },
+      "resources": {
+        "actions": {
+          "source": "actions"
+        }
+      },
+      "controls": [
+        {
+          "id": "title",
+          "name": "Set stream title",
+          "kind": "form",
+          "action": "title",
+          "fields": [
+            {
+              "id": "value",
+              "label": "Stream title",
+              "type": "text",
+              "input": true,
+              "required": true,
+              "maxLength": 140
+            }
+          ]
+        },
+        {
+          "id": "category",
+          "name": "Set game category",
+          "kind": "form",
+          "action": "category",
+          "fields": [
+            {
+              "id": "value",
+              "label": "Game category",
+              "type": "text",
+              "input": true,
+              "required": true,
+              "maxLength": 80
+            }
+          ]
+        },
+        {
+          "id": "custom-action",
+          "name": "Run custom Streamer.bot action",
+          "kind": "button",
+          "action": "custom",
+          "fields": [
+            {
+              "id": "actionId",
+              "label": "Streamer.bot action",
+              "type": "resource",
+              "resource": "actions",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "chat-bot",
+          "name": "Legacy bot chat helper",
+          "kind": "form",
+          "action": "chat-bot",
+          "compatibilityOnly": true,
+          "fields": [
+            {
+              "id": "value",
+              "label": "Message",
+              "type": "text",
+              "input": true,
+              "required": true,
+              "maxLength": 500
+            }
+          ]
+        },
+        {
+          "id": "chat-compatibility",
+          "name": "Legacy broadcaster-labelled chat helper",
+          "kind": "form",
+          "action": "chat-compatibility",
+          "compatibilityOnly": true,
+          "fields": [
+            {
+              "id": "value",
+              "label": "Message",
+              "type": "text",
+              "input": true,
+              "required": true,
+              "maxLength": 500
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

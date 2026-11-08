@@ -1,5 +1,7 @@
 # Chat Routing
 
+Version 1.0.2 adds an optional Phone Deck `ui.phoneDeck` contribution for a bot-message form. It references the existing Chat - Twitch action and its existing bot/reply routing; actions, IDs, arguments and runtime behavior are unchanged. Phone Deck is not a dependency and no cards are added automatically. Existing Chat Routing imports need no update or restart for this metadata-only change. Dispatch reports Requested rather than claiming a delivered message. No direct Twitch credentials or second chat backend are introduced.
+
 Shared outgoing bot messages and replies for modules such as Spotify, Reminders and announcements. First-party code: Sethani, MIT. This is separate from incoming chat ingestion/rendering and from the deferred chat archive.
 
 Import the four actions through Companion. No service, overlay, command, startup trigger, credential or automatic send is installed. Streamer.bot owns account authentication. Installation/verification does not send a message. A live message test requires an explicit operator action; automated tests use synthetic sinks only.

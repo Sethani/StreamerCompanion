@@ -21,6 +21,9 @@ function buildModules(ids, options = {}) {
     if (manifest.id !== id || manifest.author !== "Sethani" || manifest.license !== "MIT") throw new Error("Invalid first-party module identity: " + id);
     // Validation does not touch installed data; the instance has no filesystem constructor here.
     CompanionRegistry.prototype.validate(manifest);
+    const optional=manifest.streamerbot.optionalActions||[];
+    if(!Array.isArray(optional)||optional.some(v=>typeof v!=='string'||!v.trim())||new Set([...manifest.streamerbot.requiredActions,...optional]).size!==manifest.streamerbot.requiredActions.length+optional.length)throw Error('Invalid optional action metadata.');
+    if(manifest.ui?.phoneDeck)require('../modules/phone-deck/service/provider-schema').validate(manifest.ui.phoneDeck);
     const zip = new AdmZip();
     zip.addFile("module.json", Buffer.from(JSON.stringify(manifest, null, 2) + "\n"));
     zip.addFile("README.md", textBytes(path.join(source, "README.md")));
@@ -60,7 +63,7 @@ function buildModules(ids, options = {}) {
             zip.addFile(assetPath, bytes);
             continue;
           }
-          if (!/\.(js|cjs|mjs|html|css|json|ps1)$/.test(entry.name)) throw new Error("Service asset needs redistribution review: " + entry.name);
+          if (!/\.(js|cjs|mjs|html|css|json|ps1|svg|webmanifest)$/.test(entry.name)) throw new Error("Service asset needs redistribution review: " + entry.name);
           zip.addFile(prefix + entry.name, textBytes(path.join(directory, entry.name)));
         }
       }

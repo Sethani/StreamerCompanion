@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "name": "Phone Deck optional helpers",
+    "author": "Sethani",
+    "version": "2.0.0",
+    "description": "Optional helpers; the OBS foundation requires no imports",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "3e5e95c5-0f2c-436f-829b-f98efda47dc2",
+        "name": "Phone Deck - Send Chat as Broadcaster",
+        "group": "Phone Deck",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": true,
+        "excludeFromPending": false,
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "b90b0f19-0e82-49ef-bf4f-f6bbd7f9c561",
+            "weight": 0,
+            "type": 10,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "text": "%deckValue%",
+            "pin": false,
+            "pinToStreamEnd": false,
+            "useBot": true,
+            "fallback": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "5923347d-c45c-40da-ad79-1b3e9a47c2b3",
+        "name": "Phone Deck - Send Chat as Bot",
+        "group": "Phone Deck",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": true,
+        "excludeFromPending": false,
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "22d30a08-4c26-425d-b71d-0e75bb72cd29",
+            "weight": 0,
+            "type": 10,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "text": "%deckValue%",
+            "pin": false,
+            "pinToStreamEnd": false,
+            "useBot": true,
+            "fallback": true
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "338db055-2f15-429e-9ed9-5e1cea85041a",
+        "name": "Phone Deck - Set Stream Title",
+        "group": "Phone Deck",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": true,
+        "excludeFromPending": false,
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "76560f61-d6b4-4d56-b8ed-0074b0bcb539",
+            "weight": 0,
+            "type": 15,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "title": "%deckValue%"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "156ff353-6e68-48b2-90b9-0f94c2fb410c",
+        "name": "Phone Deck - Set Game Category",
+        "group": "Phone Deck",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": true,
+        "excludeFromPending": false,
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "id": "68333437-e0b0-4f5b-aa8c-72e03166709f",
+            "weight": 0,
+            "type": 16,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "source": 0,
+            "game": "%deckValue%",
+            "gameId": ""
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "commands": [],
+    "queues": [],
+    "timers": [],
+    "websocketServers": [],
+    "websocketClients": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

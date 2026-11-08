@@ -46,7 +46,7 @@ try {
       assert.equal(exported.meta.author, "Sethani");
       assert.equal(exported.meta.version, manifest.version);
       const names = exported.data.actions.map((action) => action.name).sort();
-      assert.deepEqual(names, [...manifest.streamerbot.requiredActions].sort());
+      assert.deepEqual(names, [...manifest.streamerbot.requiredActions,...(manifest.streamerbot.optionalActions||[])].sort());
       for (const action of exported.data.actions) for (const subAction of action.subActions || []) {
         assert.equal(subAction.sourceFile, undefined);
         if (subAction.type === 99999) assert.ok(Buffer.from(subAction.byteCode, "base64").toString().includes("CPHInline"));

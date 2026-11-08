@@ -1,37 +1,10 @@
-// Run with the packaged application's embedded Node. Uses only a synthetic Streamer.bot.
-const assert = require('node:assert/strict'), fs = require('node:fs'), os = require('node:os'), path = require('node:path'), http = require('node:http'), { once } = require('node:events');
-const bundle = path.resolve(process.argv[2]), archive = path.join(bundle, 'resources/app.asar');
-const { CompanionHost } = require(path.join(archive, 'src/companion-host'));
-const { WebSocketServer } = require(path.join(archive, 'node_modules/ws'));
-async function main() {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chat-routing-github-')); let host, websocket;
-  try {
-    const probe = http.createServer(); probe.listen(0, '127.0.0.1'); await once(probe, 'listening');
-    const port = probe.address().port; await new Promise(resolve => probe.close(resolve));
-    let actions = [];
-    websocket = new WebSocketServer({ host: '127.0.0.1', port: 0 }); await once(websocket, 'listening');
-    websocket.on('connection', socket => socket.on('message', raw => {
-      const request = JSON.parse(raw);
-      assert.equal(request.request, 'GetActions', 'Installation must never run a chat action');
-      socket.send(JSON.stringify({ id: request.id, status: 'ok', actions: actions.map(name => ({ name })) }));
-    }));
-    host = new CompanionHost({ dataDirectory: root, controlApiPort: port, streamerBotUrl: 'ws://127.0.0.1:' + websocket.address().port + '/' });
-    host.start(); await once(host.controlApi.server, 'listening');
-    const inventory = await host.catalog.check(); assert.equal(inventory.error, '');
-    const entry = inventory.modules.find(item => item.id === 'chat-routing'); assert.equal(entry.version, '1.0.1'); assert.equal(entry.problem, '');
-    await host.installCatalogModule('chat-routing');
-    const state = async () => (await host.listModules()).modules.find(item => item.id === 'chat-routing').state;
-    assert.equal(await state(), 'streamerbot-required');
-    actions = host.registry.readManifest('chat-routing').streamerbot.requiredActions;
-    assert.equal(actions.length, 4); assert.equal(await state(), 'ready');
-    actions = actions.slice(0, 3); assert.equal(await state(), 'streamerbot-required');
-    assert.equal(host.services.services.size, 0);
-    assert.ok(fs.existsSync(path.join(host.registry.moduleDirectory('chat-routing'), 'streamerbot/chat-routing.sb')));
-    console.log('Published Chat Routing passed in packaged host: GitHub catalogue/hash installation, missing-import/Ready states, no child service and no outgoing action call.');
-  } finally {
-    await host?.services.stopAll(); if (host) await host.controlApi.stop();
-    if (websocket) { for (const socket of websocket.clients) socket.terminate(); await new Promise(resolve => websocket.close(resolve)); }
-    fs.rmSync(root, { recursive: true, force: true });
-  }
-}
-main().catch(error => { console.error(error); process.exitCode = 1; });
+// Run under packaged Companion's embedded Node. Never connects to real Streamer.bot.
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto'),{once}=require('node:events');
+const bundle=path.resolve(process.argv[2]),archive=path.join(bundle,'resources/app.asar'),{CompanionHost}=require(path.join(archive,'src/companion-host')),{WebSocketServer}=require(path.join(archive,'node_modules/ws'));
+async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'chat-routing-github-'));let host,websocket;try{let actions=[];const reservation=http.createServer();reservation.listen(0,'127.0.0.1');await once(reservation,'listening');const port=reservation.address().port;await new Promise(r=>reservation.close(r));websocket=new WebSocketServer({host:'127.0.0.1',port:0});await once(websocket,'listening');websocket.on('connection',s=>s.on('message',raw=>{const m=JSON.parse(raw);assert.equal(m.request,'GetActions','Installation must never dispatch a chat action');s.send(JSON.stringify({id:m.id,status:'ok',actions:actions.map(name=>({name}))}));}));
+ host=new CompanionHost({dataDirectory:root,controlApiPort:port,streamerBotUrl:'ws://127.0.0.1:'+websocket.address().port+'/',catalogFetch:async(url,options)=>{if(process.argv[4]&&url==='https://api.github.com/repos/Sethani/StreamerCompanion-Modules/contents/catalog/modules.json?ref=main')return new Response(fs.readFileSync(path.resolve(process.argv[4])));if(process.argv[3]&&url.startsWith('https://github.com/Sethani/StreamerCompanion-Modules/releases/download/'))return new Response(fs.readFileSync(path.join(path.resolve(process.argv[3]),path.basename(new URL(url).pathname))));return fetch(url,options);}});host.start();await once(host.controlApi.server,'listening');const inventory=await host.catalog.check();assert.equal(inventory.error,'');const entry=inventory.modules.find(m=>m.id==='chat-routing');assert.equal(entry.version,'1.0.2');assert.equal(entry.problem,'');
+ const old=process.argv[5]?fs.readFileSync(path.resolve(process.argv[5])):Buffer.from(await(await fetch('https://github.com/Sethani/StreamerCompanion-Modules/releases/download/chat-routing-v1.0.1/chat-routing-1.0.1.streammodule')).arrayBuffer());assert.equal(crypto.createHash('sha256').update(old).digest('hex'),'943a8aff873ea09e90abe0a1516b6f2fbf7efab4cb2b8a761fcf7643038710c8');const oldFile=path.join(root,'old.streammodule');fs.writeFileSync(oldFile,old);await host.installModulePackage(oldFile);const state=async()=>(await host.listModules()).modules.find(m=>m.id==='chat-routing').state;assert.equal(await state(),'streamerbot-required');actions=host.registry.readManifest('chat-routing').streamerbot.requiredActions;assert.equal(actions.length,4);assert.equal(await state(),'ready');const data=path.join(root,'module-data/chat-routing');fs.mkdirSync(data,{recursive:true});fs.writeFileSync(path.join(data,'sentinel'),'private fixture retained');host.uiPreferences.setFavorite('chat-routing',true);
+ await host.installCatalogModule('chat-routing');assert.equal(await state(),'ready','Metadata-only provider update must not require reimport');assert.equal(fs.readFileSync(path.join(data,'sentinel'),'utf8'),'private fixture retained');assert.deepEqual(host.uiPreferences.read().favorites,['chat-routing']);const ui=host.publicInstalledModules((await host.moduleState()).states).modules.find(m=>m.packageId==='chat-routing');assert.equal(ui.phoneDeck.schemaVersion,1);assert.equal(ui.phoneDeck.controls[0].id,'bot-message');assert.equal(ui.version,'1.0.2');actions=actions.slice(0,3);assert.equal(await state(),'streamerbot-required');assert.equal(host.services.services.size,0);assert.ok(fs.existsSync(path.join(host.registry.moduleDirectory('chat-routing'),'streamerbot/chat-routing.sb')));
+ console.log('Released Chat Routing 1.0.2 passed in packaged Companion 1.3.1: GitHub catalogue/hash installation, 1.0.1 upgrade, retained private data/favorites/import readiness, public provider metadata, missing-import states and no service/action dispatch. Official downloaded files used only if supplied.');
+ }finally{await host?.services.stopAll();if(host)await host.controlApi.stop();if(websocket){for(const s of websocket.clients)s.terminate();await new Promise(r=>websocket.close(r));}assert.ok(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep)&&path.basename(root).startsWith('chat-routing-github-'));fs.rmSync(root,{recursive:true,force:true});}}
+main().catch(e=>{console.error(e.stack);process.exitCode=1;});

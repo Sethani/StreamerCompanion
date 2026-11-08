@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "chat-routing",
   "name": "Chat Routing",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Shared bot-account chat and reply routing for installed Streamer.bot modules.",
   "author": "Sethani",
   "license": "MIT",
@@ -39,6 +39,43 @@
     ],
     "optionalDependencies": [],
     "settings": [],
-    "tests": []
+    "tests": [],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "send": {
+          "id": "dcac5dec-c796-4b8b-9cb6-4271ef4c2f53",
+          "args": {
+            "chatMessage": {
+              "field": "message"
+            },
+            "chatTargets": "twitch",
+            "chatIsReply": false,
+            "chatReplyId": ""
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "bot-message",
+          "name": "Send bot message",
+          "kind": "form",
+          "action": "send",
+          "fields": [
+            {
+              "id": "message",
+              "label": "Bot message",
+              "type": "text",
+              "input": true,
+              "required": true,
+              "maxLength": 500
+            }
+          ]
+        }
+      ]
+    }
   }
 }

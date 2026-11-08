@@ -1,0 +1,14 @@
+{
+  "name": "Phone Deck",
+  "short_name": "Phone Deck",
+  "id": "/deck/",
+  "start_url": "/deck/",
+  "scope": "/deck/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#101417",
+  "theme_color": "#101417",
+  "icons": [
+    { "src": "/deck/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

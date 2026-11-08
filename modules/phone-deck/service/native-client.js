@@ -1,0 +1,19 @@
+'use strict';
+const crypto=require('node:crypto'),{EventEmitter}=require('node:events');
+function address(value,schemes=['ws:','wss:']){let u;try{u=new URL(value);}catch{throw Error('Invalid optional connection address.');}if(!schemes.includes(u.protocol)||!['127.0.0.1','localhost','[::1]'].includes(u.hostname)||u.username||u.password||u.search||u.hash)throw Error('Use a loopback address without embedded credentials.');return u;}
+class NativeClient extends EventEmitter{
+ constructor({timeout=1500}={}){super();this.timeout=timeout;this.pending=new Map();this.actions=[];this.ready=false;this.closed=false;}
+ configure(config){address(config.url);if(typeof config.password!=='string')throw Error('Invalid optional password.');this.disconnect();this.config={...config};if(config.enabled)this.connect();}
+ disconnect(){clearTimeout(this.retry);clearTimeout(this.handshake);this.ready=false;this.actionsVerified=false;this.actions=[];const socket=this.socket;this.socket=null;socket?.close();for(const e of this.pending.values()){clearTimeout(e.timer);e.reject(Error('Optional backend disconnected; completion may be unknown.'));}this.pending.clear();this.emit('change');}
+ connect(){if(this.closed||!this.config?.enabled)return;const socket=this.socket=new WebSocket(this.config.url);this.handshake=setTimeout(()=>socket.close(),this.timeout);let hello=false;
+  socket.addEventListener('error',()=>{});socket.addEventListener('close',()=>{if(this.socket!==socket)return;this.disconnect();if(!this.closed){this.retry=setTimeout(()=>this.connect(),2000);this.retry.unref();}});
+  socket.addEventListener('message',async event=>{if(this.socket!==socket)return;let m;try{if(String(event.data).length>2*1024*1024)return;m=JSON.parse(String(event.data));}catch{return;}const p=this.pending.get(m.id);if(p){clearTimeout(p.timer);this.pending.delete(m.id);m.status==='ok'?p.resolve(m):p.reject(Error('Optional backend rejected the request.'));return;}
+   if(hello||!m.info)return;hello=true;try{if(m.authentication){const sha=v=>crypto.createHash('sha256').update(v).digest('base64');await this.request('Authenticate',{authentication:sha(sha(this.config.password+m.authentication.salt)+m.authentication.challenge)});}if(this.socket!==socket)return;this.ready=true;await this.refresh();clearTimeout(this.handshake);this.emit('change');}catch{socket.close();}
+  });
+ }
+ request(request,body={}){if(this.socket?.readyState!==1)return Promise.reject(Error('Optional backend is disconnected.'));const id=crypto.randomUUID();return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{this.pending.delete(id);reject(Error('Optional request timed out; completion may be unknown.'));},this.timeout);this.pending.set(id,{resolve,reject,timer});this.socket.send(JSON.stringify({request,id,...body}));});}
+ async refresh(){if(!this.ready)throw Error('Optional backend is disconnected.');const m=await this.request('GetActions');if(!Array.isArray(m.actions))throw Error('Optional actions are unavailable.');this.actionsVerified=true;this.actions=m.actions.filter(a=>typeof a.id==='string'&&/^[0-9a-f-]{36}$/i.test(a.id)&&typeof a.name==='string').map(a=>({id:a.id,name:a.name.slice(0,200),enabled:a.enabled===true}));return this.actions;}
+ async global(name){if(!this.ready)throw Error('Optional backend is disconnected.');const m=await this.request('GetGlobal',{variable:name,persisted:true});let v=Array.isArray(m.variables)?m.variables.find(v=>v.name===name)?.value:m.variables?.[name]?.value;if(v===undefined)throw Error('Declared provider state is unavailable.');if(typeof v==='string')try{v=JSON.parse(v);}catch{throw Error('Declared provider state is invalid.');}return v;}
+ close(){this.closed=true;this.disconnect();}
+}
+module.exports={NativeClient,address};
