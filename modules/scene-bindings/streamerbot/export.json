@@ -1,0 +1,390 @@
+{
+  "meta": {
+    "name": "Scene Links",
+    "author": "Sethani",
+    "version": "2.0.0",
+    "description": "Scene-linked Twitch category and Windows focus",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "5215c147-9414-475f-a97f-b5c7e534fe87",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Engine",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": true,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Scene Links engine",
+            "description": "Native scene/category/focus configuration and acknowledged operations",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "ddf4b494-0b3c-4cf5-8dc1-2a44d84e8e52",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "scene-links-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "86df7e05-fd57-4619-babc-66f8bc3825ce",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Initialize",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "c40b5927-ee47-41b1-a764-27689b3b2281",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          },
+          {
+            "id": "212149e8-5685-4ab2-bc18-1aac252958e4",
+            "type": 14001,
+            "enabled": true,
+            "exclusions": []
+          },
+          {
+            "id": "e9a7011d-d6b7-461b-8cc9-e50719c30b95",
+            "type": 14002,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "0ae96253-3af2-4b4d-b730-2b030ad090b5",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "149c929a-a66e-449a-8eda-98d5f4f7520e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "cab75938-07b5-4706-9cdc-620bf634088c",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Refresh",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "refresh",
+            "autoType": false,
+            "id": "8ea8fb4b-9ebf-480c-bc38-45e691cef549",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "d6e98b36-92bc-4b13-b12f-8a067910319e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "0b166e93-0018-430a-a7d1-2e799801f475",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Save",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "save",
+            "autoType": false,
+            "id": "63e69fee-dce4-47a8-8ede-c6e57ae2510f",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "648b4b97-155c-44f7-b2a6-a8321ec12212",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3a15f946-35de-49e7-a0a9-f43341a841f4",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Apply",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "apply",
+            "autoType": false,
+            "id": "56ccb033-7ac3-49fe-8da0-0af8cb7d6c1f",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "2d65e924-2ba9-4a8b-8d27-06f32a4d582f",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "f99a3b51-6ff1-4cee-92b9-4b7237be7a2b",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Test Focus",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "test-focus",
+            "autoType": false,
+            "id": "461a54b7-ca0c-4661-9cd1-78bf6e546e82",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "2a9cc852-b1fb-4e1d-99c8-c9e6326b9710",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "de858e02-28f3-4916-a3b0-99a33decfd32",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Test Category",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "test-category",
+            "autoType": false,
+            "id": "3d56d580-e16f-4faf-bdeb-25fbad903314",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "4631795b-b5f9-4c0f-9d85-56ea2d88cb3d",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "1aae1c8f-2363-4bd0-b5d3-292ef568fe6d",
+        "queue": "92807f56-ce93-4dbd-86f1-4d2bdffa50f7",
+        "enabled": false,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Monitor",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "monitor",
+            "autoType": false,
+            "id": "c505da65-7379-4b41-9faf-f90665fe9d2d",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "718e9e7b-295f-4441-91c9-f7df35ebd2f5",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "e0ee657e-364a-4804-99df-aab0922e0fc1",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Scene Links - Scene Changed",
+        "group": "Scene Links",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": true,
+        "triggers": [
+          {
+            "sceneName": null,
+            "obsId": null,
+            "id": "9333ff66-0941-4351-86f3-27093cdce27a",
+            "type": 14004,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "sceneBindingsMode",
+            "value": "scene-changed",
+            "autoType": false,
+            "id": "99ab5365-49c4-4205-92c8-58a4944f3c9a",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "5215c147-9414-475f-a97f-b5c7e534fe87",
+            "runImmedately": true,
+            "id": "354c545c-354a-4de2-8254-0056fe0c0b81",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [
+      {
+        "id": "92807f56-ce93-4dbd-86f1-4d2bdffa50f7",
+        "blocking": true,
+        "name": "Scene Links Monitor"
+      }
+    ],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}
+

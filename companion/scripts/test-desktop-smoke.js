@@ -12,7 +12,7 @@ async function main() {
   try {
     const env = { ...process.env };
     delete env.ELECTRON_RUN_AS_NODE;
-  for (const script of ["electron-desktop-smoke.js", "electron-browser-foundation.js", "electron-archipelago-smoke.js", "electron-pokemon-smoke.js", "electron-controller-smoke.js", "electron-countdown-smoke.js", "electron-navigation-smoke.js", "electron-chat-core-smoke.js", "electron-stream-launch-smoke.js", "electron-reminders-smoke.js", "electron-wheel-smoke.js", "electron-walk-ons-smoke.js", "electron-shoutout-clips-smoke.js", "electron-reactive-cameras-smoke.js", "electron-audio-routing-smoke.js", "electron-named-timers-smoke.js", "electron-redeem-checklist-smoke.js"]) {
+  for (const script of ["electron-desktop-smoke.js", "electron-browser-foundation.js", "electron-archipelago-smoke.js", "electron-pokemon-smoke.js", "electron-controller-smoke.js", "electron-countdown-smoke.js", "electron-navigation-smoke.js", "electron-chat-core-smoke.js", "electron-stream-launch-smoke.js", "electron-reminders-smoke.js", "electron-wheel-smoke.js", "electron-walk-ons-smoke.js", "electron-shoutout-clips-smoke.js", "electron-reactive-cameras-smoke.js", "electron-audio-routing-smoke.js", "electron-scene-links-smoke.js", "electron-named-timers-smoke.js", "electron-redeem-checklist-smoke.js"]) {
     const profile = path.join(temporary, script); fs.mkdirSync(profile);
     const code = await new Promise((resolve, reject) => {
       const child = spawn(require("electron"), [path.join(__dirname, script), bundle, profile], {

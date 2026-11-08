@@ -452,3 +452,4 @@ Assert-True ($before -eq $restarted.CPH.Globals['portable.shoutoutClip.state']) 
 Write-Output 'Actual Shoutout Clips C# passed: saved layout/mute/title preservation, restart, duration limits, repeated clip identity, stale Stop, rejected input/save and concurrent state updates.'
 & (Join-Path $PSScriptRoot 'test-guest-camera-engines.ps1')
 & (Join-Path $PSScriptRoot 'test-audio-routing-engines.ps1')
+& (Join-Path $PSScriptRoot 'test-scene-links-engines.ps1')

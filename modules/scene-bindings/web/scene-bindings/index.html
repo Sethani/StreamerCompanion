@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OBS Scene Links</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="container">
+    <section class="panel status-panel">
+      <div><span>OBS</span><strong id="obs-status">checking</strong></div>
+      <div><span>Current scene</span><strong id="current-scene">--</strong></div>
+      <div><span>Last link</span><strong id="last-execution">none</strong></div>
+      <p id="private-error" class="feedback error"></p>
+    </section>
+
+    <section class="panel toolbar">
+      <p>Changing the OBS program scene applies its saved category and window target. Blank rows do nothing.</p>
+      <div class="actions">
+        <button id="refresh-button" type="button">Refresh scenes and windows</button>
+        <button id="save-button" type="button">Save links</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="headings" aria-hidden="true">
+        <span>Scene</span><span>Twitch category</span><span>Window target</span><span>Title contains</span><span>Tests</span>
+      </div>
+      <div id="scene-list" class="scene-list"></div>
+    </section>
+
+    <p id="feedback" class="feedback" aria-live="polite"></p>
+  </main>
+  <script src="../../universal-dock/shared/streamerbot-transport.js"></script>
+  <script src="./app.js?v=20261026-5"></script>
+</body>
+</html>

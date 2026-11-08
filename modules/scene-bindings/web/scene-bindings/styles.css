@@ -1,0 +1,160 @@
+html {
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #323232;
+  color: #f0f0f0;
+}
+
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 12px;
+}
+
+.panel {
+  margin-bottom: 8px;
+  border: 1px solid #666;
+  border-radius: 8px;
+  background: #505050;
+  padding: 8px 10px;
+}
+
+.status-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.status-panel div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.status-panel span,
+.toolbar p,
+.feedback {
+  color: #d0d0d0;
+  font-size: 0.78rem;
+}
+
+.status-panel .feedback {
+  grid-column: 1 / -1;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.toolbar p,
+.feedback {
+  margin: 0;
+}
+
+.actions,
+.test-actions {
+  display: flex;
+  gap: 5px;
+}
+
+button,
+input,
+select {
+  min-width: 0;
+  border: 1px solid #808080;
+  border-radius: 4px;
+  background: #393939;
+  color: #f0f0f0;
+  font: inherit;
+  font-size: 0.76rem;
+  padding: 4px 6px;
+}
+
+button {
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.headings,
+.scene-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.1fr) minmax(130px, 1fr) minmax(200px, 1.6fr) minmax(130px, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+}
+
+.headings {
+  padding: 0 5px 5px;
+  color: #d0d0d0;
+  font-size: 0.72rem;
+}
+
+.scene-list {
+  display: grid;
+  gap: 5px;
+}
+
+.scene-row {
+  border-left: 4px solid #777;
+  background: #444;
+  padding: 5px;
+}
+
+.scene-row.configured {
+  border-color: #6fd074;
+}
+
+.scene-row.missing {
+  border-color: #d2a35d;
+  opacity: 0.78;
+}
+
+.scene-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scene-name small {
+  display: block;
+  color: #e0bd83;
+}
+
+.feedback {
+  min-height: 1rem;
+}
+
+.feedback.error,
+.error {
+  color: #ffb0b0;
+}
+
+@media (max-width: 840px) {
+  .status-panel,
+  .headings,
+  .scene-row {
+    grid-template-columns: 1fr;
+  }
+
+  .headings {
+    display: none;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 2,
+  "id": "scene-bindings",
+  "name": "Scene Links",
+  "version": "2.0.0",
+  "description": "Existing scene-linked Twitch categories and Windows window focus.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Scene Links - Engine",
+      "Scene Links - Initialize",
+      "Scene Links - Refresh",
+      "Scene Links - Save",
+      "Scene Links - Apply",
+      "Scene Links - Test Focus",
+      "Scene Links - Test Category",
+      "Scene Links - Monitor",
+      "Scene Links - Scene Changed"
+    ],
+    "importFile": "streamerbot/scene-links.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.1"
+    },
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.3.1"
+  },
+  "web": {
+    "root": "web"
+  },
+  "ui": {
+    "id": "scene-bindings",
+    "name": "Scene Links",
+    "category": "Stream",
+    "order": 40,
+    "dockPage": "/scene-bindings/index.html",
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [
+      "Scene Links - Engine",
+      "Scene Links - Initialize",
+      "Scene Links - Refresh",
+      "Scene Links - Save",
+      "Scene Links - Apply",
+      "Scene Links - Test Focus",
+      "Scene Links - Test Category",
+      "Scene Links - Scene Changed"
+    ],
+    "dependencies": [
+      "streamerbot-websocket",
+      "obs-websocket",
+      "windows-powershell"
+    ],
+    "optionalDependencies": [
+      "twitch-broadcaster-token"
+    ],
+    "settings": [
+      "sceneBindings"
+    ],
+    "tests": [],
+    "transport": {
+      "feature": "sceneBindings",
+      "stateKey": "portable.sceneBindings.state",
+      "actionPrefix": "Scene Links"
+    }
+  }
+}
+
