@@ -30,6 +30,7 @@ public class FakeCPH {
  public Dictionary<string,object> Arguments = new Dictionary<string,object>();
  public List<string> Actions = new List<string>();
  public System.Action<string> RunActionHook;
+ public bool FailPersist = false;
  public void SetArgument(string key,object value){Arguments[key]=value;}
  public bool RunAction(string name,bool immediate){Actions.Add(name);if(RunActionHook!=null)RunActionHook(name);if(name=="Countdown - Start" && !FailCountdown)Globals["portable.countdown.state"]="{\"payload\":{\"status\":\"running\",\"endTimeMs\":"+(ClockMs+Int64.Parse(Arguments["durationSeconds"].ToString())*1000)+"}}";return !FailCountdown;}
  public long ClockMs = 2000000000000;
@@ -46,7 +47,7 @@ public class FakeCPH {
  public string ObsSendRaw(string type,string data){return "{\"scenes\":[{\"sceneName\":\"Synthetic Scene\"}]}";}
  public string Scene = "Synthetic Scene";
  public T GetGlobalVar<T>(string key,bool persisted){return Globals.ContainsKey(key)?(T)Globals[key]:default(T);}
- public void SetGlobalVar(string key,object value,bool persisted){Globals[key]=value;}
+ public void SetGlobalVar(string key,object value,bool persisted){if(FailPersist)throw new Exception("Synthetic save failure");Globals[key]=value;}
  public string ObsGetCurrentScene(){return Scene;}
  public void WebsocketBroadcastJson(string json){}
  public void LogInfo(string text){}
@@ -75,6 +76,31 @@ namespace EngineTest {
  public class SyntheticReminders : RemindersInline {
   public long TestNow = 2000000000000;
   protected override long Now(){return TestNow;}
+ }
+ public static class WalkOnRecorder {
+  public static void Play(FakeCPH parent,bool complete) {
+   var child=new WalkSoundInline();
+   child.CPH.Globals=parent.Globals;
+   child.CPH.FailPersist=parent.FailPersist;
+   // Streamer.bot passes inputs to a child action; child argument changes do not return.
+   child.args=new System.Collections.Generic.Dictionary<string,object>(parent.Arguments);
+   child.CPH.Arguments=child.args;
+   child.args["walkonSoundMode"]="play";
+   child.Execute();
+   if(complete){child.args["walkonSoundMode"]="stop";child.Execute();}
+  }
+  public static void ConcurrentState() {
+   const string config="{\"roster\":{\"fixture\":{\"type\":\"sound\",\"value\":\"tone\"}},\"sounds\":{\"tone\":{\"src\":\"http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav\"}},\"settings\":{\"oncePerStream\":true}}";
+   var initial=new WalkOnsInline();initial.CPH.Arguments=initial.args;initial.args["walkOnsMode"]="initialize";initial.Execute();initial.args["walkOnsMode"]="configure";initial.args["config"]=config;initial.Execute();
+   int plays=0;
+   System.Threading.Tasks.Parallel.For(0,32,index=>{
+    var engine=new WalkOnsInline();engine.CPH.Globals=initial.CPH.Globals;engine.CPH.Arguments=engine.args;
+    engine.CPH.RunActionHook=name=>{if(name=="Walk-on Sound - Play"){System.Threading.Interlocked.Increment(ref plays);Play(engine.CPH,true);}};
+    engine.args["walkOnsMode"]=index%2==0?"watch":"configure";engine.args["userName"]="fixture";engine.args["message"]="hello";engine.args["config"]=config;engine.Execute();
+   });
+   var payload=Newtonsoft.Json.Linq.JObject.Parse((string)initial.CPH.Globals["portable.walkOns.state"])["payload"];
+   if(plays!=1 || ((Newtonsoft.Json.Linq.JArray)payload["session"]["seen"]).Count!=1)throw new System.Exception("Concurrent configuration/chat lost once-per-stream eligibility");
+  }
  }
 }
 '@
@@ -318,7 +344,8 @@ Write-Output 'Remaining-time alignment and interrupted-launch preservation passe
 
 $walk = [EngineTest.WalkOnsInline]::new()
 $walk.args = $walk.CPH.Arguments
-$walk.CPH.RunActionHook = [System.Action[string]] { param($name) if ($name -eq 'Walk-on Sound - Play') { $walk.args['walkOnSoundAccepted'] = $true } }
+$playSound = [System.Action[string]] { param($name) if ($name -eq 'Walk-on Sound - Play') { [EngineTest.WalkOnRecorder]::Play($walk.CPH, $true) } }
+$walk.CPH.RunActionHook = $playSound
 Run-Engine $walk @{ walkOnsMode = 'initialize' }
 $walkConfig = '{"roster":{"fixture":{"enabled":true,"type":"soundpool","choices":[{"value":"sound-a","weight":3}],"volume":0.4}},"sounds":{"sound-a":{"label":"Synthetic","src":"http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav"}},"settings":{"oncePerStream":true}}'
 Run-Engine $walk @{ walkOnsMode = 'configure'; config = $walkConfig }
@@ -331,6 +358,8 @@ $walk.CPH.Globals.Remove('portable.video.state') | Out-Null
 Run-Engine $walk @{ walkOnsMode = 'test'; login = 'fixture' }
 $walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload
 Assert-True ($walkState.session.seen.Count -eq 0 -and $walk.CPH.Actions.Count -eq 1) 'Explicit Test must play without consuming eligibility'
+Assert-True (-not $walk.args.ContainsKey('walkOnSoundAccepted')) 'The parent must not receive child acceptance arguments'
+Assert-True (-not (($walk.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload.current.visible)) 'Acknowledgement must survive immediate completion'
 Assert-True ($walk.CPH.Arguments['src'] -like 'http://127.0.0.1:3135/*' -and $walk.CPH.Arguments['volume'] -eq '0.4') 'Weighted selection must forward private media and volume'
 Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'hello' }
 Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'again' }
@@ -340,9 +369,29 @@ Run-Engine $walk @{ walkOnsMode = 'reset'; login = 'fixture' }
 $walk.CPH.RunActionHook = $null
 Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'retry' }
 Assert-True ((($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 0) 'Rejected playback must leave the person eligible'
+$walk.CPH.RunActionHook = $playSound
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'retry accepted' }
+Assert-True ((($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 1) 'Reset and successful retry must permit one entrance'
+Run-Engine $walk @{ walkOnsMode = 'reset'; login = 'fixture' }
+$walk.CPH.RunActionHook = [System.Action[string]] { param($name) if ($name -eq 'Walk-on Sound - Play') { $walk.args['walkOnSoundAccepted'] = $true } }
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'stale acknowledgement' }
+Assert-True ((($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 0) 'An old request acknowledgement and a child-style argument cannot acknowledge a new play'
+$walk.CPH.RunActionHook = $playSound
+$walk.CPH.FailPersist = $true
+Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'save failure' }
+$walk.CPH.FailPersist = $false
+Assert-True ((($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 0) 'Failed playback-state save must not consume eligibility'
+[EngineTest.WalkOnRecorder]::ConcurrentState()
 Run-Engine $walk @{ walkOnsMode = 'initialize' }
 $walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload
 Assert-True ($walkState.config.roster.fixture.type -eq 'soundpool' -and $walkState.config.sounds.'sound-a'.label -eq 'Synthetic') 'Restart must preserve private configuration'
+$videoWalk = [EngineTest.WalkOnsInline]::new()
+$videoWalk.args = $videoWalk.CPH.Arguments
+Run-Engine $videoWalk @{ walkOnsMode = 'initialize' }
+Run-Engine $videoWalk @{ walkOnsMode = 'configure'; config = '{"roster":{"fixture":{"type":"video","value":"synthetic-video"}},"settings":{"oncePerStream":true}}' }
+Run-Engine $videoWalk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'hello' }
+Run-Engine $videoWalk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'again' }
+Assert-True ($videoWalk.CPH.Actions.Count -eq 1 -and $videoWalk.CPH.Actions[0] -eq 'Video - Play') 'Video assignments must retain once-per-stream behavior without an audio acknowledgement'
 
 $sound = [EngineTest.WalkSoundInline]::new()
 $sound.args = $sound.CPH.Arguments

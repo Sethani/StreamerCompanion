@@ -28,15 +28,19 @@ Rooms and player/game names come from Controller. No server address, room passwo
 
 Progress, goals and logic display only selected game slots. SlotLock controllers themselves are excluded. Filtering defaults on: locked, missing or unsynchronized lock state is hidden, while a room explicitly reporting no SlotLock works normally. Activity involving any locked/unknown participant is hidden when activity filtering is enabled; identities are resolved by team/slot, not names. Filters can be changed explicitly per room.
 
-Only fresh Ready analysis provides logic counts; unavailable/stale analysis is labeled accordingly. A glitched count is shown only with `glitchedSupported: true`; go mode remains absent when unsupported/unknown. Checked sphere data is not treated as reachability. Display data is read from Controller, not recalculated by Companion.
+Only fresh Ready analysis provides logic counts; unavailable/stale analysis is labeled accordingly. When Controller supplies `countAvailability`, only counts explicitly marked available are displayed. Older results without these flags retain the `glitchedSupported: true` check. Unavailable zero placeholders are never treated as BK. Go mode remains absent when unsupported/unknown. Checked sphere data is not treated as reachability. Display data is read from Controller, not recalculated by Companion.
+
+An explicit `not_governed` SlotLock target is permitted when its component is ready, fresh and synchronized. Unknown, stale or unsynchronized lock data keeps the existing filter behavior.
 
 ## API key and room actions
 
 Local passive reads normally need no key. For **Refresh room**, **Wake room**, or **Recalculate selected slots**, open Connection settings and paste the Controller API key or choose a small text file containing it, then Save connection. The key is stored only in private module `auth.json`, never in browser responses, module packages, OBS URLs, exported settings or logs. Changing the broker address clears the previously saved key unless a replacement is explicitly supplied. Only loopback HTTP broker addresses are supported; redirects are refused.
 
-Wake and Recalculate ask for confirmation and never run from startup, room selection, overlay loading or polling. Recalculate targets only selected reported game slots. Configure their correct YAML templates in Controller first. Partial job failures direct you to Controller's analysis details. Current Controller builds may require their Rooms screen to be open for local wake requests; a `starting` response does not guarantee startup completed.
+Wake and Recalculate ask for confirmation and never run from startup, room selection, overlay loading or polling. Recalculate sends one scoped request per selected reported game slot and reports partial failures without retrying mutations automatically. Configure their correct YAML templates in Controller first. Partial job failures direct you to Controller's analysis details. Current Controller builds may require their Rooms screen to be open for local wake requests; a `starting` response does not guarantee startup completed.
 
 ## Polling, outages and activity
+
+Version 1.0.9 bootstraps with a room snapshot, then reads the dashboard, SlotLock component and included slot snapshots with at most four concurrent Controller requests. Generation changes resynchronize through a room snapshot. Calculation notifications can refresh the affected selected slot's logic without becoming audience activity. A failed slot read leaves other slots and dashboard progress available. Room/slot conditional reads use ETags; cursor activity is never cached.
 
 The backend polls every five seconds for online rooms and fifteen for offline/unselected rooms, uses ETags, and backs off to at most sixty seconds after failures. Settings/overlay browser polling reads only this local service and does not multiply broker polling. Broker outages replace player details with a neutral waiting message; settings retain choices and report the issue. Pending SlotLock data also shows a neutral waiting message without exposing player identities. Activity failures do not suppress available progress and logic. A failed local browser read retains the previous frame for at most ten seconds before hiding it. No fallback to the old monolith or direct room parsing occurs.
 

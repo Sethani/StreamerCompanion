@@ -2,7 +2,7 @@
   "meta": {
     "name": "Walk Ons",
     "author": "Sethani",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "First-chat viewer entrances with private Companion audio, weighted pools, and optional video.",
     "autoRunAction": null,
     "minimumVersion": null

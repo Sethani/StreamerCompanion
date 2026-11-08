@@ -1,5 +1,15 @@
 # First public GitHub update validation
 
+## November 8: Walk Ons 2.1.1 and Archipelago 1.0.9
+
+The reported repeated walk-on was traced to child-action argument isolation: audio played, but its parent logged rejection and did not consume eligibility. Live checks found once-per-stream enabled and an empty ledger; seven rejection entries were counted without reproducing viewer data. The old test incorrectly shared parent/child arguments.
+
+Walk Ons now passes a unique request ID and reads its persisted playback acknowledgement. Sound acceptance is published only with a successful state save and preserved by Stop. Both engines serialize state changes. Actual C# regression coverage uses separate argument dictionaries and passes immediate completion, first chat/repeated chat, reset, busy/rejected/failed-save retry, mismatched acknowledgement, Test, weighted media/volume, video assignments, restart preservation and concurrent configuration/chat. Stable actions/commands, private data and reset semantics remain unchanged. Existing installed actions need reimport; Ready is name-based and does not establish installed code version.
+
+Archipelago uses the new scoped slot snapshot/logic/action endpoints while retaining the current controls/design. It bootstraps room/generation state, polls dashboard/SlotLock and included slots with ETags and a global four-request limit, isolates slot failures, and dispatches recalculation once per selected slot with partial results. Operational calculation updates refresh scoped logic without entering audience activity. Explicit ready/fresh/synchronized `not_governed` targets are permitted; count availability prevents placeholder zeroes becoming BK.
+
+The 18-module source suite, actual C# recording-adapter suite and focused hidden Walk Ons/Archipelago browser checks pass. Passive live Controller acceptance used temporary module data and GET requests only: nine selected/displayed slots, one bootstrap snapshot, nine scoped slot reads, dashboard/SlotLock reads and maximum concurrency four. No production playback, Controller mutation, OBS change or background production-profile Companion launch occurred in this implementation batch. Release and installation evidence follows when publication completes.
+
 Validated on 2026-10-30 against the public `Sethani/StreamerCompanion` repository.
 
 ## Current layout: independent app and module distribution

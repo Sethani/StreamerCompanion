@@ -15,7 +15,7 @@ function wav() {
 async function fixture(root) {
   const output = path.join(root, "packages"), catalog = buildModules(["universal-dock", "walk-ons"], { output });
   const allActions = catalog.modules.flatMap((item) => item.streamerbot.requiredActions), calls = [], globals = new Map(); let revision = 0;
-  let walkOns = { schemaVersion: 2, moduleVersion: "2.1.0", config: { roster: {}, sounds: {}, settings: { oncePerStream: true, defaultVolumePercent: 100 } }, session: { seen: [] }, lastEvent: null };
+  let walkOns = { schemaVersion: 2, moduleVersion: "2.1.1", config: { roster: {}, sounds: {}, settings: { oncePerStream: true, defaultVolumePercent: 100 } }, session: { seen: [] }, lastEvent: null };
   let sound = { serverTimeMs: Date.now(), current: { visible: false, startedAtMs: null, lastError: "" } };
   const websocket = new WebSocketServer({ host: "127.0.0.1", port: 0 }); await once(websocket, "listening");
   function publish(feature, payload) {

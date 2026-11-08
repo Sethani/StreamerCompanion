@@ -16,7 +16,7 @@ async function main() {
     host = new CompanionHost({ dataDirectory: root, controlApiPort: port, streamerBotUrl: 'ws://127.0.0.1:' + websocket.address().port + '/' });
     host.start(); await once(host.controlApi.server, 'listening');
     const inventory = await host.catalog.check(); assert.equal(inventory.error, '');
-    const entry = inventory.modules.find(item => item.id === 'walk-ons'); assert.equal(entry.version, '2.1.0'); assert.equal(entry.problem, '');
+    const entry = inventory.modules.find(item => item.id === 'walk-ons'); assert.equal(entry.version, '2.1.1'); assert.equal(entry.problem, '');
     assert.deepEqual(new Set(entry.installationPlan.map(item => item.id)), new Set(['universal-dock', 'walk-ons']));
     await host.installCatalogModule('walk-ons');
     assert.equal((await host.listModules()).modules.find(item => item.id === 'walk-ons').state, 'streamerbot-required');
@@ -32,7 +32,7 @@ async function main() {
     const media = host.webAssets.importMedia('walk-ons', [sound]); const response = await fetch(media[0].src, { headers: { Range: 'bytes=0-8' } });
     assert.equal(response.status, 206); assert.equal(response.headers.get('content-type'), 'audio/wav'); assert.equal(await response.text(), 'synthetic');
     assert.equal(host.services.services.size, 0); assert.equal(calls.some(call => call.request === 'DoAction'), false);
-    console.log('Published Walk Ons 2.1.0 passed: actual GitHub catalogue/hash installation, Dock 1.1.1 dependency, import/Ready states, dual transport, private audio/ranges and no service/action.');
+    console.log('Published Walk Ons 2.1.1 passed: actual GitHub catalogue/hash installation, Dock 1.1.1 dependency, import/Ready states, dual transport, private audio/ranges and no service/action.');
   } finally {
     if (host) await host.controlApi.stop();
     if (websocket) { for (const socket of websocket.clients) socket.terminate(); await new Promise(resolve => websocket.close(resolve)); }

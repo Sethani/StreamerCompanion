@@ -46,12 +46,27 @@ async function main() {
   logic.state = "loading";
   assert.equal(model.project(snap, { slots: ["0:1"], display: { showBK: false } }, []).players[0].logic.state, "loading", "Unavailable analysis must not be classified as BK");
   assert.equal(model.profile({ slots: ["0:1"] }).display.showBK, true);
+  const availability = snapshot();
+  availability.enriched.logic["0:1"].countAvailability = { normal: false, glitched: false, union: false };
+  availability.enriched.logic["0:1"].inLogic = 0;
+  let availabilityRow = model.project(availability, { slots: ["0:1"], display: { showBK: false } }, []).players[0];
+  assert.equal(availabilityRow.logic.state, "unavailable"); assert.equal(availabilityRow.logic.inLogic, null, "Unavailable zero is not a measured count or BK");
+  availability.enriched.logic["0:1"].countAvailability.normal = true;
+  availability.enriched.logic["0:1"].glitchedSupported = true;
+  availabilityRow = model.project(availability, { slots: ["0:1"] }, []).players[0];
+  assert.equal(availabilityRow.logic.glitched, null, "Explicit availability overrides the legacy support flag");
+  const governed = snapshot();
+  governed.enriched.components.slotLock = { state: "ready", supported: true, stale: false, data: { synchronized: true, targets: [{ team: 0, slot: 1, state: "not_governed" }] } };
+  assert.equal(model.project(governed, { slots: ["0:1"] }, [namedEvent]).players.length, 1, "Explicit ungoverned slots are permitted");
+  assert.equal(model.project(governed, { slots: ["0:1"] }, [{ ...namedEvent, participants: [namedEvent.participants[0]] }]).events.length, 1);
+  governed.enriched.components.slotLock.stale = true;
+  assert.equal(model.project(governed, { slots: ["0:1"] }, []).players.length, 0, "Stale ungoverned data remains unknown");
   assert.deepEqual(model.profile(selected).slotDisplay, { "0:1": { progress: false, logic: true }, "1:1": { progress: true, logic: false } });
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "companion-archipelago-")); let test, restarted;
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.8.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.9.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.2.2");
     const host = new CompanionHost({ version: "1.2.2", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");
@@ -69,6 +84,24 @@ async function main() {
     assert.equal(service.publicState().players.length, 2, "Overlapping slot numbers on different teams must remain distinct");
     assert.equal(service.publicState().players[0].logic.glitched, null, "Unknown glitched support must not claim supported counts");
     assert.equal(service.publicState().goals.completed, 1);
+    const scopedStart = state.requests.length;
+    await service.poll();
+    const scopedRequests = state.requests.slice(scopedStart).map((entry) => entry.path);
+    assert.ok(scopedRequests.some((route) => route.endsWith('/dashboard')));
+    assert.ok(scopedRequests.some((route) => route.endsWith('/slotlock')));
+    assert.ok(scopedRequests.some((route) => route.endsWith('/slots/0/1')));
+    assert.equal(scopedRequests.some((route) => route.endsWith('/snapshot')), false, "Stable selected rooms use scoped reads instead of full snapshots");
+    state.failedSlot = "0:1"; await service.poll();
+    assert.equal(service.settings().connected, true);
+    assert.equal(service.publicState().players.find((row) => row.id === "0:1").progress.percent, 50);
+    assert.equal(service.publicState().players.find((row) => row.id === "0:1").logic.inLogic, null);
+    assert.equal(service.publicState().players.find((row) => row.id === "1:1").logic.inLogic, 4);
+    state.failedSlot = null; await service.poll();
+    const logicNotification = { id: "logic-update", generationId: state.snapshots.alpha.generationId, timestamp: new Date().toISOString(), type: "logic_updated", audience: "operations", displayEligible: false, update: { player: { team: 0, slot: 1 } } };
+    state.pages.push({ events: [logicNotification, logicNotification], nextCursor: "tail", hasMore: false });
+    const notificationsStart = state.requests.length; await service.poll();
+    assert.equal(state.requests.slice(notificationsStart).filter((entry) => entry.path.endsWith('/slots/0/1/logic')).length, 1);
+    assert.equal(service.publicState().events.length, 0, "Calculation notifications refresh data without becoming overlay activity");
     assert.equal(JSON.stringify(service.settings()).includes("synthetic-private-key"), false); assert.equal(JSON.stringify(service.publicState()).includes("synthetic-private-key"), false);
     const testRequest = (body = {}) => fetch(base + "/api/test-item", { method: "POST", headers: { "X-Companion-CSRF": service.csrf, "Content-Type": "application/json" }, body: JSON.stringify(body) });
     assert.equal((await fetch(base + "/api/test-item", { method: "POST", body: "{}" })).status, 403);
@@ -98,7 +131,7 @@ async function main() {
     await service.update({ profile: { slots: ["1:1"] } });
     await service.update({ roomId: "alpha" }); assert.deepEqual(service.settings().config.profiles.alpha.slots, ["0:1"]); assert.equal(service.publicState().events.length, 0);
     await service.update({ profile: { slots: ["0:1"] } });
-    const before = state.actions.length; await service.action("recalculate-logic"); assert.equal(state.actions.length, before + 1); assert.deepEqual(state.actions.at(-1).body.players, [{ team: 0, slot: 1, playerKey: "0:1" }]);
+    const before = state.actions.length; await service.action("recalculate-logic"); assert.equal(state.actions.length, before + 1); assert.equal(state.actions.at(-1).playerKey, "0:1"); assert.deepEqual(state.actions.at(-1).body, { force: true });
     await assert.rejects(service.action("wake", "beta"), /room changed/); assert.equal(state.actions.length, before + 1);
     state.snapshots.alpha.enriched.logic["0:1"].stale = true; await service.poll(); assert.equal(service.publicState().players[0].logic.inLogic, null);
     state.snapshots.alpha.enriched.logic["0:1"].stale = false; state.snapshots.alpha.enriched.logic["0:1"].generationId = "wrong-generation"; await service.poll(); assert.equal(service.publicState().players[0].logic.inLogic, null);
@@ -126,6 +159,21 @@ async function main() {
     assert.deepEqual(restarted.service.settings().config.profiles.beta.slotDisplay["1:1"], { progress: false, logic: true });
     assert.equal(restarted.service.settings().config.profiles.beta.display.hideCompletedLogic, true);
     assert.equal(restarted.service.settings().config.profiles.beta.display.showBK, false);
+    const many = state.snapshots.beta;
+    for (let index = 2; index <= 12; index++) {
+      const player = { ...many.enriched.dashboard.players[0], slot: index, playerKey: '0:' + index };
+      many.enriched.dashboard.players.push(player); many.enriched.logic[player.playerKey] = { ...many.enriched.logic['0:1'], player };
+    }
+    // Use the restarted fixture so action and polling data share the same synthetic provider.
+    restarted.state.snapshots.beta = many; restarted.state.delayMs = 3;
+    await restarted.service.update({ enabled: true, profile: { slots: many.enriched.dashboard.players.map(model.key) } });
+    restarted.state.failedSlot = '0:1'; const actionStart = restarted.state.requests.length;
+    const [outcome] = await Promise.all([restarted.service.action('recalculate-logic'), restarted.service.poll()]);
+    assert.equal(outcome.status, 'partial'); assert.equal(outcome.states.filter((entry) => entry.hasError).length, 1);
+    const writes = restarted.state.requests.slice(actionStart).filter((entry) => entry.method === 'POST');
+    assert.equal(writes.length, many.enriched.dashboard.players.length, 'Every selected slot receives exactly one action with no retries');
+    assert.ok(writes.every((entry) => /\/slots\/\d+\/\d+\/actions\/recalculate-logic$/.test(entry.path)));
+    assert.ok(restarted.state.maxConcurrent <= 4, 'Reads and explicit actions share a four-request concurrency limit');
     assert.deepEqual(fs.readdirSync(path.join(root, "data")).sort(), ["auth.json", "config.json"], "Events/cursors/room history must not be persisted");
     console.log("Archipelago packaged service passed: room/team selections, private auth, explicit actions, independent display options, SlotLock, stale data, ETags, cursor dedup/reset, outages, generation changes and persisted preferences.");
   } finally { await test?.close(); await restarted?.close(); assert.ok(path.resolve(root).startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(root, { recursive: true, force: true }); }

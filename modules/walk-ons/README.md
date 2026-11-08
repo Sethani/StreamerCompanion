@@ -23,3 +23,7 @@ The roster and session ledger remain in the Streamer.bot persisted global `porta
 - Video assignments require the optional Video module. Sound-only installations do not.
 
 Walk Ons never ships a viewer roster or personal media. Removing the module does not delete Streamer.bot globals or Companion's private media directory.
+
+## Upgrade to 2.1.1
+
+Reimport the included Streamer.bot export even if Companion already shows Ready. Version 2.1.0 incorrectly expected a child action's changed argument to return to its caller: audio could play while the caller rejected it, leaving the person eligible for every later message. Version 2.1.1 uses a unique request acknowledged in persisted sound state and retains that acknowledgement through playback completion. Roster and playback state updates are serialized. Existing action IDs, roster, private audio, command permissions and startup/going-live/explicit reset behavior are retained. Test continues without consuming eligibility; rejected or busy playback remains eligible.

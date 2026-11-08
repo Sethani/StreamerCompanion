@@ -8,8 +8,14 @@ public class CPHInline
 {
     private const string StateKey = "portable.walkonSound.state";
     private const string LegacyBase = "http://127.0.0.1:7474";
+    private static readonly object StateLock = new object();
 
     public bool Execute()
+    {
+        lock (StateLock) { return ExecuteMode(); }
+    }
+
+    private bool ExecuteMode()
     {
         CPH.SetArgument("walkOnSoundAccepted", false);
         try
@@ -46,8 +52,12 @@ public class CPHInline
             ["volume"] = Number("volume", 1, 0, 1), ["startedAtMs"] = now,
             ["lastStartAtMs"] = now, ["lastError"] = ""
         };
-        CPH.SetArgument("walkOnSoundAccepted", true);
-        return Write(new JObject { ["serverTimeMs"] = now, ["current"] = current });
+        JObject payload = new JObject { ["serverTimeMs"] = now, ["current"] = current };
+        Guid requestId;
+        if (Guid.TryParse(Arg("walkOnSoundRequestId"), out requestId)) payload["lastAcceptedRequestId"] = requestId.ToString();
+        bool saved = Write(payload);
+        CPH.SetArgument("walkOnSoundAccepted", saved);
+        return saved;
     }
 
     private bool Stop()
@@ -58,7 +68,7 @@ public class CPHInline
             long active = (long?)existing["current"]?["startedAtMs"] ?? 0;
             if (active > 0 && active != expected) return true;
         }
-        return Write(new JObject { ["serverTimeMs"] = Now(), ["current"] = Hidden() });
+        return Write(new JObject { ["serverTimeMs"] = Now(), ["current"] = Hidden(), ["lastAcceptedRequestId"] = existing["lastAcceptedRequestId"]?.DeepClone() ?? JValue.CreateNull() });
     }
 
     private JObject Hidden()

@@ -12,7 +12,7 @@ async function main() {
   await app.whenReady();
   buildModules(["archipelago"], { output: path.join(temporary, "packages") });
   const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") });
-  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.8.streammodule")); registry.commit(staged); registry.finalize(staged);
+  const staged = registry.stage(path.join(temporary, "packages/archipelago-1.0.9.streammodule")); registry.commit(staged); registry.finalize(staged);
   test = await fixture(temporary, path.join(registry.moduleDirectory("archipelago"), "service/runtime.js"));
   const settings = hiddenWindow(), overlay = hiddenWindow();
   await settings.loadURL(test.base + "/settings"); await overlay.loadURL(test.base + "/overlay");
@@ -64,7 +64,7 @@ async function main() {
   await new Promise((resolve) => setTimeout(resolve, 150)); assert.equal(test.state.actions.length, baseline);
   await execute("window.confirm=()=>true;document.getElementById('recalculate').click()");
   await waitFor(() => test.state.actions.length === baseline + 1, "confirmed analysis request");
-  assert.deepEqual(test.state.actions.at(-1).body.players, [{ team: 0, slot: 1, playerKey: "0:1" }]);
+  assert.equal(test.state.actions.at(-1).playerKey, "0:1"); assert.deepEqual(test.state.actions.at(-1).body, { force: true });
   const locks = test.state.snapshots.alpha.enriched.components.slotLock;
   Object.assign(locks, { state: "loading", supported: true, data: { synchronized: false, targets: [] } }); await test.service.poll();
   await waitFor(() => view("document.querySelector('.archipelago-summary').textContent.includes('Waiting for SlotLock data')"), "unknown SlotLock reports waiting without blinking");

@@ -56,14 +56,16 @@ function project(snapshot, selection, events, now = Date.now()) {
   const settings = profile(selection), chosen = new Set(settings.slots), enriched = snapshot.enriched || {}, stale = !!snapshot.stale || !snapshot.original?.endpoint;
   const selected = players(snapshot).filter((player) => chosen.has(key(player)));
   const rows = selected.map((player) => {
-    const id = key(player), locked = lockState(snapshot, id) !== "unlocked";
+    const id = key(player), locked = !["unlocked", "not_governed"].includes(lockState(snapshot, id));
     const slotOptions = settings.slotDisplay[id] || { progress: true, logic: true };
     const complete = Number.isInteger(player.checksDone) && Number.isInteger(player.checksTotal) && player.checksTotal > 0 && player.checksDone >= player.checksTotal;
     const progress = slotOptions.progress && settings.display.progress && !(locked && settings.filterLocks.progress);
     let showLogic = slotOptions.logic && settings.display.logic && !(settings.display.hideCompletedLogic && complete) && !(locked && settings.filterLocks.logic);
     const result = enriched.logic?.[id], wrongGeneration = !!result?.generationId && result.generationId !== snapshot.generationId;
     const logicReady = showLogic && !stale && !wrongGeneration && result?.state === "ready" && !result.stale && key(result.player) === id;
-    const bk = logicReady && result.inLogic === 0 && !(result.glitchedSupported === true && result.glitched > 0) && !["yes", "glitched"].includes(result.goMode);
+    const normalAvailable = result?.countAvailability ? result.countAvailability.normal === true : true;
+    const glitchedAvailable = result?.countAvailability ? result.countAvailability.glitched === true : result?.glitchedSupported === true;
+    const bk = logicReady && normalAvailable && result.inLogic === 0 && !(glitchedAvailable && result.glitched > 0) && !["yes", "glitched"].includes(result.goMode);
     if (bk && !settings.display.showBK) showLogic = false;
     const validCount = (value) => Number.isInteger(value) && value >= 0 ? value : null;
     const done = validCount(player.checksDone), total = validCount(player.checksTotal);
@@ -71,7 +73,7 @@ function project(snapshot, selection, events, now = Date.now()) {
       id, name: settings.display.showNames ? String(player.alias || player.name || "Player").slice(0, 120) : "", game: String(player.game || "Game").slice(0, 120), locked,
       progress: progress ? { done, total, percent: total > 0 && done !== null ? Math.min(100, Math.round(done / total * 100)) : null, stale: stale || !!enriched.components?.progress?.stale } : null,
       goal: settings.display.goals && !(locked && settings.filterLocks.progress) ? player.status === 30 : null,
-      logic: showLogic ? { state: stale || result?.stale || wrongGeneration ? "stale" : result?.state === "ready" && (validCount(result.inLogic) === null || key(result.player) !== id) ? "unavailable" : result?.state || "not_requested", inLogic: logicReady ? validCount(result.inLogic) : null, glitched: logicReady && result.glitchedSupported === true ? validCount(result.glitched) : null, goMode: logicReady && ["yes", "glitched", "no"].includes(result.goMode) ? result.goMode : "unsupported" } : null
+      logic: showLogic ? { state: stale || result?.stale || wrongGeneration ? "stale" : result?.state === "ready" && (!normalAvailable || validCount(result.inLogic) === null || key(result.player) !== id) ? "unavailable" : result?.state || "not_requested", inLogic: logicReady && normalAvailable ? validCount(result.inLogic) : null, glitched: logicReady && glitchedAvailable ? validCount(result.glitched) : null, goMode: logicReady && ["yes", "glitched", "no"].includes(result.goMode) ? result.goMode : "unsupported" } : null
     };
   }).filter((row) => row.progress || row.logic || row.goal !== null);
   const filteredEvents = settings.display.activity && !stale ? events.filter((event) => {
@@ -85,11 +87,11 @@ function project(snapshot, selection, events, now = Date.now()) {
     if (!chosen.size) return false;
     if (settings.filterLocks.activity) {
       if (!participants.length) return enriched.components?.slotLock?.supported === false || enriched.components?.slotLock?.state === "unsupported";
-      if (participants.some((player) => lockState(snapshot, key(player)) !== "unlocked")) return false;
+      if (participants.some((player) => !["unlocked", "not_governed"].includes(lockState(snapshot, key(player))))) return false;
     }
     return true;
   }).slice(-settings.maxEvents).map((event) => ({ id: String(event.id), type: event.type, text: segmentsFor(event).map((segment) => segment.text).join(""), segments: segmentsFor(event), at: event.timestamp })) : [];
-  const lockFiltered = selected.some((player) => lockState(snapshot, key(player)) !== "unlocked") && ((settings.filterLocks.progress && (settings.display.progress || settings.display.goals)) || settings.filterLocks.logic && settings.display.logic);
+  const lockFiltered = selected.some((player) => !["unlocked", "not_governed"].includes(lockState(snapshot, key(player)))) && ((settings.filterLocks.progress && (settings.display.progress || settings.display.goals)) || settings.filterLocks.logic && settings.display.logic);
   const waiting = selected.length && !rows.length && lockFiltered ? selected.some((player) => lockState(snapshot, key(player)) === "unknown") ? "Waiting for SlotLock data" : "Selected slots are locked" : "";
   return { players: rows, events: filteredEvents, waiting, stale, goals: settings.display.goals ? { completed: rows.filter((row) => row.goal === true).length, total: rows.filter((row) => row.goal !== null).length } : null };
 }

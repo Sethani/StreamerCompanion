@@ -9,8 +9,14 @@ public class CPHInline
 {
     private const string StateKey = "portable.walkOns.state";
     private const string LegacyRosterKey = "walkOnRosterJson";
+    private static readonly object StateLock = new object();
 
     public bool Execute()
+    {
+        lock (StateLock) { return ExecuteMode(); }
+    }
+
+    private bool ExecuteMode()
     {
         try
         {
@@ -39,7 +45,7 @@ public class CPHInline
     {
         return new JObject {
             ["schemaVersion"] = 2,
-            ["moduleVersion"] = "2.1.0",
+            ["moduleVersion"] = "2.1.1",
             ["config"] = new JObject {
                 ["roster"] = new JObject(),
                 ["sounds"] = new JObject(),
@@ -72,7 +78,7 @@ public class CPHInline
             payload["config"] = Normalize(payload["config"] as JObject ?? new JObject());
         }
         payload["schemaVersion"] = 2;
-        payload["moduleVersion"] = "2.1.0";
+        payload["moduleVersion"] = "2.1.1";
         payload["session"] = new JObject { ["seen"] = new JArray() };
         if (payload["lastEvent"] == null) payload["lastEvent"] = JValue.CreateNull();
         return Write(payload);
@@ -82,7 +88,7 @@ public class CPHInline
     {
         JObject payload = Payload();
         JObject config = payload["config"] as JObject ?? new JObject();
-        CPH.LogInfo("[walk-ons] Health OK: schema=2 module=2.1.0 people=" + ((JObject)(config["roster"] ?? new JObject())).Count + " sounds=" + ((JObject)(config["sounds"] ?? new JObject())).Count);
+        CPH.LogInfo("[walk-ons] Health OK: schema=2 module=2.1.1 people=" + ((JObject)(config["roster"] ?? new JObject())).Count + " sounds=" + ((JObject)(config["sounds"] ?? new JObject())).Count);
         return true;
     }
 
@@ -91,7 +97,7 @@ public class CPHInline
         JObject payload = Payload();
         payload["config"] = Normalize(JObject.Parse(Arg("config")));
         payload["schemaVersion"] = 2;
-        payload["moduleVersion"] = "2.1.0";
+        payload["moduleVersion"] = "2.1.1";
         return Write(payload);
     }
 
@@ -263,8 +269,12 @@ public class CPHInline
         else
         {
             JObject sound = payload["config"]?["sounds"]?[value] as JObject;
+            string requestId = Guid.NewGuid().ToString();
+            CPH.SetArgument("walkOnSoundRequestId", requestId);
             CPH.SetArgument("src", (string)sound?["src"] ?? "");
-            if (!CPH.RunAction("Walk-on Sound - Play", true) || !BooleanArg("walkOnSoundAccepted", false)) throw new Exception("Sound player rejected the walk-on.");
+            if (!CPH.RunAction("Walk-on Sound - Play", true)) throw new Exception("Sound player rejected the walk-on.");
+            JObject playback = JObject.Parse(CPH.GetGlobalVar<string>("portable.walkonSound.state", true) ?? "{}");
+            if ((string)playback["payload"]?["lastAcceptedRequestId"] != requestId) throw new Exception("Sound player rejected the walk-on.");
         }
         if (!test && !Contains(seen, login)) seen.Add(login);
         payload["session"] = new JObject { ["seen"] = seen };

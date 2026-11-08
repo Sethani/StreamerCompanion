@@ -17,21 +17,68 @@ function createService(options = {}) {
   const headersForBroker = () => { const token = read(authFile).token; return token ? { Authorization: "Bearer " + token } : {}; };
   const save = () => write(configFile, config);
   function resetFeed() { cursor = null; events = []; seen.clear(); }
+  const slotPath = (base, player) => base + "/slots/" + player.team + "/" + player.slot;
+  async function limited(items, work) {
+    const results = new Array(items.length); let index = 0;
+    await Promise.all(Array.from({ length: Math.min(4, items.length) }, async () => {
+      while (index < items.length) { const position = index++; try { results[position] = { value: await work(items[position]) }; } catch (error) { results[position] = { error }; } }
+    }));
+    return results;
+  }
+  function slotLogic(value, player) {
+    if (!value || typeof value.state !== "string" || typeof value.stale !== "boolean" || value.data && model.key(value.data.player) !== model.key(player)) throw new Error("Controller returned invalid slot logic.");
+    return { ...(value.data || {}), player, state: value.state, stale: value.stale };
+  }
+  async function scopedSnapshot(base, room) {
+    const selection = model.profile(config.profiles[config.roomId]);
+    if (!snapshot || !selection.slots.length) return request(base + "/snapshot");
+    const dashboard = await request(base + "/dashboard");
+    if (!Array.isArray(dashboard.players)) throw new Error("Controller returned invalid slot inventory.");
+    const next = { ...snapshot, stale: !!room.stale, original: { ...snapshot.original, endpoint: room.online ? room.endpoint || snapshot.original.endpoint : null }, enriched: { ...snapshot.enriched, dashboard, logic: {}, components: { ...snapshot.enriched.components } } };
+    try { next.enriched.components.slotLock = await request(base + "/slotlock"); }
+    catch (_) { next.enriched.components.slotLock = { state: "unavailable", supported: true, stale: true }; }
+    // A stale duplicate outside the component must never bypass its freshness gate.
+    delete next.enriched.slotLock;
+    const selected = model.players(next).filter((player) => selection.slots.includes(model.key(player)));
+    if (selected.length !== selection.slots.length) return request(base + "/snapshot");
+    const results = await limited(selected, (player) => request(slotPath(base, player)));
+    if (results.some((entry) => entry.error?.statusCode === 404 || entry.value && entry.value.generationId !== snapshot.generationId)) return request(base + "/snapshot");
+    for (let index = 0; index < selected.length; index++) {
+      const player = selected[index], entry = results[index], value = entry.value;
+      try {
+        if (entry.error) throw entry.error;
+        if (value.roomId !== config.roomId || model.key(value.player) !== model.key(player) || !/^2\.2\./.test(value.schemaVersion || "")) throw new Error("Invalid slot identity.");
+        next.enriched.logic[model.key(player)] = slotLogic(value.logic, player);
+        if (value.stale) next.enriched.logic[model.key(player)].stale = true;
+      } catch (_) { next.enriched.logic[model.key(player)] = { player, state: "unavailable", stale: true }; }
+    }
+    next.enriched.components.progress = { ...next.enriched.components.progress, stale: !!room.stale };
+    next.enriched.components.logic = { ...next.enriched.components.logic, state: Object.values(next.enriched.logic).some((value) => value.stale) ? "stale" : "ready" };
+    return next;
+  }
+  let activeRequests = 0; const requestWaiters = [];
   async function request(route, method = "GET", body) {
+    if (activeRequests >= 4) await new Promise((resolve) => requestWaiters.push(resolve)); else activeRequests++;
+    try { return await performRequest(route, method, body); }
+    finally { const next = requestWaiters.shift(); if (next) next(); else activeRequests--; }
+  }
+  async function performRequest(route, method = "GET", body) {
     const headers = { ...headersForBroker(), ...(body ? { "Content-Type": "application/json" } : {}) };
-    if (method === "GET" && etags.has(route)) headers["If-None-Match"] = etags.get(route).etag;
+    const cacheable = method === "GET" && !route.includes("/events");
+    if (cacheable && etags.has(route)) headers["If-None-Match"] = etags.get(route).etag;
     const response = await fetcher(config.brokerUrl + route, { method, headers, ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(8000), redirect: "error" });
     if (response.status === 304 && etags.has(route)) return etags.get(route).data;
     const value = await response.json();
     if (!response.ok) {
       if (response.status === 409 && route.includes("/events")) { const failure = new Error("Activity stream reset."); failure.reset = true; throw failure; }
-      throw new Error(response.status === 401 ? "Controller rejected the API key. Update it in Connection settings." : "Controller request failed (HTTP " + response.status + ").");
+      throw Object.assign(new Error(response.status === 401 ? "Controller rejected the API key. Update it in Connection settings." : "Controller request failed (HTTP " + response.status + ")."), { statusCode: response.status });
     }
-    if (method === "GET" && response.headers.get("etag")) etags.set(route, { etag: response.headers.get("etag"), data: value });
+    if (cacheable && response.headers.get("etag")) etags.set(route, { etag: response.headers.get("etag"), data: value });
     return value;
   }
   async function readEvents(base) {
     if (snapshot.enriched?.components?.activity?.state !== "ready") { resetFeed(); return; }
+    const logicUpdates = new Map(), selection = model.profile(config.profiles[config.roomId]);
     for (let page = 0; page < 5; page++) {
       let value;
       try { value = await request(base + "/events" + (cursor ? "?after=" + encodeURIComponent(cursor) + "&limit=100" : "")); }
@@ -40,7 +87,10 @@ function createService(options = {}) {
       const initial = !cursor; cursor = value.nextCursor;
       if (!initial && !value.initial) for (const event of value.events) {
         if (event.generationId !== snapshot.generationId || typeof event.id !== "string" || seen.has(event.id)) continue;
-        seen.add(event.id); events.push(event);
+        seen.add(event.id);
+        if (event.displayEligible !== false && event.audience !== "operations") events.push(event);
+        const updatedKey = model.key(event.update?.player);
+        if (event.type === "logic_updated" && selection.slots.includes(updatedKey) && (!event.update.resultRevision || event.update.resultRevision !== snapshot.enriched.logic[updatedKey]?.resultRevision)) logicUpdates.set(updatedKey, event.update.player);
       }
       events = events.filter((event) => clock() - Date.parse(event.timestamp) <= 75000).slice(-200);
       if (seen.size > 2000) seen = new Set(events.map((event) => event.id));
@@ -48,6 +98,16 @@ function createService(options = {}) {
     }
     // Cursors change frequently; cache only list/snapshot GETs, never event pages.
     for (const route of etags.keys()) if (route.includes("/events")) etags.delete(route);
+    const players = [...logicUpdates.values()], results = await limited(players, (player) => request(slotPath(base, player) + "/logic"));
+    for (let index = 0; index < players.length; index++) {
+      const player = players[index], entry = results[index];
+      try {
+        if (entry.error) throw entry.error;
+        const value = slotLogic(entry.value, player);
+        if (value.generationId && value.generationId !== snapshot.generationId) throw new Error("Changed slot generation.");
+        snapshot.enriched.logic[model.key(player)] = value;
+      } catch (_) { snapshot.enriched.logic[model.key(player)] = { player, state: "unavailable", stale: true }; }
+    }
   }
   async function poll() {
     if (polling) return polling;
@@ -61,7 +121,7 @@ function createService(options = {}) {
         if (config.roomId) {
           if (!rooms.some((room) => room.id === config.roomId)) throw new Error("The selected room is not exposed by Controller. Choose a room or enable it in Controller.");
           const base = "/rooms/" + encodeURIComponent(config.roomId);
-          const next = await request(base + "/snapshot");
+          const next = await scopedSnapshot(base, list.rooms.find((room) => room.id === config.roomId));
           if (expectedRevision !== revision) return;
           if (next.apiVersion !== 2 || !/^2\.2\./.test(next.schemaVersion || "") || next.roomId !== config.roomId || typeof next.generationId !== "string" || !next.generationId || !next.enriched?.components || !Array.isArray(next.enriched.dashboard?.players)) throw new Error("Controller returned an unsupported room snapshot. API 2.2 is required.");
           const current = config.profiles[config.roomId] ||= model.profile();
@@ -136,7 +196,12 @@ function createService(options = {}) {
     if (name === "recalculate-logic" && !selected.length) throw new Error("Select at least one reported game slot.");
     actionBusy = true;
     try {
-      const result = await request("/rooms/" + encodeURIComponent(config.roomId) + "/actions/" + name, "POST", name === "recalculate-logic" ? { players: selected, force: true } : undefined);
+      const base = "/rooms/" + encodeURIComponent(config.roomId);
+      let result;
+      if (name === "recalculate-logic") {
+        const outcomes = await limited(selected, (player) => request(slotPath(base, player) + "/actions/recalculate-logic", "POST", { force: true }));
+        result = { status: outcomes.some((entry) => entry.error) ? "partial" : "accepted", states: outcomes.flatMap((entry, index) => entry.error ? [{ player: selected[index], state: "error", error: true }] : entry.value.states?.length ? entry.value.states : [{ player: selected[index], state: "queued" }]) };
+      } else result = await request(base + "/actions/" + name, "POST");
       etags.clear(); await poll(); schedule();
       return { status: result.status || (name === "recalculate-logic" ? "accepted" : "refreshed"), states: (result.states || []).map((entry) => ({ playerKey: model.key(entry.player), state: entry.state, hasError: !!entry.error })) };
     } finally { actionBusy = false; }
@@ -150,7 +215,7 @@ function createService(options = {}) {
         const origin = String(request.headers.origin || "");
         if (/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(origin)) { response.setHeader("Access-Control-Allow-Origin", origin); response.setHeader("Vary", "Origin"); }
       }
-      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.8", ready: true, configured: !!config.roomId, brokerConnected: connected });
+      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.9", ready: true, configured: !!config.roomId, brokerConnected: connected });
       if (request.method === "GET" && url.pathname === "/api/public/state") return json(response, 200, publicState());
       const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/app.js": "app.js", "/styles.css": "styles.css", "/overlay.js": "overlay.js", "/overlay.css": "overlay.css" };
       if (request.method === "GET" && pages[url.pathname]) {

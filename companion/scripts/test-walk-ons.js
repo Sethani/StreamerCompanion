@@ -16,7 +16,7 @@ async function main() {
   try {
     const output = path.join(root, "packages");
     const catalog = buildModules(["universal-dock", "walk-ons"], { output });
-    const packagePath = path.join(output, "walk-ons-2.1.0.streammodule");
+    const packagePath = path.join(output, "walk-ons-2.1.1.streammodule");
     const zip = new AdmZip(packagePath);
     const manifest = JSON.parse(zip.readAsText("module.json"));
     const bytes = Buffer.from(zip.readAsText("streamerbot/walk-ons.sb"), "base64");
@@ -67,7 +67,7 @@ async function main() {
     assert.ok(rosterSource.includes("portable.walkOns.state"));
     assert.ok(rosterSource.includes("CPH.RunAction(\"Video - Play\""));
     assert.ok(rosterSource.includes("CPH.RunAction(\"Walk-on Sound - Play\""));
-    assert.ok(rosterSource.includes("walkOnSoundAccepted"), "Rejected audio must not consume first-chat eligibility");
+    assert.ok(rosterSource.includes("lastAcceptedRequestId"), "Playback acceptance must be read from persisted state");
     assert.ok(audioSource.includes("/api/public/media/walk-ons/"));
     assert.ok(audioSource.includes("uri.Port == 3135"));
     assert.ok(audioSource.includes("uri.Port == 7474"), "Legacy sound links stay valid until explicitly relinked");
@@ -107,7 +107,7 @@ async function main() {
     const fetched = await fetch(media[0].src, { headers: { Range: "bytes=0-8" } });
     assert.equal(fetched.status, 206); assert.equal(fetched.headers.get("content-type"), "audio/mpeg"); assert.equal(await fetched.text(), "synthetic");
     assert.equal(JSON.stringify(host.webAssets.listMedia("walk-ons")).includes(root), false);
-    const upgrade = new AdmZip(packagePath), upgradedManifest = JSON.parse(upgrade.readAsText("module.json")); upgradedManifest.version = "2.1.1"; upgrade.updateFile("module.json", Buffer.from(JSON.stringify(upgradedManifest))); const upgradePath = path.join(root, "upgrade.streammodule"); upgrade.writeZip(upgradePath);
+    const upgrade = new AdmZip(packagePath), upgradedManifest = JSON.parse(upgrade.readAsText("module.json")); upgradedManifest.version = "2.1.2"; upgrade.updateFile("module.json", Buffer.from(JSON.stringify(upgradedManifest))); const upgradePath = path.join(root, "upgrade.streammodule"); upgrade.writeZip(upgradePath);
     await host.installModulePackage(upgradePath); assert.equal(host.webAssets.listMedia("walk-ons")[0].src, media[0].src);
     assert.equal(calls.length, 0, "Install, state checks, and media operations must not execute module actions");
     console.log("Walk Ons package passed: stable legacy identities, private audio boundary, dual transport, browser assets, isolated Ready state, range serving and upgrade preservation.");
