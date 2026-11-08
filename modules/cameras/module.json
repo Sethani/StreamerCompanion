@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "cameras",
   "name": "Cameras",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Native OBS camera modes, private source mappings and read-only scene inventory.",
   "author": "Sethani",
   "license": "MIT",

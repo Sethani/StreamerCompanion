@@ -2,7 +2,7 @@
   "meta": {
     "name": "Cameras",
     "author": "Sethani",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Native OBS camera controls with private mappings.",
     "autoRunAction": null,
     "minimumVersion": null

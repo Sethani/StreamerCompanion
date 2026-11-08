@@ -1,10 +1,10 @@
 # Reactive Guests and Cameras extraction
 
-Reviewed November 8, 2026. This slice keeps two independent modules: Reactive Guests 2.1.0 owns the established lineup and roster; Cameras 2.0.0 owns native OBS routing, source mappings and inventory. Cameras has no audience overlay. Stream Together and TTRPG remain excluded.
+Reviewed November 8, 2026. This slice keeps two independent modules: Reactive Guests 2.1.0 owns the established lineup and roster; Cameras 2.0.1 owns native OBS routing, source mappings and inventory. Cameras has no audience overlay. Stream Together and TTRPG remain excluded.
 
 ## Confirmed boundary and audit findings
 
-The nine installed Reactive actions matched the dedicated 2.0.0 installer before extraction. The installed Cameras implementation has five actions, including its consolidated engine; the older four-action installer is not the authoritative current export. Camera code embedded private fallback configuration and hard-coded OBS names. The dock always obtained its input/scene visibility inventory from the personal server even with native routing selected.
+The nine installed Reactive actions matched the dedicated 2.0.1 installer before extraction. The installed Cameras implementation has five actions, including its consolidated engine; the older four-action installer is not the authoritative current export. Camera code embedded private fallback configuration and hard-coded OBS names. The dock always obtained its input/scene visibility inventory from the personal server even with native routing selected.
 
 The live Streamer.bot roster had 21 entries while the Node JSON contained 16. The Node normalizer caps that roster at sixteen, so it must not seed or replace the live state. Neither public export contains a roster, URL, mapping, credential or media asset. Public camera defaults are empty and unconfigured. Actual guest/provider content stays private; the existing remote iframe integration is copied without bundling provider code or assets.
 
@@ -21,6 +21,8 @@ Cameras owns the real guest selection and updates Reactive's compatibility mirro
 The private handoff backs up actions, settings, commands, globals and legacy camera JSON before replacing the bounded player records/timer. It preserves all private roster/configuration and adds existing source-role mappings explicitly. Legacy configured/mainConfigured/secondaryConfigured flags are disabled so the already-running server cannot reapply cameras; the owner marker also prevents future legacy routing requests after a server restart. Other personal features keep running. Never restore the stale Node roster or copy private camera defaults into the public source.
 
 ## Verification and remaining acceptance
+
+The first installed camera package (2.0.0) exposed a remembered-selection mismatch during the before/after digest comparison: Camera 2 Off retained its saved guest in camera configuration, but the compatibility mirror was cleared. Cameras 2.0.1 preserves that remembered selection regardless of the current display mode and adds an explicit Off/re-enable regression. Deleting the remembered guest still clears both references. The original private roster and camera configuration remained intact; no lost guest data was reconstructed from the stale Node file.
 
 Local package/source tests verify privacy, independent optional dependencies, 21-guest state retention, repeat installation, native schedule and only Reactive's overlay registration. Actual C# tests verify fifty concurrent roster additions, read-only inventory/mapping saves, scoped routing, failures, selection/deletion consistency, item creation/transforms and one reconnect apply. Hidden browsers verify copied controls/lineup, stable rows/frames/focus, unsaved edits, native acknowledgements/errors and a single shared-overlay renderer using synthetic OBS/provider fixtures. No real cameras are switched by these implementation tests.
 
