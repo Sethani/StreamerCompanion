@@ -19,6 +19,8 @@ jobs:
           cache: npm
           cache-dependency-path: companion/package-lock.json
       - run: npm --prefix companion ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
       - run: npm run check
       - if: runner.os == 'Windows'
         run: pwsh -NoProfile -File companion/scripts/test-action-engines.ps1
