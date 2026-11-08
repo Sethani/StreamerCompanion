@@ -96,7 +96,7 @@
           <p id="provider-connection-status" aria-live="polite"></p>
         </form>
         <h2>Private OBS connection</h2>
-        <p>OBS-only foundation checkpoint. Optional module cards remain unavailable.</p>
+        <p>Basic OBS controls work independently of optional modules.</p>
         <form id="connection-form">
           <label>WebSocket address<input id="obs-url" placeholder="ws://127.0.0.1:4455" required></label>
           <label>Password (blank preserves saved password)<input id="obs-password" type="password" autocomplete="new-password"></label>
@@ -105,6 +105,12 @@
           <p id="obs-settings-status" aria-live="polite"></p>
         </form>
         <h2>Phone pairing</h2>
+        <form id="phone-address-form">
+          <label>Phone hostname or LAN IP<input id="phone-host" required placeholder="Computer hostname or LAN IP"></label>
+          <p>The HTTPS certificate must cover this address. Certificates and keys stay in the private module data directory.</p>
+          <button type="submit">Save phone address</button>
+          <p id="phone-address-status" aria-live="polite"></p>
+        </form>
         <button id="generate-code" type="button"><i data-lucide="key-round"></i> Generate code</button>
         <div id="pairing-result" class="pairing-result hidden"><strong id="pairing-code"></strong><img id="pairing-qr" alt="Phone deck pairing QR code"><a id="phone-url" target="_blank" rel="noreferrer"></a></div>
         <div id="device-list"></div>

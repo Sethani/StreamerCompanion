@@ -1,5 +1,13 @@
 # First public GitHub update validation
 
+## November 8: Phone Deck Session 6 — release and handset cutover
+
+The 2.0.0 candidate adds a privately persisted hostname with exact Host/Origin validation and local-only address editing. Old Phone Deck service-worker caches are removed on activation while unrelated caches remain. API/credentials/mutations are never cached. A lost host connection disables controls until a fresh bootstrap; lingering SSE events cannot re-enable them. Reconnection refreshes the session CSRF token after a host restart.
+
+Source checks and all hidden browser suites pass, including 120 synthetic contributions/cards, unchanged existing cookie/identity/expiry/certificate, old-worker replacement, local selected page/drafts/focus, host outage/offline navigation, no replay on restart and HTTPS revocation. Packaged Companion 1.3.1 passes the new runtime checks with isolated data/ports. The private legacy ownership guard fails closed on marker presence, blocks API/actions/state/listener fallback and redirects old local management. No native action changed; existing optional helper IDs were verified present through read-only requests. No Streamer.bot restart or app rebuild is needed.
+
+Production rollback data and private migration settings are staged separately; no private file enters the public repository/package. Release, installed-upgrade and production acceptance results are recorded below after completion. The first public Phone Deck has no older published version; its upgrade regression explicitly uses a synthetic predecessor, then the actual released archive. Prior provider release upgrades were independently verified in Sessions 3–5; no unchanged providers are republished.
+
 ## November 8: Phone Deck Session 5 — media/audio and legacy compatibility
 
 Audio Routing 2.0.1, Wheel 2.1.2 and Video 2.2.1 add optional Phone Deck declarations. Audio toggles the authoritative native configuration and waits for its matching persisted operation; partial and rejected results are terminal failures. Wheel spins a selected native profile or clears; Video plays an enabled registered ID/title or stops. Those two owners report Requested, without invented completion. Native media sources remain server-side and are not forwarded as picker data or dispatch arguments.

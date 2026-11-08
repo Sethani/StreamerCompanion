@@ -11,7 +11,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 | 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
 | 5 | Complete; all three providers published | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
-| 6 | Pending; off-stream | Publish 2.0.0 and verified providers; backed-up production HTTPS/pairing/layout handoff |
+| 6 | Release candidate verified; cutover pending | Publish 2.0.0; backed-up production HTTPS/pairing/layout handoff |
 | 7 | Pending | Spotify and scoped Source Modules controls |
 | 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
 | 9 | Pending | Named Timers, Reminders and confirmed Redeem Checklist operations |
@@ -109,3 +109,9 @@ Full source/C# synthetic checks, all hidden desktop/mobile browser suites and pa
 Session 5 publication completed from source `a9a9092962ce5e630f3db8862047c11ff97dca9b`, after Windows/Linux Check `42526045372`. Audio Routing 2.0.1 workflow `42526164242`, SHA-256 `420c17ac311b583cfd790a7ae8036f7ed1cc6e85c08e39aa1ad171c356c28a34`; Wheel 2.1.2 workflow `42526281829`, SHA-256 `cff7e61d2994495789de41f18eda6f9c75cc2d5e6030f8aa3269509d1192e207`; Video 2.2.1 workflow `42526169180`, SHA-256 `d0a5e73d8ee002ea8a5d63aeb11c14c8a265fcb3539e598f117ec275da11a544`. The first pending Wheel run was superseded by GitHub and requeued after the slot cleared. All final workflows and catalogue hashes are verified.
 
 Actual anonymous GitHub upgrades in packaged Companion 1.3.1 passed: preinstalled/imported dependencies, old Ready state, package hashes, complete native-data equality, retained private data/favorites/import readiness, provider declarations and served dock/overlay. The fixture received only GetActions and all test processes were stopped. No HTTP 504/fallback was needed. The release fixture was corrected to import Source Modules before asserting Ready; this changed no runtime package. Phone Deck remains absent from the published catalogue.
+
+## Session 6 release/cutover checkpoint
+
+The verified candidate adds private hostname persistence/local settings, exact Host validation, old shell-cache cleanup and offline/restart session-token handling. Full source/runtime/hidden checks cover 120 synthetic contributions/cards, an existing HTTPS cookie and certificate, old worker replacement, offline navigation, independent live/parked controls, drafts/focus/page preservation, no replay, revocation and clean shutdown. Packaged Companion 1.3.1 runtime checks pass. The private legacy ownership guard is tested fail-closed. Existing optional native helper IDs are present; no native import/restart or app rebuild is required.
+
+Rollback data and target private configuration are staged without transferring listeners. Candidate package SHA-256: `ff01412da0152619586ca08f1c19f4b388011365706ee898005ce8b1d13ebdae`. Release and production acceptance remain pending until the records below. The first Phone Deck release has no older public predecessor: released-package upgrade acceptance explicitly uses a synthetic 1.9.9 package before the actual 2.0.0 archive. Do not record 21/24 until the dedicated handoff and handset checks pass.

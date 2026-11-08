@@ -25,4 +25,4 @@ async function fixture(directory,{tls=false,serviceOptions={}}={}){fs.mkdirSync(
  async function connect(){const res=await api('connection','PUT',{url:'ws://127.0.0.1:'+server.address().port,password:'fixture-password'});if(!res.ok)throw Error('Fixture configuration failed');await wait(()=>service.obs.state.connected,'synthetic OBS connection');await service.obs.refresh();}
  return{service,base,api,status,calls,connect,unsupported,get authCount(){return authCount;},reject:v=>{reject=v;},drop:v=>{drop=v;},mismatch:v=>{mismatch=v;},disconnect:()=>{for(const c of clients)c.close();},publish:()=>{for(const c of clients)c.send(JSON.stringify({op:5,d:{eventType:'CurrentProgramSceneChanged',eventData:{sceneName:status.scene}}}));},close:async()=>{await service.stop();for(const c of clients)c.terminate();await new Promise(r=>server.close(r));}};
 }
-module.exports={fixture,wait,sleep};
+module.exports={fixture,wait,sleep,certificate};
