@@ -9,7 +9,7 @@ const saveButton = document.getElementById("save-button");
 const portable = window.StreamingTransport.create();
 let state = null;
 let bindings = {};
-let dirty = false, busy=false, uncertainId="", connected=true;
+let dirty = false, busy=false, refreshing=false, uncertainId="", connected=true;
 
 function showFeedback(message, error = false) {
   feedback.textContent = message;
@@ -142,7 +142,7 @@ function renderLiveStatus(liveState) {
   if (liveState.obsError) privateError.textContent = liveState.obsError;
 }
 
-function blocked(){return busy||Boolean(uncertainId)||!connected||state?.operation?.status==="running";}
+function blocked(){return busy||refreshing||Boolean(uncertainId)||!connected||state?.operation?.status==="running";}
 function terminal(p,id){return p?.lastRequestId===id&&p.operation?.requestId===id&&["ok","partial","error","superseded"].includes(p.operation.status);}
 function execute(command,args={}){
  const requestId=crypto.randomUUID(),mutating=command!=="Refresh";
@@ -156,9 +156,9 @@ function execute(command,args={}){
 }
 function accept(p){state=p;if(!dirty)bindings=structuredClone(p.config?.bindings||{});render();}
 async function refresh(){
- refreshButton.disabled=true;
+ refreshing=true;refreshButton.disabled=true;if(state)render();
  try{const p=await execute("Refresh");uncertainId="";accept(p);showFeedback("Scene and window inventory refreshed.");}
- catch(error){showFeedback(error.message,true);}finally{refreshButton.disabled=false;if(state)render();}
+ catch(error){showFeedback(error.message,true);}finally{refreshing=false;refreshButton.disabled=false;if(state)render();}
 }
 sceneList.addEventListener("input",event=>{
  const field=event.target.dataset.field,name=event.target.dataset.scene;if(!name||!["category","title"].includes(field))return;

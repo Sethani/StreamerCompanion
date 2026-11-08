@@ -109,7 +109,7 @@ if (-not $activated) {
  private JObject Previous(){try{return JObject.Parse(Read(StateKey))["payload"] as JObject??new JObject();}catch{return new JObject();}}
  private void Publish(JObject p,string mode,string status,string error="",bool terminal=true){
   long revision=0;try{revision=(long?)JObject.Parse(Read(StateKey))["revision"]??0;}catch{}
-  p["moduleVersion"]="2.0.0";p["serverTimeMs"]=Now();p["operation"]=new JObject{["requestId"]=A("requestId"),["mode"]=mode,["status"]=status,["error"]=error};if(terminal&&A("requestId")!="")p["lastRequestId"]=A("requestId");
+  p["moduleVersion"]="2.0.1";p["serverTimeMs"]=Now();p["operation"]=new JObject{["requestId"]=A("requestId"),["mode"]=mode,["status"]=status,["error"]=error};if(terminal&&A("requestId")!="")p["lastRequestId"]=A("requestId");
   string json=new JObject{["schemaVersion"]=1,["feature"]="sceneBindings",["type"]="state",["revision"]=revision+1,["payload"]=p}.ToString(Formatting.None);
   CPH.SetGlobalVar(StateKey,json,true);try{CPH.WebsocketBroadcastJson(json);}catch{}
  }

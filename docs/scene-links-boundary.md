@@ -1,6 +1,8 @@
 # Scene Links extraction boundary
 
-Scene Links 2.0.0 (`scene-bindings`) retains the existing editor and nine installed action identities, version-1 `portable.sceneBindings.config` and `portable.sceneBindings.state`. It has no overlay/service/port and works with Companion 1.3.1 plus Universal Dock. Sethani/MIT first-party metadata applies. The disabled Monitor action/queue remain inert compatibility records.
+Use 2.0.1 rather than the initially published 2.0.0. Live acceptance exposed missing broadcast completions in the private bridge and an incorrect Concurrent flag on Scene Changed. Streamer.bot's Concurrent option parallelizes an action's sub-actions; mode-setting must finish before engine dispatch. Version 2.0.1 restores sequential sub-actions and the editor blocks mutations during its inventory refresh. The private bridge serializes commands and polls persisted acknowledgements as well as consuming broadcasts; it never retries mutations. The unsuccessful initial acceptance restored the original scene/category/foreground and all configuration before correction.
+
+Scene Links 2.0.1 (`scene-bindings`) retains the existing editor and nine installed action identities, version-1 `portable.sceneBindings.config` and `portable.sceneBindings.state`. It has no overlay/service/port and works with Companion 1.3.1 plus Universal Dock. Sethani/MIT first-party metadata applies. The disabled Monitor action/queue remain inert compatibility records.
 
 The active native configuration has 13 bindings. The inactive Node copy has the same 13 plus one additional entry. The user selected the active native map as authoritative; the Node copy is archived, not merged. Public defaults contain no mappings. The embedded private seed and absolute personal helper path are excluded.
 

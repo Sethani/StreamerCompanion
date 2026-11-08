@@ -2,7 +2,7 @@
   "meta": {
     "name": "Scene Links",
     "author": "Sethani",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Scene-linked Twitch category and Windows focus",
     "autoRunAction": null,
     "minimumVersion": null
@@ -19,7 +19,7 @@
         "group": "Scene Links",
         "alwaysRun": false,
         "randomAction": false,
-        "concurrent": true,
+        "concurrent": false,
         "triggers": [],
         "subActions": [
           {
@@ -334,7 +334,7 @@
         "group": "Scene Links",
         "alwaysRun": false,
         "randomAction": false,
-        "concurrent": true,
+        "concurrent": false,
         "triggers": [
           {
             "sceneName": null,
@@ -387,4 +387,3 @@
   "exportedFrom": "1.0.7",
   "minimumVersion": "1.0.0-alpha.1"
 }
-

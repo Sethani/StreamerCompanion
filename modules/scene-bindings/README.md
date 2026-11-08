@@ -1,6 +1,6 @@
 # Scene Links
 
-Scene Links 2.0.0 preserves the existing dock editor, Twitch category updates and Windows application focus. First-party code: Sethani, MIT. It requires Companion 1.3.1, Universal Dock and Streamer.bot; Windows focus additionally requires Windows PowerShell. No overlay, service or extra port is installed.
+Scene Links 2.0.1 preserves the existing dock editor, Twitch category updates and Windows application focus. First-party code: Sethani, MIT. It requires Companion 1.3.1, Universal Dock and Streamer.bot; Windows focus additionally requires Windows PowerShell. No overlay, service or extra port is installed.
 
 Import the nine actions through Companion. The inventory retains all nine identities; the old Monitor action and queue remain disabled/inert compatibility records. Initialize has native startup/OBS connection registrations. Fresh installations start with empty bindings. Existing version-1 `portable.sceneBindings.config` and state globals are retained without personal fallback seeds. Scene names match exactly; missing scenes and unavailable window targets remain saved.
 
