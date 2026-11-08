@@ -8,7 +8,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 | --- | --- | --- |
 | 1 | Complete locally; unpublished | Independent OBS foundation and copied grid/editor |
 | 2 | Complete locally; unpublished | Volume, item/group visibility, recording pause/resume, Studio Mode, preview/transition, replay buffer, virtual camera |
-| 3 | Implemented and verified; provider publication pending | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
+| 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
 | 4 | Next; not started | Stream Launch and Countdown contributions |
 | 5 | Pending | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
 | 6 | Pending; off-stream | Publish 2.0.0 and verified providers; backed-up production HTTPS/pairing/layout handoff |
@@ -23,7 +23,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 
 Source is `modules/phone-deck/`. The local artifact is `dist/modules/phone-deck-2.0.0.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. It is a development checkpoint carrying the intended final version, **not a released or production-installed package**. It is absent from the published catalogue. Companion remains 1.3.1.
 
-The archive now contains Sessions 1–3; its current hash is recorded in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Session 3 prepares the source checkpoint and publishes only the changed Chat Routing provider package through the existing single-module workflow. Earlier Session 1/2 archive hashes below are historical and no longer identify the current artifact.
+The archive now contains Sessions 1–3; its SHA-256 is `202d3547e2f5695297cc8ef302464e8ea99a1087c63e90e8a80984a085dd3e0b`, also recorded in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Sessions 1–3 source is committed/pushed at `b59c7983e192d83f9cb66e6672b7ba870bb653f0`. Only Chat Routing 1.0.2 was published through the existing single-module workflow. Earlier Session 1/2 archive hashes below are historical and no longer identify the current artifact.
 
 ## Session 1 checkpoint
 
@@ -80,4 +80,4 @@ Provider commands have separate queues and durable request scopes from OBS. Matc
 
 Verification: full source suite and synthetic C# engines; focused Sessions 1–3 package/runtime/browser suites; provider/service lifecycle checks under the existing packaged Companion 1.3.1 executable; 100 synthetic contributions; two clients; authenticated native and CSRF service owners; resource/definition loss; missing optional actions; disconnected/reconnected/stopped owners; independent OBS while an owner waits; retained settings/drafts; matching acknowledgement and Requested presentation; and no synthetic discovery mutation. Test profiles, credentials, certificates and ports are disposable. No real chat/title/category/custom-action, OBS change, native import, production install or app rebuild occurred.
 
-Only Chat Routing's verified metadata package is selected for publication. The Phone Deck archive remains local until Session 6. The source/verification/publication record is finalized in VALIDATION.md after the workflow completes. Session 4 (Launch/Countdown contributions) is next; it is not implemented in this turn.
+[Chat Routing 1.0.2](https://github.com/Sethani/StreamerCompanion-Modules/releases/tag/chat-routing-v1.0.2) is published; SHA-256 `b612a3694b8846b3c087b9a3579527fc310e346c100d57f389cb10f8faa470cb`. Source Windows/Linux Check `42516541954` and publication workflow `42516718984` passed. Released-package acceptance in Companion 1.3.1 used actual anonymous GitHub catalogue/assets: 1.0.1-to-1.0.2 upgrade, hashes, retained private data/favorites/import readiness and public provider metadata passed, with only GetActions sent to a synthetic backend. No HTTP 504 fallback was needed. The Phone Deck archive remains local until Session 6; its absence from the published catalogue is verified. Final process inspection found no test processes remaining. See VALIDATION.md for the final publication record. Session 4 (Launch/Countdown contributions) is next; it is not implemented in this turn.

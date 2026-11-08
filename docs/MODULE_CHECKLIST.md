@@ -29,7 +29,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## To do: remaining migration
 
-- [ ] **Phone Deck — Sessions 1–3 implemented; Session 4 next.** The independent OBS foundation, common controls, optional-provider framework and copied editor pass isolated runtime/package/hidden-browser checks. Only Chat Routing's provider metadata is selected for publication; Phone Deck has no production install or handoff yet. Follow the [12-session checkpoints](phone-deck-sessions.md); the existing deck still needs the old server until Session 6. Preserve cards, pairing, TLS, action types and active-state indicators.
+- [ ] **Phone Deck — Sessions 1–3 implemented; Session 4 next.** The independent OBS foundation, common controls, optional-provider framework and copied editor pass isolated runtime/package/hidden-browser checks. Only Chat Routing 1.0.2 provider metadata is published; Phone Deck has no production install or handoff yet. Follow the [12-session checkpoints](phone-deck-sessions.md); the existing deck still needs the old server until Session 6. Preserve cards, pairing, TLS, action types and active-state indicators.
 - [ ] **Embedded widgets, including Tangia.** Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
 - [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
