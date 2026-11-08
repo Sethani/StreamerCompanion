@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "scene-bindings",
   "name": "Scene Links",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Existing scene-linked Twitch categories and Windows window focus.",
   "author": "Sethani",
   "license": "MIT",

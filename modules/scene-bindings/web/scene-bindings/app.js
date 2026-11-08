@@ -143,12 +143,13 @@ function renderLiveStatus(liveState) {
 }
 
 function blocked(){return busy||refreshing||Boolean(uncertainId)||!connected||state?.operation?.status==="running";}
-function terminal(p,id){return p?.lastRequestId===id&&p.operation?.requestId===id&&["ok","partial","error","superseded"].includes(p.operation.status);}
+function acknowledgement(p,id){return p?.completedOperations?.[id]||(p?.lastRequestId===id&&p.operation?.requestId===id?p.operation:null);}
+function terminal(p,id){return ["ok","partial","error","superseded"].includes(acknowledgement(p,id)?.status);}
 function execute(command,args={}){
  const requestId=crypto.randomUUID(),mutating=command!=="Refresh";
  return new Promise((resolve,reject)=>{
   let timer,poll,done=false,unsubscribe=()=>{};const finish=(error,p)=>{if(done)return;done=true;clearTimeout(timer);clearInterval(poll);unsubscribe();error?reject(error):resolve(p);};
-  unsubscribe=portable.subscribe("sceneBindings",event=>{const p=event.payload;if(terminal(p,requestId))finish(["error","partial"].includes(p.operation.status)?new Error(p.operation.error||"Scene link completed with issues."):null,p);});
+  unsubscribe=portable.subscribe("sceneBindings",event=>{const p=event.payload;if(terminal(p,requestId)){const ack=acknowledgement(p,requestId);finish(["error","partial","superseded"].includes(ack.status)?new Error(ack.error||"Scene link completed with issues."):null,{...p,operation:ack,lastRequestId:requestId});}});
   timer=setTimeout(()=>{if(mutating)uncertainId=requestId;finish(new Error("Completion was not confirmed. Refresh before retrying; no action was retried."));},20000);
   poll=setInterval(()=>portable.refresh().catch(()=>{}),300);
   portable.execute("sceneBindings",command,{...args,requestId}).catch(error=>{if(mutating)uncertainId=requestId;finish(error);});

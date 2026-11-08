@@ -2,7 +2,7 @@
   "meta": {
     "name": "Scene Links",
     "author": "Sethani",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "Scene-linked Twitch category and Windows focus",
     "autoRunAction": null,
     "minimumVersion": null

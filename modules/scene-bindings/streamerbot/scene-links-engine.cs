@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ public class CPHInline {
  private static readonly object Gate=String.Intern("streamercompanion:scene-bindings:state:v1");
  private static long Pending;
  private static string LastScene;
+ private static readonly ThreadLocal<Dictionary<string,object>> InvocationArgs=new ThreadLocal<Dictionary<string,object>>();
  private const string ConfigKey="portable.sceneBindings.config",StateKey="portable.sceneBindings.state";
  private const string WindowScript=@"param(
     [ValidateSet(""List"", ""Activate"")]
@@ -92,7 +94,7 @@ if (-not $activated) {
     title = $target.title
     pid = $target.pid
 } | ConvertTo-Json -Compress";
- private string A(string key){return args.ContainsKey(key)&&args[key]!=null?args[key].ToString():"";}
+ private string A(string key){var current=InvocationArgs.Value??args;return current.ContainsKey(key)&&current[key]!=null?current[key].ToString():"";}
  private string Read(string key){return CPH.GetGlobalVar<string>(key,true)??"";}
  private long Now(){return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();}
  private JObject Defaults(){return new JObject{["version"]=1,["bindings"]=new JObject()};}
@@ -109,7 +111,8 @@ if (-not $activated) {
  private JObject Previous(){try{return JObject.Parse(Read(StateKey))["payload"] as JObject??new JObject();}catch{return new JObject();}}
  private void Publish(JObject p,string mode,string status,string error="",bool terminal=true){
   long revision=0;try{revision=(long?)JObject.Parse(Read(StateKey))["revision"]??0;}catch{}
-  p["moduleVersion"]="2.0.1";p["serverTimeMs"]=Now();p["operation"]=new JObject{["requestId"]=A("requestId"),["mode"]=mode,["status"]=status,["error"]=error};if(terminal&&A("requestId")!="")p["lastRequestId"]=A("requestId");
+  p["moduleVersion"]="2.0.2";p["serverTimeMs"]=Now();p["operation"]=new JObject{["requestId"]=A("requestId"),["mode"]=mode,["status"]=status,["error"]=error};if(terminal&&A("requestId")!="")p["lastRequestId"]=A("requestId");
+  var completed=(JObject)(Previous()["completedOperations"] as JObject??new JObject()).DeepClone();if(terminal&&A("requestId")!=""){var acknowledgement=(JObject)p["operation"].DeepClone();acknowledgement["execution"]=p["lastExecution"]?.DeepClone()??new JObject();completed[A("requestId")]=acknowledgement;while(completed.Count>32)completed.Properties().First().Remove();}p["completedOperations"]=completed;
   string json=new JObject{["schemaVersion"]=1,["feature"]="sceneBindings",["type"]="state",["revision"]=revision+1,["payload"]=p}.ToString(Formatting.None);
   CPH.SetGlobalVar(StateKey,json,true);try{CPH.WebsocketBroadcastJson(json);}catch{}
  }
@@ -137,12 +140,13 @@ if (-not $activated) {
   }
   execution["status"]=superseded?"superseded":failed?"partial":"success";execution["finishedAtMs"]=Now();Publish(p,mode,superseded?"superseded":failed?"partial":"ok",failed?"Some scene-link operations failed.":"");
  }
- public bool Execute(){
+ public bool Execute(){var previousArgs=InvocationArgs.Value;InvocationArgs.Value=new Dictionary<string,object>(args);try{return ExecuteRequest();}finally{InvocationArgs.Value=previousArgs;}}
+ private bool ExecuteRequest(){
   string mode=A("sceneBindingsMode").Trim().ToLowerInvariant();long token=0;
   if(mode=="scene-changed"){token=Interlocked.Increment(ref Pending);CPH.Wait(350);}
   lock(Gate){JObject p=null;try{
    if(!new[]{"initialize","refresh","save","apply","scene-changed","test-focus","test-category","monitor"}.Contains(mode))throw new Exception("Unknown Scene Links operation.");
-   var previous=Previous();if(A("requestId")!=""&&(string)previous["lastRequestId"]==A("requestId")&&(string)previous["operation"]?["status"]!="running")return true;
+   var previous=Previous();if(A("requestId")!=""&&(previous["completedOperations"]?[A("requestId")]!=null||(string)previous["lastRequestId"]==A("requestId")&&(string)previous["operation"]?["status"]!="running"))return true;
    var c=Config();if(mode=="save"){if(String.IsNullOrWhiteSpace(A("configJson")))throw new Exception("Scene-link configuration is required.");c=Validate(JObject.Parse(A("configJson")),c);}
    if(Read(ConfigKey)==""||mode=="save")CPH.SetGlobalVar(ConfigKey,c.ToString(Formatting.None),true);
    p=Inventory(c,mode=="initialize"||mode=="refresh");if(mode=="initialize"){Interlocked.Increment(ref Pending);LastScene=(bool)p["obsAvailable"]?(string)p["currentScene"]:null;}
