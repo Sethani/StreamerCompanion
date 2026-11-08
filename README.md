@@ -4,6 +4,8 @@ An experimental Windows desktop host for independently installable Streamer.bot 
 
 This is the canonical source for the new host and the modules migrated here. The earlier personal integration project remains a migration laboratory and private configuration store; it is not bundled into this application.
 
+**Migration progress: 20 of 24 required feature areas implemented.** See the [done / to-do module checklist](docs/MODULE_CHECKLIST.md) for remaining migrations, acceptance checks and the final switch.
+
 Current build: [Windows preview 1.3.1 preview 1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.3.1-preview.1). Installed, Catalogue and Settings tabs provide alphabetical categories, compact expandable rows, search, status filters and shared favorites. Universal Dock 1.1.1 adds matching searchable navigation plus multiple state transports for modules such as Walk Ons. Upgrade the app before updating the dock; existing installed data and OBS URLs are retained. See [navigation and upgrade details](docs/COMPANION_NAVIGATION.md). Install modules separately from the catalogue.
 
 ## What is available

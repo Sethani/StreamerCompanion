@@ -1,5 +1,7 @@
 # Switchover feature checklist
 
+For the short done/to-do view, start with the [module migration checklist](MODULE_CHECKLIST.md). This document retains the numbered priorities and detailed acceptance evidence.
+
 User priorities recorded 2026-11-05. Numbers match the feature list shown in chat. All listed features are vital except 11/22 (later) and 18 (drop). Writing Challenge remains separately parked and is excluded from this list.
 
 There are 24 vital features: 20 now have independent or deliberately retained implementations, and four feature areas still need public extraction. The user completed Reactive/Cameras live acceptance in Discord; no further camera checks are required. Audio Routing 2.0.0 and Scene Links 2.0.2 are published, installed/imported and accepted off-stream. The user confirmed Shoutout Clips overlay playback and its chat command after restoring broadcaster EventSub. Published does not by itself prove the old server can stop. This checklist is the acceptance scope; the dependency/source audit remains in legacy-migration-status.md.
