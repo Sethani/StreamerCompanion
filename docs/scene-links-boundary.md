@@ -26,4 +26,6 @@ Actual C# tests cover fresh/preserved mappings, inert initialization/Save/Refres
 
 Hidden dock acceptance covers 43 rows, unavailable target preservation, drafts, caret/focus/scroll, Save/removal, independent tests and matching/late acknowledgements. Private bridge tests verify one shared socket, independent feature state, late/partial/disconnected results, read-only reconnect refresh, no replay and actual legacy ownership/pending-callback guards. Fixtures use disposable profiles and isolated ports and are stopped afterward. Release and production acceptance evidence is recorded in VALIDATION.md after rollout.
 
+The completed 2.0.2 cutover preserved all 13 active bindings, the archived 14-entry Node map, Audio Routing settings, 54 readable OBS masks and protected phone/preferences. Real off-stream focus, automatic scene/category readback and original scene/category/foreground restoration passed. Native routes report the final version, two Phone Deck clients agree, and incoming Twitch events passed after the last restart. Actual anonymous GitHub installation/upgrades worked. The complete evidence is in [VALIDATION.md](VALIDATION.md).
+
 Full Phone Deck extraction and the final integrated old-server-off rehearsal remain separate. Reactive/Cameras live acceptance is already complete and must not be repeated.
