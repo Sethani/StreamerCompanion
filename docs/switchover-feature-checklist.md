@@ -60,5 +60,6 @@ There are 24 vital features: 20 now have independent or deliberately retained im
 - [x] Launch, Countdown, Spotify handoff, going-live messaging and controlled viewer interactions work through their new owners. Spotify 2.0.2 adds the regression fix for a manual pre-stream pause.
 - [ ] Synthetic tests run without live chat, stream, hardware or production-state mutations; controlled live effects are separately authorized.
 - [ ] User acceptance/rehearsal passes with the old server stopped, with a documented rollback.
+- [ ] At the end of the final switch, remove migration-only **Import settings / Import existing settings** controls and their legacy readers from the desktop and every affected module whose settings have been migrated. Preserve current settings, normal backup/restore, Streamer.bot action imports and media imports; verify fresh installations need no personal legacy files. This cleanup is deferred until migration and final-switch acceptance pass.
 
 Infrastructure is part of the baseline: module catalogue/updates, Universal Dock/Overlay, Source Modules and test/operator controls are retained without needing an additional priority vote. External OBS services can remain independent; inspect their URLs at cutover rather than unnecessarily rebuilding them.

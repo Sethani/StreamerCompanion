@@ -40,6 +40,7 @@ Checked means the replacement is implemented and published/installed/imported as
 - [ ] After the four migrations above, audit remaining local URLs/callers and rehearse the complete workflow with the old repository server stopped, with rollback available.
 - [ ] Cold-start the complete modern setup and verify retained preferences, automatic-start settings, private media and phone pairing.
 - [ ] Retire the old server's startup/routes only after that rehearsal passes; preserve private data and rollback backups.
+- [ ] **Final cleanup: remove legacy Import settings options.** Once the final switch is complete and existing settings are confirmed migrated, remove migration-only buttons/readers from the desktop and all affected modules. Preserve saved settings, ordinary backup/restore, Streamer.bot action imports and media imports. Verify fresh installations work from defaults/manual setup without legacy files.
 
 Previously accepted individual checks stay complete. Reopen them only for a new defect or a relevant integration change.
 
