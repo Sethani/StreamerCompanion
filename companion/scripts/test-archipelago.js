@@ -127,8 +127,12 @@ async function main() {
 
     await service.update({ profile: { slots: ["0:1"], display: { progress: false, logic: false, goals: true } } });
     assert.equal(service.publicState().players.length, 1); assert.equal(service.publicState().goals.completed, 1, "Goals must work independently of the progress toggle");
+    state.snapshots.beta.enriched.components.activity.state = "loading";
     await service.update({ roomId: "beta" }); assert.equal(service.publicState().players.length, 0, "A new room must not inherit selected slots");
     await service.update({ profile: { slots: ["1:1"] } });
+    state.snapshots.beta.enriched.components.activity.state = "ready";
+    const beforeRecovery = state.baselineReads; await service.poll();
+    assert.ok(state.baselineReads > beforeRecovery, "Startup activity recovery must resynchronize metadata before tailing events");
     await service.update({ roomId: "alpha" }); assert.deepEqual(service.settings().config.profiles.alpha.slots, ["0:1"]); assert.equal(service.publicState().events.length, 0);
     await service.update({ profile: { slots: ["0:1"] } });
     const before = state.actions.length; await service.action("recalculate-logic"); assert.equal(state.actions.length, before + 1); assert.equal(state.actions.at(-1).playerKey, "0:1"); assert.deepEqual(state.actions.at(-1).body, { force: true });

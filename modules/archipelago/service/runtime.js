@@ -31,7 +31,8 @@ function createService(options = {}) {
   }
   async function scopedSnapshot(base, room) {
     const selection = model.profile(config.profiles[config.roomId]);
-    if (!snapshot || !selection.slots.length) return request(base + "/snapshot");
+    const activityRecovering = room.online && ["loading", "not_loaded", "error", "stale"].includes(snapshot?.enriched?.components?.activity?.state);
+    if (!snapshot || !selection.slots.length || activityRecovering || room.online !== !!snapshot.original?.endpoint) return request(base + "/snapshot");
     const dashboard = await request(base + "/dashboard");
     if (!Array.isArray(dashboard.players)) throw new Error("Controller returned invalid slot inventory.");
     const next = { ...snapshot, stale: !!room.stale, original: { ...snapshot.original, endpoint: room.online ? room.endpoint || snapshot.original.endpoint : null }, enriched: { ...snapshot.enriched, dashboard, logic: {}, components: { ...snapshot.enriched.components } } };
