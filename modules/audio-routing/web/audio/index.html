@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audio Routing</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="container">
+    <section class="panel">
+      <div class="live-row">
+        <span class="label">OBS</span>
+        <strong id="obs-status">checking</strong>
+      </div>
+      <div class="live-row">
+        <span class="label">Stream track</span>
+        <span id="live-track">1</span>
+      </div>
+      <div class="live-row">
+        <span class="label">VOD track</span>
+        <span id="vod-track">2</span>
+      </div>
+      <p id="obs-error" class="feedback error"></p>
+    </section>
+
+    <section class="panel">
+      <label class="toggle-row">
+        <input id="game-vod-safe" type="checkbox">
+        <span>Game audio goes to VOD</span>
+      </label>
+      <p class="hint">Unmanaged sources keep their current OBS tracks. Save stores choices; Apply changes OBS.</p>
+      <div class="action-row">
+        <button id="save-button" type="button">Save</button>
+        <button id="apply-button" type="button">Apply to OBS</button>
+        <button id="refresh-button" type="button">Refresh</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h1>Routing Plan</h1>
+      <ul id="plan-list" class="list"></ul>
+    </section>
+
+    <section class="panel">
+      <h1>Current Sources</h1>
+      <ul id="source-list" class="list"></ul>
+    </section>
+
+    <section id="missing-panel" class="panel">
+      <h1>Configured but unavailable</h1>
+      <ul id="missing-list" class="list"></ul>
+    </section>
+
+    <p id="feedback" class="feedback" aria-live="polite"></p>
+  </main>
+
+  <script src="../../universal-dock/shared/streamerbot-transport.js"></script>
+  <script src="./app.js?v=20261026-5"></script>
+</body>
+</html>

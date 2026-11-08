@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "name": "Audio Routing",
+    "author": "Sethani",
+    "version": "2.0.0",
+    "description": "Established OBS audio classifications and game VOD routing.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "a479380a-07b0-4736-b116-b661f80ffed1",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Audio Routing - Engine",
+        "group": "Audio Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Streaming audio routing engine",
+            "description": "Private exact-name classifications and verified OBS track routing",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "cbe38b71-8295-4d3f-a044-0f31035fd90a",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "audio-routing-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "03d14856-4090-44f9-8d1b-d0d42b8d59aa",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Audio Routing - Initialize",
+        "group": "Audio Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "9cc80eb1-8ab8-4d9f-b8fb-d859df3c2506",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "audioRoutingMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "a05ab865-c350-4865-9c47-d8fedc8274b1",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "a479380a-07b0-4736-b116-b661f80ffed1",
+            "runImmedately": true,
+            "id": "a0c4f32a-6b00-4e57-bda9-270e7b56e955",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "981ab952-2a27-4002-b7ae-2a22e610b5f4",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Audio Routing - Refresh",
+        "group": "Audio Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "audioRoutingMode",
+            "value": "refresh",
+            "autoType": false,
+            "id": "35cf2fe0-2d2d-4129-8e1a-01a8ff28c778",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "a479380a-07b0-4736-b116-b661f80ffed1",
+            "runImmedately": true,
+            "id": "b235d0a6-f1d5-483e-b7dd-5e8cc336247b",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "ba5a4569-1fbb-46cd-911e-1ee56322cc2f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Audio Routing - Save",
+        "group": "Audio Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "audioRoutingMode",
+            "value": "save",
+            "autoType": false,
+            "id": "582b7e45-7a30-405a-8b9f-b99810486ae0",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "a479380a-07b0-4736-b116-b661f80ffed1",
+            "runImmedately": true,
+            "id": "f7de3c9a-7903-4cf6-8a80-e9f6e1b9f3fd",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "440b4122-a10e-4d6d-b83f-a5d7526795ad",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Audio Routing - Apply",
+        "group": "Audio Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "audioRoutingMode",
+            "value": "apply",
+            "autoType": false,
+            "id": "090165ea-7102-4e43-b437-92aaa6790e27",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "a479380a-07b0-4736-b116-b661f80ffed1",
+            "runImmedately": true,
+            "id": "d2a20643-144d-44cd-8d77-51042acb3b6c",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3a540bdc-8a8a-4353-b9b4-d7f0ec78f5dc",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Audio Routing - Toggle",
+        "group": "Audio Routing",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "audioRoutingMode",
+            "value": "toggle",
+            "autoType": false,
+            "id": "e39ea3f8-7a98-4f83-a946-88235bbc93fa",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "a479380a-07b0-4736-b116-b661f80ffed1",
+            "runImmedately": true,
+            "id": "4d582bac-6121-49a3-bf51-2c8d1483877a",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 2,
+  "id": "audio-routing",
+  "name": "Audio Routing",
+  "version": "2.0.0",
+  "description": "Existing OBS live/VOD track classifications, explicit Save/Apply and game-audio toggle.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Audio Routing - Engine",
+      "Audio Routing - Initialize",
+      "Audio Routing - Refresh",
+      "Audio Routing - Save",
+      "Audio Routing - Apply",
+      "Audio Routing - Toggle"
+    ],
+    "importFile": "streamerbot/audio-routing.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.1"
+    },
+    "optionalModules": {},
+    "capabilities": {},
+    "companion": ">=1.3.1"
+  },
+  "web": {
+    "root": "web"
+  },
+  "ui": {
+    "id": "audio-routing",
+    "name": "Audio",
+    "category": "Stream",
+    "order": 30,
+    "dockPage": "/audio/index.html",
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [
+      "Audio Routing - Engine",
+      "Audio Routing - Initialize",
+      "Audio Routing - Refresh",
+      "Audio Routing - Save",
+      "Audio Routing - Apply",
+      "Audio Routing - Toggle"
+    ],
+    "dependencies": [
+      "streamerbot-websocket",
+      "obs-websocket"
+    ],
+    "optionalDependencies": [],
+    "settings": [
+      "sourceRouting",
+      "gameAudioVodSafe"
+    ],
+    "tests": [],
+    "transport": {
+      "feature": "audioRouting",
+      "stateKey": "portable.audioRouting.state",
+      "actionPrefix": "Audio Routing"
+    }
+  }
+}
