@@ -1,5 +1,13 @@
 # First public GitHub update validation
 
+## November 9: Phone Deck editor and status repair (2.0.2)
+
+The operator's crowded-editor report was reproduced: the module picker sat below connection/pairing administration, and every module card rendered Refresh status even when healthy. Read-only production inspection confirmed OBS/native connections were healthy, no unknown operation existed and the apparent global failure was misleading UI plus unexplained draft gating. No credentials or connection settings were reset to diagnose this report.
+
+The repair separates Card/Page editing from local-only Settings (Connections/Phones), folds appearance and connection details, places module selection beside Action and replaces the overlay with an in-flow compact workspace or a wide side-by-side preview. Existing card/page selection and explicit saves are preserved. An unsaved deck gets a visible resume/discard notice; incomplete module cards retain their draft with setup guidance. Search and selection cannot submit connection forms. Healthy cards no longer display recovery controls; only the affected uncertain/stale/unavailable module exposes a read-only check. OBS and Streamer.bot status are independent.
+
+New hidden acceptance covers phone, narrow dock and wide desktop layouts, adjacent module fields, keyboard tabs, folded settings, search/focus/scroll, incomplete-card save protection, draft retention/discard and scoped recovery. It proves no connection-file writes, provider reconfiguration, OBS mutation or module dispatch from editing/search/navigation. Existing runtime, pairing/TLS/Host/Origin/CSRF, native dispatch, 120-card, offline/restart and upgrade checks remain preservation requirements. This is a Session 6 usability repair; Session 7 is not started and the 21/24 feature count is unchanged. Release/upgrade proof follows after verification.
+
 ## November 9: Phone Deck navigation correction and final Session 6 acceptance
 
 The initial 2.0.0 production handoff exposed a navigation defect: the blanket cross-site rejection also blocked the public HTML page when opened from a link or embedded settings. Phone Deck 2.0.1 permits safe GET/HEAD navigation to public assets while retaining exact Host/explicit-Origin validation and all private API same-origin/CSRF checks. Tests cover real cross-site embedded settings, allowed linked pages, rejected cross-site API reads/writes, bad Host/Origin and the existing 120-card HTTPS/restart/offline suite. Health reports the actual installed manifest version.

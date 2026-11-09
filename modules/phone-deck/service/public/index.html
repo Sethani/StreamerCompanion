@@ -25,38 +25,39 @@
 
   <div id="app" class="app hidden">
     <header class="topbar">
-      <div class="connection"><span id="connection-dot"></span><span id="connection-text">Connecting</span></div>
+      <div class="connection"><span id="connection-dot"></span><div><span id="connection-text">Connecting</span><small id="module-connection-text"></small></div></div>
       <strong id="page-title">Live</strong>
       <div class="top-actions">
         <button id="wake-button" class="icon-button" type="button" title="Keep screen awake"><i data-lucide="sun"></i></button>
         <button id="refresh-button" type="button" title="Read OBS state again">Refresh</button>
-        <button id="edit-button" class="icon-button" type="button" title="Edit deck"><i data-lucide="settings-2"></i></button>
+        <button id="settings-button" class="icon-button hidden" type="button" title="Connections and phone settings" aria-label="Settings"><i data-lucide="settings"></i></button><button id="edit-button" class="icon-button" type="button" title="Edit deck" aria-label="Edit deck" aria-pressed="false"><i data-lucide="settings-2"></i></button>
       </div>
     </header>
 
+    <div id="draft-banner" class="draft-banner hidden" role="status"><span>Unsaved deck draft. Save or discard it before using controls.</span><button id="resume-editor" type="button">Resume editing</button><button id="discard-draft" type="button">Discard draft</button></div>
     <main id="deck-grid" class="deck-grid"></main>
     <nav id="page-tabs" class="page-tabs" aria-label="Deck pages"></nav>
     <div id="toast" class="toast hidden" aria-live="polite"></div>
 
     <aside id="editor" class="editor hidden" aria-label="Deck editor">
-      <div class="editor-head"><strong>Edit deck</strong><button id="close-editor" class="icon-button" title="Close editor"><i data-lucide="x"></i></button></div>
-      <div class="editor-actions">
-        <button id="add-button" type="button"><i data-lucide="square-plus"></i> Button</button>
-        <button id="add-widget" type="button"><i data-lucide="layout-dashboard"></i> Widget</button>
-        <button id="add-form" type="button"><i data-lucide="text-cursor-input"></i> Input</button>
-        <button id="add-page" type="button"><i data-lucide="files"></i> Page</button>
-      </div>
-      <form id="page-form" class="page-form">
-        <label>Page name<input id="page-name" maxlength="30"></label>
-        <button id="delete-page" class="danger" type="button"><i data-lucide="trash-2"></i> Delete page</button>
-      </form>
-      <form id="item-form" class="item-form hidden">
+      <div class="editor-head"><strong>Edit deck</strong><button id="close-editor" class="icon-button" type="button" aria-label="Close editor"><i data-lucide="x"></i></button></div>
+      <nav id="editor-tabs" class="workspace-tabs" role="tablist" aria-label="Deck editing"><button id="card-tab" type="button" role="tab" data-tab="card" aria-controls="editor-card-panel" aria-selected="true">Card</button><button id="page-tab" type="button" role="tab" data-tab="page" aria-controls="editor-page-panel" aria-selected="false" tabindex="-1">Page</button></nav>
+      <div class="editor-body">
+        <label>Page<select id="editor-page"></select></label>
+        <div class="editor-actions add-actions"><button id="add-button" type="button">+ Button</button><button id="add-widget" type="button">+ Widget</button><button id="add-form" type="button">+ Input</button><button id="add-page" type="button">+ Page</button></div>
+        <section id="editor-card-panel" role="tabpanel" aria-labelledby="card-tab"><label>Card<select id="editor-card"></select></label><p id="empty-card" class="editor-help">Choose a card above, or add one.</p>      <form id="item-form" class="item-form hidden">
         <input id="item-id" type="hidden">
         <label>Label<input id="item-label" maxlength="40"></label>
         <div id="button-fields">
-          <label>Icon<select id="item-icon"></select></label>
-          <label>Colour<input id="item-color" type="color"></label>
-          <label>Action<select id="item-action"></select></label>
+
+
+          <label>Action<select id="item-action"></select></label><div id="module-config-slot">      <section id="provider-picker" class="hidden" aria-label="Optional module controls">
+        <label>Search module controls<input id="provider-search" type="search" placeholder="Module, category or control"></label>
+        <p id="provider-result-count" aria-live="polite"></p>
+        <label>Module action<select id="provider-control"></select></label>
+        <p id="provider-description"></p>
+        <div id="provider-fields"></div>
+      </section></div>
           <label id="param-scene" class="param hidden">Scene<select id="item-scene"></select></label>
           <label id="param-input" class="param hidden">Audio input<select id="item-input"></select></label>
           <label id="param-volume" class="param hidden">Volume (%)<input id="item-volume" type="number" min="0" max="100" step="1"></label>
@@ -68,24 +69,43 @@
           <label id="param-streamerbot" class="param hidden">Streamer.bot action<select id="item-streamerbot"></select></label>
           <label class="check"><input id="item-hold" type="checkbox"> Hold to confirm</label>
         </div>
-        <label id="widget-field" class="hidden">Widget<select id="item-widget"><option value="stream">Stream</option><option value="countdown">Countdown</option><option value="writing">Writing</option><option value="media">Media</option></select></label>
+        <label id="widget-field" class="hidden">Widget<select id="item-widget"><option value="stream">Stream</option><option value="countdown">Countdown</option><option value="writing">Writing</option><option value="media">Media</option></select></label><div id="widget-config-slot"></div>
         <div id="form-fields" class="hidden">
-          <label>Input type<select id="item-form-mode"><option value="obs.scene">OBS scene picker</option></select></label>
+          <label>Input type<select id="item-form-mode"><option value="obs.scene">OBS scene picker</option></select></label><div id="form-config-slot"></div>
           <label id="form-volume-field" class="hidden">Volume input<select id="form-volume-input"></select></label>
           <label id="form-account-field" class="hidden">Send as<input id="item-form-account" type="hidden" value="bot"></label>
           <label>Placeholder<input id="item-placeholder" maxlength="80"></label>
         </div>
-        <label id="size-field">Size<select id="item-size"><option value="1x1">1 x 1</option><option value="2x1">2 x 1</option><option value="2x2">2 x 2</option></select></label>
+
+        <details id="appearance-settings" data-local-disclosure><summary>Appearance</summary><div id="button-appearance">          <label>Icon<select id="item-icon"></select></label>          <label>Colour<input id="item-color" type="color"></label></div>        <label id="size-field">Size<select id="item-size"><option value="1x1">1 x 1</option><option value="2x1">2 x 1</option><option value="2x2">2 x 2</option></select></label></details>
         <div class="editor-actions">
           <button id="move-left" type="button" title="Move earlier"><i data-lucide="arrow-left"></i></button>
           <button id="move-right" type="button" title="Move later"><i data-lucide="arrow-right"></i></button>
           <button id="duplicate-item" type="button"><i data-lucide="copy"></i> Duplicate</button>
           <button id="delete-item" class="danger" type="button"><i data-lucide="trash-2"></i> Delete</button>
         </div>
-      </form>
+      </form></section>
+        <section id="editor-page-panel" class="hidden" role="tabpanel" aria-labelledby="page-tab">      <form id="page-form" class="page-form">
+        <label>Page name<input id="page-name" maxlength="30"></label>
+        <button id="delete-page" class="danger" type="button"><i data-lucide="trash-2"></i> Delete page</button>
+      </form></section>
+      </div>
+      <footer class="editor-footer"><div><button id="save-deck" type="button">Save deck</button><button id="reload-deck" type="button">Discard draft</button></div><p id="editor-status" class="editor-status" aria-live="polite"></p></footer>
+    </aside>
+    <section id="settings" class="settings-pane hidden" aria-label="Connection and phone settings">
+      <div class="editor-head"><h2>Settings</h2><button id="close-settings" type="button">Back to deck</button></div>
+      <p id="settings-overview" role="status"></p>
+      <nav id="settings-tabs" class="workspace-tabs" role="tablist" aria-label="Settings"><button id="connections-tab" type="button" role="tab" data-tab="connections" aria-controls="settings-connections" aria-selected="true">Connections</button><button id="phones-tab" type="button" role="tab" data-tab="phones" aria-controls="settings-phones" aria-selected="false" tabindex="-1">Phones</button></nav>
       <section id="admin-panel" class="admin-panel hidden">
-        <h2>Optional module connections</h2>
-        <form id="provider-connection-form">
+        <section id="settings-connections" role="tabpanel" aria-labelledby="connections-tab">
+          <details id="obs-settings" data-local-disclosure><summary>OBS connection <span id="obs-connection-summary"></span></summary><p>Basic OBS controls work independently of optional modules.</p><form id="connection-form">
+          <label>WebSocket address<input id="obs-url" placeholder="ws://127.0.0.1:4455" required></label>
+          <label>Password (blank preserves saved password)<input id="obs-password" type="password" autocomplete="new-password"></label>
+          <label class="check"><input id="obs-clear" type="checkbox"> Clear saved password</label>
+          <button type="submit">Save connection</button>
+          <p id="obs-settings-status" aria-live="polite"></p>
+        </form></details>
+          <details id="module-settings" data-local-disclosure><summary>Module connections <span id="module-connection-summary"></span></summary><p>Used by optional module controls. Changing these settings is separate from editing your deck.</p><form id="provider-connection-form">
           <label class="check"><input id="provider-api-enabled" type="checkbox"> Discover installed Companion modules</label>
           <label>Companion loopback address<input id="provider-api-url" placeholder="http://127.0.0.1:3135"></label>
           <label class="check"><input id="provider-sb-enabled" type="checkbox"> Enable optional Streamer.bot controls</label>
@@ -94,43 +114,25 @@
           <label class="check"><input id="provider-sb-clear" type="checkbox"> Clear saved Streamer.bot password</label>
           <button type="submit">Save optional connections</button>
           <p id="provider-connection-status" aria-live="polite"></p>
-        </form>
-        <h2>Private OBS connection</h2>
-        <p>Basic OBS controls work independently of optional modules.</p>
-        <form id="connection-form">
-          <label>WebSocket address<input id="obs-url" placeholder="ws://127.0.0.1:4455" required></label>
-          <label>Password (blank preserves saved password)<input id="obs-password" type="password" autocomplete="new-password"></label>
-          <label class="check"><input id="obs-clear" type="checkbox"> Clear saved password</label>
-          <button type="submit">Save connection</button>
-          <p id="obs-settings-status" aria-live="polite"></p>
-        </form>
-        <h2>Phone pairing</h2>
-        <form id="phone-address-form">
+        </form></details>
+        </section>
+        <section id="settings-phones" class="hidden" role="tabpanel" aria-labelledby="phones-tab"><details id="phone-address-settings" data-local-disclosure><summary>Phone address</summary><form id="phone-address-form">
           <label>Phone hostname or LAN IP<input id="phone-host" required placeholder="Computer hostname or LAN IP"></label>
           <p>The HTTPS certificate must cover this address. Certificates and keys stay in the private module data directory.</p>
           <button type="submit">Save phone address</button>
           <p id="phone-address-status" aria-live="polite"></p>
-        </form>
-        <button id="generate-code" type="button"><i data-lucide="key-round"></i> Generate code</button>
+        </form></details><h3>Pairing</h3>        <button id="generate-code" type="button"><i data-lucide="key-round"></i> Generate code</button>
         <div id="pairing-result" class="pairing-result hidden"><strong id="pairing-code"></strong><img id="pairing-qr" alt="Phone deck pairing QR code"><a id="phone-url" target="_blank" rel="noreferrer"></a></div>
         <div id="device-list"></div>
+</section>
       </section>
-      <button id="save-deck" type="button">Save deck</button>
-      <button id="reload-deck" type="button">Discard draft and reload</button>
-      <p id="editor-status" class="editor-status" aria-live="polite"></p>
-      <section id="provider-picker" class="hidden" aria-label="Optional module controls">
-        <label>Search module controls<input id="provider-search" type="search" placeholder="Module, category or control"></label>
-        <p id="provider-result-count" aria-live="polite"></p>
-        <label>Module control<select id="provider-control"></select></label>
-        <p id="provider-description"></p>
-        <div id="provider-fields"></div>
-      </section>
-    </aside>
+    </section>
   </div>
 
   <script src="/deck/vendor/lucide.js"></script>
   <script src="/deck/provider-presentation.js"></script>
   <script src="/deck/provider-ui.js"></script>
+  <script src="/deck/editor-ui.js"></script>
   <script src="/deck/app.js?v=4"></script>
 </body>
 </html>

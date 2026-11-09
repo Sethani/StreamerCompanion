@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "phone-deck",
   "name": "Phone Deck",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Editable HTTPS handset deck with independent OBS controls and optional module contributions.",
   "author": "Sethani",
   "license": "MIT",

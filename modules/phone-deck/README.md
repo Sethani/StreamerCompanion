@@ -1,6 +1,6 @@
 # Phone Deck
 
-Phone Deck 2.0.1 provides independent OBS controls and an editable HTTPS handset deck for Companion 1.3.1. Basic OBS operation needs no feature module or Streamer.bot connection. Optional controls come from installed packages; installing a module never adds cards automatically.
+Phone Deck 2.0.2 provides independent OBS controls and an editable HTTPS handset deck for Companion 1.3.1. Basic OBS operation needs no feature module or Streamer.bot connection. Optional controls come from installed packages; installing a module never adds cards automatically.
 
 2.0.1 fixes opening the public page from a link or embedded settings. Private API requests still require the configured Host, same origin and CSRF token; unrelated origins cannot read or mutate private state. Existing layout, pairing and TLS identity are preserved.
 
@@ -29,6 +29,12 @@ Generate a pairing code locally, open the displayed HTTPS address on the phone a
 Enable optional Companion discovery and Streamer.bot connections in local settings as needed. Missing/stopped modules, missing imports and unavailable resources disable their own controls. Unsupported OBS features show prerequisites. Raw OBS Start invokes no countdown/music/launch automation. Streaming controls require a 1.2-second hold or keyboard confirmation.
 
 ## Editing and completion
+
+**Edit deck** has separate **Card** and **Page** tabs. Select a card or add one; its module/action picker appears directly under Action. Appearance is folded separately. Phones and narrow docks switch to a dedicated editing view, while wide windows show the deck alongside the editor. Save and Discard stay visible. Closing edit mode retains the draft and shows a clear reminder before controls can run; incomplete new cards explain what to choose without replacing saved configuration. Search never changes configuration.
+
+The separate **Settings** button opens **Connections** and **Phones**, with connection/address details folded by default. These private forms are not part of the card editor. Existing paired phones keep editing access but cannot access local-only connection or pairing administration. Deck, connection and phone-address saves remain separate operations.
+
+OBS and Streamer.bot status are shown independently. Healthy module cards have no refresh button. **Check module status** appears only when the affected module needs read-only recovery after a stale/unavailable status or unconfirmed operation; it never retries the original action. An unsaved deck is identified as a draft rather than a connection failure. Open pages are not reloaded automatically during an upgrade: save or discard an older editor's draft before refreshing to load the new UI.
 
 The established grid/editor supports pages, ordering, duplication, colours, icons, sizes and widgets. Save is explicit. Polling preserves drafts, focus, sliders, selected pages and card nodes. Revisions reject stale edits and execution. The module picker supports groups/search; missing saved resources are never substituted.
 
