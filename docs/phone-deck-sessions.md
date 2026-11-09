@@ -11,7 +11,7 @@ Updated November 9, 2026. Implement **one bounded session per implementation tur
 | 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
 | 5 | Complete; all three providers published | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
-| 6 | Complete; 2.0.1 published/installed and handset accepted | Backed-up production HTTPS/pairing/layout handoff and navigation correction |
+| 6 | Complete; handset accepted, 2.0.2 editor repair installed | Backed-up production HTTPS/pairing/layout handoff and usability corrections |
 | 7 | Pending | Spotify and scoped Source Modules controls |
 | 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
 | 9 | Pending | Named Timers, Reminders and confirmed Redeem Checklist operations |
@@ -21,9 +21,9 @@ Updated November 9, 2026. Implement **one bounded session per implementation tur
 
 ## Current local artifact
 
-Source is `modules/phone-deck/`. The current artifact is `dist/modules/phone-deck-2.0.1.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. This version is published in the module catalogue and installed/running in production. Companion remains 1.3.1.
+Source is `modules/phone-deck/`. The current artifact is `dist/modules/phone-deck-2.0.2.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. This version is published in the module catalogue and installed/running in production. Companion remains 1.3.1.
 
-The archive contains Sessions 1–6; SHA-256 `e931c2447b7df1d58fc4a4b39bec3e13e5ef2f0f34668051d72b59449287b71a`, also in `dist/modules/SHA256SUMS`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical; the Session 6 final record identifies current production status. Sessions 7–12 remain later, optional passes.
+The archive contains Sessions 1–6 plus the editor/status repair; SHA-256 `074f26de07020dd22adb522d2785915370a0823bcb15497848053aa8a7117b82`, also in `dist/modules/SHA256SUMS`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical. Sessions 7–12 remain later, optional passes.
 
 ## Session 1 checkpoint
 
@@ -129,3 +129,9 @@ The Ethernet profile required a Windows-approved application/port/local-subnet r
 ### Session 6 final acceptance — November 9
 
 The operator confirmed the original handset connects with its existing pairing. Session 6 is complete at **21/24** required feature areas. Phone Deck 2.0.1 is running with automatic start, original pages/cards/pairing/TLS/preferences preserved, and legacy ownership blocked. Production off-stream mute acceptance is restored; no stream/recording/chat/routing Apply was started. All isolated processes/listeners are stopped. Stop at this checkpoint. **Next separate turn: Session 7**, optional Spotify playback/volume/status and scoped Source Modules controls preserving saved scene lists. Keep the repository server for widgets, bouncing avatar and Ollama; leave final-switch Import settings cleanup deferred.
+
+### Session 6 usability repair — Phone Deck 2.0.2
+
+The crowded-editor/status report was a frontend issue: connections were healthy, recovery buttons were always visible and draft gating had poor feedback. The repair separates Card/Page editing and Connections/Phones settings, puts module selection beside Action, folds details, replaces the overlay with responsive workspaces, preserves labels/drafts and shows recovery only when genuinely needed. Search/Enter/navigation cannot write connection settings or run actions.
+
+Source `470f4b0991c84be64ebe57eeebf9ca619fed3e0d` passed Windows/Linux Check `42608461071`; publication `42608706677`, SHA-256 `074f26de07020dd22adb522d2785915370a0823bcb15497848053aa8a7117b82`. Full source/hidden checks and actual released 2.0.1-to-2.0.2 upgrades passed in packaged Companion 1.3.1. The idle/off-stream production update restarted only Phone Deck and preserved exact protected-data hashes, host preferences and OBS state; both connections remain healthy. No real effect or connection reset was used. Open pages were not reloaded; save/discard an older draft before refreshing. This is an installed Session 6 repair; Session 7 is not started and the count stays 21/24.

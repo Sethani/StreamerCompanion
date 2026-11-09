@@ -15,7 +15,7 @@ Checked means the replacement is implemented and published/installed/imported as
 - [x] Going-live announcements and bookkeeping — retained private native hook
 - [x] Live Chatbox — normal and ticker, including live enrichment
 - [x] Named / language timers
-- [x] Phone Deck — 2.0.1; Session 6 production cutover accepted, existing handset connected without re-pairing
+- [x] Phone Deck — 2.0.2; accepted Session 6 handoff, plus installed editor/status repair
 - [x] Pokemon Encounters
 - [x] Reactive Guests — user completed live acceptance
 - [x] Redeem Checklist
