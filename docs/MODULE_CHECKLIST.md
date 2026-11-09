@@ -1,6 +1,6 @@
 # Module migration checklist
 
-Updated November 8, 2026. **20 of 24 required feature areas implemented; 4 still to migrate.**
+Updated November 9, 2026. **21 of 24 required feature areas implemented; 3 still to migrate.**
 
 Checked means the replacement is implemented and published/installed/imported as applicable. Remaining acceptance and retirement work is listed separately below. This counts feature areas, not package files; going-live bookkeeping is deliberately retained as a private native hook.
 
@@ -15,6 +15,7 @@ Checked means the replacement is implemented and published/installed/imported as
 - [x] Going-live announcements and bookkeeping — retained private native hook
 - [x] Live Chatbox — normal and ticker, including live enrichment
 - [x] Named / language timers
+- [x] Phone Deck — 2.0.1; Session 6 production cutover accepted, existing handset connected without re-pairing
 - [x] Pokemon Encounters
 - [x] Reactive Guests — user completed live acceptance
 - [x] Redeem Checklist
@@ -29,15 +30,16 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## To do: remaining migration
 
-- [ ] **Phone Deck — Sessions 1–5 implemented; Session 6 next.** OBS foundation, optional framework, launch/countdown, Audio Routing/Wheel/Video and legacy-card/combined-widget compatibility pass isolated checks. Only verified provider metadata updates are published; Phone Deck has no production install or handoff yet. Follow the [12-session checkpoints](phone-deck-sessions.md); the existing deck still needs the old server until Session 6. Preserve cards, pairing, TLS, action types and active-state indicators.
 - [ ] **Embedded widgets, including Tangia.** Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
 - [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
 
 ## Remaining acceptance and final switch
 
+Phone Deck Sessions 1–6 are complete, including the published/installed 2.0.1 navigation correction, backed-up legacy ownership handoff, unchanged pairing/TLS/layout/preferences and restored off-stream mute acceptance. The operator confirmed the existing handset connects without re-pairing. Later optional Phone Deck contributions are separate passes: **Session 7 next** adds Spotify and scoped Source Modules controls. See the [12-session checkpoints](phone-deck-sessions.md). Keep the old server for the three remaining migrations; do not repeat accepted Cameras/Reactive live checks.
+
 - [ ] Observe one normal viewer first-chat/repeated-chat sequence with Walk Ons 2.1.1: one entrance per stream, with reset permitting the next entrance. Synthetic and controlled playback checks already pass.
-- [ ] After the four migrations above, audit remaining local URLs/callers and rehearse the complete workflow with the old repository server stopped, with rollback available.
+- [ ] After the three migrations above, audit remaining local URLs/callers and rehearse the complete workflow with the old repository server stopped, with rollback available.
 - [ ] Cold-start the complete modern setup and verify retained preferences, automatic-start settings, private media and phone pairing.
 - [ ] Retire the old server's startup/routes only after that rehearsal passes; preserve private data and rollback backups.
 - [ ] **Final cleanup: remove legacy Import settings options.** Once the final switch is complete and existing settings are confirmed migrated, remove migration-only buttons/readers from the desktop and all affected modules. Preserve saved settings, ordinary backup/restore, Streamer.bot action imports and media imports. Verify fresh installations work from defaults/manual setup without legacy files.

@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 8, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The existing Phone Deck stays in production until the dedicated Session 6 cutover.
+Updated November 9, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. **21/24** required feature areas are implemented; Session 7 is the next separate pass.
 
 ## Progress
 
@@ -11,7 +11,7 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 | 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
 | 5 | Complete; all three providers published | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
-| 6 | Release candidate verified; cutover pending | Publish 2.0.0; backed-up production HTTPS/pairing/layout handoff |
+| 6 | Complete; 2.0.1 published/installed and handset accepted | Backed-up production HTTPS/pairing/layout handoff and navigation correction |
 | 7 | Pending | Spotify and scoped Source Modules controls |
 | 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
 | 9 | Pending | Named Timers, Reminders and confirmed Redeem Checklist operations |
@@ -21,9 +21,9 @@ Updated November 8, 2026. Implement **one bounded session per implementation tur
 
 ## Current local artifact
 
-Source is `modules/phone-deck/`. The local artifact is `dist/modules/phone-deck-2.0.0.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. It is a development checkpoint carrying the intended final version, **not a released or production-installed package**. It is absent from the published catalogue. Companion remains 1.3.1.
+Source is `modules/phone-deck/`. The current artifact is `dist/modules/phone-deck-2.0.1.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. This version is published in the module catalogue and installed/running in production. Companion remains 1.3.1.
 
-The archive now contains Sessions 1–5; SHA-256 `ebf863392e838d52e33e77ad967b3210485c1242a08cb35b3175d88f1fe99523`, also in `dist/modules/SHA256SUMS`. Phone Deck remains unpublished/not installed in production. Session 5 published Audio Routing 2.0.1, Wheel 2.1.2 and Video 2.2.1; publication proof follows below. Their full native export bodies match the preceding releases. Earlier checkpoint hashes/source records below are historical and no longer identify the current artifact.
+The archive contains Sessions 1–6; SHA-256 `e931c2447b7df1d58fc4a4b39bec3e13e5ef2f0f34668051d72b59449287b71a`, also in `dist/modules/SHA256SUMS`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical; the Session 6 final record identifies current production status. Sessions 7–12 remain later, optional passes.
 
 ## Session 1 checkpoint
 
@@ -46,11 +46,11 @@ Management uses loopback 3142. HTTPS 3125 starts only with private TLS files. Cr
 - Runtime and disposable installed-service checks also pass under the existing packaged Companion 1.3.1 executable in Node-only mode, using temporary data and isolated ports. No second production-profile host was opened. The module-publishing regression passes; no catalogue/release was changed. Final process inspection found no remaining Phone Deck test processes.
 - Runtime assets include Lucide's ISC notice, first-party MIT licence, PWA manifest/icon and an offline navigation response. Private data/TLS files are excluded. No real stream, recording or mute action is used by these tests.
 
-## Boundaries and outstanding acceptance
+## Historical boundaries and outstanding acceptance
 
 This checkpoint does not provision/trust production TLS, select a LAN hostname, generate QR enrollment, copy private layout/pairing data, install optional helpers, implement providers, publish releases or hand off production ports. Numeric HTTPS pairing is verified using temporary certificates. Service-worker upgrades, broader offline acceptance, 100 synthetic contributions/cards, old-package upgrades and handset identity preservation remain explicit pre-Session-6 work. The current service worker never caches credentials, private API responses or mutations.
 
-Next turn implements **Session 6 only**, the dedicated off-stream cutover. Complete the 100-card/HTTPS/revocation/service-worker/offline/released-upgrade acceptance first, then snapshot and transfer the existing handset identity, layout and TLS with rollback. Do not advertise the local 2.0.0 checkpoint as production-installed before that handoff.
+The Session 6 transfer and verification are recorded below; do not repeat the private migration. The next implementation turn after Session 6 acceptance implements **Session 7 only**: optional Spotify and scoped Source Modules contributions.
 
 Session 6 must snapshot pages/cards, pairing, TLS, host/preferences and relevant OBS state; retain IDs and expiry; guard the legacy owner and restart only its repository server to release HTTPS. Native import/restart is needed only if helper actions change. Confirm the existing phone reconnects without re-pairing. Any real scene/mute acceptance records and restores its original state.
 
@@ -115,3 +115,17 @@ Actual anonymous GitHub upgrades in packaged Companion 1.3.1 passed: preinstalle
 The verified candidate adds private hostname persistence/local settings, exact Host validation, old shell-cache cleanup and offline/restart session-token handling. Full source/runtime/hidden checks cover 120 synthetic contributions/cards, an existing HTTPS cookie and certificate, old worker replacement, offline navigation, independent live/parked controls, drafts/focus/page preservation, no replay, revocation and clean shutdown. Packaged Companion 1.3.1 runtime checks pass. The private legacy ownership guard is tested fail-closed. Existing optional native helper IDs are present; no native import/restart or app rebuild is required.
 
 Rollback data and target private configuration are staged without transferring listeners. Candidate package SHA-256: `ff01412da0152619586ca08f1c19f4b388011365706ee898005ce8b1d13ebdae`. Release and production acceptance remain pending until the records below. The first Phone Deck release has no older public predecessor: released-package upgrade acceptance explicitly uses a synthetic 1.9.9 package before the actual 2.0.0 archive. Do not record 21/24 until the dedicated handoff and handset checks pass.
+
+## Session 6 release and production transfer record
+
+Phone Deck 2.0.0 source `233e5b17fe7527196ffcd8a9786ae793b032c975` passed Windows/Linux Check `42529309333` and publication `42529452016`, hash `ff01412da0152619586ca08f1c19f4b388011365706ee898005ce8b1d13ebdae`. Its actual released package passed isolated Companion 1.3.1 install/upgrade checks before the private layout/pairing/TLS transfer and server-only restart.
+
+The first production check exposed blocked linked/embedded public-page navigation. Phone Deck 2.0.1 fixes that distinction without relaxing private API Host/Origin/CSRF checks. Source `f68c477b03d91f89ab738c843a318368ec7fc366` passed Windows/Linux Check `42602250059`; publication `42602681852`, hash `e931c2447b7df1d58fc4a4b39bec3e13e5ef2f0f34668051d72b59449287b71a`. Real GitHub 2.0.0-to-2.0.1 upgrades passed native-data equality and preserved data, cookies, TLS, favorites/automatic-start in packaged 1.3.1. No download fallback was needed. The patch is installed through the running host and only Phone Deck restarted. HTTP and file-origin embedded settings both pass hidden acceptance; production public navigation is 200 while cross-site private API access stays 403.
+
+Production verification confirms all four pages/38 cards and their identities/appearance, the one existing pairing/expiry, TLS, original OBS scene/mutes/54 readable masks and other host preferences preserved. Automatic start is enabled. A recorded off-stream saved-card mute/unmute passed and restored the initial state. Native helpers are unchanged/present; no Streamer.bot import/restart, app rebuild or unchanged-provider publication was needed. Initial stale native inventory was corrected using the existing read-only Audio Routing Refresh, without routing Apply/Toggle. OBS/native connections are healthy after re-saving the same connection settings.
+
+The Ethernet profile required a Windows-approved application/port/local-subnet rule limited to Private LAN HTTPS; the existing certificate/address are unchanged. Legacy deck APIs now refuse fallback and the repository server retains server-only PID tracking. The old server remains needed by the other vital migrations. Handset confirmation and the 21/24 feature count are still pending until the final record below; no later provider session is started here.
+
+### Session 6 final acceptance — November 9
+
+The operator confirmed the original handset connects with its existing pairing. Session 6 is complete at **21/24** required feature areas. Phone Deck 2.0.1 is running with automatic start, original pages/cards/pairing/TLS/preferences preserved, and legacy ownership blocked. Production off-stream mute acceptance is restored; no stream/recording/chat/routing Apply was started. All isolated processes/listeners are stopped. Stop at this checkpoint. **Next separate turn: Session 7**, optional Spotify playback/volume/status and scoped Source Modules controls preserving saved scene lists. Keep the repository server for widgets, bouncing avatar and Ollama; leave final-switch Import settings cleanup deferred.
