@@ -1,6 +1,8 @@
 # Phone Deck
 
-Phone Deck 2.0.0 provides independent OBS controls and an editable HTTPS handset deck for Companion 1.3.1. Basic OBS operation needs no feature module or Streamer.bot connection. Optional controls come from installed packages; installing a module never adds cards automatically.
+Phone Deck 2.0.1 provides independent OBS controls and an editable HTTPS handset deck for Companion 1.3.1. Basic OBS operation needs no feature module or Streamer.bot connection. Optional controls come from installed packages; installing a module never adds cards automatically.
+
+2.0.1 fixes opening the public page from a link or embedded settings. Private API requests still require the configured Host, same origin and CSRF token; unrelated origins cannot read or mutate private state. Existing layout, pairing and TLS identity are preserved.
 
 ## Setup
 

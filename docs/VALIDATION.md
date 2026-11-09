@@ -1,5 +1,13 @@
 # First public GitHub update validation
 
+## November 9: Phone Deck navigation correction and final Session 6 acceptance
+
+The initial 2.0.0 production handoff exposed a navigation defect: the blanket cross-site rejection also blocked the public HTML page when opened from a link or embedded settings. Phone Deck 2.0.1 permits safe GET/HEAD navigation to public assets while retaining exact Host/explicit-Origin validation and all private API same-origin/CSRF checks. Tests cover real cross-site embedded settings, allowed linked pages, rejected cross-site API reads/writes, bad Host/Origin and the existing 120-card HTTPS/restart/offline suite. Health reports the actual installed manifest version.
+
+The first release is source `233e5b17fe7527196ffcd8a9786ae793b032c975`, Windows/Linux Check `42529309333`, publication workflow `42529452016`, SHA-256 `ff01412da0152619586ca08f1c19f4b388011365706ee898005ce8b1d13ebdae`. Its actual released archive passed packaged Companion 1.3.1 installation/upgrade checks before production transfer. The 2.0.1 release regression upgrades from that hash-verified real 2.0.0 archive and requires identical complete native action data. No unchanged provider is republished, app rebuilt or native action reimported.
+
+Private production checks confirm preserved four-page/38-card identities/appearance, existing pairing and certificate, saved classifications, original OBS scene/mutes/54 readable masks and existing favorites/automatic-start choices. Phone Deck automatic-start is enabled. A controlled off-stream saved-card mute/unmute passed and restored the original state. Only a read-only native Audio Routing inventory refresh was needed after OBS startup; no routing Apply/Toggle occurred. The Ethernet Private profile needed a narrowly scoped local-subnet HTTPS rule for the Companion executable; Windows administrator approval was obtained. The old repository deck is guarded against fallback. Final patch publication, handset confirmation and completion are recorded below when verified.
+
 ## November 8: Phone Deck Session 6 — release and handset cutover
 
 The 2.0.0 candidate adds a privately persisted hostname with exact Host/Origin validation and local-only address editing. Old Phone Deck service-worker caches are removed on activation while unrelated caches remain. API/credentials/mutations are never cached. A lost host connection disables controls until a fresh bootstrap; lingering SSE events cannot re-enable them. Reconnection refreshes the session CSRF token after a host restart.
