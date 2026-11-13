@@ -169,6 +169,34 @@ Run-Engine $routing @{ moduleRoutingMode = 'initialize'; sceneName = 'Changed Sc
 $state = $routing.CPH.Globals['portable.moduleRouting.state'] | ConvertFrom-Json
 Assert-True ($state.payload.currentScene -eq 'Changed Scene') 'OBS scene event must update routing state'
 Assert-True ($routing.CPH.Errors.Count -eq 1) 'Only intentional invalid-routing test should report an error'
+$scenes = $config.modules.video.scenes | ConvertTo-Json -Compress
+Run-Engine $routing @{ moduleRoutingMode = 'set-mode'; moduleRoutingTarget = 'video'; moduleRoutingVisibility = 'global'; requestId = 'routing-one' }
+$config = $routing.CPH.Globals['portable.moduleRouting.config'] | ConvertFrom-Json
+$state = $routing.CPH.Globals['portable.moduleRouting.state'] | ConvertFrom-Json
+Assert-True ($config.modules.video.mode -eq 'global' -and ($config.modules.video.scenes | ConvertTo-Json -Compress) -eq $scenes) 'Scoped mode must preserve saved scenes'
+Assert-True ($config.modules.legacy.mode -eq 'global' -and $config.retained -eq 'synthetic') 'Scoped mode must preserve other rules and metadata'
+Assert-True ($state.payload.phoneDeckVersion -eq 1 -and $state.payload.phoneDeckResults.'routing-one'.status -eq 'completed') 'Matching acknowledgement follows persistence'
+$before = $routing.CPH.Globals['portable.moduleRouting.config']
+Run-Engine $routing @{ moduleRoutingMode = 'set-mode'; moduleRoutingTarget = 'video'; moduleRoutingVisibility = 'disabled'; requestId = 'routing-one' }
+Assert-True ($routing.CPH.Globals['portable.moduleRouting.config'] -eq $before) 'Duplicate request must not replay after later state'
+foreach ($invalid in @(@{moduleRoutingTarget='missing';moduleRoutingVisibility='global'},@{moduleRoutingTarget='Video';moduleRoutingVisibility='global'},@{moduleRoutingTarget='video';moduleRoutingVisibility='invalid'})) {
+  $invalid.moduleRoutingMode = 'set-mode'; $invalid.requestId = 'rejected'
+  Run-Engine $routing $invalid
+  Assert-True ($routing.CPH.Globals['portable.moduleRouting.config'] -eq $before) 'Invalid scoped request must not replace mappings'
+}
+$routing.CPH.FailPersist = $true
+Run-Engine $routing @{moduleRoutingMode='set-mode';moduleRoutingTarget='video';moduleRoutingVisibility='disabled';requestId='failed-save'}
+$routing.CPH.FailPersist = $false
+$state = $routing.CPH.Globals['portable.moduleRouting.state'] | ConvertFrom-Json
+Assert-True ($null -eq $state.payload.phoneDeckResults.'failed-save') 'Failed persistence cannot acknowledge success'
+Run-Engine $routing @{moduleRoutingMode='initialize'}
+$state = $routing.CPH.Globals['portable.moduleRouting.state'] | ConvertFrom-Json
+Assert-True ($state.payload.phoneDeckResults.'routing-one'.status -eq 'completed') 'Refresh must retain terminal results'
+foreach($mode in @('disabled','scenes','global')) {
+ Run-Engine $routing @{moduleRoutingMode='set-mode';moduleRoutingTarget='video';moduleRoutingVisibility=$mode;requestId=('mode-'+$mode)}
+ $config = $routing.CPH.Globals['portable.moduleRouting.config'] | ConvertFrom-Json
+ Assert-True ($config.modules.video.mode -eq $mode -and ($config.modules.video.scenes | ConvertTo-Json -Compress) -eq $scenes) 'Each visibility mode preserves the saved scene list'
+}
 $pokemon = [EngineTest.PokemonInline]::new()
 Run-Engine $pokemon @{ pokemonMode = 'initialize' }
 $config = $pokemon.CPH.Globals['portable.moduleRouting.config'] | ConvertFrom-Json

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "spotify",
   "name": "Spotify Music",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Spotify playback, countdown fading, scene-owned music, and viewer song information.",
   "documentation": "README.md",
   "streamerbot": {
@@ -109,7 +109,253 @@
           }
         ]
       }
-    ]
+    ],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "service",
+        "apiPrefix": "/api/spotify/",
+        "statePath": "/api/spotify/phone-deck/state",
+        "csrf": {
+          "path": "/api/spotify/phone-deck/state",
+          "field": "csrf",
+          "header": "X-Companion-CSRF"
+        }
+      },
+      "state": {
+        "fields": {
+          "configured": "configured",
+          "available": "available",
+          "playing": "playing",
+          "track": "track",
+          "artist": "artist",
+          "volume": "volume",
+          "error": "error"
+        }
+      },
+      "actions": {
+        "resume": {
+          "path": "/api/spotify/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "resume"
+          }
+        },
+        "pause": {
+          "path": "/api/spotify/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "pause"
+          }
+        },
+        "toggle": {
+          "path": "/api/spotify/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "toggle"
+          }
+        },
+        "next": {
+          "path": "/api/spotify/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "next"
+          }
+        },
+        "previous": {
+          "path": "/api/spotify/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "previous"
+          }
+        },
+        "volume": {
+          "path": "/api/spotify/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "volume",
+            "volume": {
+              "field": "volume"
+            }
+          }
+        },
+        "volume-preset": {
+          "path": "/api/spotify/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "volume",
+            "volume": {
+              "field": "volume"
+            }
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "resume",
+          "name": "Resume playback",
+          "kind": "button",
+          "action": "resume",
+          "prerequisites": [
+            {
+              "field": "configured",
+              "equals": true
+            },
+            {
+              "field": "available",
+              "equals": true
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "pause",
+          "name": "Pause playback",
+          "kind": "button",
+          "action": "pause",
+          "prerequisites": [
+            {
+              "field": "configured",
+              "equals": true
+            },
+            {
+              "field": "available",
+              "equals": true
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "toggle",
+          "name": "Play / pause",
+          "kind": "button",
+          "action": "toggle",
+          "active": "playing",
+          "prerequisites": [
+            {
+              "field": "configured",
+              "equals": true
+            },
+            {
+              "field": "available",
+              "equals": true
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "next",
+          "name": "Next track",
+          "kind": "button",
+          "action": "next",
+          "prerequisites": [
+            {
+              "field": "configured",
+              "equals": true
+            },
+            {
+              "field": "available",
+              "equals": true
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "previous",
+          "name": "Previous track",
+          "kind": "button",
+          "action": "previous",
+          "prerequisites": [
+            {
+              "field": "configured",
+              "equals": true
+            },
+            {
+              "field": "available",
+              "equals": true
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "volume",
+          "name": "Set volume",
+          "kind": "form",
+          "action": "volume",
+          "prerequisites": [
+            {
+              "field": "configured",
+              "equals": true
+            },
+            {
+              "field": "available",
+              "equals": true
+            }
+          ],
+          "fields": [
+            {
+              "id": "volume",
+              "label": "Volume (%)",
+              "type": "number",
+              "integer": true,
+              "min": 0,
+              "max": 100,
+              "input": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "volume-preset",
+          "name": "Volume preset",
+          "kind": "button",
+          "action": "volume-preset",
+          "prerequisites": [
+            {
+              "field": "configured",
+              "equals": true
+            },
+            {
+              "field": "available",
+              "equals": true
+            }
+          ],
+          "fields": [
+            {
+              "id": "volume",
+              "label": "Volume (%)",
+              "type": "number",
+              "integer": true,
+              "min": 0,
+              "max": 100,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Spotify playback status",
+          "kind": "widget",
+          "display": [
+            "available",
+            "playing",
+            "track",
+            "artist",
+            "volume",
+            "error"
+          ],
+          "displayLabels": {
+            "available": "Available",
+            "playing": "Playing",
+            "track": "Track",
+            "artist": "Artist",
+            "volume": "Volume (%)",
+            "error": "Details"
+          },
+          "fields": []
+        }
+      ]
+    }
   },
   "author": "Sethani",
   "license": "MIT",
@@ -120,6 +366,6 @@
       "streamerbot-websocket": "required",
       "spotify-account": "optional"
     },
-    "companion": ">=1.1.0"
+    "companion": ">=1.3.1"
   }
 }

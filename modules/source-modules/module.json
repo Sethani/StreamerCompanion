@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "source-modules",
   "name": "Source Modules",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Preserved Streamer.bot scene routing for installed module overlays.",
   "author": "Sethani",
   "license": "MIT",
@@ -51,7 +51,92 @@
           }
         ]
       }
-    ]
+    ],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "actions": {
+        "set-mode": {
+          "id": "4c66314c-f6d0-4dbf-b2eb-ba57c2651a04",
+          "args": {
+            "moduleRoutingMode": "set-mode",
+            "moduleRoutingTarget": {
+              "field": "module"
+            },
+            "moduleRoutingVisibility": {
+              "field": "mode"
+            }
+          }
+        }
+      },
+      "state": {
+        "global": "portable.moduleRouting.state",
+        "fields": {
+          "phoneDeckVersion": "payload.phoneDeckVersion"
+        },
+        "ack": {
+          "path": "payload.phoneDeckResults",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "resources": {
+        "modules": {
+          "path": "payload.modules",
+          "id": "$key",
+          "label": "$key"
+        },
+        "modes": {
+          "source": "static",
+          "items": [
+            {
+              "id": "disabled",
+              "label": "Hidden"
+            },
+            {
+              "id": "global",
+              "label": "All scenes"
+            },
+            {
+              "id": "scenes",
+              "label": "Selected saved scenes"
+            }
+          ]
+        }
+      },
+      "controls": [
+        {
+          "id": "set-mode",
+          "name": "Set saved overlay visibility",
+          "kind": "button",
+          "action": "set-mode",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "module",
+              "label": "Saved overlay rule",
+              "type": "resource",
+              "resource": "modules",
+              "required": true
+            },
+            {
+              "id": "mode",
+              "label": "Visibility",
+              "type": "resource",
+              "resource": "modes",
+              "required": true
+            }
+          ]
+        }
+      ]
+    }
   },
   "dependencies": {
     "modules": {
@@ -59,6 +144,6 @@
     },
     "optionalModules": {},
     "capabilities": {},
-    "companion": ">=1.2.0"
+    "companion": ">=1.3.1"
   }
 }

@@ -1,6 +1,6 @@
 # Module migration checklist
 
-Updated November 9, 2026. **21 of 24 required feature areas implemented; 3 still to migrate.**
+Updated November 13, 2026. **21 of 24 required feature areas implemented; 3 still to migrate.**
 
 Checked means the replacement is implemented and published/installed/imported as applicable. Remaining acceptance and retirement work is listed separately below. This counts feature areas, not package files; going-live bookkeeping is deliberately retained as a private native hook.
 
@@ -36,7 +36,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## Remaining acceptance and final switch
 
-Phone Deck Sessions 1–6 are complete, including the published/installed 2.0.1 navigation correction, backed-up legacy ownership handoff, unchanged pairing/TLS/layout/preferences and restored off-stream mute acceptance. The operator confirmed the existing handset connects without re-pairing. Later optional Phone Deck contributions are separate passes: **Session 7 next** adds Spotify and scoped Source Modules controls. See the [12-session checkpoints](phone-deck-sessions.md). Keep the old server for the three remaining migrations; do not repeat accepted Cameras/Reactive live checks.
+Phone Deck Sessions 1–6 are complete, including the published/installed 2.0.1 navigation correction, backed-up legacy ownership handoff, unchanged pairing/TLS/layout/preferences and restored off-stream mute acceptance. The operator confirmed the existing handset connects without re-pairing. Later optional Phone Deck contributions are separate passes: **Session 7** adds verified Spotify 2.0.3 and Source Modules 1.0.1 provider candidates (publication pending); **Session 8 next** adds Cameras/Reactive/Scene Links. Source Modules needs a backed-up native reimport/Initialize before phone controls enable. See the [12-session checkpoints](phone-deck-sessions.md). Keep the old server for the three remaining migrations; do not repeat accepted Cameras/Reactive live checks.
 
 - [ ] Observe one normal viewer first-chat/repeated-chat sequence with Walk Ons 2.1.1: one entrance per stream, with reset permitting the next entrance. Synthetic and controlled playback checks already pass.
 - [ ] After the three migrations above, audit remaining local URLs/callers and rehearse the complete workflow with the old repository server stopped, with rollback available.

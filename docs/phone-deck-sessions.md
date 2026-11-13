@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 9, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. **21/24** required feature areas are implemented; Session 7 is the next separate pass.
+Updated November 13, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. **21/24** required feature areas are implemented; Session 7 provider candidates are verified; publication is pending. Session 8 is the next separate implementation pass.
 
 ## Progress
 
@@ -12,7 +12,7 @@ Updated November 9, 2026. Implement **one bounded session per implementation tur
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
 | 5 | Complete; all three providers published | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
 | 6 | Complete; handset accepted, 2.0.2 editor repair installed | Backed-up production HTTPS/pairing/layout handoff and usability corrections |
-| 7 | Pending | Spotify and scoped Source Modules controls |
+| 7 | Verified locally; publication pending | Spotify 2.0.3 and Source Modules 1.0.1 |
 | 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
 | 9 | Pending | Named Timers, Reminders and confirmed Redeem Checklist operations |
 | 10 | Pending | Walk Ons and Shoutout Clips |
@@ -135,3 +135,13 @@ The operator confirmed the original handset connects with its existing pairing. 
 The crowded-editor/status report was a frontend issue: connections were healthy, recovery buttons were always visible and draft gating had poor feedback. The repair separates Card/Page editing and Connections/Phones settings, puts module selection beside Action, folds details, replaces the overlay with responsive workspaces, preserves labels/drafts and shows recovery only when genuinely needed. Search/Enter/navigation cannot write connection settings or run actions.
 
 Source `470f4b0991c84be64ebe57eeebf9ca619fed3e0d` passed Windows/Linux Check `42608461071`; publication `42608706677`, SHA-256 `074f26de07020dd22adb522d2785915370a0823bcb15497848053aa8a7117b82`. Full source/hidden checks and actual released 2.0.1-to-2.0.2 upgrades passed in packaged Companion 1.3.1. The idle/off-stream production update restarted only Phone Deck and preserved exact protected-data hashes, host preferences and OBS state; both connections remain healthy. No real effect or connection reset was used. Open pages were not reloaded; save/discard an older draft before refreshing. This is an installed Session 6 repair; Session 7 is not started and the count stays 21/24.
+
+## Session 7 checkpoint — November 13, 2026
+
+Spotify 2.0.3 contributes Resume/Pause/Toggle, Next/Previous, a bounded whole-percent volume input/preset and playback status through its own narrow loopback/CSRF service API. It uses existing private credentials/device settings, changes no playlists/scene configuration and retains complete native export data. Manual Pause/Resume releases current automation ownership/fades; manual volume cancels a fade. Commands remain Requested with independently read playback, never invented audible completion. A private persisted request ledger, serialized commands and intent-before-dispatch prevent duplicate replay after failure/restart.
+
+Source Modules 1.0.1 contributes a saved-rule/mode picker using exact native rule keys. Only mode changes; saved scenes, extra fields and other rules survive. Existing four action IDs/triggers/wrappers remain; only the engine changes. Scoped writes serialize with Save/Initialize and matching terminal results survive later state updates. An old engine cannot enable these controls: phoneDeckVersion 1 is required. Existing installations must back up/reimport the updated Source Modules actions and run Initialize before using the new cards. No production import/restart is part of this provider session.
+
+Full source/C# checks and hidden desktop/phone acceptance pass: actual Spotify runtime in explicit synthetic mode, security/validation, durable duplicates/lost outcomes, failed persistence, old engines/missing rules/stopped owners, matching native completion, Requested Spotify commands, preserved volume/editor drafts/focus/scroll and independent OBS. Hash-verified preceding releases prove identical Spotify native data and Source Modules engine-only changes. Publication and actual released-package upgrades are recorded separately after completion.
+
+Local candidates: dist/modules/spotify-2.0.3.streammodule and dist/modules/source-modules-1.0.1.streammodule. Phone Deck remains 2.0.2; Companion remains 1.3.1. No existing cards are added/changed, no production settings, pairing/TLS or listeners are changed, and no real playback/OBS/chat action is used. Stop after this session. Session 8 is Cameras, Reactive and explicit saved Scene Links application; do not repeat accepted physical-camera checks. The feature count remains 21/24.

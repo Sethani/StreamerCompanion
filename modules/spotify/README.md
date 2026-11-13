@@ -4,7 +4,7 @@ Provides Spotify playback, countdown fading, scene-owned music, `!song`, `!playl
 
 ## Requirements
 
-- Streaming Companion 1.0 or newer.
+- Companion 1.3.1 or newer.
 - Streamer.bot with its WebSocket server enabled on `127.0.0.1:8080`.
 - A Spotify application and a Spotify account capable of remote playback control.
 - Chat Routing for viewer-facing command responses and announcements.
@@ -30,3 +30,11 @@ Configured scenes start music only when playback is not already active. Music is
 ## Data and updates
 
 Spotify client credentials, refresh tokens, device IDs, playlists, and scene settings are stored in Companion's private `module-data/spotify` directory. They are not included in the module package or exposed by health responses. Module updates replace code without overwriting private configuration.
+
+## Optional Phone Deck controls
+
+Version 2.0.3 contributes Resume, Pause, Play/pause, Next, Previous, a volume input, volume presets and a playback-status widget. Add cards explicitly using Module action or the module input/widget picker. No cards are added automatically, and Phone Deck is not required to use Spotify Music.
+
+The service must be running and authorized. The phone uses the existing device setting and server-side credentials; it cannot change credentials, playlists or scene bindings. Manual Resume continues the current Spotify context instead of starting the configured countdown playlist. Manual Pause/Resume releases the service's current scene/countdown ownership and fade; a manual volume request cancels the active fade. Saved automation settings remain intact. Next/Previous retain the current automation ownership.
+
+Commands show **Requested** after Spotify accepts the API request. The widget independently reads playback, track, artist and volume; it does not prove audible output. No automatic mutation retry occurs. The owner stores recent request IDs privately to prevent duplicate dispatch after a lost response or service restart. Its narrow `/api/spotify/phone-deck/` endpoints enforce exact loopback Host/Origin and a session CSRF token. Existing native exports are unchanged; no Streamer.bot reimport is needed for this patch.

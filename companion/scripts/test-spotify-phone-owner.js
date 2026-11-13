@@ -1,0 +1,20 @@
+'use strict';
+const assert=require('node:assert/strict'),http=require('node:http'),make=require('../../modules/spotify/service/phone-deck');
+async function main(){let owner,records={},writes=0,failSave=false,failExecute=false,configured=true;
+ const server=http.createServer(async(req,res)=>{try{await owner(req,res,new URL(req.url,'http://localhost'),(r,c,p)=>{r.writeHead(c,{'Content-Type':'application/json'});r.end(JSON.stringify(p));});}catch{res.writeHead(503);res.end('{}');}});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port,base='http://127.0.0.1:'+port;
+ function restart(){owner=make({port,configured:()=>configured,playback:async()=>({playing:false,volume:50}),execute:async()=>{writes++;if(failExecute)throw Error('synthetic');},read:()=>JSON.parse(JSON.stringify(records)),write:r=>{if(failSave)throw Error();records=JSON.parse(JSON.stringify(r));}});}restart();
+ const api=(path,body,headers={})=>fetch(base+'/api/spotify/phone-deck/'+path,{method:body?'POST':'GET',headers:{Origin:base,...headers},body:body&&JSON.stringify(body)});
+ try{let state=await (await api('state')).json();assert.equal(state.available,true);const csrf={'X-Companion-CSRF':state.csrf};
+ const body={command:'next',requestId:'same-id'};assert.equal((await api('control',body)).status,403);
+ assert.equal((await api('control',body,{...csrf,Origin:'http://example.test'})).status,403);
+ assert.equal((await api('state',undefined,{'Sec-Fetch-Site':'cross-site'})).status,403);
+ const badHost=await new Promise((resolve,reject)=>{const r=http.get(base+'/api/spotify/phone-deck/state',{headers:{Host:'example.test'}},res=>{res.resume();res.on('end',()=>resolve(res.statusCode));});r.on('error',reject);});assert.equal(badHost,403);
+ for(const invalid of [{command:'volume',volume:-1},{command:'volume',volume:101},{command:'volume',volume:1.5},{command:'next',volume:1},{command:'arbitrary'},{command:'next',url:'http://example.test'}])assert.equal((await api('control',{requestId:'invalid',...invalid},csrf)).status,400);
+ assert.equal(writes,0);const concurrent=await Promise.all([api('control',body,csrf),api('control',body,csrf)]);assert.ok(concurrent.every(r=>r.status===200));assert.equal(writes,1);
+ assert.equal((await api('control',{...body,command:'previous'},csrf)).status,409);restart();state=await(await api('state')).json();csrf['X-Companion-CSRF']=state.csrf;assert.equal((await api('control',body,csrf)).status,200);assert.equal(writes,1,'Restart must not replay an accepted next');
+ failSave=true;assert.equal((await api('control',{command:'pause',requestId:'save-fails'},csrf)).status,503);assert.equal(writes,1);failSave=false;failExecute=true;assert.equal((await api('control',{command:'pause',requestId:'lost'},csrf)).status,502);failExecute=false;assert.equal((await api('control',{command:'pause',requestId:'lost'},csrf)).status,409);assert.equal(writes,2);
+ configured=false;assert.equal((await(await api('state')).json()).available,false);assert.equal((await api('control',{command:'resume',requestId:'unconfigured'},csrf)).status,503);assert.equal(writes,2);
+ console.log('Spotify scoped owner: strict fields/volume, Host/Origin/CSRF, serialized duplicate/concurrent requests, persisted no-replay after restart/loss, failed persistence and unavailable setup passed.');
+ }finally{server.closeAllConnections();await new Promise(r=>server.close(r));}}
+main().catch(e=>{console.error(e.stack);process.exitCode=1;});

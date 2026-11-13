@@ -2,7 +2,7 @@
   "meta": {
     "name": "Source Modules",
     "author": "Sethani",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Shared overlay scene routing",
     "autoRunAction": null,
     "minimumVersion": null

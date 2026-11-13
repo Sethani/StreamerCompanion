@@ -379,9 +379,40 @@ function tickOwnership() {
 function json(response, code, payload) { const body = Buffer.from(JSON.stringify(payload)); response.writeHead(code, { "Content-Type": "application/json", "Content-Length": body.length, "Cache-Control": "no-store" }); response.end(body); }
 function text(response, code, payload) { const body = Buffer.from(String(payload)); response.writeHead(code, { "Content-Type": "text/plain; charset=utf-8", "Content-Length": body.length }); response.end(body); }
 
+const phoneDeck = require('./phone-deck')({
+  port, configured,
+  read: () => {
+    const file=path.join(dataDirectory,'phone-deck-operations.json');
+    if(!fs.existsSync(file))return {};
+    const records=JSON.parse(fs.readFileSync(file,'utf8'));
+    if(!records||Array.isArray(records)||typeof records!=='object')throw Error('Operation history is unreadable.');
+    return records;
+  },
+  write: records => writeJson(path.join(dataDirectory, 'phone-deck-operations.json'), records),
+  playback: async () => {
+    if (testMode) return {playing:testPlayback.isPlaying, track:'Test Track', artist:'Test Artist', volume:testPlayback.volume};
+    const response = await spotifyRequest('/me/player');
+    if (response.status===204) return {playing:false, track:'', artist:'', volume:null};
+    const p = await response.json();
+    return {playing:Boolean(p.is_playing), track:String(p.item?.name||'').slice(0,500),
+      artist:(p.item?.artists||[]).map(a=>a.name).join(', ').slice(0,500), volume:p.device?.volume_percent??null};
+  },
+  execute: async ({command, volume}) => {
+    if (command==='toggle') command=(await playbackState()).isPlaying?'pause':'resume';
+    const settings=config(), query=settings.deviceId?'?'+new URLSearchParams({device_id:settings.deviceId}):'';
+    if (command==='volume') { await setVolume(volume); runtime.fade=null; return; }
+    if (command==='pause') await pausePlayback();
+    else if (testMode) { if(command==='resume'){testPlayback.isPlaying=true;testPlayback.startCount++;} }
+    else await spotifyRequest('/me/player/'+({resume:'play',next:'next',previous:'previous'}[command])+query,
+      {method:command==='resume'?'PUT':'POST'});
+    if (command==='resume'||command==='pause') {runtime.fade=null;runtime.sceneSession=null;runtime.playbackSession=null;}
+  }
+});
+
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, "http://127.0.0.1:" + port);
   try {
+    if (await phoneDeck(request,response,url,json)) return;
     if (request.method === "GET" && ["/health", "/api/spotify/state"].includes(url.pathname)) return json(response, 200, status());
     if (request.method === "GET" && url.pathname === "/api/spotify/scene") return json(response, 200, await handleScene(url.searchParams.get("scene")));
     if (request.method === "GET" && url.pathname === "/api/spotify/config") {
