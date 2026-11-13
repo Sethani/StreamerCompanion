@@ -11,7 +11,7 @@ async function waitFor(check, label) { const deadline = Date.now() + 10000; whil
 async function main() {
   await app.whenReady(); buildModules(["pokemon-encounters"], { output: path.join(temporary, "packages") });
   const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") });
-  const staged = registry.stage(path.join(temporary, "packages/pokemon-encounters-1.7.0.streammodule")); registry.commit(staged); registry.finalize(staged);
+  const staged = registry.stage(path.join(temporary, "packages/pokemon-encounters-1.7.1.streammodule")); registry.commit(staged); registry.finalize(staged);
   test = await fixture(temporary, path.join(registry.moduleDirectory("pokemon-encounters"), "service/pokemon-runtime.js"));
   const settings = hiddenWindow(), overlay = hiddenWindow();
   await settings.loadURL(test.base + "/pokemon/settings"); await overlay.loadURL(test.base + "/pokemon/overlay");
@@ -42,6 +42,9 @@ async function main() {
   await control("document.getElementById('test-name').value='Unidentified Ghost';document.getElementById('test').click()");
   await waitFor(() => view("document.getElementById('name').textContent==='Unidentified Ghost' && getComputedStyle(document.querySelector('.mystery-art')).display==='grid'"), "mystery fallback design");
   assert.equal(test.requests.length, 2, "All artwork lookups are synthetic and cached; mystery uses no network");
+  await control("document.getElementById('test-name').value='Sawsbuck (Summer)';document.getElementById('test').click()");
+  await waitFor(() => view("document.getElementById('name').textContent==='Sawsbuck (Summer)' && !document.getElementById('layer').classList.contains('idle') && document.getElementById('art').complete && document.getElementById('art').naturalWidth>0"), "cosmetic form artwork reaches overlay");
+  assert.equal(await view("document.querySelectorAll('#types img').length"), 2);
   assert.ok(windows.every(window => !window.isVisible()));
   console.log("Hidden Pokemon UI passed: original transparent card/type/ball design, settings, synthetic artwork/cache, live encounter/throw/clear and mystery rendering.");
 }

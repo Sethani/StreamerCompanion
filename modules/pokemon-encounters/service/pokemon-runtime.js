@@ -32,11 +32,23 @@ async function resolvePokemon(name, slugInput = "") {
   const metadataFile = path.join(cacheDirectory, variantKey + ".json");
   let metadata = readJson(metadataFile, null);
   if (!metadata || metadata.cacheVersion !== 3 || !Array.isArray(metadata.types)) {
-    const response = await fetcher("https://pokeapi.co/api/v2/pokemon/" + encodeURIComponent(slug));
+    let response = await fetcher("https://pokeapi.co/api/v2/pokemon/" + encodeURIComponent(slug));
+    let form = null;
+    if (response.status === 404) {
+      const formResponse = await fetcher("https://pokeapi.co/api/v2/pokemon-form/" + encodeURIComponent(slug));
+      if (formResponse.status !== 404 && !formResponse.ok) throw new Error("PokeAPI form lookup failed (HTTP " + formResponse.status + ").");
+      if (formResponse.ok) {
+        form = await formResponse.json();
+        const baseName = form.pokemon?.name;
+        if (typeof baseName !== "string" || !/^[a-z0-9-]+$/.test(baseName)) throw new Error("PokeAPI form has no valid base Pokemon.");
+        response = await fetcher("https://pokeapi.co/api/v2/pokemon/" + encodeURIComponent(baseName));
+      }
+    }
     if (response.status === 404) throw new Error("No Pokemon was found for \"" + requestedName + "\".");
     if (!response.ok) throw new Error("PokeAPI lookup failed for " + requestedName + " (HTTP " + response.status + ").");
     const payload = await response.json();
-    const sprites = payload.sprites || {};
+    // Cosmetic forms own their artwork; their linked Pokemon owns types/stats.
+    const sprites = (form ? form.sprites : payload.sprites) || {};
     const latest = sprites.versions?.["generation-ix"]?.["scarlet-violet"] || {};
     const home = sprites.other?.home || {};
     const official = sprites.other?.["official-artwork"] || {};

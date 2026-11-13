@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "pokemon-encounters",
   "name": "Pokemon Encounters",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Shows Pokemon Community Game encounters, type icons, and animated viewer ball throws.",
   "documentation": "README.md",
   "streamerbot": {

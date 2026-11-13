@@ -1,6 +1,8 @@
 # Pokemon Encounters
 
-Version 1.7.0. Shows genuine Pokemon Community Game encounters using the existing green-bordered card, artwork/type symbols, countdown and animated viewer ball throws. The service is independent of the personal monolith. First-party code is MIT, author Sethani.
+Version 1.7.1. Shows genuine Pokemon Community Game encounters using the existing green-bordered card, artwork/type symbols, countdown and animated viewer ball throws. The service is independent of the personal monolith. First-party code is MIT, author Sethani.
+
+Cosmetic forms such as Sawsbuck (Summer) resolve through PokeAPI's `pokemon-form` endpoint when the regular Pokemon endpoint returns 404. Artwork comes from the requested form, including shiny artwork; types come from its linked Pokemon. Existing successful lookups and caches remain unchanged. Native actions are unchanged, so this update requires no Streamer.bot reimport.
 
 ## Assets and notices
 

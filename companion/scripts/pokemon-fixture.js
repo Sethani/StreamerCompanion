@@ -6,8 +6,14 @@ async function fixture(directory, runtimePath) {
   const service = createService({ port: 0, dataDirectory: path.join(directory, "data"), fetch: async (address) => {
     requests.push(address);
     if (address === "https://synthetic.invalid/art.png") return new Response(png);
+    if (address === "https://synthetic.invalid/summer.png" || address === "https://synthetic.invalid/summer-shiny.png") return new Response(png);
+    if (String(address).startsWith("https://pokeapi.co/api/v2/pokemon-form/")) {
+      if (!String(address).endsWith("/sawsbuck-summer")) return new Response("Not found", {status:404});
+      return new Response(JSON.stringify({name:"sawsbuck-summer",pokemon:{name:"sawsbuck"},sprites:{other:{"official-artwork":{front_default:"https://synthetic.invalid/summer.png",front_shiny:"https://synthetic.invalid/summer-shiny.png"}}}}));
+    }
     if (!String(address).startsWith("https://pokeapi.co/api/v2/pokemon/")) throw new Error("Unexpected fixture network request");
     const slug = String(address).split("/").at(-1);
+    if (["sawsbuck-summer", "missing-form"].includes(slug)) return new Response("Not found", {status:404});
     return new Response(JSON.stringify({ id: 13, name: slug, sprites: { other: { "official-artwork": { front_default: "https://synthetic.invalid/art.png", front_shiny: "https://synthetic.invalid/art.png" } } }, types: [{ slot: 1, type: { name: "bug", url: "https://pokeapi.co/api/v2/type/7/" } }, { slot: 2, type: { name: "poison", url: "https://pokeapi.co/api/v2/type/4/" } }] }));
   } });
   const port = await service.start();
