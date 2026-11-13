@@ -34,7 +34,7 @@ async function fixture(root, packageFile) {
   websocket.on('connection', socket => socket.on('message', raw => {
     const request = JSON.parse(raw); let response = {};
     if (request.request === 'GetActions') response.actions = catalog.modules.flatMap(item => item.streamerbot.requiredActions).map(name => ({ name }));
-    else if (request.request === 'GetGlobals') response.variables = [...globals].map(([variableName, value]) => ({ variableName, value }));
+    else if (request.request === 'GetGlobal') response.variables = { [request.variable]: { name: request.variable, value: globals.get(request.variable) } }; else if (request.request === 'GetGlobals') response.variables = [...globals].map(([variableName, value]) => ({ variableName, value }));
     else if (request.request === 'DoAction') action(request.action.name, request.args || {});
     else if (request.request !== 'Subscribe') throw Error('Unexpected fixture request: ' + request.request);
     socket.send(JSON.stringify({ id: request.id, status: 'ok', ...response }));

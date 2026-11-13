@@ -9,7 +9,7 @@ async function fixture(root,Host=CompanionHost){
  publish(payload);
  websocket.on('connection',socket=>socket.on('message',raw=>{const request=JSON.parse(raw);let response={};
   if(request.request==='GetActions')response.actions=actions.map(name=>({name}));
-  else if(request.request==='GetGlobals')response.variables=[...globals].map(([name,value])=>({name,value}));
+  else if (request.request === 'GetGlobal') response.variables = { [request.variable]: { name: request.variable, value: globals.get(request.variable) } }; else if(request.request==='GetGlobals')response.variables=[...globals].map(([name,value])=>({name,value}));
   else if(request.request==='Subscribe'){}
   else if(request.request==='DoAction'){
    calls.push(request);const name=request.action.name;
