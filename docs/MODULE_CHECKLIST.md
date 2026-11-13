@@ -1,6 +1,6 @@
 # Module migration checklist
 
-Updated November 13, 2026. **21 of 24 required feature areas implemented; 3 still to migrate.**
+Updated November 14, 2026. **21 of 24 required feature areas implemented; 3 still to migrate.**
 
 Checked means the replacement is implemented and published/installed/imported as applicable. Remaining acceptance and retirement work is listed separately below. This counts feature areas, not package files; going-live bookkeeping is deliberately retained as a private native hook.
 
@@ -20,7 +20,7 @@ Checked means the replacement is implemented and published/installed/imported as
 - [x] Reactive Guests — user completed live acceptance
 - [x] Redeem Checklist
 - [x] Reminders — dock list and chat lookup
-- [x] Scene Links — use 2.0.2
+- [x] Scene Links — native cutover accepted; 2.0.3 optional Phone Deck controls published
 - [x] Shoutout Clips — core player/command accepted; optional AI text belongs to the Ollama migration below
 - [x] Spotify Music
 - [x] Stream Launch
@@ -31,12 +31,12 @@ Checked means the replacement is implemented and published/installed/imported as
 ## To do: remaining migration
 
 - [ ] **Embedded widgets, including Tangia.** Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
-- [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay.
+- [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay. Add optional colour changes on bounce and image selection/upload.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
 
 ## Remaining acceptance and final switch
 
-Phone Deck Sessions 1–6 are complete, including the published/installed 2.0.1 navigation correction, backed-up legacy ownership handoff, unchanged pairing/TLS/layout/preferences and restored off-stream mute acceptance. The operator confirmed the existing handset connects without re-pairing. Later optional Phone Deck contributions are separate passes: **Session 7** is complete with published/upgrade-verified Spotify 2.0.3 and Source Modules 1.0.1 providers (production update/import pending); **Session 8 next** adds Cameras/Reactive/Scene Links. Source Modules needs a backed-up native reimport/Initialize before phone controls enable. See the [12-session checkpoints](phone-deck-sessions.md). Keep the old server for the three remaining migrations; do not repeat accepted Cameras/Reactive live checks.
+Phone Deck Sessions 1–8 are complete. The backed-up ownership handoff preserved pairing/TLS/layout/preferences, passed restored off-stream mute acceptance, and the operator confirmed the existing handset connects. Phone Deck 2.0.3 includes the installed startup/connection repair. Session 7 providers are published/upgrade-verified; Spotify is now installed at 2.0.4, while Source Modules 1.0.1 still requires a backed-up native reimport/Initialize if not adopted. Session 8 publishes Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 contributions with unchanged native data; adopt via explicit Catalogue updates and add cards manually. Session 9 is next: Named Timers, Reminders and Redeem Checklist. See the [12-session checkpoints](phone-deck-sessions.md). Keep the old server for the three remaining migrations; do not repeat accepted Cameras/Reactive live checks.
 
 - [ ] Observe one normal viewer first-chat/repeated-chat sequence with Walk Ons 2.1.1: one entrance per stream, with reset permitting the next entrance. Synthetic and controlled playback checks already pass.
 - [ ] After the three migrations above, audit remaining local URLs/callers and rehearse the complete workflow with the old repository server stopped, with rollback available.

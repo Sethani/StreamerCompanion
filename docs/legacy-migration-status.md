@@ -48,3 +48,7 @@ The following entries were inventoried from personal public/modules/registry.jso
 5. Rehearse the full selected workflow with the old server stopped and a rollback available; only then retire its startup/routes.
 
 No production actions, streams, games, chat messages or settings were changed by this audit. Test evidence and published module results are recorded in VALIDATION.md. The public repository contains no personal state, reminders, globals dump, credential or history export.
+
+## Phone Deck Session 8 — November 14, 2026
+
+Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 are published and release-upgrade verified. They add optional phone controls over unchanged native action data, preserving the accepted owners, private mappings/roster and automatic camera/scene behavior. Production package updates are explicit Catalogue operations; this session performed no installation, native import/restart or physical-camera acceptance. See phone-deck-sessions.md for the complete verification/release checkpoint.
