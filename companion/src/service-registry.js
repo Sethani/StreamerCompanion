@@ -7,6 +7,8 @@ class ServiceRegistry {
     this.services = new Map();
     this.configPath = options.configPath || "";
     this.config = { schemaVersion: 1, autoStart: {} };
+    this.pendingAutomatic = new Set();
+    this.automaticStarted = false;
     this.loadConfig();
   }
 
@@ -61,12 +63,16 @@ class ServiceRegistry {
     const optional = dependencies.optionalCapabilities || [];
     const moduleState = service.manifest.installedModule && this.moduleStates?.get(service.manifest.id);
     const moduleProblem = moduleState && ["broken", "incompatible", "missing-dependency"].includes(moduleState.state) ? [moduleState.problem] : [];
-    const missingRequired = [...required.filter((capability) => !provided.has(capability)), ...moduleProblem];
+    const unavailable = required.filter((capability) => !provided.has(capability));
+    const waitingRequired = unavailable.filter(capability => capability === "streamerbot-websocket" || [...this.services.values()].some(s => (s.manifest.provides || []).includes(capability)));
+    if (moduleState && ["verification-unavailable","dependency-unavailable"].includes(moduleState.state)) waitingRequired.push(moduleState.problem);
+    const missingRequired = [...unavailable.filter(c => !waitingRequired.includes(c)), ...moduleProblem];
     return {
-      ready: missingRequired.length === 0,
+      ready: missingRequired.length === 0 && waitingRequired.length === 0,
       required,
       optional,
       missingRequired,
+      waitingRequired,
       missingOptional: optional.filter((capability) => !provided.has(capability))
     };
   }
@@ -85,11 +91,12 @@ class ServiceRegistry {
     if (!service) throw new Error("Unknown Companion service: " + id);
     const dependencies = this.dependencyState(service);
     if (["start", "restart"].includes(action) && !dependencies.ready) {
-      throw new Error("Missing required capabilities: " + dependencies.missingRequired.join(", "));
+      throw new Error(dependencies.missingRequired.length ? "Missing required capabilities: " + dependencies.missingRequired.join(", ") : "Waiting for: " + dependencies.waitingRequired.join(", "));
     }
     if (!["start", "stop", "restart"].includes(action) || typeof service[action] !== "function") {
       throw new Error("Unsupported service action: " + action);
     }
+    this.pendingAutomatic.delete(id);
     await service[action]();
     return this.list();
   }
@@ -97,6 +104,8 @@ class ServiceRegistry {
   async setAutoStart(id, enabled) {
     if (!this.services.has(id)) throw new Error("Unknown Companion service: " + id);
     this.config.autoStart[id] = Boolean(enabled);
+    if (enabled && this.automaticStarted) this.pendingAutomatic.add(id);
+    else if (!enabled) this.pendingAutomatic.delete(id);
     this.saveConfig();
     return this.list();
   }
@@ -109,6 +118,7 @@ class ServiceRegistry {
 
   async startAll(options = {}) {
     const automaticOnly = Boolean(options.automaticOnly);
+    if (automaticOnly) { this.automaticStarted = true; for (const id of this.services.keys()) if (this.config.autoStart[id]) this.pendingAutomatic.add(id); return this.reconcileAutomatic(); }
     const results = [];
     for (const [id, service] of this.services) {
       if (automaticOnly && !this.config.autoStart[id]) continue;
@@ -119,7 +129,23 @@ class ServiceRegistry {
     return automaticOnly ? results : this.list();
   }
 
+  async reconcileAutomatic() {
+    if(this.reconciling)return this.reconciling;
+    const work=async()=>{for(const id of [...this.pendingAutomatic]){
+      if(!this.pendingAutomatic.has(id))continue;
+      const service=this.services.get(id);
+      if(!service||!this.config.autoStart[id]){this.pendingAutomatic.delete(id);continue;}
+      if(service.process||service.status==='running'||service.status==='starting'){this.pendingAutomatic.delete(id);continue;}
+      if(!this.dependencyState(service).ready)continue;
+      // Retry availability, never repeatedly restart a failed/conflicting child.
+      this.pendingAutomatic.delete(id);
+      await service.start().catch(()=>{});
+    }};
+    this.reconciling=work().finally(()=>{this.reconciling=null;});return this.reconciling;
+  }
+
   async stopAll() {
+    this.pendingAutomatic.clear();
     await Promise.allSettled(Array.from(this.services.values(), (service) => service.stop()));
     return this.list();
   }

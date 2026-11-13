@@ -70,10 +70,19 @@
         this.pending.set(id, { resolve, reject, timer }); this.socket.send(JSON.stringify({ request, id, ...body }));
       });
     }
-    async refresh() {
+    async refresh(feature) {
       if (this.refreshing) return this.refreshing;
       this.refreshing = (async () => {
         await this.registry();
+        if (feature) {
+          const module = this.features.get(feature);
+          if (!module) return;
+          const key = module.transport.stateKey;
+          const response = await this.request("GetGlobal", { variable: key, persisted: true });
+          const value = Array.isArray(response.variables) ? response.variables.find(v => v.name === key)?.value : response.variables?.[key]?.value;
+          this.apply(value);
+          return;
+        }
         const response = await this.request("GetGlobals", { persisted: true });
         const values = response.variables || response.globals || response.data?.variables || response.data?.globals || [];
         for (const module of this.features.values()) {

@@ -92,8 +92,8 @@ async function main() {
     zip.deleteFile("web/video/index.html"); manifest.version = "2.2.3"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); zip.writeZip(upgrade);
     await assert.rejects(host.installModulePackage(upgrade), /Browser page/); assert.equal(host.registry.readManifest("video").version, "2.2.2"); assert.equal(host.webAssets.listMedia("video").length, 1);
     test.setActions([]);
-    const pending = await host.listModules(); assert.equal(pending.modules.find((item) => item.id === "source-modules").state, "streamerbot-required"); assert.equal(pending.modules.find((item) => item.id === "video").state, "missing-dependency");
-    assert.equal((await fetch(base + "/api/public/assets/video/video/index.html")).status, 409);
+    const pending = await host.listModules(); assert.equal(pending.modules.find((item) => item.id === "source-modules").state, "streamerbot-required"); assert.equal(pending.modules.find((item) => item.id === "video").state, "streamerbot-required");
+    assert.equal((await fetch(base + "/api/public/assets/video/video/index.html")).status, 200);
     test.setActions(test.allActions);
     fs.renameSync(host.registry.moduleDirectory("universal-dock"), path.join(temporary, "removed-dock"));
     assert.equal((await host.moduleState()).states.get("video").state, "missing-dependency");

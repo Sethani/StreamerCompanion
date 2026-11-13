@@ -291,6 +291,7 @@ async function handleScene(sceneName) {
     return { status: "preserved-existing-playback", scene, ownsPlayback: false };
   }
   const binding = bindingFor(settings, scene) || {};
+  if (binding.autoplayOnEnter === false) return { status: "scene-autoplay-disabled", scene };
   if (binding.playlist) settings.playlist = binding.playlist;
   if (binding.startVolume !== "" && binding.startVolume !== undefined) settings.startVolume = binding.startVolume;
   if (binding.normalVolume !== "" && binding.normalVolume !== undefined) settings.onStreamVolume = binding.normalVolume;
@@ -440,7 +441,8 @@ const server = http.createServer(async (request, response) => {
         startVolume: entry.startVolume === "" || entry.startVolume == null ? "" : Math.round(clamp(entry.startVolume, 0, 100, 50)),
         normalVolume: entry.normalVolume === "" || entry.normalVolume == null ? "" : Math.round(clamp(entry.normalVolume, 0, 100, 20)),
         fadeSeconds: entry.fadeSeconds === "" || entry.fadeSeconds == null ? "" : Math.round(clamp(entry.fadeSeconds, 0, 3600, 30)),
-        leaveBehavior: entry.leaveBehavior === "keep" ? "keep" : "pause"
+        leaveBehavior: entry.leaveBehavior === "keep" ? "keep" : "pause",
+        autoplayOnEnter: entry.autoplayOnEnter !== false
       })).filter((entry) => entry.scene).slice(0, 50);
       settings.sceneAutomation = {
         enabled: Boolean(input.enabled),

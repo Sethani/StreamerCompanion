@@ -23,8 +23,8 @@ class ObsClient extends EventEmitter {
     const inputMutes={},names=inputs.inputs.map(i=>i.inputName).filter(n=>typeof n==='string');
     for(let offset=0;offset<names.length;offset+=4)await Promise.all(names.slice(offset,offset+4).map(async inputName=>{try{const v=await this.request('GetInputMute',{inputName});if(typeof v.inputMuted==='boolean')inputMutes[inputName]=v.inputMuted;}catch{}}));
     if(generation!==this.generation||!this.identified)return;
-    this.state={connected:true,error:'',currentScene:scenes.currentProgramSceneName,scenes:scenes.scenes.map(s=>s.sceneName),inputs:Object.keys(inputMutes),inputMutes,streamActive:stream.outputActive,recording:record.outputActive,common:this.state.common||controls.empty()};
-   }catch{if(generation!==this.generation)return;this.state=this.empty('OBS inventory is unavailable.');}
+    this.readFailures=0;this.state={connected:true,error:'',currentScene:scenes.currentProgramSceneName,scenes:scenes.scenes.map(s=>s.sceneName),inputs:Object.keys(inputMutes),inputMutes,streamActive:stream.outputActive,recording:record.outputActive,common:this.state.common||controls.empty()};
+   }catch(error){if(generation!==this.generation)return;this.state=this.empty('OBS inventory is unavailable.');if(!/timed out|disconnected|socket|network/i.test(error.message))this.readFailures=-1;if((this.readFailures=(this.readFailures||0)+1)>=2&&!this.closed){this.readFailures=0;this.disconnect();this.connect();return;}}
    this.emit('state',this.state);
    })();
    const tracked=work.finally(()=>{if(this.refreshing===tracked)this.refreshing=null;});this.refreshing=tracked;

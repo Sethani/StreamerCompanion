@@ -52,6 +52,12 @@ class CompanionHost {
   }
 
   async moduleState() {
+    if(this.refreshingState)return this.refreshingState;
+    this.refreshingState=this.readModuleState().finally(()=>{this.refreshingState=null;});
+    return this.refreshingState;
+  }
+
+  async readModuleState() {
     const state = await this.registry.refresh();
     if (state.streamerBot.connected) this.services.systemCapabilities.add("streamerbot-websocket");
     else this.services.systemCapabilities.delete("streamerbot-websocket");
@@ -82,6 +88,20 @@ class CompanionHost {
     this.registerInstalledServices();
     this.controlApi.start();
   }
+
+  async startAutomaticServices() {
+    if(this.automaticStopped)return;
+    await this.availableCapabilities();
+    if(this.automaticStopped)return;
+    await this.services.startAll({automaticOnly:true});
+    this.startupTimer=setInterval(()=>{
+      if(this.startupTick)return;
+      this.startupTick=this.availableCapabilities().then(()=>{if(!this.automaticStopped)return this.services.reconcileAutomatic();}).catch(()=>{}).finally(()=>{this.startupTick=null;});
+    },2000);
+    this.startupTimer.unref();
+  }
+
+  stopAutomaticServices() { this.automaticStopped=true;clearInterval(this.startupTimer);this.services.pendingAutomatic.clear(); }
 
   createInstalledService(manifest, directory) {
     const dataDirectory = path.join(this.dataDirectory, "module-data", manifest.id);

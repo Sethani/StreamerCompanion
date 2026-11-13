@@ -33,6 +33,20 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'stream-la
   const restarted=await get('/api/spotify/stream-start?durationSeconds=2');
   assert.equal(restarted.playback,'started');
   health=await get('/health');assert.equal(health.testPlayback.startCount,2);assert.equal(health.testPlayback.isPlaying,true);
+  // Scene entry and guided stream launch are independent controls.
+  const saved=JSON.parse(fs.readFileSync(path.join(data,'config.json')));
+  saved.sceneAutomation={enabled:true,bindings:[{scene:'Fixture Starting Soon',autoplayOnEnter:false,leaveBehavior:'pause'}]};
+  fs.writeFileSync(path.join(data,'config.json'),JSON.stringify(saved));
+  await spotify.stop();
+  process.env.SPOTIFY_TEST_MODE='1';try{await spotify.start();}finally{if(old===undefined)delete process.env.SPOTIFY_TEST_MODE;else process.env.SPOTIFY_TEST_MODE=old;}
+  await get('/api/spotify/test/playback?playing=false');
+  const starts=(await get('/health')).testPlayback.startCount;
+  assert.equal((await get('/api/spotify/scene?scene=Fixture%20Starting%20Soon')).status,'scene-autoplay-disabled');
+  assert.equal((await get('/health')).testPlayback.startCount,starts,'Opening Starting Soon must stay silent when entry autoplay is off');
+  await get('/api/spotify/stream-start?durationSeconds=10');
+  assert.equal((await get('/health')).testPlayback.startCount,starts+1,'Stream launch must still start the music');
+  await get('/api/spotify/scene?scene=Fixture%20Starting%20Soon');
+  assert.equal((await get('/health')).testPlayback.startCount,starts+1,'Duplicate scene notification must not restart music');
   await spotify.stop();assert.equal((await spotify.probe(200)).ready,false);
   console.log('Stream Launch package passed: preserved action identities, safe trigger/export boundaries, no private/monolith dependency, import/Ready states and no overlay/service. Spotify passed autonomous fade, shared scene/countdown ownership, and restart-after-manual-pause in isolated test mode.');
  }finally{await spotify?.stop();await test?.close();fs.rmSync(root,{recursive:true,force:true});}

@@ -1,5 +1,7 @@
 # Phone Deck
 
+Version 2.0.3 recovers failed initial page loads and offline navigation automatically. OBS and optional native connections are replaced after repeated transport read timeouts, including sockets that remain open but stop answering. Recovery reads state only; it never retries button actions or clears pairing/layout data.
+
 Phone Deck 2.0.2 provides independent OBS controls and an editable HTTPS handset deck for Companion 1.3.1. Basic OBS operation needs no feature module or Streamer.bot connection. Optional controls come from installed packages; installing a module never adds cards automatically.
 
 2.0.1 fixes opening the public page from a link or embedded settings. Private API requests still require the configured Host, same origin and CSRF token; unrelated origins cannot read or mutate private state. Existing layout, pairing and TLS identity are preserved.

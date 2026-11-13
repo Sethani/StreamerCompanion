@@ -36,15 +36,23 @@ function moduleStates(items, version, systemCapabilities, actions, connected) {
       if (["broken", "incompatible", "missing-dependency"].includes(current.state)) continue;
       const missing = Object.entries(manifest.dependencies?.modules || {}).filter(([dependency, range]) => {
         const installed = entries.get(dependency)?.manifest;
-        return !installed || !semver.satisfies(installed.version, range) || states.get(dependency).state !== "ready";
+        return !installed || !semver.satisfies(installed.version, range) || ["broken", "incompatible", "missing-dependency"].includes(states.get(dependency).state);
       }).map(([dependency, range]) => dependency + " " + range);
-      const facilities = Object.entries(manifest.dependencies?.capabilities || {}).filter(([capability, requirement]) => requirement === "required" && !capabilities.has(capability)).map(([capability]) => capability);
+      const facilities = Object.entries(manifest.dependencies?.capabilities || {}).filter(([capability, requirement]) => requirement === "required" && !capabilities.has(capability) && capability !== "streamerbot-websocket" && ![...entries.values()].some(item => provides(item.manifest).includes(capability))).map(([capability]) => capability);
       if (missing.length || facilities.length) {
         states.set(id, { id, state: "missing-dependency", problem: "Missing dependencies: " + [...missing, ...facilities].join(", ") + "." });
         changed = true;
       }
     }
     if (!changed) break;
+  }
+  // Installation/version failures are distinct from an installed owner waiting to run.
+  for (let pass=0;pass<entries.size;pass++) for(const [id,{manifest}] of entries) {
+    if(states.get(id).state!=="ready")continue;
+    const waiting=Object.keys(manifest.dependencies?.modules||{}).filter(dep=>states.get(dep)?.state!=="ready");
+    const required=manifest.dependencies?.capabilities||{};
+    if(required["streamerbot-websocket"]==="required"&&!connected)states.set(id,{id,state:"verification-unavailable",problem:"Streamer.bot is disconnected."});
+    else if(waiting.length)states.set(id,{id,state:"dependency-unavailable",problem:"Waiting for installed dependencies: "+waiting.map(dep=>entries.get(dep).manifest.name+" ("+states.get(dep).problem+")").join(", ")+"."});
   }
   const capabilities = new Set(systemCapabilities);
   for (const [id, { manifest }] of entries) if (states.get(id).state === "ready") for (const capability of provides(manifest)) capabilities.add(capability);

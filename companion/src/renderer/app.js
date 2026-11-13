@@ -1,6 +1,9 @@
 'use strict';
+// Navigation is restored from private screen preferences; Chromium must not
+// race that restoration with its own reload scroll position.
+history.scrollRestoration = 'manual';
 const $ = selector => document.querySelector(selector), N = CompanionNavigation;
-const labels = { ready: 'Ready', broken: 'Broken', incompatible: 'Incompatible Companion version', 'missing-dependency': 'Missing dependency', 'streamerbot-required': 'Streamer.bot confirmation needed', 'verification-unavailable': 'Verification unavailable', 'configuration-required': 'Configuration needed' };
+const labels = { ready: 'Ready', broken: 'Broken', incompatible: 'Incompatible Companion version', 'missing-dependency': 'Missing dependency', 'dependency-unavailable': 'Waiting for dependency', 'streamerbot-required': 'Streamer.bot confirmation needed', 'verification-unavailable': 'Verification unavailable', 'configuration-required': 'Configuration needed' };
 let saved = {}; try { saved = JSON.parse(localStorage.getItem('companion-navigation-v1')) || {}; } catch (_) {}
 const view = { tab: ['installed','catalogue','settings'].includes(saved.tab) ? saved.tab : 'installed', filters: saved.filters || {}, groups: saved.groups || {}, rows: saved.rows || {}, scroll: saved.scroll || {} };
 let initialized = false;
@@ -33,7 +36,7 @@ function updateInstalled(entry, item) {
   row.classList.toggle('service', Boolean(s)); if (s) row.dataset.serviceId = s.manifest.id;
   text(entry.badges, (labels[item.state] || item.state || '') + (state ? ' · ' + state.status : ''));
   entry.badges.classList.toggle('warning', N.attention(item));
-  const problem = item.error || item.problem || (item.missingActions?.length ? 'Missing Streamer.bot actions: ' + item.missingActions.join(', ') : '') || state?.error || (s && !s.dependencies.ready ? 'Missing: ' + s.dependencies.missingRequired.join(', ') : '') || (state?.endpoint?.configured === false ? 'Service configuration needed.' : '') || (state?.status === 'running' && state.endpoint?.ready === false ? 'Service endpoint unavailable.' : '') || (item.state === 'configuration-required' ? 'Configuration needed.' : '') || (item.state === 'verification-unavailable' ? 'Start Streamer.bot to verify this module.' : '');
+  const problem = item.error || item.problem || (item.missingActions?.length ? 'Missing Streamer.bot actions: ' + item.missingActions.join(', ') : '') || state?.error || (s && !s.dependencies.ready ? s.dependencies.missingRequired.length ? 'Missing: ' + s.dependencies.missingRequired.join(', ') : 'Waiting for: ' + (s.dependencies.waitingRequired || []).join(', ') : '') || (state?.endpoint?.configured === false ? 'Service configuration needed.' : '') || (state?.status === 'running' && state.endpoint?.ready === false ? 'Service endpoint unavailable.' : '') || (item.state === 'configuration-required' ? 'Configuration needed.' : '') || (item.state === 'verification-unavailable' ? 'Start Streamer.bot to verify this module.' : '');
   text(entry.problem, problem); entry.problem.hidden = !problem;
   slot(quick, 'controls', 'Open controls', () => window.companion.moduleLink(item.id, 'controls'), Boolean(item.ui?.nodeUrl));
   slot(quick, 'start', 'Start', () => serviceAction(s.manifest.id, 'start'), Boolean(s), Boolean(state?.pid) || state?.status === 'running' || !s?.dependencies.ready);
@@ -126,5 +129,6 @@ $('#copy-api-token').onclick = async () => { await window.companion.copyApiToken
 $('#rotate-api-token').onclick = async () => { if (window.confirm('Rotate the Companion API token? Existing local automation will stop working until updated.')) { await window.companion.rotateApiToken(); feedback('Companion API token rotated.'); } };
 window.companion.apiState().then(state => text($('#api-status'), 'Listening on 127.0.0.1:' + state.port + ' · token stored privately')).catch(() => {});
 selectTab(view.tab); window.addEventListener('scroll', () => { if (initialized) { view.scroll[view.tab] = window.scrollY; persist(); } }, {passive:true});
+window.addEventListener('beforeunload', () => { if(initialized){view.scroll[view.tab]=window.scrollY;persist();initialized=false;} });
 refresh().then(() => requestAnimationFrame(() => { window.scrollTo(0, view.scroll[view.tab] || 0); initialized = true; })).catch(error => feedback(error.message, true));
 window.setInterval(() => refresh().catch(error => feedback(error.message, true)), 3000);

@@ -45,8 +45,7 @@ function createDesktop(options) {
     if (options.registerServices) options.registerServices(host);
     host.start();
     await createWindow();
-    await host.availableCapabilities();
-    await services.startAll({ automaticOnly: true });
+    await host.startAutomaticServices();
   });
 
   app.on("window-all-closed", () => {
@@ -57,6 +56,7 @@ function createDesktop(options) {
     event.preventDefault();
     if (shuttingDown) return;
     shuttingDown = true;
+    host.stopAutomaticServices();
     Promise.allSettled([services.stopAll(), controlApi?.stop()]).finally(() => {
       quitAfterServices = true;
       app.quit();

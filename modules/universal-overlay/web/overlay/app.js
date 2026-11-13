@@ -1,6 +1,7 @@
 "use strict";
 const transport = StreamingTransport.create();
 let modules = [], routing = null, connected = false;
+let sceneRevisionFloor = -1;
 function render() {
   const wanted = new Map();
   for (const module of modules) {
@@ -14,8 +15,14 @@ function render() {
     const frame = document.createElement("iframe"); frame.dataset.module = id; frame.title = id; frame.src = url; frame.allow = "autoplay"; document.body.append(frame);
   }
 }
-transport.subscribe("moduleRouting", (event) => { routing = event.payload; render(); });
-transport.subscribe("connection", (health) => { connected = health.connected; if (!connected) routing = null; render(); });
-transport.subscribe("obs", (event) => { const scene = event.sceneName || event.scene; if (routing && typeof scene === "string") { routing.currentScene = scene; render(); } });
-async function refresh() { try { modules = (await StreamingModuleRegistry.load()).modules; render(); } catch (_) { modules = []; render(); } }
+transport.subscribe("moduleRouting", (event) => {
+  const scene = routing?.currentScene;
+  routing = structuredClone(event.payload);
+  if (scene && scene !== routing.currentScene && Number(event.revision) <= sceneRevisionFloor) routing.currentScene = scene;
+  else sceneRevisionFloor = Number(event.revision) || 0;
+  render();
+});
+transport.subscribe("connection", (health) => { connected = health.connected; if (!connected) { routing = null; sceneRevisionFloor = -1; } render(); });
+transport.subscribe("obs", (event) => { const scene = event.sceneName || event.newSceneName || event.name || event.scene; if (routing && typeof scene === "string") { sceneRevisionFloor = Number(transport.getState("moduleRouting")?.revision) || 0; routing.currentScene = scene; render(); } });
+async function refresh() { try { modules = (await StreamingModuleRegistry.load()).modules; await transport.refresh("moduleRouting"); render(); } catch (_) { modules = []; render(); } }
 transport.connect(); refresh(); setInterval(refresh, 3000);

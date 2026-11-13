@@ -84,7 +84,7 @@ async function main(){
  await run('window.scrollTo(0,350)');await new Promise(r=>setTimeout(r,100));
  assert.ok(Math.abs(await run('window.scrollY')-350)<1,'Fixture must scroll before testing restoration');
  await desktop.reload();await wait(()=>run("document.querySelectorAll('#modules .module').length>0"),'desktop reload');
- await wait(()=>run('Math.abs(window.scrollY-350)<1'),'restored scroll');
+ try{await wait(()=>run('Math.abs(window.scrollY-350)<1'),'restored scroll');}catch(error){console.log('Synthetic scroll diagnostics',await run("JSON.stringify({y:scrollY,height:document.documentElement.scrollHeight,saved:JSON.parse(localStorage.getItem('companion-navigation-v1')).scroll,view:view.scroll,initial:saved.scroll,tab:view.tab,restoration:history.scrollRestoration})"));throw error;}
  assert.equal(await run("document.querySelector('#tab-catalogue').getAttribute('aria-selected')"),'true');assert.equal(await run("document.querySelector('#catalogue-filter').value"),'not-installed');assert.equal(await run("document.querySelector('#installed-search').value"),'');
  assert.equal(effects,0,'Navigation/favorites must not invoke module actions');assert.equal(test.calls.length,0);assert.deepEqual(errors,[]);
  console.log('Hidden navigation acceptance passed: 120 modules, unified rows, search/filters/counts, focus/node/log persistence, folding, restored navigation, desktop/two-dock favorites, stable iframe and missing-selection recovery. No module action executed.');
