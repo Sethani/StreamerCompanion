@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 13, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. **21/24** required feature areas are implemented; Session 7 providers are published and verified; production updates/import remain a separate step. Session 8 is the next separate implementation pass.
+Updated November 13, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. Production now uses Companion 1.3.2 and Phone Deck 2.0.3 after the startup reliability repair; the contribution contract remains compatible with 1.3.1. **21/24** required feature areas are implemented; Session 7 providers are published and verified; production updates/import remain a separate step. Session 8 is the next separate implementation pass.
 
 ## Progress
 
@@ -21,9 +21,9 @@ Updated November 13, 2026. Implement **one bounded session per implementation tu
 
 ## Current local artifact
 
-Source is `modules/phone-deck/`. The current artifact is `dist/modules/phone-deck-2.0.2.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. This version is published in the module catalogue and installed/running in production. Companion remains 1.3.1.
+Source is `modules/phone-deck/`. The current artifact is `dist/modules/phone-deck-2.0.3.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. This version is published in the module catalogue and installed/running in production. Production Companion is now 1.3.2.
 
-The archive contains Sessions 1–6 plus the editor/status repair; SHA-256 `074f26de07020dd22adb522d2785915370a0823bcb15497848053aa8a7117b82`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical. Session 7 providers are now independently published; Sessions 8–12 remain later optional passes.
+The archive contains Sessions 1–6 plus the editor/status and startup-recovery repairs; SHA-256 `8856bef06d57f37c58593353e8c63e3053d1e47ef649a7edfe0c9b248cf44816`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical. Session 7 providers are now independently published; Sessions 8–12 remain later optional passes.
 
 ## Session 1 checkpoint
 
@@ -149,3 +149,7 @@ Published/local artifacts: dist/modules/spotify-2.0.3.streammodule and dist/modu
 Source 7ddd23e560f445d2aa420ae5c3c6bc63a661bf85 passed Windows/Linux Check 43438941820. Spotify 2.0.3 publication 43439204945, SHA-256 3a194aab174cf8459f9678bdac917e7847e9f247e701e0b317843f0451c038f0; Source Modules 1.0.1 publication 43439422944, SHA-256 132275b1b49e07fbfbf75baeb0d5c1e28cc7c2e8ab8aa9e3964197145050a13b. Both catalogue entries point to this source. Actual anonymous GitHub upgrades from Spotify 2.0.2 and Source Modules 1.0.0 passed inside packaged Companion 1.3.1: checksums, dependencies, private sentinel data, favorites, stopped/automatic-start preferences, action-name readiness and public contribution metadata. Complete Spotify native data is identical; Source Modules differs only in engine code. No HTTP 504 fallback was needed. The release fixture was corrected to expect one registered but stopped Spotify service; no runtime bytes changed. All isolated test processes were stopped.
 
 Session 7 stops here. Running production packages/actions/data/listeners were left unchanged. To adopt the additions, update Spotify and Source Modules from Catalogue; back up/reimport Source Modules actions, run Initialize and add desired cards explicitly. Spotify needs no native import. No Companion or Phone Deck update/re-pairing is needed. Session 8 is next, in its own turn.
+
+### Installed reliability follow-up
+
+Phone Deck 2.0.3 is published and installed with Companion 1.3.2. Explicit WebSocket error recovery, repeated transport-read recovery, initial bootstrap retries and offline navigation recovery preserve commands, data/pairing/TLS and drafts. See [the live-stream repair record](startup-reliability-repair.md). Spotify is now 2.0.4. Session 8 remains next; these repairs do not implement another provider session.
