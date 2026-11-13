@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 13, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. **21/24** required feature areas are implemented; Session 7 provider candidates are verified; publication is pending. Session 8 is the next separate implementation pass.
+Updated November 13, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. **21/24** required feature areas are implemented; Session 7 providers are published and verified; production updates/import remain a separate step. Session 8 is the next separate implementation pass.
 
 ## Progress
 
@@ -12,7 +12,7 @@ Updated November 13, 2026. Implement **one bounded session per implementation tu
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
 | 5 | Complete; all three providers published | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
 | 6 | Complete; handset accepted, 2.0.2 editor repair installed | Backed-up production HTTPS/pairing/layout handoff and usability corrections |
-| 7 | Verified locally; publication pending | Spotify 2.0.3 and Source Modules 1.0.1 |
+| 7 | Complete; both providers published, production update/import pending | Spotify 2.0.3 and scoped Source Modules 1.0.1 |
 | 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
 | 9 | Pending | Named Timers, Reminders and confirmed Redeem Checklist operations |
 | 10 | Pending | Walk Ons and Shoutout Clips |
@@ -23,7 +23,7 @@ Updated November 13, 2026. Implement **one bounded session per implementation tu
 
 Source is `modules/phone-deck/`. The current artifact is `dist/modules/phone-deck-2.0.2.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. This version is published in the module catalogue and installed/running in production. Companion remains 1.3.1.
 
-The archive contains Sessions 1–6 plus the editor/status repair; SHA-256 `074f26de07020dd22adb522d2785915370a0823bcb15497848053aa8a7117b82`, also in `dist/modules/SHA256SUMS`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical. Sessions 7–12 remain later, optional passes.
+The archive contains Sessions 1–6 plus the editor/status repair; SHA-256 `074f26de07020dd22adb522d2785915370a0823bcb15497848053aa8a7117b82`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical. Session 7 providers are now independently published; Sessions 8–12 remain later optional passes.
 
 ## Session 1 checkpoint
 
@@ -142,6 +142,10 @@ Spotify 2.0.3 contributes Resume/Pause/Toggle, Next/Previous, a bounded whole-pe
 
 Source Modules 1.0.1 contributes a saved-rule/mode picker using exact native rule keys. Only mode changes; saved scenes, extra fields and other rules survive. Existing four action IDs/triggers/wrappers remain; only the engine changes. Scoped writes serialize with Save/Initialize and matching terminal results survive later state updates. An old engine cannot enable these controls: phoneDeckVersion 1 is required. Existing installations must back up/reimport the updated Source Modules actions and run Initialize before using the new cards. No production import/restart is part of this provider session.
 
-Full source/C# checks and hidden desktop/phone acceptance pass: actual Spotify runtime in explicit synthetic mode, security/validation, durable duplicates/lost outcomes, failed persistence, old engines/missing rules/stopped owners, matching native completion, Requested Spotify commands, preserved volume/editor drafts/focus/scroll and independent OBS. Hash-verified preceding releases prove identical Spotify native data and Source Modules engine-only changes. Publication and actual released-package upgrades are recorded separately after completion.
+Full source/C# checks and hidden desktop/phone acceptance pass: actual Spotify runtime in explicit synthetic mode, security/validation, durable duplicates/lost outcomes, failed persistence, old engines/missing rules/stopped owners, matching native completion, Requested Spotify commands, preserved volume/editor drafts/focus/scroll and independent OBS. Hash-verified preceding releases prove identical Spotify native data and Source Modules engine-only changes. Publication and actual released-package upgrades passed as recorded below.
 
-Local candidates: dist/modules/spotify-2.0.3.streammodule and dist/modules/source-modules-1.0.1.streammodule. Phone Deck remains 2.0.2; Companion remains 1.3.1. No existing cards are added/changed, no production settings, pairing/TLS or listeners are changed, and no real playback/OBS/chat action is used. Stop after this session. Session 8 is Cameras, Reactive and explicit saved Scene Links application; do not repeat accepted physical-camera checks. The feature count remains 21/24.
+Published/local artifacts: dist/modules/spotify-2.0.3.streammodule and dist/modules/source-modules-1.0.1.streammodule. Phone Deck remains 2.0.2; Companion remains 1.3.1. No existing cards are added/changed, no production settings, pairing/TLS or listeners are changed, and no real playback/OBS/chat action is used. Stop after this session. Session 8 is Cameras, Reactive and explicit saved Scene Links application; do not repeat accepted physical-camera checks. The feature count remains 21/24.
+
+Source 7ddd23e560f445d2aa420ae5c3c6bc63a661bf85 passed Windows/Linux Check 43438941820. Spotify 2.0.3 publication 43439204945, SHA-256 3a194aab174cf8459f9678bdac917e7847e9f247e701e0b317843f0451c038f0; Source Modules 1.0.1 publication 43439422944, SHA-256 132275b1b49e07fbfbf75baeb0d5c1e28cc7c2e8ab8aa9e3964197145050a13b. Both catalogue entries point to this source. Actual anonymous GitHub upgrades from Spotify 2.0.2 and Source Modules 1.0.0 passed inside packaged Companion 1.3.1: checksums, dependencies, private sentinel data, favorites, stopped/automatic-start preferences, action-name readiness and public contribution metadata. Complete Spotify native data is identical; Source Modules differs only in engine code. No HTTP 504 fallback was needed. The release fixture was corrected to expect one registered but stopped Spotify service; no runtime bytes changed. All isolated test processes were stopped.
+
+Session 7 stops here. Running production packages/actions/data/listeners were left unchanged. To adopt the additions, update Spotify and Source Modules from Catalogue; back up/reimport Source Modules actions, run Initialize and add desired cards explicitly. Spotify needs no native import. No Companion or Phone Deck update/re-pairing is needed. Session 8 is next, in its own turn.
