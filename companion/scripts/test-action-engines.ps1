@@ -269,7 +269,7 @@ Run-Engine $reminders @{ reminderMode = 'initialize' }
 $private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
 $public = ($reminders.CPH.Globals['portable.reminders.state'] | ConvertFrom-Json).payload
 Assert-True (@($private.items).Count -eq 2 -and $private.retained -eq 'private-field' -and $private.config.retained -eq 'synthetic') 'Reminder initialization must preserve legacy items, completion history and unknown private fields'
-Assert-True ($public.ready -and $public.moduleVersion -eq '1.0.1' -and $null -eq $public.items -and $null -eq $public.config -and $null -eq $public.display) 'Public reminder state must contain only content-free readiness'
+Assert-True ($public.ready -and $public.moduleVersion -eq '1.0.2' -and $null -eq $public.items -and $null -eq $public.config -and $null -eq $public.display) 'Public reminder state must contain only content-free readiness'
 Run-Engine $reminders @{ reminderMode = 'add'; userName = 'viewer_one'; user = 'Viewer One'; rawInput = 'Synthetic self reminder' }
 $private = ($reminders.CPH.Globals['portable.reminders.private'] | ConvertFrom-Json).payload
 Assert-True (@($private.items).Count -eq 3 -and $reminders.CPH.Arguments['chatMessage'] -eq 'Reminder added to your backlog.') 'Self add must persist and prepare a generic chat acknowledgement'
@@ -481,3 +481,7 @@ Write-Output 'Actual Shoutout Clips C# passed: saved layout/mute/title preservat
 & (Join-Path $PSScriptRoot 'test-guest-camera-engines.ps1')
 & (Join-Path $PSScriptRoot 'test-audio-routing-engines.ps1')
 & (Join-Path $PSScriptRoot 'test-scene-links-engines.ps1')
+
+& (Join-Path $PSScriptRoot 'test-named-timers-engine.ps1')
+& (Join-Path $PSScriptRoot 'test-redeem-checklist-engine.ps1')
+& (Join-Path $PSScriptRoot 'test-phone-backlog-engines.ps1')

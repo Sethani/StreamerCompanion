@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "reminders",
   "name": "Reminders",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Private viewer reminder backlogs with chat commands and dock-only management.",
   "author": "Sethani",
   "license": "MIT",
@@ -28,7 +28,7 @@
     },
     "optionalModules": {},
     "capabilities": {},
-    "companion": ">=1.3.0"
+    "companion": ">=1.3.1"
   },
   "web": {
     "root": "web"
@@ -80,6 +80,122 @@
       "feature": "reminders",
       "stateKey": "portable.reminders.state",
       "actionPrefix": "Reminders"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.reminders.private",
+        "fields": {
+          "phoneDeckVersion": "payload.phoneDeckVersion",
+          "openCount": "payload.phoneDeck.openCount"
+        },
+        "ack": {
+          "path": "payload.phoneDeckResults",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "resources": {
+        "unfinished": {
+          "path": "payload.phoneDeck.unfinished",
+          "id": "id",
+          "label": "label"
+        }
+      },
+      "actions": {
+        "add": {
+          "id": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+          "args": {
+            "reminderMode": "phone-add",
+            "userName": {
+              "field": "creator"
+            },
+            "user": {
+              "field": "creator"
+            },
+            "rawInput": {
+              "field": "message"
+            }
+          }
+        },
+        "complete": {
+          "id": "e70e165b-2d92-435a-a5b1-7b37d6c44444",
+          "args": {
+            "reminderMode": "phone-complete",
+            "id": {
+              "field": "reminder"
+            }
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "add",
+          "name": "Add reminder",
+          "kind": "form",
+          "action": "add",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "creator",
+              "label": "Added by (Twitch login)",
+              "type": "text",
+              "required": true,
+              "maxLength": 25
+            },
+            {
+              "id": "message",
+              "label": "Reminder (or @person message)",
+              "type": "text",
+              "required": true,
+              "maxLength": 300,
+              "input": true
+            }
+          ]
+        },
+        {
+          "id": "complete",
+          "name": "Complete unfinished reminder",
+          "kind": "form",
+          "action": "complete",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "reminder",
+              "label": "Unfinished reminder",
+              "type": "resource",
+              "resource": "unfinished",
+              "input": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Reminder backlog status",
+          "kind": "widget",
+          "display": [
+            "openCount"
+          ],
+          "displayLabels": {
+            "openCount": "Unfinished reminders"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }

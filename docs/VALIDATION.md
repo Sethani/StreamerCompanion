@@ -1,5 +1,11 @@
 # First public GitHub update validation
 
+## November 14: Phone Deck Session 9
+
+Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1 add optional timer/backlog forms and status. Unlike Session 8, these packages change native engine code and require backed-up imports plus Initialize for adoption. New phoneDeckVersion prerequisites keep old imports from dispatching unsupported operations. Existing action/command/trigger/schedule/queue/wrapper data and private configuration contracts are preserved.
+
+Full source, full Phone Deck runtime/hidden-browser and actual C# checks pass. New C# regressions cover private unfinished projections, timer validation/reserved language names, serialized concurrent additions/resolutions, durable request intent before effects, failed saves at each stage, rejected/uncertain Twitch responses, restart deduplication and results surviving initialization. Hidden desktop/mobile checks retain input drafts/carets/focus/scroll and unavailable selected resources, reject cancelled refund confirmations, expose no history or viewer-input fields and preserve independent direct OBS. Local candidates over hash-verified prior releases pass in packaged Companion 1.3.1 with only native engine code changed; Ready/assets/contributions, private sentinel data and favorites survive without service creation or action dispatch. No anonymous-download fallback is needed. Publication and released-upgrade evidence follows in phone-deck-sessions.md.
+
 ## November 14: Phone Deck Session 8
 
 Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 add optional Phone Deck declarations only. Existing action bodies/IDs, private mappings/rosters, native state contracts and automatic camera/scene handling remain unchanged. Local candidates over hash-verified prior GitHub releases pass inside packaged Companion 1.3.1 and 1.3.2: native-data equality, Ready state, served assets/contributions, sentinel data/favorites, no service creation and only read-only GetActions requests. No anonymous-download fallback was needed. The new release fixture is test-github-phone-camera-links.js.

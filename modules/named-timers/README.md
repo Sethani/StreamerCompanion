@@ -1,5 +1,11 @@
 # Named Timers
 
+## Optional Phone Deck controls (1.0.1)
+
+Add an Input card and choose Named Timers / Create or extend named timer. Enter a name and whole seconds (1–604800). An existing named timer is extended by the existing owner. The status widget reports the published active count and remaining-time summary at its last update. Phone creation is quiet: it does not send a new chat acknowledgement. Existing timer expiry notifications remain unchanged. German/French/Dutch timer creation stays with the existing managed language route; phone creation cannot bypass that queue.
+
+Existing installations must back up and reimport the updated Named Timers actions, then run Initialize. Stable action/command/schedule IDs, globals and legacy argument contracts are preserved; only engine code changes. The phone controls require phoneDeckVersion 1, so old imports stay disabled. Persisted request intents/results prevent duplicate additions after lost responses or restart; uncertain outcomes are not retried automatically. No Phone Deck dependency, new service, app/deck rebuild or automatic card is added.
+
 Named Timers is the faithful extraction of the installed named/language timer core. It preserves `Timer_Add`, `Timer_Check`, `Timer_Command`, `Timers - Publish Overlay State`, the moderator-only `!timer <seconds> <title>` command, the five-second `timer_check` schedule, `timer_end_*` globals and `portable.timers.state`. First-party code and design: Sethani, MIT.
 
 ## Install
@@ -18,7 +24,7 @@ The forthcoming Redeem Checklist migration will delegate language redemptions to
 
 Imports preserve unknown `timer_end_*` titles, inactive values, `managedLanguageRedemptionsJson`, `managedLanguageActive` and the schema-1 public envelope. No installed global values are bundled. The old disabled `Speak_Dutch`, `Speak_German` and `Speak_French` wrappers remain private; their reward IDs and the French local reference-file launch are not exported. The old Node countdown/Spotify clock is a separate feature and is not included.
 
-The installed checker prepares one final chat payload when several ordinary timers expire on the same five-second tick. Version 1.0.0 preserves that last-message-only behavior for fidelity while clearing every completed timer.
+The installed checker prepares one final chat payload when several ordinary timers expire on the same five-second tick. Version 1.0.1 preserves that last-message-only behavior for fidelity while clearing every completed timer.
 
 ## Testing
 

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "named-timers",
   "name": "Named Timers",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Named and queued language timers using the established Streamer.bot globals, chat command and transparent overlay.",
   "author": "Sethani",
   "license": "MIT",
@@ -33,7 +33,7 @@
       "universal-overlay": "^1.0.0"
     },
     "capabilities": {},
-    "companion": ">=1.3.0"
+    "companion": ">=1.3.1"
   },
   "web": {
     "root": "web",
@@ -95,6 +95,87 @@
       "feature": "timers",
       "stateKey": "portable.timers.state",
       "actionPrefix": "Named Timers"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.timers.state",
+        "fields": {
+          "phoneDeckVersion": "payload.phoneDeckVersion",
+          "activeCount": "payload.phoneDeck.activeCount",
+          "summary": "payload.phoneDeck.summary"
+        },
+        "ack": {
+          "path": "payload.phoneDeckResults",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "actions": {
+        "create": {
+          "id": "64f06ada-2dd9-49d6-8af0-e2b31c67fd75",
+          "args": {
+            "namedTimersMode": "phone-add",
+            "timerTitle": {
+              "field": "title"
+            },
+            "timerSeconds": {
+              "field": "seconds"
+            }
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "create",
+          "name": "Create or extend named timer",
+          "kind": "form",
+          "action": "create",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "title",
+              "label": "Timer name",
+              "type": "text",
+              "required": true,
+              "maxLength": 80,
+              "input": true
+            },
+            {
+              "id": "seconds",
+              "label": "Seconds (up to 7 days)",
+              "type": "number",
+              "input": true,
+              "required": true,
+              "integer": true,
+              "min": 1,
+              "max": 604800
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Named timer status",
+          "kind": "widget",
+          "display": [
+            "activeCount",
+            "summary"
+          ],
+          "displayLabels": {
+            "activeCount": "Active timers",
+            "summary": "Remaining at last update"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "redeem-checklist",
   "name": "Redeem Checklist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Private dock management for pending channel-point requests with coordinated Named Timers language routing.",
   "author": "Sethani",
   "license": "MIT",
@@ -29,7 +29,7 @@
     },
     "optionalModules": {},
     "capabilities": {},
-    "companion": ">=1.3.0"
+    "companion": ">=1.3.1"
   },
   "web": {
     "root": "web"
@@ -82,6 +82,113 @@
       "feature": "redeems",
       "stateKey": "portable.redeems.state",
       "actionPrefix": "Redeems"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.redeems.state",
+        "fields": {
+          "phoneDeckVersion": "payload.phoneDeckVersion",
+          "pendingCount": "payload.phoneDeck.pendingCount"
+        },
+        "ack": {
+          "path": "payload.phoneDeckResults",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "resources": {
+        "pending": {
+          "path": "payload.phoneDeck.pending",
+          "id": "id",
+          "label": "label"
+        }
+      },
+      "actions": {
+        "complete": {
+          "id": "8969edcf-4d3f-492c-a2b8-b576b276a600",
+          "args": {
+            "redeemMode": "phone-resolve",
+            "redemptionId": {
+              "field": "redemption"
+            },
+            "resolution": "complete"
+          }
+        },
+        "refund": {
+          "id": "8969edcf-4d3f-492c-a2b8-b576b276a600",
+          "args": {
+            "redeemMode": "phone-resolve",
+            "redemptionId": {
+              "field": "redemption"
+            },
+            "resolution": "refund"
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "complete",
+          "name": "Complete pending redemption",
+          "kind": "form",
+          "action": "complete",
+          "confirm": true,
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "redemption",
+              "label": "Pending reward and viewer",
+              "type": "resource",
+              "resource": "pending",
+              "input": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "refund",
+          "name": "Refund pending redemption",
+          "kind": "form",
+          "action": "refund",
+          "confirm": true,
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "redemption",
+              "label": "Pending reward and viewer",
+              "type": "resource",
+              "resource": "pending",
+              "input": true,
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Redeem backlog status",
+          "kind": "widget",
+          "display": [
+            "pendingCount"
+          ],
+          "displayLabels": {
+            "pendingCount": "Pending redemptions"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }

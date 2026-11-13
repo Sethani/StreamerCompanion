@@ -1,10 +1,16 @@
 # Redeem Checklist
 
+## Optional Phone Deck controls (1.0.1)
+
+Add Input cards for Complete pending redemption and Refund pending redemption, plus an optional pending-count widget. Pick the exact reward/viewer entry and confirm before dispatch. Only currently pending IDs are accepted; reward IDs, viewer input and history are not part of the phone projection. Completion/refund uses the existing native Twitch owner and preserves history and language routing. No history deletion, manual reward creation or duplicate language route is exposed.
+
+Back up and reimport the updated actions, then run Initialize. Stable action/trigger/timer/queue IDs, wrappers, existing globals and configuration are retained; only engine code changes. New controls require phoneDeckVersion 1 so old imports stay disabled. The owner saves an intent before contacting Twitch and a keyed terminal result afterward. Rejected responses report failure; thrown responses or failed persistence remain unknown, without automatic mutation retry. Serialized operations prevent competing resolutions. No Companion/Phone Deck rebuild, new service or automatically added card is needed.
+
 Redeem Checklist preserves the established private pending/history state and dock workflow while removing the old port-3124 callback. First-party code and design: Sethani, MIT.
 
 ## Install and cutover
 
-Requires Companion 1.3.0+, Named Timers 1.0.0+, Universal Dock and Streamer.bot's local WebSocket server. Back up the Redeems action group and these persisted globals before import: `portable.redeems.state`, `managedRedeemRewardsJson`, `managedRedeemDockBacklogJson`, `managedLanguageRedemptionsJson` and `managedLanguageActive`.
+Requires Companion 1.3.0+, Named Timers 1.0.1+, Universal Dock and Streamer.bot's local WebSocket server. Back up the Redeems action group and these persisted globals before import: `portable.redeems.state`, `managedRedeemRewardsJson`, `managedRedeemDockBacklogJson`, `managedLanguageRedemptionsJson` and `managedLanguageActive`.
 
 Importing replaces the established router, five-second checker and compatibility resolver by their stable action IDs. It preserves `Redeems - Initialize`, `Redeems - Add` and `Redeems - Resolve` IDs and keeps all existing state in place. Restart Streamer.bot once so Initialize republishes the checklist and migrates any old Node backlog. The dock is private operator UI; this module deliberately registers no OBS overlay.
 
