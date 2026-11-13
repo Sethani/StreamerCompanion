@@ -1,6 +1,10 @@
 # Cameras
 
-Version 2.0.1 moves the established main/secondary camera controls and OBS inventory off the personal Node server. It controls existing OBS scenes through Streamer.bot's existing default OBS connection; no service, new port, OBS credential copy or browser overlay is required. The five installed action identities and `portable.cameras.state` are preserved. Source mappings are private settings; public defaults are empty and unconfigured.
+## Optional Phone Deck controls
+
+Version 2.0.2 adds main-camera modes, Camera 2 Off/Laptop modes, an OBS video-input picker, a saved Reactive guest picker for Camera 2, and a mode/status widget. Set up private mappings in the existing dock first. Controls require the corresponding camera slot to be configured and OBS available; missing inputs/guests remain unavailable. Each command changes only its chosen slot and preserves the other slot and source mappings. Assigning a guest does not enable that guest in the overlay lineup. Commands report Requested; consult the owner status/OBS for the result. No new native engine, import, service, Phone Deck dependency or automatic cards are added.
+
+Version 2.0.2 moves the established main/secondary camera controls and OBS inventory off the personal Node server. It controls existing OBS scenes through Streamer.bot's existing default OBS connection; no service, new port, OBS credential copy or browser overlay is required. The five installed action identities and `portable.cameras.state` are preserved. Source mappings are private settings; public defaults are empty and unconfigured.
 
 Install/import through Companion. Open Cameras in Universal Dock, Refresh the read-only OBS inventory, then select existing scenes and source roles under Source mappings. Saving mappings never switches cameras. Main modes remain Off, Monitor, Laptop and My PNG tuber; Camera 2 remains Off, Laptop, Reactive guest and OBS video source. Reactive mode requires Reactive Guests 2.1.0; webcam/video-only use does not.
 

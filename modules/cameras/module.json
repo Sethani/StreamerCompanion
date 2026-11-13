@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "cameras",
   "name": "Cameras",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Native OBS camera modes, private source mappings and read-only scene inventory.",
   "author": "Sethani",
   "license": "MIT",
@@ -74,6 +74,228 @@
       "feature": "cameras",
       "stateKey": "portable.cameras.state",
       "actionPrefix": "Cameras"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.cameras.state",
+        "fields": {
+          "obsAvailable": "payload.obsAvailable",
+          "configured": "payload.config.configured",
+          "mainConfigured": "payload.config.mainConfigured",
+          "secondaryConfigured": "payload.config.secondaryConfigured",
+          "mainMode": "payload.config.mainMode",
+          "secondaryMode": "payload.config.secondaryMode",
+          "status": "payload.status.status"
+        }
+      },
+      "actions": {
+        "main-mode": {
+          "id": "dcb10149-334a-42f4-a357-cd3b972f1c74",
+          "args": {
+            "changedSlot": "main",
+            "mainMode": {
+              "field": "mode"
+            }
+          }
+        },
+        "secondary-mode": {
+          "id": "dcb10149-334a-42f4-a357-cd3b972f1c74",
+          "args": {
+            "changedSlot": "secondary",
+            "secondaryMode": {
+              "field": "mode"
+            }
+          }
+        },
+        "secondary-video": {
+          "id": "dcb10149-334a-42f4-a357-cd3b972f1c74",
+          "args": {
+            "changedSlot": "secondary",
+            "secondaryMode": "video",
+            "videoSourceName": {
+              "field": "source"
+            }
+          }
+        },
+        "assign-guest": {
+          "id": "d8ceb47d-55e1-4070-9430-9ec57f9578e7",
+          "args": {
+            "id": {
+              "field": "guest"
+            }
+          }
+        }
+      },
+      "resources": {
+        "main-modes": {
+          "source": "static",
+          "items": [
+            {
+              "id": "off",
+              "label": "Off"
+            },
+            {
+              "id": "monitor",
+              "label": "Monitor camera"
+            },
+            {
+              "id": "laptop",
+              "label": "Laptop camera"
+            },
+            {
+              "id": "png",
+              "label": "Avatar"
+            }
+          ]
+        },
+        "secondary-modes": {
+          "source": "static",
+          "items": [
+            {
+              "id": "off",
+              "label": "Off"
+            },
+            {
+              "id": "laptop",
+              "label": "Laptop camera"
+            }
+          ]
+        },
+        "video-inputs": {
+          "path": "payload.videoInputs",
+          "id": "name",
+          "label": "name"
+        },
+        "guests": {
+          "path": "payload.reactiveGuests",
+          "id": "id",
+          "label": "name"
+        }
+      },
+      "controls": [
+        {
+          "id": "main-mode",
+          "name": "Set main camera mode",
+          "kind": "button",
+          "action": "main-mode",
+          "fields": [
+            {
+              "id": "mode",
+              "label": "Mode",
+              "type": "resource",
+              "resource": "main-modes",
+              "required": true
+            }
+          ],
+          "prerequisites": [
+            {
+              "field": "obsAvailable",
+              "equals": true
+            },
+            {
+              "field": "mainConfigured",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "secondary-mode",
+          "name": "Set Camera 2 mode",
+          "kind": "button",
+          "action": "secondary-mode",
+          "fields": [
+            {
+              "id": "mode",
+              "label": "Mode",
+              "type": "resource",
+              "resource": "secondary-modes",
+              "required": true
+            }
+          ],
+          "prerequisites": [
+            {
+              "field": "obsAvailable",
+              "equals": true
+            },
+            {
+              "field": "secondaryConfigured",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "secondary-video",
+          "name": "Use OBS video source on Camera 2",
+          "kind": "button",
+          "action": "secondary-video",
+          "fields": [
+            {
+              "id": "source",
+              "label": "OBS video source",
+              "type": "resource",
+              "resource": "video-inputs",
+              "required": true
+            }
+          ],
+          "prerequisites": [
+            {
+              "field": "obsAvailable",
+              "equals": true
+            },
+            {
+              "field": "secondaryConfigured",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "assign-guest",
+          "name": "Assign Reactive guest to Camera 2",
+          "kind": "button",
+          "action": "assign-guest",
+          "fields": [
+            {
+              "id": "guest",
+              "label": "Saved guest",
+              "type": "resource",
+              "resource": "guests",
+              "required": true
+            }
+          ],
+          "prerequisites": [
+            {
+              "field": "obsAvailable",
+              "equals": true
+            },
+            {
+              "field": "secondaryConfigured",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Camera modes",
+          "kind": "widget",
+          "display": [
+            "obsAvailable",
+            "mainMode",
+            "secondaryMode",
+            "status"
+          ],
+          "displayLabels": {
+            "obsAvailable": "OBS connected",
+            "mainMode": "Main camera",
+            "secondaryMode": "Camera 2",
+            "status": "Owner status"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }

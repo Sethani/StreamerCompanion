@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "reactive",
   "name": "Reactive Guests",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "The established ordered reactive guest lineup, private roster and presentation controls.",
   "author": "Sethani",
   "license": "MIT",
@@ -139,6 +139,84 @@
       "stateKey": "portable.reactive.state",
       "actionPrefix": "Reactive Guests"
     },
-    "packagedOverlay": true
+    "packagedOverlay": true,
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.reactive.state",
+        "fields": {
+          "camera2GuestId": "payload.camera2GuestId"
+        },
+        "ack": {
+          "path": "payload.lastOperation",
+          "requestId": "requestId",
+          "status": "status"
+        }
+      },
+      "resources": {
+        "guests": {
+          "path": "payload.guests",
+          "id": "id",
+          "label": "name"
+        }
+      },
+      "actions": {
+        "show-guest": {
+          "id": "b43f18e2-51a9-42d2-886a-d48af97dbcb1",
+          "args": {
+            "id": {
+              "field": "guest"
+            },
+            "enabled": true
+          }
+        },
+        "hide-guest": {
+          "id": "b43f18e2-51a9-42d2-886a-d48af97dbcb1",
+          "args": {
+            "id": {
+              "field": "guest"
+            },
+            "enabled": false
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "show-guest",
+          "name": "Show saved guest",
+          "kind": "button",
+          "action": "show-guest",
+          "fields": [
+            {
+              "id": "guest",
+              "label": "Saved guest",
+              "type": "resource",
+              "resource": "guests",
+              "required": true
+            }
+          ],
+          "prerequisites": []
+        },
+        {
+          "id": "hide-guest",
+          "name": "Hide saved guest",
+          "kind": "button",
+          "action": "hide-guest",
+          "fields": [
+            {
+              "id": "guest",
+              "label": "Saved guest",
+              "type": "resource",
+              "resource": "guests",
+              "required": true
+            }
+          ],
+          "prerequisites": []
+        }
+      ]
+    }
   }
 }

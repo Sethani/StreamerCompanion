@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "scene-bindings",
   "name": "Scene Links",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Existing scene-linked Twitch categories and Windows window focus.",
   "author": "Sethani",
   "license": "MIT",
@@ -67,7 +67,83 @@
       "feature": "sceneBindings",
       "stateKey": "portable.sceneBindings.state",
       "actionPrefix": "Scene Links"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.sceneBindings.state",
+        "fields": {
+          "obsAvailable": "payload.obsAvailable",
+          "status": "payload.operation.status",
+          "lastScene": "payload.lastExecution.sceneName",
+          "lastResult": "payload.lastExecution.status"
+        },
+        "ack": {
+          "path": "payload.completedOperations",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "resources": {
+        "links": {
+          "path": "payload.config.bindings",
+          "id": "$key",
+          "label": "$key"
+        }
+      },
+      "actions": {
+        "apply-link": {
+          "id": "3a15f946-35de-49e7-a0a9-f43341a841f4",
+          "args": {
+            "sceneName": {
+              "field": "scene"
+            }
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "apply-link",
+          "name": "Apply saved scene link",
+          "kind": "button",
+          "action": "apply-link",
+          "fields": [
+            {
+              "id": "scene",
+              "label": "Saved scene link",
+              "type": "resource",
+              "resource": "links",
+              "required": true
+            }
+          ],
+          "prerequisites": [
+            {
+              "field": "obsAvailable",
+              "equals": true
+            }
+          ],
+          "confirm": true
+        },
+        {
+          "id": "status",
+          "name": "Scene Link status",
+          "kind": "widget",
+          "display": [
+            "status",
+            "lastScene",
+            "lastResult"
+          ],
+          "displayLabels": {
+            "status": "Operation",
+            "lastScene": "Last saved link",
+            "lastResult": "Result"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }
-

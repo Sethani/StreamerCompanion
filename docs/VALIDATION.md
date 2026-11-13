@@ -1,5 +1,11 @@
 # First public GitHub update validation
 
+## November 14: Phone Deck Session 8
+
+Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 add optional Phone Deck declarations only. Existing action bodies/IDs, private mappings/rosters, native state contracts and automatic camera/scene handling remain unchanged. Local candidates over hash-verified prior GitHub releases pass inside packaged Companion 1.3.1 and 1.3.2: native-data equality, Ready state, served assets/contributions, sentinel data/favorites, no service creation and only read-only GetActions requests. No anonymous-download fallback was needed. The new release fixture is test-github-phone-camera-links.js.
+
+Full source checks, actual synthetic C# camera/guest and Scene Links tests, and focused hidden desktop/mobile Session 8 checks pass. Coverage includes scoped mode/assignment dispatch, missing saved targets/imports/owner readiness, partial failures, durable Scene Links acknowledgements surviving later operations, Reactive matching-result handling, unknown/no-replay behavior, confirmation cancellation, stale deck revisions, two clients and preserved editor focus/scroll/selections. No physical-camera acceptance or real focus/category/OBS action is repeated. Final publication and released-upgrade results are appended to the Session 8 checkpoint after release.
+
 ## November 9: Phone Deck editor and status repair (2.0.2)
 
 The operator's crowded-editor report was reproduced: the module picker sat below connection/pairing administration, and every module card rendered Refresh status even when healthy. Read-only production inspection confirmed OBS/native connections were healthy, no unknown operation existed and the apparent global failure was misleading UI plus unexplained draft gating. No credentials or connection settings were reset to diagnose this report.

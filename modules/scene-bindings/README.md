@@ -1,6 +1,10 @@
 # Scene Links
 
-Scene Links 2.0.2 preserves the existing dock editor, Twitch category updates and Windows application focus. First-party code: Sethani, MIT. It requires Companion 1.3.1, Universal Dock and Streamer.bot; Windows focus additionally requires Windows PowerShell. No overlay, service or extra port is installed.
+## Optional Phone Deck controls
+
+Version 2.0.3 adds Apply saved scene link and a status widget. Select an exact saved binding; applying it requires confirmation and executes that binding's saved category/focus behavior without switching OBS scenes or editing mappings. It does not offer arbitrary categories/windows, draft tests or automatic scene handling. Completion uses the existing durable request acknowledgement; partial failures remain partial. Removed bindings stay unavailable. Native action data is unchanged, so no reimport, service, Phone Deck dependency or automatic card is required.
+
+Scene Links 2.0.3 preserves the existing dock editor, Twitch category updates and Windows application focus. First-party code: Sethani, MIT. It requires Companion 1.3.1, Universal Dock and Streamer.bot; Windows focus additionally requires Windows PowerShell. No overlay, service or extra port is installed.
 
 Import the nine actions through Companion. The inventory retains all nine identities; the old Monitor action and queue remain disabled/inert compatibility records. Initialize has native startup/OBS connection registrations. Fresh installations start with empty bindings. Existing version-1 `portable.sceneBindings.config` and state globals are retained without personal fallback seeds. Scene names match exactly; missing scenes and unavailable window targets remain saved.
 

@@ -1,6 +1,10 @@
 # Reactive Guests
 
-Version 2.1.0 extracts the established roster editor and bottom-aligned guest lineup. Install in Companion and import its nine Streamer.bot actions. Use Universal Dock and the existing shared overlay; no additional OBS source is needed. The package keeps stable action IDs, guest order, enabled flags, presentation and `portable.reactive.state`. No roster or private URL is bundled.
+## Optional Phone Deck controls
+
+Version 2.1.1 adds Show saved guest and Hide saved guest. Pick an existing guest; commands retain roster order, URLs, presentation and other guests. The existing request-ID result confirms visibility changes when matched; unknown results are not retried. Camera 2 assignment is offered under the Cameras module, using its authoritative owner and saved guest inventory. Cameras remains optional; lineup visibility does not require it. No native reimport, new service or automatic cards are needed.
+
+Version 2.1.1 extracts the established roster editor and bottom-aligned guest lineup. Install in Companion and import its nine Streamer.bot actions. Use Universal Dock and the existing shared overlay; no additional OBS source is needed. The package keeps stable action IDs, guest order, enabled flags, presentation and `portable.reactive.state`. No roster or private URL is bundled.
 
 The live Streamer.bot roster is authoritative. Do not import the older Node JSON over it: that legacy path normalizes to sixteen entries and can omit newer guests. Initialization and upgrades preserve every guest. Remote provider pages load as existing iframes; no provider code or image media is redistributed under MIT.
 

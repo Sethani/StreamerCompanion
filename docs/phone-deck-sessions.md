@@ -153,3 +153,15 @@ Session 7 stops here. Running production packages/actions/data/listeners were le
 ### Installed reliability follow-up
 
 Phone Deck 2.0.3 is published and installed with Companion 1.3.2. Explicit WebSocket error recovery, repeated transport-read recovery, initial bootstrap retries and offline navigation recovery preserve commands, data/pairing/TLS and drafts. See [the live-stream repair record](startup-reliability-repair.md). Spotify is now 2.0.4. Session 8 remains next; these repairs do not implement another provider session.
+
+## Session 8 checkpoint — November 14, 2026
+
+Cameras 2.0.2 contributes scoped main-camera and Camera 2 modes, eligible OBS video-input selection, saved Reactive guest assignment to Camera 2 and status. Private mappings and the other slot remain owned by the existing Cameras engine. Initial mapping/setup stays in Universal Dock; disconnected OBS, unconfigured slots and missing saved resources disable affected cards. Assignment does not change lineup visibility. Commands report Requested because the existing camera status does not provide a durable flat terminal-result contract.
+
+Reactive 2.1.1 contributes Show/Hide for an exact saved guest, retaining URLs, order, presentation and other guests. Matching existing lastOperation acknowledgements confirm completion; lost/overwritten results remain unknown without replay. Camera 2 assignment lives under Cameras and requires no new cross-owner transport.
+
+Scene Links 2.0.3 contributes explicit confirmed application of an exact saved link plus status. It uses the existing Apply action and durable completedOperations acknowledgements, preserving partial failures and superseded/unknown outcomes. No scene switch, mapping editor, arbitrary window/category input or automatic scene event is exposed through the phone contribution.
+
+These are declarations over unchanged native action data. No Streamer.bot reimport, application/Phone Deck rebuild, production camera acceptance, credential/pairing/layout migration or automatically added cards is needed. Runtime and hidden desktop/mobile acceptance use disposable data, synthetic owners and isolated ports. They cover exact scoped arguments, two clients, missing resources/imports/owners, confirmation cancellation, Requested vs matching completion, partial/mismatched/overwritten results, duplicate/stale requests and stable drafts/focus/scroll. Existing actual C# camera/guest and Scene Links regressions pass with synthetic OBS/Twitch/focus. Source and release gates are recorded after completion below.
+
+The user's Pokemon 1.7.1 publication completed successfully (workflow 43525799555; catalogue SHA-256 80cf5d43ebf0b6b4c1d752ceea073cb5997d5386a903530473faa1aa7ca9a7f9). Bouncing-avatar colour-on-bounce and image select/upload requirements are recorded in future-ideas.md. Feature count remains 21/24. Stop after Session 8; Session 9 is Named Timers, Reminders and Redeem Checklist contributions.
