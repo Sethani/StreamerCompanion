@@ -14,6 +14,6 @@ Existing installations must back up and reimport the updated Source Modules acti
 
 The scoped operation sends `moduleRoutingMode=set-mode`, `moduleRoutingTarget` and `moduleRoutingVisibility` to the existing Engine action. Configuration updates are serialized with Save/Initialize; a matching terminal result is published only after configuration persistence. The last 256 request IDs/results survive Initialize and scene events. Duplicate IDs do not replay, unavailable rules remain unavailable, and unconfirmed outcomes are never automatically retried.
 
-## Widget group presentation (1.0.2 candidate)
+## Widget group presentation (1.0.2)
 
-Grouped external-widget declarations show separate Tangia and generic-widget routing rows using the existing saved rule IDs. There is no replacement umbrella rule or automatic scene-list change. Ordinary module rows remain unchanged. Only the editor/manifest version changes; all native actions, IDs, globals, engine bodies and arguments are unchanged. No new Streamer.bot import is required for this update. This candidate remains unpublished while the widget cutover gates are pending.
+Grouped external-widget declarations show separate Tangia and generic-widget routing rows using the existing saved rule IDs. There is no replacement umbrella rule or automatic scene-list change. Ordinary module rows remain unchanged. Only the editor/manifest version changes; all native actions, IDs, globals, engine bodies and arguments are unchanged. No new Streamer.bot import is required for this update.

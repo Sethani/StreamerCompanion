@@ -1,6 +1,6 @@
-# Grouped widget overlay contract v1 — unpublished candidate
+# Grouped widget overlay contract v1
 
-Companion 1.3.1 already passes optional `ui` metadata through the public module inventory. No host API/rebuild is introduced. Embedded Widgets 1.0.0, Universal Overlay 1.0.2 and Source Modules 1.0.2 are local candidates pending recovery, release and cutover gates.
+Companion 1.3.1 already passes optional `ui` metadata through the public module inventory. No host API/rebuild is introduced. Embedded Widgets 1.0.0, Universal Overlay 1.0.2 and Source Modules 1.0.2 implement this contract. Release evidence and private cutover status are recorded in embedded-widgets-extraction.md.
 
 ```json
 "overlayRouting": {
@@ -27,4 +27,8 @@ Settings and renderer APIs enforce exact listening loopback Host/Origin, scoped 
 
 This protocol does not govern an unpatched legacy overlay. The private candidate must suppress its old Tangia/generic paths and skip the generic extension loader before migrated URLs are activated. Missing Companion must remain transparent, not fall back to Node rendering. The candidate is staged outside production. Cutover also has to account for old standalone sources, private ownership guards and all live callers.
 
-Before publication: finish local off-stream recovery/status controls for an unconfirmed owner, prove that recovery cannot run while an old renderer might still play, recheck package upgrades/data preservation and validate the complete private guard handoff. A crash record is not permission to delete the ownership file automatically. Real Tangia delivery, OBS source adoption and final retirement remain later acceptance steps.
+Ownership recovery is settings-only and requires the saved master switch disabled. A renderer-only heartbeat reports activity and revocation; a responding owner clears embeds before acknowledging release. Recent activity prevents manual takeover. If it cannot acknowledge, an operator must confirm off-stream and closed views and type CLOSED. The app cannot mechanically verify a disconnected browser; that confirmation is an operator assertion. Status/recovery never infer closure from an expired heartbeat.
+
+Recovery requests use settings CSRF, a config/ownership-generation scope and UUID. Old scopes cannot recover a newer owner. The atomic owner record contains up to 64 request outcomes, so duplicates/read-only lookups survive restart and newer state without repeating a reset. Corrupt records are privately archived before recovery. The earlier internal version-1 owner record is read without overwriting it and still blocks takeover until released/recovered. The Phone Deck projection remains read-only and gains no recovery mutation.
+
+The private cutover must still verify live callers, guard old feeds/renderers, back up private state and explicitly adopt the new owner off-stream. Real Tangia delivery, OBS source adoption and final retirement remain separate acceptance steps.

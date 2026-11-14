@@ -3,7 +3,7 @@
   "id": "embedded-widgets",
   "name": "Embedded Widgets",
   "version": "1.0.0",
-  "description": "Private external widgets, including Tangia, in the existing combined overlay. Unpublished integration candidate.",
+  "description": "Private external widgets, including Tangia, in the existing combined overlay.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
