@@ -19,7 +19,9 @@ function createService(options={}){
   // Public shell assets may be embedded by Companion/OBS file documents. The
   // child then reads its own same-origin API; private APIs/media keep the gate.
   const publicPage=req.method==='GET'&&Object.hasOwn(pages,route);
-  if(!['127.0.0.1:'+port,'localhost:'+port].includes(host)||!publicPage&&(origin&&origin!=='http://'+host||req.headers['sec-fetch-site']==='cross-site'))return json(res,403,{error:'Unexpected host or origin.'});
+  const healthRead=req.method==='GET'&&route==='/health'&&(!origin||origin==='null'||/^http:\/\/(?:127\.0\.0\.1|localhost):[0-9]{1,5}$/.test(origin||'')&&Number(origin.slice(origin.lastIndexOf(':')+1))>0&&Number(origin.slice(origin.lastIndexOf(':')+1))<=65535);
+  if(!['127.0.0.1:'+port,'localhost:'+port].includes(host)||!publicPage&&!healthRead&&(origin&&origin!=='http://'+host||req.headers['sec-fetch-site']==='cross-site'))return json(res,403,{error:'Unexpected host or origin.'});
+  if(healthRead&&origin&&origin!=='http://'+host){res.setHeader('Access-Control-Allow-Origin',origin);res.setHeader('Vary','Origin');}
   if(req.method==='GET'&&route==='/health')return json(res,invalid?503:200,{service:'bouncing-avatar',version:require('../module.json').version,ready:!invalid,configured:invalid?false:renderState().configured,enabled:!invalid&&config.enabled});
   if(req.method==='GET'&&pages[route]){const name=pages[route],type=name.endsWith('.html')?'text/html':name.endsWith('.js')?'application/javascript':'text/css';res.writeHead(200,{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'"});return res.end(fs.readFileSync(path.join(__dirname,'public',name)));}
   if(req.method==='GET'&&route==='/api/avatar/config')return json(res,200,{config:state(),csrf});

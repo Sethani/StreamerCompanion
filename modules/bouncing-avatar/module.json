@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "bouncing-avatar",
   "name": "Bouncing Avatar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The original bouncing image in the combined overlay, with private image uploads and optional colour changes.",
   "author": "Sethani",
   "license": "MIT",
