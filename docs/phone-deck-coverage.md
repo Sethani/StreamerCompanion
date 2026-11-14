@@ -1,6 +1,6 @@
 # Phone Deck contribution coverage
 
-Current source audit, November 14, 2026: **26 source packages**, **23 contributors, 71 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.1 is published/installed with an operator-accepted guarded handoff. This inventory is separate from the whole-system feature checklist, which is now **23/24**, with Ollama remaining.
+Current source audit, November 14, 2026: **27 source packages**, **24 contributors, 72 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.1 is published/installed with an operator-accepted guarded handoff. Local AI 1.0.0 is a local candidate with read-only status. This inventory is separate from the whole-system feature checklist, which is now **23/24**, with Ollama remaining.
 
 | Package / version | Owner transport | Visible controls | Completion |
 | --- | --- | --- | --- |
@@ -13,6 +13,7 @@ Current source audit, November 14, 2026: **26 source packages**, **23 contributo
 | controller-input 1.1.1 | service | show, hide, status | Requested |
 | countdown 1.1.1 | streamerbot | start, preset-3, preset-5, custom, configure, pause, resume, clear, status | Requested |
 | embedded-widgets 1.0.0 | service | status | read-only |
+| local-ai 1.0.0 (local candidate) | service | status | read-only |
 | named-timers 1.0.1 | streamerbot | create, status | matching acknowledgement |
 | phone-deck 2.0.4 | streamerbot | title, category, custom-action | Requested |
 | pokemon-encounters 1.7.2 | service | clear, status | Requested |

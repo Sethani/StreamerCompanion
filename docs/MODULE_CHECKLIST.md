@@ -32,7 +32,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## To do: remaining migration and cutover
 
-- [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
+- [ ] **Local AI / Ollama integration.** Local 1.0.0 package copies raid/shoutout prompts, validation and fallbacks; focused/hidden/packaged checks pass. [Release and private caller handoff](local-ai-extraction.md) remain.
 
 ## Remaining acceptance and final switch
 
