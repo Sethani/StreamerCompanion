@@ -1,30 +1,35 @@
 'use strict';
-const controls=require('./obs-controls');
+const controls=require('./obs-controls'),{Background}=require('./obs-background');
 const crypto=require('node:crypto'),{EventEmitter}=require('node:events');
 class ObsClient extends EventEmitter {
- constructor(options={}){super();this.timeout=options.timeout||4000;this.WebSocket=options.WebSocket||globalThis.WebSocket;this.pending=new Map();this.connection={configured:false,url:'ws://127.0.0.1:4455',password:''};this.state=this.empty();this.tail=Promise.resolve();this.generation=0;this.closed=false;}
+ constructor(options={}){super();this.timeout=options.timeout||4000;this.WebSocket=options.WebSocket||globalThis.WebSocket;this.pending=new Map();this.connection={configured:false,url:'ws://127.0.0.1:4455',password:''};this.state=this.empty();this.tail=Promise.resolve();this.generation=0;this.closed=false;this.background=new Background(this);}
  empty(error='OBS is not configured.'){return{connected:false,error,currentScene:'',scenes:[],inputs:[],inputMutes:{},streamActive:null,recording:null,common:controls.empty()};}
  configure(config){if(!config||typeof config.url!=='string'||typeof config.password!=='string')throw Error('Invalid OBS connection settings.');let url;try{url=new URL(config.url);}catch{throw Error('Invalid OBS WebSocket address.');}if(!['ws:','wss:'].includes(url.protocol)||url.username||url.password||url.hash||url.search)throw Error('Use an OBS ws:// or wss:// address without embedded credentials.');this.connection={configured:true,url:url.href,password:config.password};this.disconnect();if(!this.closed)this.connect();}
- disconnect(){this.generation++;this.refreshing=null;this.commonRefreshing=null;clearTimeout(this.retry);clearTimeout(this.handshake);this.socket?.close();this.socket=null;this.identified=false;for(const p of this.pending.values()){clearTimeout(p.timer);p.reject(Error('OBS disconnected; completion may be unknown.'));}this.pending.clear();this.state=this.empty('OBS disconnected.');this.emit('state',this.state);}
+ disconnect(){this.background.reset();this.generation++;this.refreshing=null;this.commonRefreshing=null;clearTimeout(this.retry);clearTimeout(this.handshake);this.socket?.close();this.socket=null;this.identified=false;for(const p of this.pending.values()){clearTimeout(p.timer);p.reject(Error('OBS disconnected; completion may be unknown.'));}this.pending.clear();this.state=this.empty('OBS disconnected.');this.emit('state',this.state);}
  connect(){if(this.closed||!this.connection.configured)return;const generation=++this.generation;let socket;try{socket=this.socket=new this.WebSocket(this.connection.url);}catch{this.schedule();return;}this.handshake=setTimeout(()=>socket.close(),this.timeout);
-  socket.addEventListener('error',()=>{if(generation!==this.generation)return;this.disconnect();this.schedule();});socket.addEventListener('close',()=>{if(generation!==this.generation)return;clearTimeout(this.handshake);this.identified=false;for(const p of this.pending.values()){clearTimeout(p.timer);p.reject(Error('OBS disconnected; completion may be unknown.'));}this.pending.clear();this.state=this.empty('OBS disconnected.');this.emit('state',this.state);this.schedule();});
-  socket.addEventListener('message',async event=>{if(generation!==this.generation)return;let m;try{m=JSON.parse(String(event.data));}catch{return;}if(m.op===0){const d={rpcVersion:1,eventSubscriptions:2047};if(m.d.authentication){const sha=x=>crypto.createHash('sha256').update(x).digest('base64');d.authentication=sha(sha(this.connection.password+m.d.authentication.salt)+m.d.authentication.challenge);}socket.send(JSON.stringify({op:1,d}));}else if(m.op===2){clearTimeout(this.handshake);this.identified=true;await this.refresh();}else if(m.op===7){const p=this.pending.get(m.d.requestId);if(!p)return;this.pending.delete(m.d.requestId);clearTimeout(p.timer);if(m.d.requestStatus?.result===true)p.resolve(m.d.responseData||{});else p.reject(Error('OBS rejected '+p.type+'.'));}else if(m.op===5){clearTimeout(this.eventTimer);this.eventTimer=setTimeout(()=>this.refresh(),60);}});
+  socket.addEventListener('error',()=>{if(generation!==this.generation)return;this.disconnect();this.schedule();});socket.addEventListener('close',()=>{if(generation!==this.generation)return;this.disconnect();this.schedule();});
+  socket.addEventListener('message',async event=>{if(generation!==this.generation)return;let m;try{m=JSON.parse(String(event.data));}catch{return;}if(m.op===0){const d={rpcVersion:1,eventSubscriptions:2047};if(m.d.authentication){const sha=x=>crypto.createHash('sha256').update(x).digest('base64');d.authentication=sha(sha(this.connection.password+m.d.authentication.salt)+m.d.authentication.challenge);}socket.send(JSON.stringify({op:1,d}));}else if(m.op===2){clearTimeout(this.handshake);this.identified=true;await this.refresh();}else if(m.op===7){const p=this.pending.get(m.d.requestId);if(!p)return;this.pending.delete(m.d.requestId);clearTimeout(p.timer);if(m.d.requestStatus?.result===true)p.resolve(m.d.responseData||{});else p.reject(Error('OBS rejected '+p.type+'.'));}else if(m.op===5){this.background.event(m.d.eventType,m.d.eventData);}});
  }
  schedule(){if(this.closed)return;clearTimeout(this.retry);this.retry=setTimeout(()=>this.connect(),2000);}
  request(type,data={}){if(!this.identified||this.socket?.readyState!==1)return Promise.reject(Error('OBS is disconnected.'));const requestId=crypto.randomUUID();return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{this.pending.delete(requestId);reject(Error('OBS request timed out; completion may be unknown.'));},this.timeout);this.pending.set(requestId,{resolve,reject,timer,type});this.socket.send(JSON.stringify({op:6,d:{requestType:type,requestId,requestData:data}}));});}
 
- refresh({coreOnly=false,freshCommon=false}={}){
+ reconcile(){return this.background.reconcile();}
+ refresh({coreOnly=false,freshCommon=false,inventory=true}={}){
+  if(this.background.changing)return Promise.resolve();
+  if(inventory&&this.refreshing&&this.refreshInventory!==true)return this.refreshing.then(()=>this.refresh({coreOnly,freshCommon,inventory}));
   if(!this.refreshing){
-   const generation=this.generation;
+   const generation=this.generation,start=this.background.stamp();this.refreshInventory=inventory;
    const work=(async()=>{try{
-    const[scenes,stream,record,inputs]=await Promise.all([this.request('GetSceneList'),this.request('GetStreamStatus'),this.request('GetRecordStatus'),this.request('GetInputList')]);
+    const scanScenes=inventory===true||inventory==='scenes',scanInputs=inventory===true||inventory==='inputs';
+    const[scenes,stream,record,inputs]=await Promise.all([this.request(scanScenes?'GetSceneList':'GetCurrentProgramScene'),this.request('GetStreamStatus'),this.request('GetRecordStatus'),scanInputs?this.request('GetInputList'):Promise.resolve(null)]);
     if(generation!==this.generation)return;
-    if(!Array.isArray(scenes.scenes)||typeof scenes.currentProgramSceneName!=='string'||typeof stream.outputActive!=='boolean'||typeof record.outputActive!=='boolean'||!Array.isArray(inputs.inputs))throw Error('Invalid inventory.');
-    const inputMutes={},names=inputs.inputs.map(i=>i.inputName).filter(n=>typeof n==='string');
+    if((scanScenes&&!Array.isArray(scenes.scenes))||typeof scenes.currentProgramSceneName!=='string'||typeof stream.outputActive!=='boolean'||typeof record.outputActive!=='boolean'||(scanInputs&&!Array.isArray(inputs.inputs)))throw Error('Invalid inventory.');
+    const inputMutes=scanInputs?{}:{...this.state.inputMutes},names=scanInputs?inputs.inputs.map(i=>i.inputName).filter(n=>typeof n==='string'):[];
     for(let offset=0;offset<names.length;offset+=4)await Promise.all(names.slice(offset,offset+4).map(async inputName=>{try{const v=await this.request('GetInputMute',{inputName});if(typeof v.inputMuted==='boolean')inputMutes[inputName]=v.inputMuted;}catch{}}));
-    if(generation!==this.generation||!this.identified)return;
-    this.readFailures=0;this.state={connected:true,error:'',currentScene:scenes.currentProgramSceneName,scenes:scenes.scenes.map(s=>s.sceneName),inputs:Object.keys(inputMutes),inputMutes,streamActive:stream.outputActive,recording:record.outputActive,common:this.state.common||controls.empty()};
-   }catch(error){if(generation!==this.generation)return;this.state=this.empty('OBS inventory is unavailable.');if(!/timed out|disconnected|socket|network/i.test(error.message))this.readFailures=-1;if((this.readFailures=(this.readFailures||0)+1)>=2&&!this.closed){this.readFailures=0;this.disconnect();this.connect();return;}}
+    if(generation!==this.generation||!this.identified)return;if(start.epoch!==this.background.epoch){this.background.dirty.add('inputs');this.background.dirty.add('scenes');return;}
+    this.readFailures=0;this.state=this.background.core({connected:true,error:'',currentScene:scenes.currentProgramSceneName,scenes:scanScenes?scenes.scenes.map(s=>s.sceneName):this.state.scenes,inputs:Object.keys(inputMutes),inputMutes,streamActive:stream.outputActive,recording:record.outputActive,common:this.state.common||controls.empty()},start);
+    this.background.prune(start,false);this.background.lastStatus=Date.now();if(inventory===true)this.background.lastInventory=Date.now();
+   }catch(error){if(generation!==this.generation||start.epoch!==this.background.epoch)return;this.state=this.empty('OBS inventory is unavailable.');if(!/timed out|disconnected|socket|network/i.test(error.message))this.readFailures=-1;if((this.readFailures=(this.readFailures||0)+1)>=2&&!this.closed){this.readFailures=0;this.disconnect();this.connect();return;}}
    this.emit('state',this.state);
    })();
    const tracked=work.finally(()=>{if(this.refreshing===tracked)this.refreshing=null;});this.refreshing=tracked;
@@ -32,11 +37,11 @@ class ObsClient extends EventEmitter {
   const core=this.refreshing;
   return coreOnly?core:core.then(async()=>{if(freshCommon&&this.commonRefreshing)await this.commonRefreshing;return this.refreshCommon();});
  }
- refreshCommon(){
+ refreshCommon(options={}){
   if(!this.state.connected)return Promise.resolve();
-  if(this.commonRefreshing)return this.commonRefreshing;
-  const generation=this.generation,base=this.state;
-  const work=controls.snapshot(this,base).then(common=>{if(generation!==this.generation||!this.identified||!this.state.connected)return;this.state={...this.state,common};this.emit('state',this.state);});
+  if(this.commonRefreshing)return options.features?this.commonRefreshing:this.commonRefreshing.then(()=>this.refreshCommon(options));
+  const generation=this.generation,base=this.state,start=this.background.stamp();
+  const work=controls.snapshot(this,base,options).then(common=>{if(generation!==this.generation||!this.identified||!this.state.connected)return;if(start.epoch!==this.background.epoch){this.background.dirty.add('common');return;}this.state={...this.state,common:this.background.common(common,start)};this.background.prune(start,true);this.emit('state',this.state);});
   const tracked=work.finally(()=>{if(this.commonRefreshing===tracked)this.commonRefreshing=null;});this.commonRefreshing=tracked;return tracked;
  }
 

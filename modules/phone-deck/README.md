@@ -1,6 +1,6 @@
 # Phone Deck
 
-Version 2.0.3 recovers failed initial page loads and offline navigation automatically. OBS and optional native connections are replaced after repeated transport read timeouts, including sockets that remain open but stop answering. Recovery reads state only; it never retries button actions or clears pairing/layout data.
+Version 2.0.4 uses the existing OBS WebSocket's state events instead of scanning every input after every event or two-second UI tick. Structural changes coalesce into affected-inventory reads. Lightweight status reconciliation runs about every six seconds, with a full inventory reconciliation about every thirty seconds to recover missed events. Explicit refresh and button actions retain fresh target checks and readback. Reconnects never replay actions or clear pairing/layout data. The initial-load, offline and stalled-socket recovery from 2.0.3 is retained.
 
 Phone Deck 2.0.2 provides independent OBS controls and an editable HTTPS handset deck for Companion 1.3.1. Basic OBS operation needs no feature module or Streamer.bot connection. Optional controls come from installed packages; installing a module never adds cards automatically.
 
