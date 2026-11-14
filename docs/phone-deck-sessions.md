@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 is complete with published Walk Ons/Shoutout Clips declarations requiring no new native imports. Session 11 is complete with published Archipelago/Controller/Pokemon service-owner contributions. Session 12 is next; release verification is recorded below. Feature count remains **21/24**.
+Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 is complete with published Walk Ons/Shoutout Clips declarations requiring no new native imports. Session 11 is complete with published Archipelago/Controller/Pokemon service-owner contributions. Session 12 implementation and isolated acceptance are complete; publication verification is recorded at the final checkpoint below. Feature count remains **21/24**.
 
 ## Progress
 
@@ -17,17 +17,17 @@ Updated November 14, 2026. Implement **one bounded session per implementation tu
 | 9 | Complete; all three published; user reports imports/restart | Named Timers, Reminders and confirmed Redeem Checklist operations |
 | 10 | Complete; both providers published | Walk Ons and Shoutout Clips |
 | 11 | Complete; all three providers published | Archipelago, Controller and Pokemon |
-| 12 | Pending | Live Chatbox status, provider coverage and stabilization |
+| 12 | Implemented; publication checkpoint below | Live Chatbox status, all-package coverage and stabilization |
 
 ## Current local artifact
 
 Source is `modules/phone-deck/`. The current artifact is `dist/modules/phone-deck-2.0.3.streammodule`; rebuild with `node scripts/build-modules.js phone-deck`. This version is published in the module catalogue and installed/running in production. Production Companion is now 1.3.2.
 
-The archive contains Sessions 1–6 plus the editor/status and startup-recovery repairs; SHA-256 `8856bef06d57f37c58593353e8c63e3053d1e47ef649a7edfe0c9b248cf44816`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical. Session 7 providers are now independently published; Sessions 8–12 remain later optional passes.
+The archive contains Sessions 1–6 plus the editor/status and startup-recovery repairs; SHA-256 `8856bef06d57f37c58593353e8c63e3053d1e47ef649a7edfe0c9b248cf44816`. Existing data/pairing/TLS and optional native action data are preserved. Earlier checkpoint hashes and boundaries below are historical. Sessions 7–11 providers are independently published. Session 12 adds Live Chatbox status without changing the Phone Deck archive.
 
 ## Session 1 checkpoint
 
-The session sections below retain their historical boundaries; the current checkpoint and next action are in Progress and the Session 5 section.
+The session sections below retain their historical boundaries; the current checkpoint is in Progress and the final Session 12 section.
 
 The existing dark grid, appearance, editor structure, page/card identities, ordering, duplication, icon/colour/size controls and wake-lock option are copied. Save is explicit; polling preserves nodes, focus, caret, scroll, unsaved editor drafts and scene selections. Configuration and execution carry revisions. Conflicts retain the losing draft instead of overwriting it. New defaults contain only OBS controls. Unknown legacy cards and their fields remain intact and unavailable; guided `stream.launch` never becomes raw OBS Start.
 
@@ -211,3 +211,17 @@ No production application/service, layout/pairing/TLS, scene, room selection, in
 Session 11 publication completed from source `58b8cb6efa5e795838be9ac490236bb7d2a50713`, after Windows/Linux Check `43578774819` passed (including existing actual C# checks on Windows). Archipelago 1.0.10 workflow `43579059139`, SHA-256 `2cef9f380278188196b5f6e1efcda5c190be8311b41616a9cde9cc4ffcf6d23a`; Controller 1.1.1 workflow `43579146571`, SHA-256 `be6c7740a0a6f220d6af7d8dc334e525d2abde38afeb074a2a2bf3c6f34a1cf1`; Pokemon 1.7.2 workflow `43579322833`, SHA-256 `7e7b8ce818c3985ff5baa27a46d969461b40d556d3ff2eebbf79b521cd2d6b7e`. Local archives are the corresponding dist/modules/<id>-<version>.streammodule files.
 
 Full source/security/actual-service checks, hidden phone/desktop acceptance and existing module settings/overlay acceptance passed. Actual anonymous released upgrades in packaged Companion 1.3.1 passed hashes, unchanged native data, exact private config/auth/favorites/stopped-auto-start preservation and isolated installed-runtime routes. Health probes and runtime fixtures use isolated ports; only GetActions reaches the synthetic native backend, and no GitHub download fallback is needed. All isolated test processes exited. Production applications/services/data, room/encounter/input state and deck layout/pairing/TLS remain unchanged. Adopt with explicit Catalogue updates and manually added cards; no new native import or app/deck build is needed. Module services restart during update, so update Pokemon while no transient encounter needs preserving. Stop at Session 11; Session 12 has not started.
+
+## Session 12 checkpoint — November 14, 2026
+
+Live Chatbox 1.0.1 adds one read-only service-owned connection widget. It reports the Streamer.bot feed socket/subscription and enabled-platform flags without messages, viewer identities, counters, history, credentials or configuration. Subscription does not verify platform authentication/EventSub or message delivery. Exact loopback Host/Origin checks and no-CORS prevent cross-origin access; no mutations exist under this prefix. Polling neither reconnects nor opens another chat feed. Existing ingestion, normal/ticker presentation, enrichment and settings remain unchanged.
+
+The [coverage audit](phone-deck-coverage.md) accounts for all 24 source packages: 21 contributors, 69 visible controls, two hidden compatibility helpers and explicit exclusions for Universal Dock, Universal Overlay and Update Probe. Static source/export/schema checks and real declarations with absent/stopped/removed owners protect scope, private projections, confirmations and independent OBS. Missing providers stay unavailable without starts/installs/actions/layout changes.
+
+Focused actual-service and hidden desktop/mobile checks pass for subscribed/rejected/disabled/no-platforms/disconnected/reconnected/unavailable state, two clients, no additional subscriptions/configuration writes or widget dispatch, optional-native independence and stable drafts/focus/caret/scroll. The full Phone Deck suite passes all Sessions 1–12, including 100 synthetic contributions, 120 cards, HTTPS pairing/revocation, offline/service-worker upgrades, durable outcomes and process/listener cleanup. Source/packaged/release gates are recorded below once complete. Tests use disposable data/ports/certificates and synthetic effects.
+
+No production application, service, layout, pairing/TLS or viewer state changes during this session. Adopt through an explicit Live Chatbox Catalogue update between streams, then add Widget → Module status → Live Chatbox connection. The service briefly restarts on update; private appearance/platform/enrichment preferences and existing sources remain. No new Streamer.bot import, app build or Phone Deck update is required. Existing cards are never added or rewritten automatically.
+
+Stop at Session 12. The twelve-session Phone Deck implementation is complete; the whole-system count remains 21/24. Widgets/Tangia, bouncing avatar and Ollama still need migration, followed by cold-start/full-system rehearsal and final Import settings cleanup. Keep the old server for those remaining features.
+
+Local completion gates passed: full source suite, full Phone Deck runtime/hidden suite, existing Chatbox settings/renderer hidden acceptance and local 1.0.0-to-1.0.1 candidate upgrade inside packaged Companion 1.3.1. One first source run timed out waiting for a synthetic native disconnect while suites ran concurrently; that check and the full source suite passed on an isolated rerun. No runtime change was made for the transient test timing. Release evidence follows after CI/publication.

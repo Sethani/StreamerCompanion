@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),schema=require('../../modules/phone-deck/service/provider-schema');
+const expected={
+ archipelago:['show','hide','refresh','wake','status'], 'audio-routing':['toggle','status'], cameras:['main-mode','secondary-mode','secondary-video','assign-guest','status'],
+ 'chat-core':['status'], 'chat-routing':['bot-message'], 'controller-input':['show','hide','status'], countdown:['start','preset-3','preset-5','custom','configure','pause','resume','clear','status'],
+ 'named-timers':['create','status'], 'phone-deck':['title','category','custom-action'], 'pokemon-encounters':['clear','status'], reactive:['show-guest','hide-guest'],
+ 'redeem-checklist':['complete','refund','status'], reminders:['add','complete','status'], 'scene-bindings':['apply-link','status'], 'shoutout-clips':['play','play-input','stop','status'],
+ 'source-modules':['set-mode'], spotify:['resume','pause','toggle','next','previous','volume','volume-preset','status'], 'stream-launch':['go-live','progress'], video:['play','stop','status'], 'walk-ons':['test','test-picker','stop','reset','status'],wheel:['spin','clear','status']
+};
+const excluded={'universal-dock':'Desktop/OBS navigation foundation; no additional phone action.','universal-overlay':'Shared renderer foundation; individual owners expose their controls.','update-probe':'Installation/update test utility; no stream operation.'};
+function inventory(){const root=path.resolve(__dirname,'../../modules');return fs.readdirSync(root).filter(id=>fs.existsSync(path.join(root,id,'module.json'))).sort().map(id=>JSON.parse(fs.readFileSync(path.join(root,id,'module.json'),'utf8')));}
+function audit(){const modules=inventory(),native=new Map();for(const m of modules){const p=path.resolve(__dirname,'../../modules',m.id,'streamerbot/export.json');if(fs.existsSync(p))for(const action of JSON.parse(fs.readFileSync(p)).data.actions)native.set(action.id,action.name);}
+ assert.deepEqual(modules.map(m=>m.id),Object.keys({...expected,...excluded}).sort(),'Every package needs an explicit contribution or exclusion');const rows=[];let visible=0,compatibility=0;
+ for(const m of modules){assert.equal(m.dependencies.modules?.['phone-deck'],undefined,'Phone Deck must remain optional');const d=m.ui?.phoneDeck;if(excluded[m.id]){assert.equal(d,undefined);rows.push({id:m.id,version:m.version,transport:'none',controls:[],completion:'none',reason:excluded[m.id]});continue;}schema.validate(d);const controls=d.controls.filter(c=>!c.compatibilityOnly);assert.deepEqual(controls.map(c=>c.id),expected[m.id],m.id+' control scope changed');visible+=controls.length;compatibility+=d.controls.length-controls.length;
+  for(const[key,value]of Object.entries(d.state?.fields||{}))assert.equal(/csrf|password|secret|token|credential|clientId|(?:^|\.)history(?:\.|$)|(?:^|\.)src$|(?:^|\.)url$/i.test(key+' '+value),false,'Unsafe projected field in '+m.id);
+  if(d.owner.transport==='service'){assert.ok(m.service);assert.ok(d.owner.statePath.includes('/phone-deck/'));if(Object.keys(d.actions).length)assert.ok(d.owner.csrf,'Writable service contribution needs CSRF');for(const action of Object.values(d.actions))assert.ok(action.path.includes('/phone-deck/'));}
+  else for(const action of Object.values(d.actions)){if(action.id)assert.ok(native.has(action.id),'Unknown declared native action in '+m.id);else assert.ok(action.resourceField);}
+  for(const control of controls){if(control.kind==='widget')assert.ok(control.display.every(k=>Object.hasOwn(d.state?.fields||{},k)),'Widget must project declared state');for(const requirement of control.prerequisites||[])assert.ok(Object.hasOwn(d.state?.fields||{},requirement.field),'Prerequisite must project declared state');}
+  rows.push({id:m.id,version:m.version,transport:d.owner.transport,controls:controls.map(c=>c.id),completion:Object.keys(d.actions).length?(d.state?.ack?'matching acknowledgement':'Requested'):'read-only',reason:''});
+ }
+ const get=(id,control)=>modules.find(m=>m.id===id).ui.phoneDeck.controls.find(c=>c.id===control);for(const[id,control]of [['stream-launch','go-live'],['scene-bindings','apply-link'],['redeem-checklist','complete'],['redeem-checklist','refund'],['walk-ons','reset'],['archipelago','wake']])assert.equal(get(id,control).confirm,true,'Missing confirmation for '+id+'/'+control);assert.equal(get('stream-launch','go-live').hold,true);
+ const base=modules.find(m=>m.id==='phone-deck');assert.deepEqual(base.streamerbot.requiredActions,[]);assert.deepEqual(base.dependencies.modules,{});assert.equal(base.streamerbot.optionalActions.length,4);assert.deepEqual(base.ui.phoneDeck.controls.filter(c=>c.compatibilityOnly).map(c=>c.id),['chat-bot','chat-compatibility']);
+ const chat=modules.find(m=>m.id==='chat-core').ui.phoneDeck;assert.deepEqual(chat.actions,{});assert.deepEqual(chat.controls.map(c=>c.kind),['widget']);
+ return{packages:modules.length,providers:rows.filter(r=>r.transport!=='none').length,visibleControls:visible,compatibilityControls:compatibility,rows};
+}
+if(require.main===module){const result=audit();console.log(`Phone Deck coverage passed: ${result.packages} packages, ${result.providers} providers, ${result.visibleControls} visible controls, ${result.compatibilityControls} hidden compatibility controls and three explicit foundation exclusions; owners, projections, scopes, confirmations and optional dependencies verified.`);}
+module.exports={audit,inventory,expected,excluded};

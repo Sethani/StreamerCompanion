@@ -1,0 +1,5 @@
+'use strict';
+const path=require('node:path'),{providerFixture}=require('./phone-deck-provider-fixture'),schema=require('../../modules/phone-deck/service/provider-schema'),manifest=require('../../modules/chat-core/module.json');
+function layout(){const d=manifest.ui.phoneDeck,c=d.controls[0];return{version:3,revision:8,pages:[{id:'chat',title:'Chat status',items:[{id:'chat-status',type:'widget',kind:'provider',label:'Live Chatbox',size:'full',packageId:'chat-core',controlId:'status',providerRevision:schema.revision(d,c),values:{}}]}]};}
+async function chatStatusFixture(root){const f=await providerFixture(root);let chat,closed=false;const stopChat=async()=>{if(!closed&&chat){closed=true;await chat.close();}};try{chat=await require('./chat-core-fixture').fixture(path.join(root,'chat-data'));f.modules.push({packageId:manifest.id,name:manifest.name,category:manifest.ui.category,state:'ready',nodeUrl:chat.base+'/settings',phoneDeck:manifest.ui.phoneDeck});return{...f,chat,stopChat,close:async()=>{await f.close();await stopChat();}};}catch(e){await f.close();await chat?.close();throw e;}}
+module.exports={layout,chatStatusFixture};

@@ -10,7 +10,7 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'chat-core
   const modern=normalizeMessage({messageId:'modern',text:'Hi Kappa',user:{id:'modern',name:'Modern Viewer',subscribed:true},parts:[{type:'text',text:'Hi '},{type:'emote',text:'Kappa',imageUrl:'https://example.invalid/kappa.png'}]},'twitch');
   assert.equal(modern.emotes[0].startIndex,3);assert.equal(modern.emotes[0].endIndex,7);assert.equal(modern.isSubscriber,true);
   assert.equal(normalizeMessage({messageId:'announcement',text:'Fixture',announcementColor:'blue',user:{id:'one',name:'Fixture'}},'twitch','announcement').user.colour,'#0099ff');
-  const output=path.join(root,'packages');buildModules(['chat-core'],{output});const zip=new AdmZip(path.join(output,'chat-core-1.0.0.streammodule'));
+  const output=path.join(root,'packages');buildModules(['chat-core'],{output});const zip=new AdmZip(path.join(output,'chat-core-1.0.1.streammodule'));
   const manifest=JSON.parse(zip.readAsText('module.json'));assert.equal(manifest.service.port,3136);assert.equal(manifest.service.overlayPath,undefined);assert.deepEqual(manifest.ui.overlays,[]);assert.deepEqual(manifest.streamerbot.requiredActions,[]);
   assert.ok(zip.readAsText('third-party/stream-chat.txt').includes('2022 Izzy'));assert.ok(zip.readAsText('third-party/pluralmind.txt').includes('2026 leahinmoonlight'));
   assert.equal(crypto.createHash('sha256').update(zip.readFile('service/pluralmind.cjs')).digest('hex'),'82d30bffcc2ea2e2c2d4bab3372ee3fd9e9a503b94d58d2fb89c9fbcae274a7b');
@@ -46,12 +46,12 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'chat-core
   await new Promise(r=>setTimeout(r,180));assert.equal(test.events.some(e=>e.type==='message-update'&&e.data.messageId==='twitch:late'),false);
   for(const socket of test.websocket.clients)socket.terminate();await waitFor(()=>test.service.status().subscribed,'reconnect');
   const {CompanionRegistry}=require('../src/module-registry'),{InstalledService}=require('../src/installed-service');
-  const registry=new CompanionRegistry({dataDirectory:path.join(root,'installed')});let staged=registry.stage(path.join(output,'chat-core-1.0.0.streammodule'));registry.commit(staged);registry.finalize(staged);
+  const registry=new CompanionRegistry({dataDirectory:path.join(root,'installed')});let staged=registry.stage(path.join(output,'chat-core-1.0.1.streammodule'));registry.commit(staged);registry.finalize(staged);
   const childData=path.join(root,'child-data');fs.mkdirSync(childData);fs.writeFileSync(path.join(childData,'config.json'),JSON.stringify({...test.service.config(),pronouns:false,pluralmind:false,appearance:'bubbles=true&fontsize=27px'}));
   const reservation=require('node:http').createServer();await new Promise(r=>reservation.listen(0,'127.0.0.1',r));const childPort=reservation.address().port;await new Promise(r=>reservation.close(r));
   child=new InstalledService({app:{},moduleDirectory:registry.moduleDirectory('chat-core'),dataDirectory:childData,manifest:{...manifest,service:{...manifest.service,port:childPort}}});
   assert.equal((await child.start()).status,'running');assert.equal((await child.state()).endpoint.details.service,'chat-core');await child.stop();assert.equal((await child.probe(200)).ready,false);
-  const upgrade=new AdmZip(path.join(output,'chat-core-1.0.0.streammodule'));upgrade.updateFile('module.json',Buffer.from(JSON.stringify({...manifest,version:'1.0.1'})));const upgradeFile=path.join(root,'upgrade.streammodule');upgrade.writeZip(upgradeFile);staged=registry.stage(upgradeFile);registry.commit(staged);registry.finalize(staged);
+  const upgrade=new AdmZip(path.join(output,'chat-core-1.0.1.streammodule'));upgrade.updateFile('module.json',Buffer.from(JSON.stringify({...manifest,version:'1.0.1'})));const upgradeFile=path.join(root,'upgrade.streammodule');upgrade.writeZip(upgradeFile);staged=registry.stage(upgradeFile);registry.commit(staged);registry.finalize(staged);
   assert.equal(JSON.parse(fs.readFileSync(path.join(childData,'config.json'))).appearance,'bubbles=true&fontsize=27px');
   assert.equal((await child.start()).status,'running');await child.stop();assert.equal((await child.probe(200)).ready,false);
   await test.close();test=null;

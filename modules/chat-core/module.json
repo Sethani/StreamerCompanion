@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "chat-core",
   "name": "Live Chatbox",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The existing stream-chat design with live chat, moderation, pronouns and PluralMind, independent of the archive.",
   "author": "Sethani",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "capabilities": {
       "embedded-node": "required"
     },
-    "companion": ">=1.3.0"
+    "companion": ">=1.3.1"
   },
   "service": {
     "apiVersion": 1,
@@ -60,6 +60,47 @@
         "name": "Chatbox",
         "path": "/chat/chat.html"
       }
-    ]
+    ],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "service",
+        "apiPrefix": "/api/chat-core/",
+        "statePath": "/api/chat-core/phone-deck/state"
+      },
+      "state": {
+        "fields": {
+          "status": "status",
+          "enabled": "enabled",
+          "connected": "connected",
+          "subscribed": "subscribed",
+          "twitch": "twitch",
+          "youtube": "youtube"
+        }
+      },
+      "actions": {},
+      "controls": [
+        {
+          "id": "status",
+          "name": "Live Chatbox connection",
+          "kind": "widget",
+          "display": [
+            "status",
+            "connected",
+            "subscribed",
+            "twitch",
+            "youtube"
+          ],
+          "displayLabels": {
+            "status": "Streamer.bot feed",
+            "connected": "Socket connected",
+            "subscribed": "Events subscribed",
+            "twitch": "Twitch enabled",
+            "youtube": "YouTube enabled"
+          },
+          "fields": []
+        }
+      ]
+    }
   }
 }

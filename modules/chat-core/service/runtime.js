@@ -140,6 +140,14 @@ function createService(options = {}) {
       const host=String(req.headers.host||'');if(!/^(127\.0\.0\.1|localhost):\d+$/.test(host))return json(res,403,{error:'Local requests only.'});
       const url=new URL(req.url,'http://'+host), origin=String(req.headers.origin||'');
       if(origin && origin!=='http://'+host && !/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(origin))return json(res,403,{error:'Local requests only.'});
+      if(url.pathname.startsWith('/api/chat-core/phone-deck/')){
+        const expected=['127.0.0.1:'+server.address().port,'localhost:'+server.address().port];
+        if(!expected.includes(host)||(origin&&origin!=='http://'+host)||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{error:'Same-origin local requests only.'});
+        if(req.method!=='GET')return json(res,405,{error:'Phone connection status is read-only.'});
+        if(url.pathname!=='/api/chat-core/phone-deck/state')return json(res,404,{error:'Not found.'});
+        const feed=!config.enabled?'disabled':!config.twitch&&!config.youtube?'no-platforms':state.subscribed?'subscribed':state.connected?state.lastError?'subscription-rejected':'awaiting-subscription':socket?.readyState===0?'connecting':'disconnected';
+        return json(res,200,{status:feed,enabled:config.enabled,connected:state.connected,subscribed:state.subscribed,twitch:config.twitch,youtube:config.youtube});
+      }
       if(req.method==='GET'&&url.pathname==='/health')return json(res,200,{service:'chat-core',ready:true,configured:true,...status()});
       if(req.method==='GET'&&url.pathname==='/api/chat-core/events'){
         if(origin && origin!=='http://'+host)res.setHeader('Access-Control-Allow-Origin',origin);
