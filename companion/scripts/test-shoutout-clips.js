@@ -9,7 +9,7 @@ async function main() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'shoutout-clips-test-')); let test;
   try {
     test = await fixture(root, process.argv[2]);
-    const zip = new AdmZip(path.join(root, 'packages', 'shoutout-clips-2.1.0.streammodule'));
+    const zip = new AdmZip(path.join(root, 'packages', 'shoutout-clips-2.1.1.streammodule'));
     const bytes = Buffer.from(zip.readAsText('streamerbot/shoutout-clips.sb'), 'base64');
     const exported = JSON.parse(zlib.gunzipSync(bytes.subarray(4)));
     const manifest = JSON.parse(zip.readAsText('module.json'));
@@ -41,7 +41,7 @@ async function main() {
       assert.equal((await fetch(test.base + '/api/public/assets/shoutout-clips/' + asset)).status, 200);
     }
     const saved = JSON.stringify(test.payload().config);
-    await test.host.installModulePackage(path.join(root, 'packages', 'shoutout-clips-2.1.0.streammodule'));
+    await test.host.installModulePackage(path.join(root, 'packages', 'shoutout-clips-2.1.1.streammodule'));
     assert.equal(JSON.stringify(test.payload().config), saved);
     console.log('Shoutout Clips passed: package/privacy, stable actions, native transport, ready inventory, copied assets and repeat installation.');
   } finally { await test?.close(); assert.ok(root.startsWith(os.tmpdir() + path.sep)); fs.rmSync(root, { recursive: true, force: true }); }

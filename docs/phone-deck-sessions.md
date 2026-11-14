@@ -1,21 +1,21 @@
 # Phone Deck implementation checkpoints
 
-Updated November 13, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. The modern Phone Deck is installed/running after the accepted Session 6 handoff. Production now uses Companion 1.3.2 and Phone Deck 2.0.3 after the startup reliability repair; the contribution contract remains compatible with 1.3.1. **21/24** required feature areas are implemented; Session 7 providers are published and verified; production updates/import remain a separate step. Session 8 is the next separate implementation pass.
+Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 adds optional Walk Ons/Shoutout Clips declarations without new native imports; release verification is recorded below. Feature count remains **21/24**.
 
 ## Progress
 
 | Session | Status | Deliverable |
 | --- | --- | --- |
-| 1 | Complete locally; unpublished | Independent OBS foundation and copied grid/editor |
-| 2 | Complete locally; unpublished | Volume, item/group visibility, recording pause/resume, Studio Mode, preview/transition, replay buffer, virtual camera |
+| 1 | Complete; included in published Phone Deck | Independent OBS foundation and copied grid/editor |
+| 2 | Complete; included in published Phone Deck | Volume, item/group visibility, recording pause/resume, Studio Mode, preview/transition, replay buffer, virtual camera |
 | 3 | Complete; Chat Routing provider published | Optional-provider discovery/dispatch, optional native helper imports, resource pickers, Streamer.bot forms and Chat Routing |
 | 4 | Complete; both providers published | Stream Launch and Countdown contributions |
 | 5 | Complete; all three providers published | Audio Routing, Wheel, Video and legacy-card/widget compatibility |
-| 6 | Complete; handset accepted, 2.0.2 editor repair installed | Backed-up production HTTPS/pairing/layout handoff and usability corrections |
-| 7 | Complete; both providers published, production update/import pending | Spotify 2.0.3 and scoped Source Modules 1.0.1 |
-| 8 | Pending | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
-| 9 | Pending | Named Timers, Reminders and confirmed Redeem Checklist operations |
-| 10 | Pending | Walk Ons and Shoutout Clips |
+| 6 | Complete; handset accepted, 2.0.3 reliability repair installed | Backed-up production HTTPS/pairing/layout handoff and usability corrections |
+| 7 | Complete; both providers published; adoption tracked separately | Spotify 2.0.3 and scoped Source Modules 1.0.1 |
+| 8 | Complete; all three providers published | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
+| 9 | Complete; all three published; user reports imports/restart | Named Timers, Reminders and confirmed Redeem Checklist operations |
+| 10 | In release verification | Walk Ons and Shoutout Clips |
 | 11 | Pending | Archipelago, Controller and Pokemon |
 | 12 | Pending | Live Chatbox status, provider coverage and stabilization |
 
@@ -183,3 +183,13 @@ Feature count stays 21/24. Stop after Session 9. Session 10 is Walk Ons test/sto
 Session 9 publication completed from source `f5bdeff0ff71c501efc837517ebdaf1115563d3e`, after Windows/Linux Check `43530441480` passed (including full actual C# preservation and new failure/concurrency tests on Windows). Named Timers 1.0.1 workflow `43530661944`, SHA-256 `05b9f7cfb763b6f3213f4a3ab34034ccb5596bf7b28217c2c73db2e7f2c6f83f`; Reminders 1.0.2 workflow `43530849750`, SHA-256 `9e5d1f52b4d1aea04bfa0e2c52b5b94521587bdb457dc7c3a9facb339c7d8184`; Redeem Checklist 1.0.1 workflow `43531022751`, SHA-256 `8fe7c5dddf5ae2421f7e012377d04cfca04e80ce57f96c1b816a8d4c534088e0`. Local archives are the corresponding dist/modules/<id>-<version>.streammodule files.
 
 Complete source, actual C# and full Phone Deck runtime/hidden suites passed. Actual anonymous released-package upgrades in packaged Companion 1.3.1 passed hashes, engine-only native changes, stable action/command/trigger/schedule/queue/wrapper data, Ready assets/contributions and preserved private data/favorites. The read-only fixture received only GetActions; no service or action was dispatched and no download fallback was needed. All isolated test processes exited. Production applications, packages/actions, settings, viewers and deck layout/pairing/TLS remain unchanged. Adoption is three explicit Catalogue updates followed by a backed-up off-stream native import/restart and the three Initialize actions, then explicitly added Input/widget cards. No Companion/Phone Deck rebuild is required. New controls stay disabled against old native imports. Stop at Session 9; Session 10 has not started.
+
+## Session 10 checkpoint — November 14, 2026
+
+Walk Ons 2.1.2 contributes enabled saved-person Test buttons/pickers, Stop walk-on sound, confirmed all-person session reset and once-per-stream/used-count status. The existing native Test path preserves eligibility, weighted pools, volumes, busy/rejected behavior and optional Video assignments. Stop retains the existing sound-only ownership; video entrances use Video’s already available Stop contribution. It never stops another media owner. Refresh/discovery performs no Initialize/reset. Private audio URLs and assignment values stay server-side.
+
+Shoutout Clips 2.1.1 contributes saved/live clip-ID playback, Stop and native clip visibility/ID/duration status. No channel lookup or AI is added, and saved layout/mute/player/duration/title styling remains native-owned. Both packages retain complete native action data and require no new import/restart or app/Phone Deck rebuild. Commands report Requested because the existing owners have no matching durable phone-operation result; lost responses remain unknown without replay. Cards remain explicitly added.
+
+Focused runtime/hidden desktop/mobile checks pass with synthetic media/owners, including two clients, confirmation cancellation, eligibility/configuration preservation, missing saved resources/imports/owners, Requested vs observable state, duplicate/stale/lost requests, stable drafts/focus/carets/scroll and independent OBS. Existing actual C# media/Walk Ons regressions pass. Full source and real released-upgrade gates follow below. All production applications/actions/settings/eligibility/playback/deck layout/pairing/TLS are untouched during implementation. The user separately reports completing Session 9 imports and restart; no production Initialize or reset was invoked to check that report.
+
+Stop after Session 10. Session 11 is Archipelago, Controller and Pokemon contributions; it is not started here. Feature count stays 21/24.

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "walk-ons",
   "name": "Walk Ons",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "First-chat viewer entrances with private audio, weighted pools, optional video, and once-per-stream eligibility.",
   "author": "Sethani",
   "license": "MIT",
@@ -149,6 +149,112 @@
         "stateKey": "portable.walkonSound.state",
         "actionPrefix": "Walk-on Sound"
       }
-    ]
+    ],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.walkOns.state",
+        "fields": {
+          "oncePerStream": "payload.config.settings.oncePerStream",
+          "usedCount": "payload.session.seen.length"
+        }
+      },
+      "resources": {
+        "people": {
+          "path": "payload.config.roster",
+          "id": "$key",
+          "label": "$key",
+          "filter": {
+            "path": "enabled",
+            "equals": true
+          }
+        }
+      },
+      "actions": {
+        "test": {
+          "id": "75744c13-b2d7-4a44-af5f-8f5263da7b9f",
+          "args": {
+            "login": {
+              "field": "login"
+            }
+          }
+        },
+        "stop": {
+          "id": "16f3bce9-9c70-4791-98b5-bef600897957",
+          "args": {}
+        },
+        "reset": {
+          "id": "fb01f2b6-646c-4f19-b3e6-67557f330d67",
+          "args": {
+            "login": "all"
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "test",
+          "name": "Test saved entrance",
+          "kind": "button",
+          "action": "test",
+          "fields": [
+            {
+              "id": "login",
+              "label": "Configured person",
+              "type": "resource",
+              "resource": "people",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "test-picker",
+          "name": "Choose entrance to test",
+          "kind": "form",
+          "action": "test",
+          "fields": [
+            {
+              "id": "login",
+              "label": "Configured person",
+              "type": "resource",
+              "resource": "people",
+              "required": true,
+              "input": true
+            }
+          ]
+        },
+        {
+          "id": "stop",
+          "name": "Stop walk-on sound",
+          "kind": "button",
+          "action": "stop",
+          "fields": []
+        },
+        {
+          "id": "reset",
+          "name": "Reset all walk-on eligibility",
+          "kind": "button",
+          "action": "reset",
+          "confirm": true,
+          "fields": []
+        },
+        {
+          "id": "status",
+          "name": "Walk-on session status",
+          "kind": "widget",
+          "display": [
+            "oncePerStream",
+            "usedCount"
+          ],
+          "displayLabels": {
+            "oncePerStream": "Once per stream",
+            "usedCount": "Entrances used"
+          },
+          "fields": []
+        }
+      ]
+    }
   }
 }

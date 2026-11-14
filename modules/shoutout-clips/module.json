@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "shoutout-clips",
   "name": "Shoutout Clips",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Existing Twitch clip presentation, title styling, duration, mute and shared-overlay playback.",
   "author": "Sethani",
   "license": "MIT",
@@ -151,6 +151,90 @@
       "feature": "shoutoutClip",
       "stateKey": "portable.shoutoutClip.state",
       "actionPrefix": "Shoutout Clips"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.shoutoutClip.state",
+        "fields": {
+          "visible": "payload.clip.visible",
+          "clipId": "payload.clip.clipId",
+          "durationMs": "payload.clip.durationMs"
+        }
+      },
+      "actions": {
+        "play": {
+          "id": "136a6a6b-47d2-427c-b101-5f84d8cae707",
+          "args": {
+            "clipId": {
+              "field": "clipId"
+            }
+          }
+        },
+        "stop": {
+          "id": "e91420c4-f85a-474d-990a-64cae0a27af3",
+          "args": {}
+        }
+      },
+      "controls": [
+        {
+          "id": "play",
+          "name": "Play saved clip ID",
+          "kind": "button",
+          "action": "play",
+          "fields": [
+            {
+              "id": "clipId",
+              "label": "Twitch clip ID",
+              "type": "text",
+              "required": true,
+              "maxLength": 200
+            }
+          ]
+        },
+        {
+          "id": "play-input",
+          "name": "Play clip by ID",
+          "kind": "form",
+          "action": "play",
+          "fields": [
+            {
+              "id": "clipId",
+              "label": "Twitch clip ID",
+              "type": "text",
+              "required": true,
+              "maxLength": 200,
+              "input": true
+            }
+          ]
+        },
+        {
+          "id": "stop",
+          "name": "Stop shoutout clip",
+          "kind": "button",
+          "action": "stop",
+          "fields": []
+        },
+        {
+          "id": "status",
+          "name": "Shoutout clip status",
+          "kind": "widget",
+          "display": [
+            "visible",
+            "clipId",
+            "durationMs"
+          ],
+          "displayLabels": {
+            "visible": "Clip visible",
+            "clipId": "Clip ID",
+            "durationMs": "Duration (ms)"
+          },
+          "fields": []
+        }
+      ]
     }
   }
 }

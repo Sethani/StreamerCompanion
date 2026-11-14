@@ -1,5 +1,13 @@
 # Walk Ons
 
+## Optional Phone Deck controls (2.1.2)
+
+Add a Button for Test saved entrance, or an Input card for Choose entrance to test. Both pick an enabled saved person and use the existing Test action: weights, volume, busy rules and optional Video assignments remain native-owned; testing never consumes normal once-per-stream eligibility. Video tests need their existing Video setup. Private sound paths and assignment values are not sent to the phone.
+
+Stop walk-on sound stops only the existing sound player. Use Video's existing Stop control for video entrances; this control never stops unrelated Video/Shoutout playback. Reset all walk-on eligibility requires confirmation and explicitly sends the existing all-person reset. A session widget shows the saved once-per-stream setting and used count. Refresh/discovery does not initialize or reset the session.
+
+Commands report Requested, because these actions have no matching durable phone-operation acknowledgement. Requested does not prove playback acceptance. Busy/rejected playback preserves native eligibility. Existing native action data is unchanged: no new import/restart, Companion/Phone Deck rebuild, service, dependency or automatic cards are required.
+
 Walk Ons maps selected Twitch logins to one sound, a weighted sound pool, or an optional Video module item. The first ordinary chat message from that person starts the entrance once per stream. Commands are ignored, and an entrance skipped because media is busy remains eligible.
 
 ## Setup
@@ -24,6 +32,6 @@ The roster and session ledger remain in the Streamer.bot persisted global `porta
 
 Walk Ons never ships a viewer roster or personal media. Removing the module does not delete Streamer.bot globals or Companion's private media directory.
 
-## Upgrade to 2.1.1
+## Upgrade to 2.1.2
 
 Reimport the included Streamer.bot export even if Companion already shows Ready. Version 2.1.0 incorrectly expected a child action's changed argument to return to its caller: audio could play while the caller rejected it, leaving the person eligible for every later message. Version 2.1.1 uses a unique request acknowledged in persisted sound state and retains that acknowledgement through playback completion. Roster and playback state updates are serialized. Existing action IDs, roster, private audio, command permissions and startup/going-live/explicit reset behavior are retained. Test continues without consuming eligibility; rejected or busy playback remains eligible.

@@ -1,6 +1,12 @@
 # Shoutout Clips
 
-The existing Streamer.bot-owned Twitch clip player, extracted with its established controls and shared-overlay appearance. Version 2.1.0 preserves the six action IDs and `portable.shoutoutClip.state`; importing never seeds personal settings or viewer data.
+## Optional Phone Deck controls (2.1.1)
+
+Add a Button for Play saved clip ID or an Input card for Play clip by ID, plus Stop shoutout clip and a status widget if desired. Playback accepts a Twitch clip ID directly and uses the native owner's existing player, duration limit, mute, layout and title styling. Phone controls add no channel lookup or AI step and do not change saved presentation settings. Status reflects the owner's saved clip visibility/ID/duration, not proof that a remote player is audible.
+
+Commands report Requested without a matching durable operation acknowledgement. Lost responses stay unknown and never retry automatically. Existing native actions/state and import data are unchanged; no new Streamer.bot import/restart, Companion/Phone Deck rebuild, service, dependency or automatic cards are needed.
+
+The existing Streamer.bot-owned Twitch clip player, extracted with its established controls and shared-overlay appearance. Version 2.1.1 preserves the six action IDs and `portable.shoutoutClip.state`; importing never seeds personal settings or viewer data.
 
 Install from Companion, import the included Streamer.bot export, and open Shoutout Clips in Universal Dock. Universal Overlay hosts the renderer using the existing `shoutoutclip` routing identity. The personal combined source can host the same packaged renderer; no extra OBS source is needed.
 

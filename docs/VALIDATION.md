@@ -1,5 +1,11 @@
 # First public GitHub update validation
 
+## November 14: Phone Deck Session 10
+
+Walk Ons 2.1.2 and Shoutout Clips 2.1.1 add optional declarations over unchanged native action data. Focused runtime and hidden desktop/mobile regressions cover configured/live roster and clip-ID selection, explicit reset confirmation/cancellation, Requested-only results, lost-response no replay, preserved eligibility/configuration, sound Stop ownership, missing resources/imports/provider readiness and independent direct OBS. Private audio URLs and assignment values are absent from phone state. No channel lookup or AI is added.
+
+Existing actual C# regressions preserve weighted playback, Test vs normal eligibility, once-per-stream/rejected/immediate sound acceptance, guarded Stop, restart behavior, clip duration/mute/style and stale completion protection. All tests use synthetic owners/media and disposable data/ports. Release/upgrade results and the final checkpoint are recorded in phone-deck-sessions.md.
+
 ## November 14: Phone Deck Session 9
 
 Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1 add optional timer/backlog forms and status. Unlike Session 8, these packages change native engine code and require backed-up imports plus Initialize for adoption. New phoneDeckVersion prerequisites keep old imports from dispatching unsupported operations. Existing action/command/trigger/schedule/queue/wrapper data and private configuration contracts are preserved.

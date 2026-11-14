@@ -16,7 +16,7 @@ async function main() {
   try {
     const output = path.join(root, "packages");
     const catalog = buildModules(["universal-dock", "walk-ons"], { output });
-    const packagePath = path.join(output, "walk-ons-2.1.1.streammodule");
+    const packagePath = path.join(output, "walk-ons-2.1.2.streammodule");
     const zip = new AdmZip(packagePath);
     const manifest = JSON.parse(zip.readAsText("module.json"));
     const bytes = Buffer.from(zip.readAsText("streamerbot/walk-ons.sb"), "base64");
