@@ -1,6 +1,6 @@
 # Module migration checklist
 
-Updated November 14, 2026. **21 of 24 required feature areas implemented; 3 still to migrate.**
+Updated November 14, 2026. **21 of 24 required feature areas complete; 3 migrations/cutovers remain.**
 
 Checked means the replacement is implemented and published/installed/imported as applicable. Remaining acceptance and retirement work is listed separately below. This counts feature areas, not package files; going-live bookkeeping is deliberately retained as a private native hook.
 
@@ -28,9 +28,9 @@ Checked means the replacement is implemented and published/installed/imported as
 - [x] Walk Ons — use 2.1.1; one live observation remains below
 - [x] Wheel
 
-## To do: remaining migration
+## To do: remaining migration and cutover
 
-- [ ] **Embedded widgets, including Tangia.** In progress: [combined-overlay candidate](embedded-widgets-extraction.md) built and tested; recovery and package-upgrade gates pass; publication record and off-stream cutover are tracked there. Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
+- [ ] **Embedded widgets, including Tangia.** In progress: [combined-overlay candidate](embedded-widgets-extraction.md) built and tested; Embedded Widgets 1.0.0, Universal Overlay 1.0.2 and Source Modules 1.0.2 are published/release-upgrade verified; private off-stream adoption is pending. Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
 - [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay. Add optional colour changes on bounce and image selection/upload.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
 
