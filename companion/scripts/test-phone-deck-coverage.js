@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const expected={
  archipelago:['show','hide','refresh','wake','status'], 'audio-routing':['toggle','status'], cameras:['main-mode','secondary-mode','secondary-video','assign-guest','status'],
  'chat-core':['status'], 'chat-routing':['bot-message'], 'controller-input':['show','hide','status'], countdown:['start','preset-3','preset-5','custom','configure','pause','resume','clear','status'],
- 'named-timers':['create','status'], 'phone-deck':['title','category','custom-action'], 'pokemon-encounters':['clear','status'], reactive:['show-guest','hide-guest'],
+ 'embedded-widgets':['status'], 'named-timers':['create','status'], 'phone-deck':['title','category','custom-action'], 'pokemon-encounters':['clear','status'], reactive:['show-guest','hide-guest'],
  'redeem-checklist':['complete','refund','status'], reminders:['add','complete','status'], 'scene-bindings':['apply-link','status'], 'shoutout-clips':['play','play-input','stop','status'],
  'source-modules':['set-mode'], spotify:['resume','pause','toggle','next','previous','volume','volume-preset','status'], 'stream-launch':['go-live','progress'], video:['play','stop','status'], 'walk-ons':['test','test-picker','stop','reset','status'],wheel:['spin','clear','status']
 };

@@ -1,0 +1,33 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto'),model=require('./model');
+function atomicWrite(file,value){const temporary=file+'.'+crypto.randomUUID()+'.tmp';try{const fd=fs.openSync(temporary,'wx',0o600);try{fs.writeFileSync(fd,JSON.stringify(value,null,2)+'\n');fs.fsyncSync(fd);}finally{fs.closeSync(fd);}fs.renameSync(temporary,file);}finally{try{fs.unlinkSync(temporary);}catch(e){if(e.code!=='ENOENT')throw e;}}}
+function createService(options={}){
+ const directory=options.dataDirectory||process.env.COMPANION_DATA_DIRECTORY||path.join(process.cwd(),'embedded-widgets-data');fs.mkdirSync(directory,{recursive:true});
+ const file=path.join(directory,'config.json'),csrf=crypto.randomBytes(24).toString('hex');let config=model.defaults(),invalidSaved=false,stopped=false,stopPromise;
+ try{config=model.validate(JSON.parse(fs.readFileSync(file,'utf8')));}catch(e){if(e.code!=='ENOENT')invalidSaved=true;}
+ function state(){if(invalidSaved)throw Object.assign(Error('Saved widget settings are unavailable. Restore a valid private backup before editing.'),{statusCode:503});return structuredClone(config);}
+ function save(input){if(stopped)throw Object.assign(Error('Widget service is stopping.'),{statusCode:503});state();if(!input||typeof input!=='object'||Array.isArray(input)||Object.keys(input).some(k=>!['revision','config'].includes(k)))throw Object.assign(Error('Invalid save request.'),{statusCode:400});if(input.revision!==config.revision)throw Object.assign(Error('Settings changed in another client. Reload before saving.'),{statusCode:409});
+  const next=model.validate({...input.config,revision:config.revision+1});try{(options.writeConfig||atomicWrite)(file,next);}catch{throw Object.assign(Error('Widget settings could not be saved. The previous settings remain active.'),{statusCode:500});}config=next;return state();
+ }
+ const assets={'/settings':['settings.html','text/html; charset=utf-8'],'/settings.js':['settings.js','application/javascript'],'/settings.css':['settings.css','text/css'],'/renderer.js':['renderer.js','application/javascript']};
+ function json(res,code,value){res.writeHead(code,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(value));}
+ const server=http.createServer(async(req,res)=>{try{
+  res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('Cross-Origin-Resource-Policy','same-origin');
+  res.setHeader('Content-Security-Policy',"default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors http://127.0.0.1:* http://localhost:*");
+  const port=server.address()?.port,host=String(req.headers.host||''),origin=String(req.headers.origin||'');if(!['127.0.0.1:'+port,'localhost:'+port].includes(host)||(origin&&origin!=='http://'+host)||req.headers['sec-fetch-site']==='cross-site')return json(res,403,{error:'Same-origin loopback requests only.'});
+  const pathname=new URL(req.url,'http://'+host).pathname;
+  if(req.method==='GET'&&pathname==='/health')return json(res,200,{service:'embedded-widgets',ready:!invalidSaved,configured:!invalidSaved&&model.summary(config).configuredCount>0});
+  if(req.method==='GET'&&assets[pathname]){const[name,type]=assets[pathname];res.writeHead(200,{'Content-Type':type});return res.end(fs.readFileSync(path.join(__dirname,'public',name)));}
+  if(pathname.startsWith('/api/widgets/phone-deck/')){if(req.method!=='GET')return json(res,405,{error:'Setup status is read-only.'});if(pathname!=='/api/widgets/phone-deck/state')return json(res,404,{error:'Not found.'});return json(res,200,model.summary(state()));}
+  if(pathname!=='/api/widgets/config')return json(res,404,{error:'Not found.'});
+  if(req.method==='GET')return json(res,200,{config:state(),csrf});
+  if(req.method!=='PUT')return json(res,405,{error:'Method not allowed.'});
+  if(req.headers['x-companion-csrf']!==csrf)return json(res,403,{error:'Open Widget settings before saving.'});
+  if(!/^application\/json(?:\s*;|$)/i.test(req.headers['content-type']||''))return json(res,415,{error:'JSON settings are required.'});
+  let size=0;const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>524288)return json(res,413,{error:'Settings are too large.'});chunks.push(chunk);}let input;try{input=JSON.parse(Buffer.concat(chunks).toString());}catch{return json(res,400,{error:'Invalid JSON settings.'});}
+  return json(res,200,{config:save(input)});
+ }catch(e){if(!res.headersSent)json(res,e.statusCode||500,{error:e.statusCode?e.message:'Widget service request failed.'});else res.end();}});
+ return{state,save,server,async start(){if(stopped)throw Error('Widget service is stopped.');await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(options.port??Number(process.env.COMPANION_SERVICE_PORT||3143),'127.0.0.1',()=>{server.removeListener('error',reject);resolve();});});return server.address().port;},stop(){if(stopPromise)return stopPromise;stopped=true;stopPromise=new Promise(resolve=>{server.closeAllConnections();server.close(()=>resolve());});return stopPromise;}};
+}
+if(require.main===module){const service=createService();service.start().catch(()=>{console.error('Embedded Widgets could not start.');process.exitCode=1;});for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>service.stop().then(()=>process.exit(0)));}
+module.exports={createService,atomicWrite};

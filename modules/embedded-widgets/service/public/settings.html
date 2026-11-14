@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Embedded Widgets</title><link rel="stylesheet" href="/settings.css"><script src="/settings.js" defer></script></head>
+<body><main><h1>Embedded Widgets</h1><p>Local setup candidate. Combined-overlay integration is pending; saving does not load or display widgets.</p>
+<p>Widget URLs stay private. This editor never opens them or sends a preview request.</p>
+<form id="settings"><fieldset><legend>Canvas</legend><label><input type="checkbox" id="enabled"> Enable widgets</label><div class="grid"><label>Width<input type="number" id="canvasWidth" min="640" max="7680" required></label><label>Height<input type="number" id="canvasHeight" min="360" max="4320" required></label></div></fieldset>
+<div class="toolbar"><button type="button" id="add-widget">Add widget</button><button type="submit" id="save" disabled>Save</button><button type="button" id="reload">Discard draft and reload</button></div><p id="status" role="status" aria-live="polite">Loading private settings…</p><div id="widgets"></div><p id="empty" hidden>No saved widgets. Add one to configure its URL and layout.</p></form></main></body></html>

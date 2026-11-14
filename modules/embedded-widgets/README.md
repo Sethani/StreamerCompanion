@@ -1,0 +1,13 @@
+# Embedded Widgets — local foundation candidate
+
+This unpublished candidate stores external widget setup, including Tangia, privately. Fresh installations are empty and disabled. The settings editor supports per-widget URL, position, dimensions, nonuniform scale and enable choices. URLs are masked by default and are never loaded by the editor. Save is explicit, revision checked and atomic; polling preserves drafts, focus and expanded rows.
+
+**Combined-overlay routing and ownership integration are not implemented in this checkpoint.** Saving an enabled widget does not display or contact it. No overlay is registered, no new OBS source should be added, and this is not ready to replace the existing production widgets. The renderer library has no automatic fetch/start and is exercised only with synthetic local embeds. The next pass must preserve separate Tangia/MicroLayer rules, lazy first load, hidden-session retention and safe unload/ownership handoff in the existing combined source.
+
+Management defaults to loopback port 3143. Host/origin checks, CSRF protection, no cross-origin access and restricted local framing protect private settings. Health and the optional Phone Deck setup widget contain only boolean/count information; they do not report remote-site availability or delivery. No installation token, Streamer.bot import or app rebuild is needed. Phone Deck adds no cards automatically.
+
+URLs accept explicit HTTP/HTTPS only and preserve the supplied query and fragment. They may contain credentials, so keep the private data directory out of Git and backups intended for sharing. Only the local settings editor and the eventual intended renderer should receive URLs. There is no public legacy Import settings option, embedded private seed, automatic preview, external validation request or remote application/asset bundle. Migration tooling and rollback data remain private.
+
+Configuration schema version 1 uses a revision, master enable switch, canvas dimensions and a widget map. Each widget has a stable ID, label, routing group (`tangia` or `microlayer`), enable switch, URL and layout box. Invalid or corrupt saved data fails closed without replacing the file. Missing settings start empty without a write. No existing owner (Controller, Stream Together, notifications, clips) is imported or activated automatically.
+
+Local validation: `node companion/scripts/test-embedded-widgets.js` and `node companion/scripts/test-embedded-widgets-browser.js`. Both use disposable data, isolated ports and synthetic embeds. See `docs/embedded-widgets-extraction.md` for the bounded migration checkpoints. No production installation/publication/cutover is authorized by merely building this candidate.

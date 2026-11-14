@@ -1,5 +1,9 @@
 # First public GitHub update validation
 
+## November 14: Embedded Widgets local foundation
+
+The unpublished embedded-widgets 1.0.0 candidate passes full source, focused runtime/security/package, actual installed service, hidden two-client editor/synthetic renderer and packaged Companion 1.3.1 compatibility checks. Empty defaults, strict URL/layout validation, revisioned concurrent saves, corrupt/failed persistence, exact private data, safe read-only Phone Deck projection, stable editor drafts/focus/scroll, lost-response no replay, lazy hidden iframe sessions and explicit disable/clear are covered with isolated data/ports. No real widget website, native/OBS action, production install, application restart or publication occurs. The candidate deliberately registers no overlay; combined-renderer routing/lifetime/ownership remains the next pass. See embedded-widgets-extraction.md for artifact hash and resume boundary.
+
 ## November 14: Phone Deck Session 12
 
 Live Chatbox 1.0.1 adds one read-only service-owned connection widget over exact loopback Host/Origin/no-CORS routes. State contains only feed status, enabled/socket/subscription and platform switches, never messages, viewer identifiers/history, counters, configuration or credentials. Subscription is not platform authentication/EventSub/message-delivery verification. Polling does not open a feed, subscribe again, send chat, reconnect or save configuration. Widget execution is rejected. Existing ingestion/enrichment, normal/ticker renderer and settings remain unchanged.

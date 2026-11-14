@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 2,
+  "id": "embedded-widgets",
+  "name": "Embedded Widgets",
+  "version": "1.0.0",
+  "description": "Private external widget setup, including Tangia. Local candidate; combined-overlay integration is pending.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": []
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {},
+    "capabilities": {
+      "embedded-node": "required"
+    },
+    "companion": ">=1.3.1"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/runtime.js",
+    "port": 3143,
+    "healthPath": "/health",
+    "healthService": "embedded-widgets",
+    "settingsPath": "/settings",
+    "provides": [
+      "embedded-widgets"
+    ]
+  },
+  "ui": {
+    "id": "embedded-widgets",
+    "name": "Embedded Widgets",
+    "category": "Effects",
+    "dockPage": "/settings",
+    "ownership": "node",
+    "overlays": [],
+    "actions": [],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "service",
+        "apiPrefix": "/api/widgets/",
+        "statePath": "/api/widgets/phone-deck/state"
+      },
+      "state": {
+        "fields": {
+          "enabled": "enabled",
+          "savedCount": "savedCount",
+          "configuredCount": "configuredCount"
+        }
+      },
+      "actions": {},
+      "controls": [
+        {
+          "id": "status",
+          "name": "Embedded Widgets setup",
+          "kind": "widget",
+          "display": [
+            "enabled",
+            "savedCount",
+            "configuredCount"
+          ],
+          "displayLabels": {
+            "enabled": "Master enabled",
+            "savedCount": "Saved widgets",
+            "configuredCount": "Configured URLs"
+          },
+          "fields": []
+        }
+      ]
+    }
+  }
+}

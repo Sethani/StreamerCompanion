@@ -29,6 +29,10 @@ Session 12 source audit, November 14, 2026. All **24 source packages** have an e
 | walk-ons 2.1.2 | streamerbot | test, test-picker, stop, reset, status | Requested |
 | wheel 2.1.2 | streamerbot | spin, clear, status | Requested |
 
+## Current source addition — unpublished Widgets foundation
+
+The subsequent local embedded-widgets 1.0.0 candidate adds one read-only setup widget (master-enabled flag, saved count and configured-URL count). It does not expose URLs/identities, dispatch actions or claim renderer/event readiness. Current source inventory is **25 packages, 22 contributors, 70 visible controls**, including this unpublished package; the Session 12 published baseline above remains historical. Static and real missing/stopped/removed-owner tests include the new declaration, and its actual owner projection is exercised by test-embedded-widgets.js. No production package/cards changed.
+
 ## Availability and ownership
 
 Phone Deck's basic OBS controls require only its private OBS connection. No feature module or Streamer.bot is a required dependency. Optional discovery never installs, starts or executes an owner, nor does it add cards to saved layouts. Missing, stopped, unconfigured, incompatible and removed providers remain unavailable with their saved references intact. A slow or disconnected optional owner cannot block direct OBS controls.

@@ -30,7 +30,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## To do: remaining migration
 
-- [ ] **Embedded widgets, including Tangia.** In progress: [boundary audit and preservation baseline](embedded-widgets-extraction.md) complete; replacement package/cutover still pending. Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
+- [ ] **Embedded widgets, including Tangia.** In progress: [local foundation candidate](embedded-widgets-extraction.md) built and tested; combined-overlay integration, publication and cutover still pending. Preserve existing widgets, private URLs, layouts and scene routing in the modern setup.
 - [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay. Add optional colour changes on bounce and image selection/upload.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
 
