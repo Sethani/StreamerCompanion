@@ -1,5 +1,9 @@
 # Remaining legacy migration status
 
+## Current checkpoint: November 14, Local AI handoff complete
+
+Local AI 1.0.0 is published, installed and running with automatic start. Its two private raid/shoutout callers now use port 3145; the old Node generation routes return 410 and startup warming is guarded. Original model/URL/timeout/keep-alive were preserved privately. Explicit warm and synthetic AI preview passed without AI chat; both native HTTP response contracts passed. The backed-up off-stream Streamer.bot/server restart preserved scene, mutes, routing, phone identity/preferences and all other running service PIDs. Native reconnect and incoming Twitch chat were verified. All 24 required feature areas now have implementations; this does not complete whole-system retirement. Recover the pre-existing Widgets owner safely, audit/adopt modern overlay/startup paths, rehearse old-server-off and cold-start behavior, then remove migration-only Import settings controls. Do not repeat accepted Avatar/Cameras/Reactive/Tangia checks. See [release and verification evidence](local-ai-extraction.md). Earlier dated entries below are historical.
+
 Reviewed 2026-11-08. The old personal registry still lists both migrated and unmigrated features; its presence alone is not evidence that a legacy implementation is still required. This is a source/dependency audit, not proof that every installed action or live trigger works.
 
 Writing Challenge is explicitly parked at the user's request: it was experimental and is not a switchover requirement. It is omitted from the priority candidates below; its code and data are not removed.
