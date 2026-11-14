@@ -2,7 +2,7 @@
 
 ## Current handoff - November 14, 2026
 
-**Avatar 1.0.1 is published, installed and enabled in the existing combined source.** Original image, native scene rules, OBS scene/source/audio state, pairing/TLS and existing preferences are preserved. The operator enabled automatic start. The old renderer is guarded; no additional OBS source or app/native/server restart was needed. Operator visual acceptance is pending, so the overall count remains 22/24.
+**Avatar 1.0.1 is published, installed and enabled in the existing combined source.** Original image, native scene rules, OBS scene/source/audio state, pairing/TLS and existing preferences are preserved. The operator enabled automatic start. The old renderer is guarded; no additional OBS source or app/native/server restart was needed. The operator confirmed the original single bouncing image, movement and colour changes on November 14. Avatar is complete; the overall count is **23/24**, with Ollama remaining.
 
 ## Pass 1 - historical local checkpoint
 
@@ -29,7 +29,7 @@ All requests enforce exact loopback Host/port. Private APIs/media additionally r
 
 Full local source, focused runtime/package/lifecycle and hidden-browser checks passed. The editor suite includes a delayed-poll regression: a read begun before Save cannot undo the confirmed newer settings. Actual packaged Companion 1.3.1 registry/private-data and child lifecycle checks passed with the target host version explicitly selected. Tests use disposable data, synthetic images/native responses and isolated ports; all test processes must close. Local artifact: `dist/modules/bouncing-avatar-1.0.0.streammodule`; SHA-256 `c096b60962e33f974f54c111b913949857176bc887bc96312f51218751cafe55`. Source `5c56ed7e87ba74191217a03ae17846525bfd4628` passed [Windows/Linux Check 43614628069](https://github.com/Sethani/StreamerCompanion/actions/runs/43614628069), including existing actual C# checks on Windows. Final process inspection found zero Avatar test processes and no production 3144 listener. No module release workflow was dispatched.
 
-## Cutover plan (completed below; visual acceptance pending)
+## Cutover plan (completed and accepted below)
 
 1. Finish source/CI gates and verify the exact archive; publish only this module through the existing independent module workflow. There is no prior published Avatar release to upgrade; verified reinstall/private-data preservation is the baseline, and first release must be checked in packaged Companion.
 2. Audit live consumers without switching scenes: combined legacy Overlay, any standalone Bouncing source, modern aggregate and cached/hidden consumers. Read current native `bouncing` routing without applying it. Back up the personal image, source/helper files, module private data, preferences and relevant OBS state.
@@ -61,4 +61,4 @@ The original image was copied privately while disabled. The operator started Ava
 
 Verification passed for the original image hash, all native routing rules, unchanged current scene and OBS browser settings, cached authoritative mute state, phone pairing/TLS/configuration, existing host preferences, previously running service PIDs and repository-server PID. Embedded Widgets had been stopped at the initial snapshot and was found running later; it was left running. Its pre-existing renderer-owner record is unchanged from the backup and reports unconfirmed, requiring a separate safe owner-recovery follow-up. No ownership reset or unrelated setting change was performed in this handoff.
 
-The modern renderer remains enabled with colour changes on bounce. `scripts/avatar-cutover.js rollback` disables modern Avatar, restores the hash-checked original private source/helper/standalone files, removes only its matching ownership marker and refreshes the same source; image data stays private and preserved. Rollback requires off-stream OBS. Visual acceptance is pending; do not mark 23/24 until confirmed. Keep the old server for Ollama, and defer final legacy Import settings removal to the overall switch.
+The modern renderer remains enabled with colour changes on bounce. `scripts/avatar-cutover.js rollback` disables modern Avatar, restores the hash-checked original private source/helper/standalone files, removes only its matching ownership marker and refreshes the same source; image data stays private and preserved. Rollback requires off-stream OBS. Operator acceptance was recorded on November 14: the original avatar looks correct in the existing selected scene. The checklist is now 23/24; no further Avatar visual check is required. Keep the old server for Ollama, and defer final legacy Import settings removal to the overall switch.

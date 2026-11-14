@@ -1,6 +1,6 @@
 # Phone Deck contribution coverage
 
-Current source audit, November 14, 2026: **26 source packages**, **23 contributors, 71 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.1 is published/installed with a verified guarded handoff; operator visual acceptance remains. This inventory is separate from the whole-system feature checklist, which remains **22/24** until Avatar cutover/acceptance.
+Current source audit, November 14, 2026: **26 source packages**, **23 contributors, 71 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.1 is published/installed with an operator-accepted guarded handoff. This inventory is separate from the whole-system feature checklist, which is now **23/24**, with Ollama remaining.
 
 | Package / version | Owner transport | Visible controls | Completion |
 | --- | --- | --- | --- |
