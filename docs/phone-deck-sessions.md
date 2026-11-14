@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 is complete with published Walk Ons/Shoutout Clips declarations requiring no new native imports. Session 11 is complete with published Archipelago/Controller/Pokemon service-owner contributions. Session 12 implementation and isolated acceptance are complete; publication verification is recorded at the final checkpoint below. Feature count remains **21/24**.
+Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 is complete with published Walk Ons/Shoutout Clips declarations requiring no new native imports. Session 11 is complete with published Archipelago/Controller/Pokemon service-owner contributions. Session 12 is complete and Live Chatbox 1.0.1 is published/release-upgrade verified; final verification is recorded below. Feature count remains **21/24**.
 
 ## Progress
 
@@ -17,7 +17,7 @@ Updated November 14, 2026. Implement **one bounded session per implementation tu
 | 9 | Complete; all three published; user reports imports/restart | Named Timers, Reminders and confirmed Redeem Checklist operations |
 | 10 | Complete; both providers published | Walk Ons and Shoutout Clips |
 | 11 | Complete; all three providers published | Archipelago, Controller and Pokemon |
-| 12 | Implemented; publication checkpoint below | Live Chatbox status, all-package coverage and stabilization |
+| 12 | Complete; Live Chatbox published; all-package audit verified | Live Chatbox status, all-package coverage and stabilization |
 
 ## Current local artifact
 
@@ -225,3 +225,7 @@ No production application, service, layout, pairing/TLS or viewer state changes 
 Stop at Session 12. The twelve-session Phone Deck implementation is complete; the whole-system count remains 21/24. Widgets/Tangia, bouncing avatar and Ollama still need migration, followed by cold-start/full-system rehearsal and final Import settings cleanup. Keep the old server for those remaining features.
 
 Local completion gates passed: full source suite, full Phone Deck runtime/hidden suite, existing Chatbox settings/renderer hidden acceptance and local 1.0.0-to-1.0.1 candidate upgrade inside packaged Companion 1.3.1. One first source run timed out waiting for a synthetic native disconnect while suites ran concurrently; that check and the full source suite passed on an isolated rerun. No runtime change was made for the transient test timing. Release evidence follows after CI/publication.
+
+Session 12 publication completed from source `21ded68a85e029b83482992269ecef3ef39d4e7c`, after Windows/Linux Check [43582272312](https://github.com/Sethani/StreamerCompanion/actions/runs/43582272312) passed, including actual C# regressions on Windows. [Live Chatbox 1.0.1](https://github.com/Sethani/StreamerCompanion-Modules/releases/tag/chat-core-v1.0.1) publication workflow [43582410495](https://github.com/Sethani/StreamerCompanion-Modules/actions/runs/43582410495) passed. SHA-256 `e5384d0ed87ee2ca5e9316a1ab16b15f2408a5a31fd0cf5f663ea5f47bdd884c`; local artifact `dist/modules/chat-core-1.0.1.streammodule`.
+
+Actual anonymous catalogue/download upgrade from hash-verified 1.0.0 passed in packaged Companion 1.3.1: catalogue hash validation, Ready/provider metadata, exact private configuration/appearance/favorites/stopped-auto-start preservation and the actual installed status endpoint on an isolated port. Only read-only GetActions reached the synthetic host backend; the Chatbox fixture used only its synthetic Subscribe/GetStatus feed. No GitHub fallback was needed. All isolated test processes exited. Production applications/services, cards/preferences, pairing/TLS and sources remain untouched. All twelve Phone Deck sessions stop here; whole-system count remains 21/24.
