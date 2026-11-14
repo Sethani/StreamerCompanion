@@ -1,5 +1,13 @@
 # First public GitHub update validation
 
+## November 14: Phone Deck Session 11
+
+Archipelago 1.0.10, Controller 1.1.1 and Pokemon Encounters 1.7.2 add narrow service-owner Phone Deck APIs and optional declarations. Commands are restricted to Archipelago Show/Hide/room Refresh/confirmed Wake, Controller Show/Hide, and Pokemon encounter Clear. Status contains no credentials, room/slot identifiers, viewer event/throw history, media paths or installation token. No calculations, simulated input/throws or arbitrary settings writes are exposed.
+
+Private endpoints enforce exact loopback Host/Origin, scoped CSRF and no cross-origin access, including Pokemon's otherwise legacy permissive routes. Persisted intents and serialized operations cover concurrent duplicates, restart, failed initial/final saves and unknown outcomes without automatic replay. Room/generation and encounter context are rechecked before queued dispatch; shutdown rejects waiting mutations. Visibility preserves profiles, display/slot choices, geometry/index and saved additional preferences. A failed config save cannot change in-memory visibility. Controller synthetic/stale input is never reported as a real connected controller.
+
+Full source, focused security/actual-service/hidden desktop-mobile tests and existing module settings/overlay browser checks pass with synthetic data and isolated ports. Candidate upgrades from hash-verified previous archives pass in packaged Companion 1.3.1: unchanged Pokemon native data, private config/auth/favorites/stopped-auto-start preservation and actual installed runtime endpoints. Upgrade probes use isolated ports and never contact production owners. No GitHub fallback is needed. Final release hashes/workflows and actual released-upgrade results follow in phone-deck-sessions.md.
+
 ## November 14: Phone Deck Session 10
 
 Walk Ons 2.1.2 and Shoutout Clips 2.1.1 add optional declarations over unchanged native action data. Focused runtime and hidden desktop/mobile regressions cover configured/live roster and clip-ID selection, explicit reset confirmation/cancellation, Requested-only results, lost-response no replay, preserved eligibility/configuration, sound Stop ownership, missing resources/imports/provider readiness and independent direct OBS. Private audio URLs and assignment values are absent from phone state. No channel lookup or AI is added.

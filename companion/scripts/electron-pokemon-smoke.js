@@ -11,7 +11,7 @@ async function waitFor(check, label) { const deadline = Date.now() + 10000; whil
 async function main() {
   await app.whenReady(); buildModules(["pokemon-encounters"], { output: path.join(temporary, "packages") });
   const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") });
-  const staged = registry.stage(path.join(temporary, "packages/pokemon-encounters-1.7.1.streammodule")); registry.commit(staged); registry.finalize(staged);
+  const staged = registry.stage(path.join(temporary, "packages/pokemon-encounters-1.7.2.streammodule")); registry.commit(staged); registry.finalize(staged);
   test = await fixture(temporary, path.join(registry.moduleDirectory("pokemon-encounters"), "service/pokemon-runtime.js"));
   const settings = hiddenWindow(), overlay = hiddenWindow();
   await settings.loadURL(test.base + "/pokemon/settings"); await overlay.loadURL(test.base + "/pokemon/overlay");

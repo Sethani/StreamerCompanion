@@ -1,10 +1,16 @@
 # Controller
 
+## Optional Phone Deck controls (1.1.1)
+
+Show/Hide changes only the enabled preference and preserves position, size, scale, selected controller index and saved additional preferences. Source Modules scene routing still applies. Status distinguishes ready/stale/unavailable input; a disconnected or synthetic-test input is never presented as a real connected controller. No input simulation or native-helper start/stop is exposed to the phone.
+
+The private loopback API enforces exact Host/Origin and CSRF checks, serialized requests and persisted no-replay intents. Commands report Requested and do not automatically retry unknown outcomes. Config saves become visible in memory only after persistence succeeds. No Companion/Phone Deck rebuild or Streamer.bot import is needed; Catalogue updates restart only this module service, retaining saved settings and automatic-start preferences. Existing layouts receive no new cards automatically.
+
 Native Windows XInput and the existing local controller drawing, in the same combined OBS overlay as the other modules. First-party code and drawing: Sethani, MIT. No external skin, GamepadViewer connection, Streamer.bot import or controller driver installation is part of this package.
 
 ## Install and cutover
 
-Requires Companion 1.2.2+, Windows, PowerShell and Universal Dock. Universal Overlay and Source Modules are optional for a standalone public setup. The existing personal combined overlay is integrated directly; do not create another OBS browser source.
+Requires Companion 1.3.1+, Windows, PowerShell and Universal Dock. Universal Overlay and Source Modules are optional for a standalone public setup. The existing personal combined overlay is integrated directly; do not create another OBS browser source.
 
 Install Controller, start its service explicitly, open Settings, enable/save the display, then refresh the existing combined OBS source. Port 3126 must have one owner: if the old built-in Controller Input service is running, stop only that service before starting this module. Leave OBS, Streamer.bot, Controller room hosting and other Companion services running. Existing scene rules retain the UI key `controller`; the package/service ID remains `controller-input`.
 

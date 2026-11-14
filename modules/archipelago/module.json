@@ -2,17 +2,26 @@
   "schemaVersion": 2,
   "id": "archipelago",
   "name": "Archipelago",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Choose Controller rooms and slots for a clean progress, logic and activity overlay.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
-  "streamerbot": { "requiredActions": [] },
+  "streamerbot": {
+    "requiredActions": []
+  },
   "dependencies": {
-    "modules": { "universal-dock": "^1.0.0" },
-    "optionalModules": { "universal-overlay": "^1.0.0", "source-modules": "^1.0.0" },
-    "capabilities": { "embedded-node": "required" },
-    "companion": ">=1.2.2"
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
+    "optionalModules": {
+      "universal-overlay": "^1.0.0",
+      "source-modules": "^1.0.0"
+    },
+    "capabilities": {
+      "embedded-node": "required"
+    },
+    "companion": ">=1.3.1"
   },
   "service": {
     "apiVersion": 1,
@@ -22,12 +31,151 @@
     "healthService": "archipelago",
     "settingsPath": "/settings",
     "overlayPath": "/overlay",
-    "provides": ["archipelago-display"]
+    "provides": [
+      "archipelago-display"
+    ]
   },
   "ui": {
-    "id": "archipelago", "name": "Archipelago", "category": "Games", "order": 60,
-    "dockPage": "/settings", "ownership": "node", "packagedOverlay": true,
-    "overlays": ["archipelago"], "actions": [], "dependencies": [], "optionalDependencies": [],
-    "settings": ["room", "slots", "display", "slotLock"], "tests": []
+    "id": "archipelago",
+    "name": "Archipelago",
+    "category": "Games",
+    "order": 60,
+    "dockPage": "/settings",
+    "ownership": "node",
+    "packagedOverlay": true,
+    "overlays": [
+      "archipelago"
+    ],
+    "actions": [],
+    "dependencies": [],
+    "optionalDependencies": [],
+    "settings": [
+      "room",
+      "slots",
+      "display",
+      "slotLock"
+    ],
+    "tests": [],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "service",
+        "apiPrefix": "/api/archipelago/",
+        "statePath": "/api/archipelago/phone-deck/state",
+        "csrf": {
+          "path": "/api/archipelago/phone-deck/state",
+          "field": "csrf",
+          "header": "X-Companion-CSRF"
+        }
+      },
+      "state": {
+        "fields": {
+          "enabled": "enabled",
+          "hidden": "hidden",
+          "connected": "connected",
+          "status": "status",
+          "room": "room",
+          "selectedSlots": "selectedSlots",
+          "canRefresh": "canRefresh",
+          "canWake": "canWake",
+          "roomOnline": "roomOnline"
+        }
+      },
+      "actions": {
+        "show": {
+          "path": "/api/archipelago/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "show"
+          }
+        },
+        "hide": {
+          "path": "/api/archipelago/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "hide"
+          }
+        },
+        "refresh": {
+          "path": "/api/archipelago/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "refresh"
+          }
+        },
+        "wake": {
+          "path": "/api/archipelago/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "wake"
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "show",
+          "name": "Show overlay",
+          "kind": "button",
+          "action": "show",
+          "fields": [],
+          "active": "enabled"
+        },
+        {
+          "id": "hide",
+          "name": "Hide overlay",
+          "kind": "button",
+          "action": "hide",
+          "fields": [],
+          "active": "hidden"
+        },
+        {
+          "id": "refresh",
+          "name": "Refresh selected room",
+          "kind": "button",
+          "action": "refresh",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "canRefresh",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "wake",
+          "name": "Wake selected room",
+          "kind": "button",
+          "action": "wake",
+          "fields": [],
+          "confirm": true,
+          "prerequisites": [
+            {
+              "field": "canWake",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Archipelago status",
+          "kind": "widget",
+          "display": [
+            "status",
+            "room",
+            "roomOnline",
+            "selectedSlots",
+            "enabled"
+          ],
+          "displayLabels": {
+            "enabled": "Overlay enabled",
+            "status": "Controller status",
+            "room": "Selected room",
+            "selectedSlots": "Included slots",
+            "roomOnline": "Room online"
+          },
+          "fields": []
+        }
+      ]
+    }
   }
 }

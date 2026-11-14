@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "pokemon-encounters",
   "name": "Pokemon Encounters",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Shows Pokemon Community Game encounters, type icons, and animated viewer ball throws.",
   "documentation": "README.md",
   "streamerbot": {
@@ -129,7 +129,68 @@
         ]
       }
     ],
-    "packagedOverlay": true
+    "packagedOverlay": true,
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "service",
+        "apiPrefix": "/api/pokemon/",
+        "statePath": "/api/pokemon/phone-deck/state",
+        "csrf": {
+          "path": "/api/pokemon/phone-deck/state",
+          "field": "csrf",
+          "header": "X-Companion-CSRF"
+        }
+      },
+      "state": {
+        "fields": {
+          "enabled": "enabled",
+          "hasEncounter": "hasEncounter",
+          "name": "name",
+          "status": "status"
+        }
+      },
+      "actions": {
+        "clear": {
+          "path": "/api/pokemon/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "clear"
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "clear",
+          "name": "Clear encounter",
+          "kind": "button",
+          "action": "clear",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "hasEncounter",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Pokemon Encounters status",
+          "kind": "widget",
+          "display": [
+            "status",
+            "name",
+            "enabled"
+          ],
+          "displayLabels": {
+            "enabled": "Overlay enabled",
+            "status": "Encounter status",
+            "name": "Pokemon"
+          },
+          "fields": []
+        }
+      ]
+    }
   },
   "author": "Sethani",
   "license": "MIT",
@@ -144,6 +205,6 @@
     "capabilities": {
       "embedded-node": "required"
     },
-    "companion": ">=1.2.2"
+    "companion": ">=1.3.1"
   }
 }

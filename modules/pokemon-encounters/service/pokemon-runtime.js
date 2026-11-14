@@ -125,16 +125,24 @@ function sendJson(response, code, payload) { const body = Buffer.from(JSON.strin
 function sendFile(response, file, type, cache = "public,max-age=86400") { if (!fs.existsSync(file)) { response.writeHead(404); return response.end(); } const body = fs.readFileSync(file); response.writeHead(200, { "Content-Type": type, "Content-Length": body.length, "Cache-Control": cache, "Access-Control-Allow-Origin": "*" }); response.end(body); }
 function sendArtwork(response, file) { if (!fs.existsSync(file)) { response.writeHead(404); return response.end(); } const body=fs.readFileSync(file);const type=body.subarray(0,4).toString()==="RIFF"?"image/webp":"image/png";response.writeHead(200,{"Content-Type":type,"Content-Length":body.length,"Cache-Control":"public,max-age=86400","Access-Control-Allow-Origin":"*"});response.end(body); }
 
+function clearEncounter(){state.encounter=null;state.throws=[];catchers.clear();touch({type:'clear',reason:'manual'});}
+const phoneFile=path.join(dataDirectory,'phone-deck-operations.json');
+const phoneDeck=require('./phone-deck')({prefix:'/api/pokemon/phone-deck/',port:()=>server.address()?.port,context:()=>state.encounter?.id||'',commands:['clear'],
+ state:()=>({enabled:config().enabled,hasEncounter:!!state.encounter,name:state.encounter?.name||'',status:state.lastError?'error':state.encounter?'encounter':'idle'}),
+ read:()=>{if(!fs.existsSync(phoneFile))return{};return JSON.parse(fs.readFileSync(phoneFile,'utf8'));},write:r=>writeJson(phoneFile,r),
+ execute:async(input,guard)=>{guard();clearEncounter();}
+});
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, "http://127.0.0.1:" + port);
   try {
     if (!/^((127\.0\.0\.1|localhost)(:\d+)?)$/.test(request.headers.host || "")) return sendJson(response, 403, { error: "Local requests only." });
+    if (await phoneDeck(request,response,url)) return;
     if (request.method === "OPTIONS") { response.writeHead(204, { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Access-Control-Allow-Headers": "Content-Type" }); return response.end(); }
     if (request.method === "GET" && ["/health", "/api/pokemon/state"].includes(url.pathname)) return sendJson(response, 200, publicState());
     if (request.method === "GET" && url.pathname === "/api/pokemon/message") return sendJson(response, 200, await handleMessage(url.searchParams.get("sender"), url.searchParams.get("message")));
     if (request.method === "GET" && url.pathname === "/api/pokemon/test") return sendJson(response, 200, await handleMessage("pokemoncommunitygame", "A wild " + (url.searchParams.get("name") || "Weedle") + " appears Catch it using !pokecatch (winners revealed in 90s)"));
     if (request.method === "GET" && url.pathname === "/api/pokemon/test-throw") return sendJson(response, 200, await handleMessage(url.searchParams.get("user") || "Alice", "!pokecatch " + (url.searchParams.get("ball") || "")));
-    if (request.method === "GET" && url.pathname === "/api/pokemon/clear") { state.encounter = null; state.throws=[];catchers.clear();touch({ type: "clear", reason: "manual" }); return sendJson(response, 200, publicState()); }
+    if (request.method === "GET" && url.pathname === "/api/pokemon/clear") { clearEncounter(); return sendJson(response, 200, publicState()); }
     if (request.method === "GET" && url.pathname === "/api/pokemon/config") return sendJson(response, 200, config());
     if (request.method === "POST" && url.pathname === "/api/pokemon/config") { const chunks=[];for await(const chunk of request)chunks.push(chunk);const input=JSON.parse(Buffer.concat(chunks).toString("utf8")||"{}");const saved={...config(),enabled:Boolean(input.enabled),durationSeconds:Math.max(10,Math.min(600,Number(input.durationSeconds)||90)),showTimer:input.showTimer!==false,position:["top-left","top-right","bottom-left","bottom-right"].includes(input.position)?input.position:"bottom-right",width:Math.max(160,Math.min(800,Number(input.width)||320)),opacity:Math.max(10,Math.min(100,Number(input.opacity)||88)),artwork:"official-artwork",throwAnimations:input.throwAnimations!==false,showThrowNames:input.showThrowNames!==false,throwSpeedMs:Math.max(500,Math.min(2500,Number(input.throwSpeedMs)||1100)),throwQueueLimit:Math.max(1,Math.min(30,Number(input.throwQueueLimit)||10))};writeJson(configPath,saved);return sendJson(response,200,saved); }
     if (request.method === "GET" && url.pathname === "/pokemon/settings") return sendFile(response, path.join(__dirname, "pokemon-settings.html"), "text/html; charset=utf-8", "no-store");
@@ -151,7 +159,7 @@ function beginExpiry() { expiry = setInterval(() => { if (state.encounter && Dat
 }
 return { server, publicState, handleMessage, resolvePokemon,
  async start() { await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(port,"127.0.0.1",resolve)});beginExpiry();return server.address().port; },
- async stop() { clearInterval(expiry); if(server.listening) await new Promise(resolve=>server.close(resolve)); }
+ async stop() { await phoneDeck.stop();clearInterval(expiry); if(server.listening) await new Promise(resolve=>server.close(resolve)); }
 };
 }
 module.exports = { createService };

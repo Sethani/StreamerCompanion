@@ -32,15 +32,23 @@ function createService(options = {}) {
     const test = now() < testUntil;
     const fresh = providerStatus === "ready" && now() - lastInput < 1500;
     const current = test ? snapshot({ supported: true, pads: [{ index: config.controllerIndex < 0 ? 0 : config.controllerIndex, connected: true, pressed: [0, 4, 6], axes: [0.6, -0.5, -0.4, 0.3] }] }) : fresh ? input : snapshot();
-    return { ...current, service: "controller-input", version: "1.1.0", ready: true, enabled: config.enabled, config, test, providerStatus: fresh ? "ready" : providerStatus === "ready" ? "stale" : providerStatus, atMs: now() };
+    return { ...current, service: "controller-input", version: "1.1.1", ready: true, enabled: config.enabled, config, test, providerStatus: fresh ? "ready" : providerStatus === "ready" ? "stale" : providerStatus, atMs: now() };
   }
-  function save(input) { config = normalize({ ...config, ...input }); fs.writeFileSync(file + ".tmp", JSON.stringify(config, null, 2)); fs.renameSync(file + ".tmp", file); return config; }
+  function save(input, preserve=false) { const next = normalize({ ...config, ...input }); const output=preserve&&fs.existsSync(file)?{...JSON.parse(fs.readFileSync(file,"utf8")),...next}:next;fs.writeFileSync(file + ".tmp", JSON.stringify(output, null, 2)); fs.renameSync(file + ".tmp", file); config=next;return config; }
   function json(response, status, value) { const bytes = Buffer.from(JSON.stringify(value)); response.writeHead(status, { "Content-Type": "application/json", "Content-Length": bytes.length, "Cache-Control": "no-store" }); response.end(bytes); }
   const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/overlay.css": "overlay.css", "/overlay.js": "overlay.js", "/settings.js": "settings.js" };
+  const phoneFile=path.join(directory,'phone-deck-operations.json');
+  const phoneDeck=require('./phone-deck')({prefix:'/api/controller/phone-deck/',port:()=>server.address()?.port,commands:['show','hide'],
+    state:()=>{const p=publicState();return{enabled:p.enabled,hidden:!p.enabled,providerStatus:p.test?'test':p.providerStatus,supported:p.test?null:p.supported,controllerConnected:!p.test&&p.providerStatus==='ready'&&p.supported?p.pads.length>0:null};},
+    read:()=>{if(!fs.existsSync(phoneFile))return{};return JSON.parse(fs.readFileSync(phoneFile,'utf8'));},
+    write:r=>{fs.writeFileSync(phoneFile+'.tmp',JSON.stringify(r));fs.renameSync(phoneFile+'.tmp',phoneFile);},
+    execute:async(input,guard)=>{guard();save({enabled:input.command==='show'},true);}
+  });
   const server = http.createServer(async (request, response) => {
     try {
       if (!/^(127\.0\.0\.1|localhost)(:\d+)?$/.test(request.headers.host || "")) return json(response, 403, { error: "Local requests only." });
       const url = new URL(request.url, "http://127.0.0.1");
+      if (await phoneDeck(request,response,url)) return;
       if (request.method === "GET" && ["/health", "/state", "/api/controller/state"].includes(url.pathname)) {
         const origin = String(request.headers.origin || ""); if (/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(origin)) { response.setHeader("Access-Control-Allow-Origin", origin); response.setHeader("Vary", "Origin"); }
         return json(response, 200, publicState());
@@ -58,7 +66,7 @@ function createService(options = {}) {
   });
   return { server, publicState, csrf, nativePid: () => provider?.pid,
     async start() { stopped = false; await new Promise((resolve, reject) => { server.once("error", reject); server.listen(options.port ?? Number(process.env.COMPANION_SERVICE_PORT || 3126), "127.0.0.1", resolve); }); if (options.providerFactory) provider = options.providerFactory({ directory, onState, onError }); else if (process.platform === "win32") provider = nativeProvider({ directory, onState, onError }); else providerStatus = "unsupported"; return server.address().port; },
-    async stop() { if (stopped) return; stopped = true; await provider?.stop(); if (server.listening) await new Promise(resolve => server.close(resolve)); },
+    async stop() { if (stopped) return; stopped = true; await phoneDeck.stop(); await provider?.stop(); if (server.listening) await new Promise(resolve => server.close(resolve)); },
   };
 }
 if (require.main === module) { const service = createService(); service.start().catch(() => { console.error("Controller service could not start."); process.exitCode = 1; }); for (const signal of ["SIGTERM", "SIGINT"]) process.on(signal, () => service.stop().finally(() => process.exit(0))); }

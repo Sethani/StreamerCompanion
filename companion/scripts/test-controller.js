@@ -14,7 +14,7 @@ async function main() {
     assert.deepEqual(snapshot({ pads: [{ index: 0, axes: [9, -9, null, 0.1] }] }).pads[0].axes, [1, -1, 0, 0.1]);
     buildModules(["controller-input"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules") });
-    const staged = registry.stage(path.join(root, "packages/controller-input-1.1.0.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages/controller-input-1.1.1.streammodule")); registry.commit(staged); registry.finalize(staged);
     const moduleDirectory = registry.moduleDirectory("controller-input");
     const helper = fs.readFileSync(path.join(moduleDirectory, "service/native-xinput.ps1"), "utf8");
     assert.ok(helper.includes("XInputGetState") && helper.includes("7849") && helper.includes("8689") && helper.includes("$parentProcess.HasExited"));
@@ -35,7 +35,7 @@ async function main() {
     await api("/api/controller/test", {}); test.state.now += 11000; assert.equal(test.service.publicState().test, false);
     await test.close(); assert.equal(test.stopped(), true); test = null;
     const manifest = registry.readManifest("controller-input");
-    const upgrade = new AdmZip(path.join(root, "packages/controller-input-1.1.0.streammodule")); manifest.version = "1.1.1";
+    const upgrade = new AdmZip(path.join(root, "packages/controller-input-1.1.1.streammodule")); manifest.version = "1.1.2";
     upgrade.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); const upgradedFile = path.join(root, "upgrade.streammodule"); upgrade.writeZip(upgradedFile);
     const replacement = registry.stage(upgradedFile); registry.commit(replacement); registry.finalize(replacement);
     assert.equal(JSON.parse(fs.readFileSync(path.join(root, "data/config.json"), "utf8")).width, 310, "Package upgrade preserves private layout");

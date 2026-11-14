@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "controller-input",
   "name": "Controller",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Native controller input and the existing gamepad display in the combined stream overlay.",
   "author": "Sethani",
   "license": "MIT",
@@ -23,7 +23,7 @@
       "powershell": "required",
       "embedded-node": "required"
     },
-    "companion": ">=1.2.2"
+    "companion": ">=1.3.1"
   },
   "service": {
     "apiVersion": 1,
@@ -63,6 +63,78 @@
       "scale",
       "controllerIndex"
     ],
-    "tests": []
+    "tests": [],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "service",
+        "apiPrefix": "/api/controller/",
+        "statePath": "/api/controller/phone-deck/state",
+        "csrf": {
+          "path": "/api/controller/phone-deck/state",
+          "field": "csrf",
+          "header": "X-Companion-CSRF"
+        }
+      },
+      "state": {
+        "fields": {
+          "enabled": "enabled",
+          "hidden": "hidden",
+          "providerStatus": "providerStatus",
+          "supported": "supported",
+          "controllerConnected": "controllerConnected"
+        }
+      },
+      "actions": {
+        "show": {
+          "path": "/api/controller/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "show"
+          }
+        },
+        "hide": {
+          "path": "/api/controller/phone-deck/control",
+          "method": "POST",
+          "args": {
+            "command": "hide"
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "show",
+          "name": "Show overlay",
+          "kind": "button",
+          "action": "show",
+          "fields": [],
+          "active": "enabled"
+        },
+        {
+          "id": "hide",
+          "name": "Hide overlay",
+          "kind": "button",
+          "action": "hide",
+          "fields": [],
+          "active": "hidden"
+        },
+        {
+          "id": "status",
+          "name": "Controller status",
+          "kind": "widget",
+          "display": [
+            "providerStatus",
+            "controllerConnected",
+            "enabled"
+          ],
+          "displayLabels": {
+            "enabled": "Overlay enabled",
+            "providerStatus": "Input status",
+            "controllerConnected": "Controller connected"
+          },
+          "fields": []
+        }
+      ]
+    }
   }
 }

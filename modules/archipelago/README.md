@@ -1,10 +1,16 @@
 # Archipelago
 
+## Optional Phone Deck controls (1.0.10)
+
+Show/Hide changes only this module's overlay-enabled preference, preserving the selected room, per-slot Percentage/Logic choices, name hiding, filters and saved profiles. Source Modules scene rules still apply. Refresh selected room and confirmed Wake selected room reuse the existing Controller room actions and credentials; disconnected/unconfigured or unsupported actions stay unavailable. No calculation-management controls, slot editing or simulated item sends are exposed. Status reports the saved selection, Controller availability and room-online flag.
+
+The phone uses a narrow private loopback API with exact Host/Origin checks, scoped CSRF tokens and persisted request intents. Credentials, broker/room identifiers, slot/player data and event history are not returned. Queued requests recheck room/generation context before dispatch. Commands report Requested; unknown outcomes never retry automatically. No Companion/Phone Deck rebuild or Streamer.bot import is needed. Catalogue update restarts this module's service; existing data and automatic-start preferences remain owned by Companion. No cards are added automatically.
+
 Choose a Controller room from a dropdown, check the reported game slots and save the display. Companion remembers each room's selection by team/slot identity. One stable OBS URL follows the saved room and slot choices.
 
 ## Requirements and installation
 
-- Companion **1.2.2 or newer**, with its embedded Node runtime. Universal Dock is installed as a dependency.
+- Companion **1.3.1 or newer**, with its embedded Node runtime. Universal Dock is installed as a dependency.
 - Archipelago Controller's **Room data API 2.2** running locally; default `http://127.0.0.1:38283/api/controller/v2`. Expose the desired rooms in Controller.
 - No Streamer.bot import, direct AP connection, tracker scraping, APWorld installation or local logic worker is part of this module. Controller owns those operations.
 

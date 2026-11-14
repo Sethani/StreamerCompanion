@@ -9,7 +9,7 @@ function hiddenWindow() { const result = new BrowserWindow({ width: 1920, height
 async function waitFor(check, label) { const deadline = Date.now() + 12000; while (Date.now() < deadline) { if (await check()) return; await new Promise(resolve => setTimeout(resolve, 50)); } throw new Error("Timed out: " + label); }
 async function main() {
   await app.whenReady(); buildModules(["controller-input"], { output: path.join(temporary, "packages") });
-  const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") }); const staged = registry.stage(path.join(temporary, "packages/controller-input-1.1.0.streammodule")); registry.commit(staged); registry.finalize(staged);
+  const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, "modules") }); const staged = registry.stage(path.join(temporary, "packages/controller-input-1.1.1.streammodule")); registry.commit(staged); registry.finalize(staged);
   test = await fixture(temporary, path.join(registry.moduleDirectory("controller-input"), "service/runtime.js"));
   const settings = hiddenWindow(), overlay = hiddenWindow(); await settings.loadURL(test.base + "/settings"); await overlay.loadURL(test.base + "/overlay");
   const control = code => settings.webContents.executeJavaScript(code), view = code => overlay.webContents.executeJavaScript(code);

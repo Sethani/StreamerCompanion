@@ -1,6 +1,12 @@
 # Pokemon Encounters
 
-Version 1.7.1. Shows genuine Pokemon Community Game encounters using the existing green-bordered card, artwork/type symbols, countdown and animated viewer ball throws. The service is independent of the personal monolith. First-party code is MIT, author Sethani.
+## Optional Phone Deck controls (1.7.2)
+
+Encounter status reports the current Pokemon and owner state. Clear encounter clears only the local encounter/throw display, leaving game outcomes, configuration and cached artwork untouched. It sends no catch command, simulated throw, test encounter or chat. Clear stays disabled while no encounter is active, and a stale token cannot clear a newly arrived encounter. Source Modules rules and existing overlay settings remain unchanged.
+
+These phone endpoints use exact loopback Host/Origin checks, scoped CSRF tokens and durable request intents with no automatic replay after unknown outcomes. They provide no cross-origin access and return no viewer throws/history, private configuration, media paths or installation token. Existing legacy endpoints/Streamer.bot bridge are preserved. No new native import or Companion/Phone Deck rebuild is needed. Update through Catalogue when no encounter needs preserving: restarting the service retains saved settings/cache but its transient active encounter is not persisted. No cards are added automatically.
+
+Version 1.7.2. Shows genuine Pokemon Community Game encounters using the existing green-bordered card, artwork/type symbols, countdown and animated viewer ball throws. The service is independent of the personal monolith. First-party code is MIT, author Sethani.
 
 Cosmetic forms such as Sawsbuck (Summer) resolve through PokeAPI's `pokemon-form` endpoint when the regular Pokemon endpoint returns 404. Artwork comes from the requested form, including shiny artwork; types come from its linked Pokemon. Existing successful lookups and caches remain unchanged. Native actions are unchanged, so this update requires no Streamer.bot reimport.
 
@@ -10,7 +16,7 @@ The 18 type symbols and 27 ball images are byte-identical to PokeAPI/sprites rev
 
 ## Installation and behavior
 
-Requires Companion 1.2.2 or newer and the two Streamer.bot actions. Universal Dock is a package dependency. Universal Overlay and Source Modules are optional for scene routing; a direct OBS source can use `http://127.0.0.1:3128/pokemon/overlay`. This URL and every existing `/api/pokemon/*` route are preserved. Keep the service running. For shared rendering, enable Pokemon in Source Modules for the desired scenes. The package does not switch any OBS source.
+Requires Companion 1.3.1 or newer and the two Streamer.bot actions. Universal Dock is a package dependency. Universal Overlay and Source Modules are optional for scene routing; a direct OBS source can use `http://127.0.0.1:3128/pokemon/overlay`. This URL and every existing `/api/pokemon/*` route are preserved. Keep the service running. For shared rendering, enable Pokemon in Source Modules for the desired scenes. The package does not switch any OBS source.
 
 Install the module package, import **Pokemon Encounters - Chat** and **Pokemon Encounters - Initialize**, then explicitly start the service. Importing replaces the same action IDs; do not run duplicate bridges. New installations are disabled. Enable and save in Settings, then use **Show test encounter**, **Throw ball** and **Clear** to test the actual overlay without sending chat or performing a catch in Pokemon Community Game. Initial named-Pokemon lookup needs internet; **Unidentified Ghost** works without network/artwork. The game remains authoritative for catch results.
 

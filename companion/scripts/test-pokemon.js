@@ -16,7 +16,7 @@ async function main() {
     assert.equal(core.parsePokemonLabel("Shiny Staraptor (F)").gender, "female");
     assert.equal(core.parseCatchCommand("!POKECATCH great ball").ball, "great-ball"); assert.equal(core.parseCatchCommand("!pokecatch unknown").fallback, true);
     const catalog = buildModules(["pokemon-encounters"], { output: path.join(root, "packages") });
-    const archive = path.join(root, "packages/pokemon-encounters-1.7.1.streammodule"), zip = new AdmZip(archive);
+    const archive = path.join(root, "packages/pokemon-encounters-1.7.2.streammodule"), zip = new AdmZip(archive);
     const review = JSON.parse(zip.readAsText("ASSET-PROVENANCE.json")); assert.equal(review.files.length, 45);
     assert.ok(zip.readAsText(review.notice).includes("Copyright The Pokémon Company"));
     for (const asset of review.files) assert.equal(crypto.createHash("sha256").update(zip.readFile(asset.path)).digest("hex"), asset.sha256);
@@ -58,7 +58,7 @@ async function main() {
     assert.equal(test.service.publicState().encounter.shiny, true, "Failed lookup preserves active encounter");
     await test.close(); test = null;
     const marker = path.join(root, "data/private-marker.txt"); fs.writeFileSync(marker, "synthetic");
-    const manifest = registry.readManifest("pokemon-encounters"); manifest.version = "1.7.2"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); const upgrade = path.join(root, "upgrade.streammodule"); zip.writeZip(upgrade);
+    const manifest = registry.readManifest("pokemon-encounters"); manifest.version = "1.7.3"; zip.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); const upgrade = path.join(root, "upgrade.streammodule"); zip.writeZip(upgrade);
     const replacement = registry.stage(upgrade); registry.commit(replacement); registry.finalize(replacement);
     child = new InstalledService({ app: {}, moduleDirectory, dataDirectory: path.join(root, "data"), manifest: { ...manifest, service: { ...manifest.service, port: await freePort() } } });
     assert.equal((await child.start()).status, "running");

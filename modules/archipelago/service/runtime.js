@@ -165,7 +165,8 @@ function createService(options = {}) {
       components: Object.fromEntries(Object.entries(snapshot?.enriched?.components || {}).map(([name, component]) => [name, { state: component.state, stale: !!component.stale, supported: component.supported, reasonCode: component.reasonCode }])) };
   }
   let updates = Promise.resolve();
-  function update(input) { const next = updates.then(() => updateSettings(input)); updates = next.catch(() => {}); return next; }
+  function enqueue(work) { const next = updates.then(work); updates = next.catch(() => {}); return next; }
+  function update(input) { return enqueue(() => updateSettings(input)); }
   async function updateSettings(input) {
     if (actionBusy) throw new Error("Wait for the Controller action before changing settings.");
     const nextUrl = model.brokerUrl(input.brokerUrl || config.brokerUrl);
@@ -207,16 +208,25 @@ function createService(options = {}) {
       return { status: result.status || (name === "recalculate-logic" ? "accepted" : "refreshed"), states: (result.states || []).map((entry) => ({ playerKey: model.key(entry.player), state: entry.state, hasError: !!entry.error })) };
     } finally { actionBusy = false; }
   }
+  function setEnabled(enabled) { const next={...config,enabled};write(configFile,{...read(configFile),...next});config=next;if(!enabled)testEvent=null;return settings(); }
+  const phoneFile=path.join(directory,'phone-deck-operations.json');
+  const phoneDeck=require('./phone-deck')({prefix:'/api/archipelago/phone-deck/',port:()=>server.address()?.port,context:()=>JSON.stringify([config.roomId,generation]),commands:['show','hide','refresh','wake'],
+    state:()=>{const room=rooms.find(r=>r.id===config.roomId),canAct=!!(connected&&room&&read(authFile).token&&!actionBusy);return{enabled:config.enabled,hidden:!config.enabled,connected,status:!connected?'unavailable':!config.roomId?'no-room':!model.profile(config.profiles[config.roomId]).slots.length?'no-slots':'ready',room:room?.label||'',roomOnline:connected&&room?room.online:null,selectedSlots:model.profile(config.profiles[config.roomId]).slots.length,canRefresh:canAct,canWake:!!(canAct&&room.capabilities.remoteWake)};},
+    read:()=>{if(!fs.existsSync(phoneFile))return{};return JSON.parse(fs.readFileSync(phoneFile,'utf8'));},write:r=>write(phoneFile,r),
+    validate:input=>['show','hide'].includes(input.command)||!!(connected&&rooms.some(r=>r.id===config.roomId)&&(input.command!=='wake'||rooms.find(r=>r.id===config.roomId)?.capabilities.remoteWake)&&read(authFile).token&&!actionBusy),
+    execute:(input,guard)=>enqueue(async()=>{guard();if(input.command==='show'||input.command==='hide')return setEnabled(input.command==='show');return action(input.command,config.roomId);})
+  });
   function json(response, status, value) { const body = Buffer.from(JSON.stringify(value)); response.writeHead(status, { "Content-Type": "application/json", "Content-Length": body.length, "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }); response.end(body); }
   const server = http.createServer(async (request, response) => {
     try {
       if (!/^((127\.0\.0\.1|localhost)(:\d+)?)$/.test(request.headers.host || "")) return json(response, 403, { error: "Local requests only." });
       const url = new URL(request.url, "http://127.0.0.1");
+      if (await phoneDeck(request,response,url)) return;
       if (request.method === "GET" && ["/health", "/api/public/state"].includes(url.pathname)) {
         const origin = String(request.headers.origin || "");
         if (/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(origin)) { response.setHeader("Access-Control-Allow-Origin", origin); response.setHeader("Vary", "Origin"); }
       }
-      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.9", ready: true, configured: !!config.roomId, brokerConnected: connected });
+      if (request.method === "GET" && url.pathname === "/health") return json(response, 200, { service: "archipelago", version: "1.0.10", ready: true, configured: !!config.roomId, brokerConnected: connected });
       if (request.method === "GET" && url.pathname === "/api/public/state") return json(response, 200, publicState());
       const pages = { "/settings": "settings.html", "/overlay": "overlay.html", "/app.js": "app.js", "/styles.css": "styles.css", "/overlay.js": "overlay.js", "/overlay.css": "overlay.css" };
       if (request.method === "GET" && pages[url.pathname]) {
@@ -231,8 +241,7 @@ function createService(options = {}) {
       const input = chunks.length ? JSON.parse(Buffer.concat(chunks)) : {};
       if (url.pathname === "/api/overlay") {
         if (typeof input.enabled !== "boolean") throw new Error("Choose whether the overlay is enabled.");
-        config.enabled = input.enabled; if (!config.enabled) testEvent = null; save();
-        return json(response, 200, settings());
+        return json(response, 200, await enqueue(() => setEnabled(input.enabled)));
       }
       if (url.pathname === "/api/test-item") {
         if (input.clear === true) { testEvent = null; return json(response, 200, { status: "cleared" }); }
@@ -248,7 +257,7 @@ function createService(options = {}) {
   });
   return { server, poll, update, action, settings, publicState, csrf,
     async start() { await new Promise((resolve, reject) => { server.once("error", reject); server.listen(options.port ?? Number(process.env.COMPANION_SERVICE_PORT || 3141), "127.0.0.1", resolve); }); await poll(); schedule(); return server.address().port; },
-    async stop() { closed = true; clearTimeout(timer); await polling; if (server.listening) await new Promise((resolve) => server.close(resolve)); }
+    async stop() { closed = true; clearTimeout(timer); await phoneDeck.stop(); await polling; if (server.listening) await new Promise((resolve) => server.close(resolve)); }
   };
 }
 if (require.main === module) { const service = createService(); service.start().catch(() => { console.error("Archipelago service could not start."); process.exitCode = 1; }); for (const signal of ["SIGTERM", "SIGINT"]) process.on(signal, () => service.stop().finally(() => process.exit(0))); }

@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 is complete with published Walk Ons/Shoutout Clips declarations requiring no new native imports. Session 11 is next; release verification is recorded below. Feature count remains **21/24**.
+Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 is complete with published Walk Ons/Shoutout Clips declarations requiring no new native imports. Session 11 adds Archipelago/Controller/Pokemon service-owner contributions; release verification is recorded below. Feature count remains **21/24**.
 
 ## Progress
 
@@ -16,7 +16,7 @@ Updated November 14, 2026. Implement **one bounded session per implementation tu
 | 8 | Complete; all three providers published | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
 | 9 | Complete; all three published; user reports imports/restart | Named Timers, Reminders and confirmed Redeem Checklist operations |
 | 10 | Complete; both providers published | Walk Ons and Shoutout Clips |
-| 11 | Pending | Archipelago, Controller and Pokemon |
+| 11 | In release verification | Archipelago, Controller and Pokemon |
 | 12 | Pending | Live Chatbox status, provider coverage and stabilization |
 
 ## Current local artifact
@@ -197,3 +197,13 @@ Stop after Session 10. Session 11 is Archipelago, Controller and Pokemon contrib
 Session 10 publication completed from source `d35ae51dd5bf7dcebfbd3004d98806a6f47611c7`, after Windows/Linux Check `43534290448` passed. Walk Ons 2.1.2 workflow `43534592861`, SHA-256 `582fa5401e6eb9c8d18354fb57b82a734a6fa414df28d20f5b1ec944659500bb`; Shoutout Clips 2.1.1 workflow `43534666809`, SHA-256 `10af2cd4996ac9b69b3206b2b4ee962b8a34c108bdec1b2daae0e04ab7b93bde`. Local artifacts: dist/modules/walk-ons-2.1.2.streammodule and dist/modules/shoutout-clips-2.1.1.streammodule.
 
 Full source and actual C# checks, focused runtime/hidden desktop/mobile acceptance and actual anonymous released upgrades in packaged Companion 1.3.1 passed. Upgrade verification checks hashes, full native-data equality, Ready assets/contributions and retained private data/favorites, with only GetActions reaching the read-only native fixture. No service/action dispatch or download fallback occurred. All isolated test processes exited. Production applications/packages/actions/settings, eligibility/playback and deck layout/pairing/TLS remain unchanged. Adoption is two explicit Catalogue updates and explicitly added cards; no new import/restart, app build or Phone Deck update is required. Session 10 stops here; Session 11 has not started.
+
+## Session 11 checkpoint — November 14, 2026
+
+Archipelago 1.0.10 contributes Show/Hide, existing selected-room Refresh, confirmed Wake and selection/Controller/room-online status. Visibility preserves saved room/profile/Percentage/Logic/name/filter choices and works while the Controller API is unavailable. Room commands retain existing capabilities/token checks and semantics; no calculation-management controls are added. Controller 1.1.1 contributes visibility and truthful native input status, preserving geometry, scale and controller index; stale/unsupported/test input remains distinguishable from a real connected device. Pokemon 1.7.2 contributes current encounter status and Clear only, retaining config/cache and touching no actual game result, chat, test encounter or simulated throw. Source Modules scene rules still govern rendering independently.
+
+Each package owns a narrowly scoped loopback state/control API with exact Host/Origin/CSRF/no-CORS checks and a private persisted request journal. The helper is byte-identical in all three independent packages. Commands serialize, save intent before effects, keep unknown outcomes from replaying after restart, and reject stale room/generation or encounter tokens immediately before dispatch. Shutdown prevents waiting operations from mutating. Visibility saves preserve other private fields, and failed persistence leaves in-memory visibility unchanged. State projections omit credentials, broker URLs/room IDs, slot/player/event/throw history, media paths and the installation token. Commands report Requested.
+
+Focused runtime/security and hidden desktop/mobile acceptance pass against the actual service implementations, using only synthetic room/input/Pokemon fixtures and disposable data/ports. Existing module settings/overlay browser acceptance also passes, preserving transparency/design, stable Archipelago rows/animations and no view rotation. Full source checks pass. Local candidates over hash-verified prior releases pass in packaged Companion 1.3.1 with unchanged native data, private config/auth/favorites/stopped-auto-start preservation and actual installed runtime API checks. Production ports are isolated even for upgrade health probes. Publication/released-upgrade proof follows below.
+
+No production application/service, layout/pairing/TLS, scene, room selection, input or encounter was changed. No new Streamer.bot import or Companion/Phone Deck rebuild is needed. Catalogue updates restart only the corresponding module services and retain their private data/preferences; update Pokemon while no transient encounter needs preserving. Add cards explicitly. Feature count stays 21/24. Stop after Session 11; Session 12 is Live Chatbox status, contribution coverage and stabilization, and has not started here.
