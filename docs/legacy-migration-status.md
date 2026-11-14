@@ -60,3 +60,7 @@ Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1 are published and
 ## Phone Deck Session 10 — November 14, 2026
 
 Walk Ons 2.1.2 and Shoutout Clips 2.1.1 are published and actual released upgrades are verified. Optional test/audio-stop/confirmed eligibility-reset and clip-ID play/stop/status declarations retain complete native data and need no new native import/restart or app build. Requested semantics avoid inventing playback acceptance; private media assignments remain server-side. Production packages, eligibility, playback, settings and layouts were not changed. The user separately reports completing Session 9 imports/restart. Session 11 is next; see phone-deck-sessions.md for hashes/workflows/test evidence.
+
+## Phone Deck Session 11 — November 14, 2026
+
+Archipelago 1.0.10, Controller 1.1.1 and Pokemon 1.7.2 are published and actual released upgrades are verified. Narrow service-owned Phone Deck APIs provide visibility/room Refresh/confirmed Wake/status, controller visibility/input status and local encounter status/Clear. Context-scoped CSRF, persisted no-replay intents, serialized saves and private projections preserve owner boundaries; no calculation controls or simulated throws are added. Existing native data and legacy endpoints/overlay presentation are retained. Production services/data were untouched; Catalogue adoption restarts only the updated owners and needs no native import/app build. Session 12 is next; see phone-deck-sessions.md for hashes/workflows/tests.
