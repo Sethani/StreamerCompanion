@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 2,
+  "id": "bouncing-avatar",
+  "name": "Bouncing Avatar",
+  "version": "1.0.0",
+  "description": "The original bouncing image in the combined overlay, with private image uploads and optional colour changes.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "streamerbot": { "requiredActions": [] },
+  "dependencies": {
+    "modules": { "universal-dock": "^1.0.0", "universal-overlay": "^1.0.0", "source-modules": "^1.0.0" },
+    "optionalModules": {},
+    "capabilities": { "embedded-node": "required" },
+    "companion": ">=1.3.1"
+  },
+  "service": {
+    "apiVersion": 1,
+    "entry": "service/runtime.js",
+    "port": 3144,
+    "healthPath": "/health",
+    "healthService": "bouncing-avatar",
+    "settingsPath": "/settings",
+    "overlayPath": "/overlay",
+    "provides": ["bouncing-avatar"]
+  },
+  "ui": {
+    "id": "bouncing",
+    "name": "Bouncing Avatar",
+    "category": "Effects",
+    "dockPage": "/settings",
+    "ownership": "node",
+    "overlays": ["bouncing"],
+    "actions": [],
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": { "transport": "service", "apiPrefix": "/api/avatar/", "statePath": "/api/avatar/phone-deck/state" },
+      "state": { "fields": { "enabled": "enabled", "configured": "configured", "changeColorOnBounce": "changeColorOnBounce" } },
+      "actions": {},
+      "controls": [{ "id": "status", "name": "Bouncing Avatar status", "kind": "widget", "display": ["enabled", "configured", "changeColorOnBounce"], "displayLabels": { "enabled": "Enabled", "configured": "Image selected", "changeColorOnBounce": "Colour on bounce" }, "fields": [] }]
+    }
+  }
+}

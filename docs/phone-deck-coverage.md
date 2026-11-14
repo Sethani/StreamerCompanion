@@ -1,16 +1,18 @@
 # Phone Deck contribution coverage
 
-Session 12 source audit, November 14, 2026. All **24 source packages** have an explicit disposition: **21 contributors, 69 visible controls and 2 hidden compatibility controls**. This inventory is separate from the whole-system feature checklist, which remains **21/24**.
+Current source audit, November 14, 2026: **26 source packages**, **23 contributors, 71 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.0 is an unpublished local candidate. This inventory is separate from the whole-system feature checklist, which remains **22/24** until Avatar cutover/acceptance.
 
 | Package / version | Owner transport | Visible controls | Completion |
 | --- | --- | --- | --- |
 | archipelago 1.0.10 | service | show, hide, refresh, wake, status | Requested |
 | audio-routing 2.0.1 | streamerbot | toggle, status | matching acknowledgement |
+| bouncing-avatar 1.0.0 (local candidate) | service | status | read-only |
 | cameras 2.0.2 | streamerbot | main-mode, secondary-mode, secondary-video, assign-guest, status | Requested |
 | chat-core 1.0.1 | service | status | read-only |
 | chat-routing 1.0.2 | streamerbot | bot-message | Requested |
 | controller-input 1.1.1 | service | show, hide, status | Requested |
 | countdown 1.1.1 | streamerbot | start, preset-3, preset-5, custom, configure, pause, resume, clear, status | Requested |
+| embedded-widgets 1.0.0 | service | status | read-only |
 | named-timers 1.0.1 | streamerbot | create, status | matching acknowledgement |
 | phone-deck 2.0.4 | streamerbot | title, category, custom-action | Requested |
 | pokemon-encounters 1.7.2 | service | clear, status | Requested |
@@ -19,11 +21,11 @@ Session 12 source audit, November 14, 2026. All **24 source packages** have an e
 | reminders 1.0.2 | streamerbot | add, complete, status | matching acknowledgement |
 | scene-bindings 2.0.3 | streamerbot | apply-link, status | matching acknowledgement |
 | shoutout-clips 2.1.1 | streamerbot | play, play-input, stop, status | Requested |
-| source-modules 1.0.1 | streamerbot | set-mode | matching acknowledgement |
+| source-modules 1.0.2 | streamerbot | set-mode | matching acknowledgement |
 | spotify 2.0.4 | service | resume, pause, toggle, next, previous, volume, volume-preset, status | Requested |
 | stream-launch 1.0.1 | streamerbot | go-live, progress | Requested |
 | universal-dock 1.1.2 | none | Desktop/OBS navigation foundation; no additional phone action. | none |
-| universal-overlay 1.0.1 | none | Shared renderer foundation; individual owners expose their controls. | none |
+| universal-overlay 1.0.2 | none | Shared renderer foundation; individual owners expose their controls. | none |
 | update-probe 1.0.2 | none | Installation/update test utility; no stream operation. | none |
 | video 2.2.1 | streamerbot | play, stop, status | Requested |
 | walk-ons 2.1.2 | streamerbot | test, test-picker, stop, reset, status | Requested |

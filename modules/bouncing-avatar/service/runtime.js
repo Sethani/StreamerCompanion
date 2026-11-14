@@ -1,0 +1,44 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto'),model=require('./model');
+function atomicWrite(file,bytes){const temp=file+'.'+crypto.randomUUID()+'.tmp';try{const fd=fs.openSync(temp,'wx',0o600);try{fs.writeFileSync(fd,bytes);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}fs.renameSync(temp,file);}finally{try{fs.unlinkSync(temp);}catch(e){if(e.code!=='ENOENT')throw e;}}}
+function createService(options={}){
+ const directory=options.dataDirectory||process.env.COMPANION_DATA_DIRECTORY||path.join(process.cwd(),'bouncing-avatar-data'),images=path.join(directory,'images'),file=path.join(directory,'config.json'),csrf=crypto.randomBytes(24).toString('hex');fs.mkdirSync(images,{recursive:true});
+ let config=model.defaults(),invalid=false,stopped=false,tail=Promise.resolve(),stopPromise;
+ try{config=model.validate(JSON.parse(fs.readFileSync(file,'utf8')));}catch(e){invalid=e.code!=='ENOENT';}
+ function state(){if(invalid)throw model.error('Saved avatar settings are unavailable. Restore a valid private backup before editing.',503);return structuredClone(config);}
+ function commit(next){try{(options.writeConfig||atomicWrite)(file,JSON.stringify(model.validate(next),null,2)+'\n');}catch{throw model.error('Avatar settings could not be saved. The previous settings remain in use.',503);}config=next;return state();}
+ function revision(value){if(stopped)throw model.error('Avatar service is stopping.',503);state();if(!Number.isSafeInteger(value)||value!==config.revision)throw model.error('Settings changed. Reload before saving; your draft is retained.',409);if(config.revision===Number.MAX_SAFE_INTEGER)throw model.error('Settings revision limit reached.',503);}
+ function enqueue(fn){const work=tail.then(fn);tail=work.catch(()=>{});return work;}
+ function imageFile(image){return path.join(images,image.id+'.'+image.type);}
+ function imageAvailable(image){if(!image)return false;try{const p=imageFile(image),stat=fs.lstatSync(p);return stat.isFile()&&!stat.isSymbolicLink()&&stat.size===image.bytes;}catch{return false;}}
+ function renderState(){const c=state(),selected=c.images.find(i=>i.id===c.imageId),available=imageAvailable(selected);return{version:c.version,revision:c.revision,enabled:c.enabled,changeColorOnBounce:c.changeColorOnBounce,imageUrl:available?'/media/'+selected.id:'',configured:available};}
+ function json(res,code,value){const bytes=Buffer.from(JSON.stringify(value));res.writeHead(code,{'Content-Type':'application/json; charset=utf-8','Content-Length':bytes.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(bytes);}
+ const pages={'/settings':'settings.html','/settings.js':'settings.js','/settings.css':'settings.css','/overlay':'overlay.html','/overlay.js':'overlay.js','/overlay.css':'overlay.css','/motion.js':'motion.js'};
+ const server=http.createServer(async(req,res)=>{try{
+  const port=server.address()?.port,host=String(req.headers.host||''),origin=req.headers.origin,route=new URL(req.url,'http://127.0.0.1').pathname;
+  // Public shell assets may be embedded by Companion/OBS file documents. The
+  // child then reads its own same-origin API; private APIs/media keep the gate.
+  const publicPage=req.method==='GET'&&Object.hasOwn(pages,route);
+  if(!['127.0.0.1:'+port,'localhost:'+port].includes(host)||!publicPage&&(origin&&origin!=='http://'+host||req.headers['sec-fetch-site']==='cross-site'))return json(res,403,{error:'Unexpected host or origin.'});
+  if(req.method==='GET'&&route==='/health')return json(res,invalid?503:200,{service:'bouncing-avatar',version:require('../module.json').version,ready:!invalid,configured:invalid?false:renderState().configured,enabled:!invalid&&config.enabled});
+  if(req.method==='GET'&&pages[route]){const name=pages[route],type=name.endsWith('.html')?'text/html':name.endsWith('.js')?'application/javascript':'text/css';res.writeHead(200,{'Content-Type':type+'; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'"});return res.end(fs.readFileSync(path.join(__dirname,'public',name)));}
+  if(req.method==='GET'&&route==='/api/avatar/config')return json(res,200,{config:state(),csrf});
+  if(req.method==='GET'&&route==='/api/avatar/state')return json(res,200,renderState());
+  if(req.method==='GET'&&route==='/api/avatar/phone-deck/state'){const r=renderState();return json(res,200,{enabled:r.enabled,configured:r.configured,changeColorOnBounce:r.changeColorOnBounce});}
+  if(req.method==='GET'&&route.startsWith('/media/')){const image=state().images.find(i=>i.id===route.slice(7));if(!imageAvailable(image))return json(res,404,{error:'Image unavailable.'});const bytes=fs.readFileSync(imageFile(image));res.writeHead(200,{'Content-Type':image.type==='jpeg'?'image/jpeg':'image/'+image.type,'Content-Length':bytes.length,'Cache-Control':'private, max-age=31536000, immutable','X-Content-Type-Options':'nosniff'});return res.end(bytes);}
+  const remove=route.startsWith('/api/avatar/images/')&&model.id(route.slice('/api/avatar/images/'.length));
+  if(!(route==='/api/avatar/config'&&req.method==='PUT'||route==='/api/avatar/images'&&req.method==='POST'||remove&&req.method==='DELETE'))return json(res,404,{error:'Not found.'});
+  if(origin!=='http://'+host||req.headers['x-companion-csrf']!==csrf)return json(res,403,{error:'Open Avatar settings before making changes.'});
+  if(!/^application\/json(?:\s*;|$)/i.test(req.headers['content-type']||''))return json(res,415,{error:'JSON is required.'});
+  let size=0;const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>Math.ceil(model.MAX_BYTES/3)*4+2048)return json(res,413,{error:'Image request is too large.'});chunks.push(chunk);}let input;try{input=JSON.parse(Buffer.concat(chunks).toString());}catch{return json(res,400,{error:'Invalid JSON.'});}
+  const result=await enqueue(()=>{
+   if(route==='/api/avatar/config'){model.object(input,['revision','config']);revision(input.revision);const settings=model.settings(input.config);if(settings.imageId&&!config.images.some(i=>i.id===settings.imageId&&imageAvailable(i)))throw model.error('Selected image is unavailable.');return{config:commit({...config,...settings,revision:config.revision+1})};}
+   if(remove){model.object(input,['revision']);revision(input.revision);const id=route.slice('/api/avatar/images/'.length),image=config.images.find(i=>i.id===id);if(config.imageId===id)throw model.error('Save another image or clear the selection before removing this image.',409);if(!image)throw model.error('Image unavailable.',404);const next=commit({...config,revision:config.revision+1,images:config.images.filter(i=>i.id!==id)});try{fs.unlinkSync(imageFile(image));}catch{/* An unreferenced file is never served. */}return{config:next};}
+   revision(input?.revision);const upload=model.upload(input),known=config.images.find(i=>i.id===upload.image.id);if(known){if(!imageAvailable(known)){try{atomicWrite(imageFile(known),upload.bytes);}catch{throw model.error('Image could not be saved.',503);}}return{config:state(),imageId:known.id};}
+   if(config.images.length>=model.MAX_IMAGES)throw model.error('Remove an unused image before uploading another.');const target=imageFile(upload.image);try{atomicWrite(target,upload.bytes);}catch{throw model.error('Image could not be saved.',503);}try{return{config:commit({...config,revision:config.revision+1,images:[...config.images,upload.image]}),imageId:upload.image.id};}catch(e){try{fs.unlinkSync(target);}catch{}throw e;}
+  });return json(res,200,result);
+ }catch(e){if(!res.headersSent)json(res,e.statusCode||500,{error:e.statusCode?e.message:'Avatar request failed.'});else res.end();}});
+ return{server,state,renderState,csrf,async start(){if(stopped)throw Error('Avatar service is stopped.');await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(options.port??Number(process.env.COMPANION_SERVICE_PORT||3144),'127.0.0.1',()=>{server.removeListener('error',reject);resolve();});});return server.address().port;},stop(){if(stopPromise)return stopPromise;stopped=true;stopPromise=(async()=>{await tail;server.closeAllConnections();await new Promise(r=>server.close(r));})();return stopPromise;}};
+}
+if(require.main===module){const service=createService(),parent=process.ppid;let exiting=false;const watch=setInterval(()=>{try{process.kill(parent,0);if(process.ppid!==parent)stop();}catch{stop();}},1000);watch.unref();async function stop(){if(exiting)return;exiting=true;clearInterval(watch);await service.stop();process.exit(0);}service.start().catch(()=>{console.error('Bouncing Avatar could not start.');process.exitCode=1;});process.on('SIGTERM',stop);process.on('SIGINT',stop);}
+module.exports={createService,atomicWrite};

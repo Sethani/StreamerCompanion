@@ -31,12 +31,12 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## To do: remaining migration and cutover
 
-- [ ] **Bouncing avatar.** Copy the existing appearance, animation and layout into the combined overlay. Add optional colour changes on bounce and image selection/upload.
+- [ ] **Bouncing avatar.** Local 1.0.0 candidate implements the copied combined renderer, private image library and optional colour-on-bounce; [Pass 1 checkpoint](bouncing-avatar-extraction.md). Publication and backed-up legacy cutover remain.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
 
 ## Remaining acceptance and final switch
 
-- [ ] [Reduce OBS request traffic](obs-websocket-traffic.md): event-driven Phone Deck state with slower reconciliation; preserve safe dispatch/readback. Widgets itself makes no direct OBS requests.
+- [x] [Reduce OBS request traffic](obs-websocket-traffic.md): event-driven Phone Deck state with slower reconciliation; preserve safe dispatch/readback. Widgets itself makes no direct OBS requests.
 
 Phone Deck Sessions 1–12 are complete. The backed-up ownership handoff preserved pairing/TLS/layout/preferences, passed restored off-stream mute acceptance, and the operator confirmed the existing handset connects. Phone Deck 2.0.3 includes the installed startup/connection repair. Session 7 providers are published/upgrade-verified; Spotify is now installed at 2.0.4, while Source Modules 1.0.1 still requires a backed-up native reimport/Initialize if not adopted. Session 8 publishes Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 contributions with unchanged native data; adopt via explicit Catalogue updates and add cards manually. Session 9 publishes Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1; their phone controls require backed-up native imports/restart and Initialize; the user reports completing that import/restart. Session 10 publishes Walk Ons 2.1.2 and Shoutout Clips 2.1.1 with unchanged native data, so Catalogue updates suffice for those additions. Session 11 publishes Archipelago 1.0.10, Controller 1.1.1 and Pokemon 1.7.2 with scoped service controls; no new native imports are needed. Session 12 adds Live Chatbox 1.0.1 read-only connection status and the all-package coverage/stabilization audit; no new native import, app rebuild or Phone Deck update is needed. See the [12-session checkpoints](phone-deck-sessions.md). Keep the old server for the two remaining migrations; do not repeat accepted Cameras/Reactive live checks.
 

@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),schema=require('../../modules/phone-deck/service/provider-schema');
 const expected={
- archipelago:['show','hide','refresh','wake','status'], 'audio-routing':['toggle','status'], cameras:['main-mode','secondary-mode','secondary-video','assign-guest','status'],
+ archipelago:['show','hide','refresh','wake','status'], 'bouncing-avatar':['status'], 'audio-routing':['toggle','status'], cameras:['main-mode','secondary-mode','secondary-video','assign-guest','status'],
  'chat-core':['status'], 'chat-routing':['bot-message'], 'controller-input':['show','hide','status'], countdown:['start','preset-3','preset-5','custom','configure','pause','resume','clear','status'],
  'embedded-widgets':['status'], 'named-timers':['create','status'], 'phone-deck':['title','category','custom-action'], 'pokemon-encounters':['clear','status'], reactive:['show-guest','hide-guest'],
  'redeem-checklist':['complete','refund','status'], reminders:['add','complete','status'], 'scene-bindings':['apply-link','status'], 'shoutout-clips':['play','play-input','stop','status'],
