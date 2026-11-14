@@ -31,7 +31,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## To do: remaining migration and cutover
 
-- [ ] **Bouncing avatar.** Local 1.0.0 candidate implements the copied combined renderer, private image library and optional colour-on-bounce; [Pass 1 checkpoint](bouncing-avatar-extraction.md). Publication and backed-up legacy cutover remain.
+- [ ] **Bouncing avatar.** Published/installed 1.0.1, original image migrated and guarded handoff verified in the existing combined source; [checkpoint](bouncing-avatar-extraction.md). Operator visual confirmation remains.
 - [ ] **Local AI / Ollama integration.** Extract the functionality actually used, including the remaining Shoutout Clips warm-text dependency.
 
 ## Remaining acceptance and final switch

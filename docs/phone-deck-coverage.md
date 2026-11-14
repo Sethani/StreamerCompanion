@@ -1,12 +1,12 @@
 # Phone Deck contribution coverage
 
-Current source audit, November 14, 2026: **26 source packages**, **23 contributors, 71 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.0 is an unpublished local candidate. This inventory is separate from the whole-system feature checklist, which remains **22/24** until Avatar cutover/acceptance.
+Current source audit, November 14, 2026: **26 source packages**, **23 contributors, 71 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.1 is published/installed with a verified guarded handoff; operator visual acceptance remains. This inventory is separate from the whole-system feature checklist, which remains **22/24** until Avatar cutover/acceptance.
 
 | Package / version | Owner transport | Visible controls | Completion |
 | --- | --- | --- | --- |
 | archipelago 1.0.10 | service | show, hide, refresh, wake, status | Requested |
 | audio-routing 2.0.1 | streamerbot | toggle, status | matching acknowledgement |
-| bouncing-avatar 1.0.0 (local candidate) | service | status | read-only |
+| bouncing-avatar 1.0.1 | service | status | read-only |
 | cameras 2.0.2 | streamerbot | main-mode, secondary-mode, secondary-video, assign-guest, status | Requested |
 | chat-core 1.0.1 | service | status | read-only |
 | chat-routing 1.0.2 | streamerbot | bot-message | Requested |

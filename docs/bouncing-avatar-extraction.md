@@ -1,6 +1,10 @@
 # Bouncing Avatar extraction
 
-## Pass 1 - local package and combined-overlay acceptance
+## Current handoff - November 14, 2026
+
+**Avatar 1.0.1 is published, installed and enabled in the existing combined source.** Original image, native scene rules, OBS scene/source/audio state, pairing/TLS and existing preferences are preserved. The operator enabled automatic start. The old renderer is guarded; no additional OBS source or app/native/server restart was needed. Operator visual acceptance is pending, so the overall count remains 22/24.
+
+## Pass 1 - historical local checkpoint
 
 November 14, 2026. Bouncing Avatar 1.0.0 is an **unpublished local candidate**. Production renderer, private image, OBS sources, routing, services and installed packages remain unchanged. Whole-system status stays **22/24** until backed-up handoff and acceptance. Do not install this beside an active legacy renderer without the next cutover pass.
 
@@ -25,7 +29,7 @@ All requests enforce exact loopback Host/port. Private APIs/media additionally r
 
 Full local source, focused runtime/package/lifecycle and hidden-browser checks passed. The editor suite includes a delayed-poll regression: a read begun before Save cannot undo the confirmed newer settings. Actual packaged Companion 1.3.1 registry/private-data and child lifecycle checks passed with the target host version explicitly selected. Tests use disposable data, synthetic images/native responses and isolated ports; all test processes must close. Local artifact: `dist/modules/bouncing-avatar-1.0.0.streammodule`; SHA-256 `c096b60962e33f974f54c111b913949857176bc887bc96312f51218751cafe55`. Source `5c56ed7e87ba74191217a03ae17846525bfd4628` passed [Windows/Linux Check 43614628069](https://github.com/Sethani/StreamerCompanion/actions/runs/43614628069), including existing actual C# checks on Windows. Final process inspection found zero Avatar test processes and no production 3144 listener. No module release workflow was dispatched.
 
-## Next bounded pass - release and private cutover preparation
+## Cutover plan (completed below; visual acceptance pending)
 
 1. Finish source/CI gates and verify the exact archive; publish only this module through the existing independent module workflow. There is no prior published Avatar release to upgrade; verified reinstall/private-data preservation is the baseline, and first release must be checked in packaged Companion.
 2. Audit live consumers without switching scenes: combined legacy Overlay, any standalone Bouncing source, modern aggregate and cached/hidden consumers. Read current native `bouncing` routing without applying it. Back up the personal image, source/helper files, module private data, preferences and relevant OBS state.
@@ -43,3 +47,18 @@ The first 1.0.0 archive was published by workflow 43615291906 and verified in pa
 A hidden private-adapter check caught a boundary gap before the handoff: the old combined source lives on another local origin (or a file document), so it could not read 1.0.0's same-origin-only health response. Version **1.0.1** adds a deliberately read-only exception for `GET /health`: exact loopback Host/port remains mandatory; local HTTP reader origins receive an exact reflected allow-origin header, file readers may use `null`, and Origin-less probes may read the same small response. There is no wildcard or credential allowance. Arbitrary web origins and invalid loopback ports are rejected. The response contains only service identity/version and ready/configured/enabled booleans. Private settings, media, Phone Deck state and every mutation retain their original same-origin/CSRF gates.
 
 Regression checks cover the permitted readers and rejected web origins, private API/media rejection from those same readers, package restart/data preservation, and the actual private bridge from both HTTP and file parents. The bridge creates one frame only when native routing is fresh and eligible, the service is ready/enabled/configured, and its health is fresh. It removes the frame on scene exclusion or service failure, fences late reads after Stop, and never enables a legacy fallback. Regular health polling preserves a visible frame. The old avatar and generic duplicate loader are guarded separately before production activation.
+
+
+## Released patch and verified production adoption
+
+Patch source `45f69c173fb29d59a59cdb3f474e862bd7a30743` passed [Windows/Linux Check 43631012740](https://github.com/Sethani/StreamerCompanion/actions/runs/43631012740). Both source suites passed first; the first Windows C# stage failed the unchanged Scene Links window-enumeration helper check, and the retried failed Windows job passed. No C# or Scene Links code was changed. [Avatar 1.0.1](https://github.com/Sethani/StreamerCompanion-Modules/releases/tag/bouncing-avatar-v1.0.1) publication [43631540570](https://github.com/Sethani/StreamerCompanion-Modules/actions/runs/43631540570) passed. Archive SHA-256: `da1df3a311031579e6ef153c2cd4be4923a8d179738274830bfd1563a890555d`.
+
+Actual published 1.0.0-to-1.0.1 archive upgrade passed in packaged Companion 1.3.1: catalogue/archive hashes, current runtime version, exact private image/config/favorite/stopped-auto-start preservation, restart and isolated HTTP endpoints. The fixture clears its old runtime/manifest cache between package versions to model a fresh service process. Private hidden bridge checks passed against both candidate and exact installed code, with synthetic images and isolated HTTP/file parents. No temporary production-profile host or real viewer action was used; all test processes exited.
+
+Private rollback backup/checkpoint is under the personal repository's ignored `output/avatar-cutovers/2026-11-14T19-00-45-313Z`. One combined consumer and zero standalone/modern consumers were found. The first scene snapshot became stale; after the operator's correction, a live OBS/native comparison confirmed the current program scene matched one of the three saved scenes. Studio Mode was off and the rule had not changed. That operator-selected scene became the preservation baseline; the agent never switched scenes.
+
+The original image was copied privately while disabled. The operator started Avatar and enabled automatic start. Only Avatar restarted for the patch upgrade. The tested private guard removed the built-in image source, made the old animation inert, excluded a generic duplicate iframe and retired the unused standalone renderer. It retained accepted Widgets cadence and every other bridge. Exactly one existing combined browser source was refreshed while Avatar was disabled, then modern Avatar was enabled. No Node server, Companion, OBS or Streamer.bot restart was required.
+
+Verification passed for the original image hash, all native routing rules, unchanged current scene and OBS browser settings, cached authoritative mute state, phone pairing/TLS/configuration, existing host preferences, previously running service PIDs and repository-server PID. Embedded Widgets had been stopped at the initial snapshot and was found running later; it was left running. Its pre-existing renderer-owner record is unchanged from the backup and reports unconfirmed, requiring a separate safe owner-recovery follow-up. No ownership reset or unrelated setting change was performed in this handoff.
+
+The modern renderer remains enabled with colour changes on bounce. `scripts/avatar-cutover.js rollback` disables modern Avatar, restores the hash-checked original private source/helper/standalone files, removes only its matching ownership marker and refreshes the same source; image data stays private and preserved. Rollback requires off-stream OBS. Visual acceptance is pending; do not mark 23/24 until confirmed. Keep the old server for Ollama, and defer final legacy Import settings removal to the overall switch.
