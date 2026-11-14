@@ -4,7 +4,7 @@
 
 Walk Ons 2.1.2 and Shoutout Clips 2.1.1 add optional declarations over unchanged native action data. Focused runtime and hidden desktop/mobile regressions cover configured/live roster and clip-ID selection, explicit reset confirmation/cancellation, Requested-only results, lost-response no replay, preserved eligibility/configuration, sound Stop ownership, missing resources/imports/provider readiness and independent direct OBS. Private audio URLs and assignment values are absent from phone state. No channel lookup or AI is added.
 
-Existing actual C# regressions preserve weighted playback, Test vs normal eligibility, once-per-stream/rejected/immediate sound acceptance, guarded Stop, restart behavior, clip duration/mute/style and stale completion protection. All tests use synthetic owners/media and disposable data/ports. Release/upgrade results and the final checkpoint are recorded in phone-deck-sessions.md.
+Existing actual C# regressions preserve weighted playback, Test vs normal eligibility, once-per-stream/rejected/immediate sound acceptance, guarded Stop, restart behavior, clip duration/mute/style and stale completion protection. All tests use synthetic owners/media and disposable data/ports. Windows/Linux source checks, both publications and actual anonymous released upgrades passed in packaged Companion 1.3.1 with full native-data equality and no download fallback. Hashes/workflows and the final production-unchanged checkpoint are recorded in phone-deck-sessions.md.
 
 ## November 14: Phone Deck Session 9
 

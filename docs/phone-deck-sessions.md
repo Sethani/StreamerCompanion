@@ -1,6 +1,6 @@
 # Phone Deck implementation checkpoints
 
-Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 adds optional Walk Ons/Shoutout Clips declarations without new native imports; release verification is recorded below. Feature count remains **21/24**.
+Updated November 14, 2026. Implement **one bounded session per implementation turn**, then stop with a tested checkpoint. Target Companion **1.3.1**, without an app rebuild. Production uses Companion 1.3.2 and Phone Deck 2.0.3 after the accepted handoff and reliability repair. Sessions 1–9 are implemented/published; the user reports completing Session 9 native imports and restarting Streamer.bot. Session 10 is complete with published Walk Ons/Shoutout Clips declarations requiring no new native imports. Session 11 is next; release verification is recorded below. Feature count remains **21/24**.
 
 ## Progress
 
@@ -15,7 +15,7 @@ Updated November 14, 2026. Implement **one bounded session per implementation tu
 | 7 | Complete; both providers published; adoption tracked separately | Spotify 2.0.3 and scoped Source Modules 1.0.1 |
 | 8 | Complete; all three providers published | Cameras, Reactive and explicit Scene Links application; no repeat physical-camera acceptance |
 | 9 | Complete; all three published; user reports imports/restart | Named Timers, Reminders and confirmed Redeem Checklist operations |
-| 10 | In release verification | Walk Ons and Shoutout Clips |
+| 10 | Complete; both providers published | Walk Ons and Shoutout Clips |
 | 11 | Pending | Archipelago, Controller and Pokemon |
 | 12 | Pending | Live Chatbox status, provider coverage and stabilization |
 
@@ -193,3 +193,7 @@ Shoutout Clips 2.1.1 contributes saved/live clip-ID playback, Stop and native cl
 Focused runtime/hidden desktop/mobile checks pass with synthetic media/owners, including two clients, confirmation cancellation, eligibility/configuration preservation, missing saved resources/imports/owners, Requested vs observable state, duplicate/stale/lost requests, stable drafts/focus/carets/scroll and independent OBS. Existing actual C# media/Walk Ons regressions pass. Full source and real released-upgrade gates follow below. All production applications/actions/settings/eligibility/playback/deck layout/pairing/TLS are untouched during implementation. The user separately reports completing Session 9 imports and restart; no production Initialize or reset was invoked to check that report.
 
 Stop after Session 10. Session 11 is Archipelago, Controller and Pokemon contributions; it is not started here. Feature count stays 21/24.
+
+Session 10 publication completed from source `d35ae51dd5bf7dcebfbd3004d98806a6f47611c7`, after Windows/Linux Check `43534290448` passed. Walk Ons 2.1.2 workflow `43534592861`, SHA-256 `582fa5401e6eb9c8d18354fb57b82a734a6fa414df28d20f5b1ec944659500bb`; Shoutout Clips 2.1.1 workflow `43534666809`, SHA-256 `10af2cd4996ac9b69b3206b2b4ee962b8a34c108bdec1b2daae0e04ab7b93bde`. Local artifacts: dist/modules/walk-ons-2.1.2.streammodule and dist/modules/shoutout-clips-2.1.1.streammodule.
+
+Full source and actual C# checks, focused runtime/hidden desktop/mobile acceptance and actual anonymous released upgrades in packaged Companion 1.3.1 passed. Upgrade verification checks hashes, full native-data equality, Ready assets/contributions and retained private data/favorites, with only GetActions reaching the read-only native fixture. No service/action dispatch or download fallback occurred. All isolated test processes exited. Production applications/packages/actions/settings, eligibility/playback and deck layout/pairing/TLS remain unchanged. Adoption is two explicit Catalogue updates and explicitly added cards; no new import/restart, app build or Phone Deck update is required. Session 10 stops here; Session 11 has not started.

@@ -56,3 +56,7 @@ Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 are published and release-up
 ## Phone Deck Session 9 — November 14, 2026
 
 Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1 are published and released-upgrade verified. Their phone forms/status reuse the existing native owners and add private projections plus persisted request intents/results. Only engine bodies change; stable IDs/wrappers/triggers/configuration remain. Production adoption requires backed-up off-stream imports/restart and Initialize. No production package/action/viewer mutation or application restart occurred in this session. The old native engines keep new phone controls disabled. See phone-deck-sessions.md for release hashes and tests; Session 10 is next.
+
+## Phone Deck Session 10 — November 14, 2026
+
+Walk Ons 2.1.2 and Shoutout Clips 2.1.1 are published and actual released upgrades are verified. Optional test/audio-stop/confirmed eligibility-reset and clip-ID play/stop/status declarations retain complete native data and need no new native import/restart or app build. Requested semantics avoid inventing playback acceptance; private media assignments remain server-side. Production packages, eligibility, playback, settings and layouts were not changed. The user separately reports completing Session 9 imports/restart. Session 11 is next; see phone-deck-sessions.md for hashes/workflows/test evidence.
