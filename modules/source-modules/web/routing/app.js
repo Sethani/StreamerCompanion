@@ -1,11 +1,19 @@
 "use strict";
 const transport = StreamingTransport.create();
 let config = { version: 1, modules: {} }, dirty = false, modules = [];
+function routingRows(items) {
+  const rows=new Map();
+  for(const item of items.filter(m=>m.extensionOverlayUrl&&m.packageId!=="universal-overlay")){
+    const p=item.overlayRouting;
+    if(p){if(p.version!==1||p.retainOnSceneHide!==true||!Array.isArray(p.groups)||!p.groups.length||p.groups.length>16||new Set(p.groups).size!==p.groups.length||p.groups.some(id=>typeof id!=="string"||!/^[a-z][a-z0-9-]{0,63}$/.test(id)))continue;for(const id of p.groups)rows.set(id,{id,name:item.name+" · "+(typeof p.labels?.[id]==="string"?p.labels[id]:id)});}
+    else rows.set(item.id,item);
+  }return [...rows.values()];
+}
 const status = document.getElementById("status"), feedback = document.getElementById("feedback");
 function render() {
   if (dirty) return;
   const root = document.getElementById("rules"); root.replaceChildren();
-  for (const module of modules.filter((item) => item.extensionOverlayUrl && item.packageId !== "universal-overlay")) {
+  for (const module of routingRows(modules)) {
     const section = document.createElement("section"), heading = document.createElement("h2"), label = document.createElement("label"), select = document.createElement("select"), scenes = document.createElement("textarea");
     heading.textContent = module.name; label.textContent = "Visibility"; select.dataset.module = module.id;
     for (const [value, text] of [["disabled", "Hidden"], ["global", "All scenes"], ["scenes", "Selected scenes"]]) { const option = document.createElement("option"); option.value = value; option.textContent = text; select.append(option); }

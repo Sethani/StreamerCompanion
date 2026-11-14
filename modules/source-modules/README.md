@@ -13,3 +13,7 @@ Version 1.0.1 contributes **Set saved overlay visibility**. Choose an existing s
 Existing installations must back up and reimport the updated Source Modules actions, then run Initialize. Until the new engine publishes `phoneDeckVersion: 1`, phone controls remain unavailable instead of treating an old engine's ignored request as success. All four installed action IDs, triggers and arguments are retained. No Phone Deck/Companion rebuild is required; no cards are added automatically. Installing the package does not import actions or change routing.
 
 The scoped operation sends `moduleRoutingMode=set-mode`, `moduleRoutingTarget` and `moduleRoutingVisibility` to the existing Engine action. Configuration updates are serialized with Save/Initialize; a matching terminal result is published only after configuration persistence. The last 256 request IDs/results survive Initialize and scene events. Duplicate IDs do not replay, unavailable rules remain unavailable, and unconfirmed outcomes are never automatically retried.
+
+## Widget group presentation (1.0.2 candidate)
+
+Grouped external-widget declarations show separate Tangia and generic-widget routing rows using the existing saved rule IDs. There is no replacement umbrella rule or automatic scene-list change. Ordinary module rows remain unchanged. Only the editor/manifest version changes; all native actions, IDs, globals, engine bodies and arguments are unchanged. No new Streamer.bot import is required for this update. This candidate remains unpublished while the widget cutover gates are pending.

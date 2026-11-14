@@ -3,7 +3,7 @@
   "id": "embedded-widgets",
   "name": "Embedded Widgets",
   "version": "1.0.0",
-  "description": "Private external widget setup, including Tangia. Local candidate; combined-overlay integration is pending.",
+  "description": "Private external widgets, including Tangia, in the existing combined overlay. Unpublished integration candidate.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "modules": {
-      "universal-dock": "^1.0.0"
+      "universal-dock": "^1.0.0",
+      "universal-overlay": "^1.0.2",
+      "source-modules": "^1.0.2"
     },
     "optionalModules": {},
     "capabilities": {
@@ -30,7 +32,8 @@
     "settingsPath": "/settings",
     "provides": [
       "embedded-widgets"
-    ]
+    ],
+    "overlayPath": "/overlay"
   },
   "ui": {
     "id": "embedded-widgets",
@@ -38,7 +41,10 @@
     "category": "Effects",
     "dockPage": "/settings",
     "ownership": "node",
-    "overlays": [],
+    "overlays": [
+      "tangia",
+      "microlayer"
+    ],
     "actions": [],
     "phoneDeck": {
       "schemaVersion": 1,
@@ -73,6 +79,18 @@
           "fields": []
         }
       ]
+    },
+    "overlayRouting": {
+      "version": 1,
+      "retainOnSceneHide": true,
+      "groups": [
+        "tangia",
+        "microlayer"
+      ],
+      "labels": {
+        "tangia": "Tangia",
+        "microlayer": "Other widgets"
+      }
     }
   }
 }
