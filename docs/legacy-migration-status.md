@@ -52,3 +52,7 @@ No production actions, streams, games, chat messages or settings were changed by
 ## Phone Deck Session 8 — November 14, 2026
 
 Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 are published and release-upgrade verified. They add optional phone controls over unchanged native action data, preserving the accepted owners, private mappings/roster and automatic camera/scene behavior. Production package updates are explicit Catalogue operations; this session performed no installation, native import/restart or physical-camera acceptance. See phone-deck-sessions.md for the complete verification/release checkpoint.
+
+## Phone Deck Session 9 — November 14, 2026
+
+Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1 are published and released-upgrade verified. Their phone forms/status reuse the existing native owners and add private projections plus persisted request intents/results. Only engine bodies change; stable IDs/wrappers/triggers/configuration remain. Production adoption requires backed-up off-stream imports/restart and Initialize. No production package/action/viewer mutation or application restart occurred in this session. The old native engines keep new phone controls disabled. See phone-deck-sessions.md for release hashes and tests; Session 10 is next.
