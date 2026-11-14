@@ -117,3 +117,10 @@ Repeated broad OBS inventory/audio snapshots caused verification bursts. They st
 Acceptance/checkpoint files in the private backup: baseline.json, verification.json, plan.json, cadence-fix.json, owner-stability-long.json, acceptance.json and original source/server files. All remain Git-ignored. Rollback starts by disabling Widgets and confirming its owner releases; then restore the backed-up private source/server, remove only the matching ownership marker, restart only the repository server with correct PID tracking and refresh old consumers. Keep the modern widget owner disabled during rollback to avoid overlap. Preserve current user changes and use the original untouched microlayer.json for old data.
 
 This feature is complete (22/24). Keep the repository server for bouncing avatar/Ollama. Do not repeat accepted physical Cameras/Reactive checks or remove final-switch Import settings controls yet.
+
+
+## Interrupted-owner recovery completed - November 14
+
+After a later service restart, the persisted previous renderer was unconfirmed. The original configuration/owner and OBS browser settings were backed up, master rendering disabled and one persisted release request submitted. The operator confirmed no extra overlay tabs outside OBS; all known OBS widget-consuming documents were temporarily blanked/refreshed after inventory/settings checks. Scoped closed-view recovery completed durably. The exact source settings and original enabled preference were restored; readback confirmed one active responding owner, unchanged private URLs/layout/group rules and no scene/audio/routing/application change. No Tangia or other accepted visual test was repeated. See [remaining final-switch boundaries](final-switch-audit.md). A service's running state still needs its intended automatic-start preference verified in the cold-start rehearsal.
+
+Post-recovery stability: 35.45 seconds, 35 active samples, zero ownership changes, zero OBS requests and no viewer actions. Temporary observer exited.
