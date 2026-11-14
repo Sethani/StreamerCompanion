@@ -16,7 +16,7 @@ Checked means the replacement is implemented and published/installed/imported as
 - [x] Going-live announcements and bookkeeping — retained private native hook
 - [x] Live Chatbox — normal and ticker, including live enrichment
 - [x] Named / language timers
-- [x] Phone Deck — 2.0.3; accepted handoff/editor and installed startup/connection repair
+- [x] Phone Deck — 2.0.4; accepted handoff/editor/startup repair and installed OBS traffic reduction
 - [x] Pokemon Encounters
 - [x] Reactive Guests — user completed live acceptance
 - [x] Redeem Checklist
@@ -67,3 +67,5 @@ These support the features above and are not additional items in the 24-feature 
 The old server must remain available until the remaining migrations and final switch pass. Detailed priorities and acceptance evidence are in the [feature checklist](switchover-feature-checklist.md), [migration audit](legacy-migration-status.md) and [validation record](VALIDATION.md). Update this page and the detailed checklist together when a slice changes status.
 
 November 13 reliability repairs are published/installed in Companion 1.3.2, with Spotify 2.0.4, Dock 1.1.2, Overlay 1.0.1 and Phone Deck 2.0.3. [Repair and verification record](startup-reliability-repair.md). The feature count is now 22/24; all twelve Phone Deck sessions are complete, while the two remaining migrations stay separate.
+
+Phone Deck 2.0.4 is published and installed with event-fed OBS state, scoped structural reads and slower reconciliation; [release/adoption verification](obs-websocket-traffic.md). Pairing/TLS/layout/preferences and OBS state were preserved, with no new native import or app rebuild. Whole-system count remains 22/24; avatar and Ollama remain.

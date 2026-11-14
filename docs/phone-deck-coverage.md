@@ -12,7 +12,7 @@ Session 12 source audit, November 14, 2026. All **24 source packages** have an e
 | controller-input 1.1.1 | service | show, hide, status | Requested |
 | countdown 1.1.1 | streamerbot | start, preset-3, preset-5, custom, configure, pause, resume, clear, status | Requested |
 | named-timers 1.0.1 | streamerbot | create, status | matching acknowledgement |
-| phone-deck 2.0.3 | streamerbot | title, category, custom-action | Requested |
+| phone-deck 2.0.4 | streamerbot | title, category, custom-action | Requested |
 | pokemon-encounters 1.7.2 | service | clear, status | Requested |
 | reactive 2.1.1 | streamerbot | show-guest, hide-guest | matching acknowledgement |
 | redeem-checklist 1.0.1 | streamerbot | complete, refund, status | matching acknowledgement |
