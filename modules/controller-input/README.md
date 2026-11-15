@@ -14,7 +14,7 @@ Requires Companion 1.3.1+, Windows, PowerShell and Universal Dock. Universal Ove
 
 Install Controller, start its service explicitly, open Settings, enable/save the display, then refresh the existing combined OBS source. Port 3126 must have one owner: if the old built-in Controller Input service is running, stop only that service before starting this module. Leave OBS, Streamer.bot, Controller room hosting and other Companion services running. Existing scene rules retain the UI key `controller`; the package/service ID remains `controller-input`.
 
-The drawing, button mapping, trigger thresholds, axis dead zones and stick directions are preserved. Layout defaults are X 1420, Y 850, width 260, height 190, scale 1, matching the old layout defaults. New installations start disabled. Settings can import a legacy microlayer JSON file or a controller-only layout file, reading only the controller enable/position/size/scale fields; Save display applies it. External URLs and other widget settings are ignored. Existing installed-module data and automatic-start preferences are retained during upgrades; cross-profile copies are explicit.
+The drawing, button mapping, trigger thresholds, axis dead zones and stick directions are preserved. Layout defaults are X 1420, Y 850, width 260, height 190, scale 1, matching the old layout defaults. New installations start disabled. Configure the display directly in Settings. Version 1.1.2 removes the retired personal-layout importer; existing installed layout settings remain in private module data and are preserved on upgrade. Existing installed-module data and automatic-start preferences are retained during upgrades; cross-profile copies are explicit.
 
 ## Input and tests
 

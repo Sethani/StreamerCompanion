@@ -14,13 +14,14 @@ async function main() {
     assert.deepEqual(snapshot({ pads: [{ index: 0, axes: [9, -9, null, 0.1] }] }).pads[0].axes, [1, -1, 0, 0.1]);
     buildModules(["controller-input"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules") });
-    const staged = registry.stage(path.join(root, "packages/controller-input-1.1.1.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages/controller-input-1.1.2.streammodule")); registry.commit(staged); registry.finalize(staged);
     const moduleDirectory = registry.moduleDirectory("controller-input");
     const helper = fs.readFileSync(path.join(moduleDirectory, "service/native-xinput.ps1"), "utf8");
     assert.ok(helper.includes("XInputGetState") && helper.includes("7849") && helper.includes("8689") && helper.includes("$parentProcess.HasExited"));
     test = await fixture(root, path.join(moduleDirectory, "service/runtime.js"));
     const api = async (route, body, token = test.service.csrf) => fetch(test.base + route, { method: body ? "POST" : "GET", headers: { "X-Companion-CSRF": token }, ...(body ? { body: JSON.stringify(body) } : {}) });
     assert.equal(test.service.publicState().enabled, false);
+    assert.equal(test.service.publicState().version, registry.readManifest("controller-input").version);
     assert.equal((await api("/api/controller/settings", { enabled: true }, "wrong")).status, 403);
     assert.equal((await fetch(test.base + "/health", { headers: { Origin: "http://127.0.0.1:7474" } })).headers.get("access-control-allow-origin"), "http://127.0.0.1:7474");
     assert.equal((await fetch(test.base + "/api/controller/settings")).status, 403);
@@ -35,9 +36,11 @@ async function main() {
     await api("/api/controller/test", {}); test.state.now += 11000; assert.equal(test.service.publicState().test, false);
     await test.close(); assert.equal(test.stopped(), true); test = null;
     const manifest = registry.readManifest("controller-input");
-    const upgrade = new AdmZip(path.join(root, "packages/controller-input-1.1.1.streammodule")); manifest.version = "1.1.2";
+    const upgrade = new AdmZip(path.join(root, "packages/controller-input-1.1.2.streammodule")); manifest.version = "1.1.3";
     upgrade.updateFile("module.json", Buffer.from(JSON.stringify(manifest))); const upgradedFile = path.join(root, "upgrade.streammodule"); upgrade.writeZip(upgradedFile);
+    const savedLayout = fs.readFileSync(path.join(root, "data/config.json"));
     const replacement = registry.stage(upgradedFile); registry.commit(replacement); registry.finalize(replacement);
+    assert.deepEqual(fs.readFileSync(path.join(root, "data/config.json")), savedLayout, "Upgrade preserves every saved layout field byte-for-byte");
     assert.equal(JSON.parse(fs.readFileSync(path.join(root, "data/config.json"), "utf8")).width, 310, "Package upgrade preserves private layout");
     if (process.platform === "win32") {
       child = new InstalledService({ app: {}, moduleDirectory, dataDirectory: path.join(root, "data"), manifest: { ...manifest, service: { ...manifest.service, port: await freePort() } } });

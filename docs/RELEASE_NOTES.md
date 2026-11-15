@@ -1,5 +1,7 @@
 Experimental application release by Sethani, under MIT for first-party code.
 
+Companion 1.3.3 removes the retired legacy settings-import desktop hook. Controller 1.1.2 removes its personal-layout JSON picker and reader. Existing module data, automatic starts, pairing and normal installed-data upgrades are preserved. Streamer.bot action imports, media imports and Video/Wheel backup import/export stay available. No Streamer.bot reimport is needed.
+
 Companion 1.3.2 distinguishes missing packages from installed dependencies waiting for Streamer.bot/import verification. Automatic services blocked during boot remain pending and start once their dependencies are ready. Manual Stop/Stop all is retained. Browser assets remain available while native verification waits. Native availability is checked in the background; you do not need to race Companion and Streamer.bot. Navigation reload uses its saved scroll position without competing browser history restoration.
 
 Related independent module repairs: Spotify 2.0.4 adds per-scene entry autoplay without changing stream-launch music; Universal Dock 1.1.2/Universal Overlay 1.0.1 reconcile current-scene routing; Phone Deck 2.0.3 recovers failed initial page loads and stalled OBS/native read connections without retrying commands. Existing module settings, actions, pairing/TLS, cards and automatic-start preferences are preserved. No Streamer.bot import/restart is required for these fixes.

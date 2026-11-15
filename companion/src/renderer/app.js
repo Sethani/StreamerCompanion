@@ -52,7 +52,6 @@ function updateInstalled(entry, item) {
   for (const node of actions.children) if (node.dataset.action?.startsWith('link-')) node.hidden = Number(node.dataset.action.slice(5)) >= links.length;
   slot(actions, 'restart', 'Restart', () => serviceAction(s.manifest.id, 'restart'), Boolean(s), !state?.pid);
   slot(actions, 'settings', 'Settings', () => window.companion.openServiceSettings(s.manifest.id), Boolean(s?.manifest.settingsPath), !state?.endpoint?.ready);
-  slot(actions, 'legacy', 'Import existing settings', async () => { const result = await window.companion.importServiceSettings(s.manifest.id); services = result.services; }, Boolean(s?.manifest.supportsLegacyImport && window.companion.importServiceSettings));
   if (s && !entry.serviceBody) {
     const body = el('div', 'service-body'), health = el('div', 'service-health'), meta = el('div', 'service-meta');
     const automatic = el('label', 'autostart'), checkbox = el('input'); checkbox.type = 'checkbox'; automatic.append(checkbox, document.createTextNode(' Start automatically with Companion'));

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "controller-input",
   "name": "Controller",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Native controller input and the existing gamepad display in the combined stream overlay.",
   "author": "Sethani",
   "license": "MIT",

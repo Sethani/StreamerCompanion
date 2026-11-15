@@ -32,7 +32,7 @@ function createService(options = {}) {
     const test = now() < testUntil;
     const fresh = providerStatus === "ready" && now() - lastInput < 1500;
     const current = test ? snapshot({ supported: true, pads: [{ index: config.controllerIndex < 0 ? 0 : config.controllerIndex, connected: true, pressed: [0, 4, 6], axes: [0.6, -0.5, -0.4, 0.3] }] }) : fresh ? input : snapshot();
-    return { ...current, service: "controller-input", version: "1.1.1", ready: true, enabled: config.enabled, config, test, providerStatus: fresh ? "ready" : providerStatus === "ready" ? "stale" : providerStatus, atMs: now() };
+    return { ...current, service: "controller-input", version: require("../module.json").version, ready: true, enabled: config.enabled, config, test, providerStatus: fresh ? "ready" : providerStatus === "ready" ? "stale" : providerStatus, atMs: now() };
   }
   function save(input, preserve=false) { const next = normalize({ ...config, ...input }); const output=preserve&&fs.existsSync(file)?{...JSON.parse(fs.readFileSync(file,"utf8")),...next}:next;fs.writeFileSync(file + ".tmp", JSON.stringify(output, null, 2)); fs.renameSync(file + ".tmp", file); config=next;return config; }
   function json(response, status, value) { const bytes = Buffer.from(JSON.stringify(value)); response.writeHead(status, { "Content-Type": "application/json", "Content-Length": bytes.length, "Cache-Control": "no-store" }); response.end(bytes); }
