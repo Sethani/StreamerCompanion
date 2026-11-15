@@ -28,12 +28,12 @@ Checked means the replacement is implemented and published/installed/imported as
 - [x] Spotify Music
 - [x] Stream Launch
 - [x] Video
-- [x] Walk Ons — use 2.1.1; one live observation remains below
+- [x] Walk Ons — repeated-chat fix confirmed by the operator
 - [x] Wheel
 
 ## Feature migration complete
 
-[Local AI release and private caller handoff](local-ai-extraction.md) passed. Required integrated ownership, startup and legacy-settings import cleanup are complete. One normal-use Walk Ons observation remains below.
+[Local AI release and private caller handoff](local-ai-extraction.md) passed. Required integrated ownership, startup and legacy-settings import cleanup are complete. The operator confirmed the remaining normal-use Walk Ons repetition check.
 
 ## Remaining acceptance and final switch
 
@@ -43,7 +43,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 Phone Deck Sessions 1–12 are complete. The backed-up ownership handoff preserved pairing/TLS/layout/preferences, passed restored off-stream mute acceptance, and the operator confirmed the existing handset connects. Phone Deck 2.0.3 includes the installed startup/connection repair. Session 7 providers are published/upgrade-verified; Spotify is now installed at 2.0.4, while Source Modules 1.0.1 still requires a backed-up native reimport/Initialize if not adopted. Session 8 publishes Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 contributions with unchanged native data; adopt via explicit Catalogue updates and add cards manually. Session 9 publishes Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1; their phone controls require backed-up native imports/restart and Initialize; the user reports completing that import/restart. Session 10 publishes Walk Ons 2.1.2 and Shoutout Clips 2.1.1 with unchanged native data, so Catalogue updates suffice for those additions. Session 11 publishes Archipelago 1.0.10, Controller 1.1.1 and Pokemon 1.7.2 with scoped service controls; no new native imports are needed. Session 12 adds Live Chatbox 1.0.1 read-only connection status and the all-package coverage/stabilization audit; no new native import, app rebuild or Phone Deck update is needed. See the [12-session checkpoints](phone-deck-sessions.md). The required modern setup now cold-starts with the old API stopped; do not repeat accepted Cameras/Reactive live checks.
 
-- [ ] Observe one normal viewer first-chat/repeated-chat sequence with Walk Ons 2.1.1: one entrance per stream, with reset permitting the next entrance. Synthetic and controlled playback checks already pass.
+- [x] Walk Ons normal-use repeated-chat defect confirmed fixed by the operator on November 15; synthetic reset/once-per-stream regressions pass.
 - [x] [Audit remaining URLs and callers](final-switch-audit.md): existing aggregate source, retained ad timing, startup/shutdown and deferred source dependencies identified.
 - [x] Replace retained ad timing with native Countdown state, verify native video-entrance dispatch and guard legacy HTTP fallback.
 - [x] Adopt the permanent Universal Overlay on the existing source with persistent browser lifetime; operator confirmed smooth, correctly scene-limited Avatar.
@@ -71,7 +71,8 @@ These support the features above and are not additional items in the 24-feature 
 
 ## Later / excluded
 
-- **Later:** Chat Archive; TTRPG-specific tools/layouts.
+- **Additional optional module:** [Chat Archive](../modules/chat-archive/README.md), built after the required switchover; private capture starts disabled.
+- **Later:** TTRPG-specific tools/layouts.
 - **Dropped from this switchover:** Stream Together.
 
 The old server is stopped; retain its private data and explicit rollback for deferred tools. Detailed priorities and acceptance evidence are in the [feature checklist](switchover-feature-checklist.md), [migration audit](legacy-migration-status.md) and [validation record](VALIDATION.md). Update this page and the detailed checklist together when a slice changes status.

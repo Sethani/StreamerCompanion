@@ -1,0 +1,13 @@
+# Chat Archive
+
+Optional private chat history for Companion. Install Live Chatbox and Universal Dock, start Chat Archive, then open its controls and enable **Archive incoming chat**. Capture starts disabled. No Streamer.bot import or Companion rebuild is needed. This module has no overlay and sends no chat messages.
+
+The archive consumes Live Chatbox's normalized local event feed on port 3136; it does not open another Streamer.bot connection or run external pronoun/PluralMind lookups. Original messages and available display-name/member/pronoun updates are retained. Twitch and YouTube IDs remain separate. Repeated events do not duplicate messages. Enrichment cannot restore deleted messages. Live Chatbox's synthetic test identities and synthetic clear events are excluded.
+
+Use message/user/member/platform/date/moderation filters and paginated results. Dates use UTC; displayed timestamps use your local timezone. Search is literal substring matching (SQLite's built-in case folding, primarily ASCII), not SQL or full-text syntax. CSV and JSON exports contain all matching rows, up to 10,000 per export, independently of the displayed page. Narrow filters to export a larger archive in batches. CSV neutralizes spreadsheet formula prefixes; JSON retains exact stored values.
+
+Settings save with revisions, so two clients cannot silently overwrite each other's changes. Polling updates status without replacing drafts, focus or results. No mutation is automatically retried. Local management requires exact loopback Host/same-origin checks, with a session CSRF header for writes; it is not a public history API or a Phone Deck contribution.
+
+SQLite data lives in this module's private data directory, outside its package. Retention defaults to 30 days (1–3650 allowed), runs at startup/hourly/Save and on explicit cleanup. Moderator deletions mark matching records and remove message text by default. Retaining deleted text requires explicit opt-in; switching it off scrubs existing deleted text. This is application-level deletion, not a guarantee of forensic erasure from filesystem backups. Do not share the private database or exports publicly. Stop the service before copying its database as a backup; do not copy a live SQLite file without its WAL.
+
+Stopping/disabling Archive does not affect live rendering. Existing history remains searchable when capture is off. Messages during disconnection or while disabled cannot be recovered: the live feed has no replay/backfill. Reconnect resumes future events without re-sending chat. Do not rely on it as a complete moderation audit log across outages. The original private prototype/history is not imported, modified or bundled. There is no legacy-settings import control.

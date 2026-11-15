@@ -1,3 +1,5 @@
+Chat Archive addition (November 15): the private archive is an explicit non-provider; history/search/exports stay in its local dock. The source coverage test includes it without exposing viewer data or creating phone cards. Earlier counts below describe their recorded checkpoint.
+
 # Phone Deck contribution coverage
 
 Current source audit, November 14, 2026: **27 source packages**, **24 contributors, 72 visible controls and 2 hidden compatibility controls**. Bouncing Avatar 1.0.1 is published/installed with an operator-accepted guarded handoff. Local AI 1.0.0 is a local candidate with read-only status. This inventory is separate from the whole-system feature checklist, which is now **23/24**, with Ollama remaining.
