@@ -1,6 +1,25 @@
 # Final integrated switch audit
 
-## November 14 checkpoint
+## November 15: modern aggregate and cold start accepted; startup console fixed
+
+The existing OBS aggregate now uses Companion's permanent Universal Overlay URL. Its source identity, size, audio, transforms, other browser inputs, private module configuration, phone identity and native mappings are preserved. The two intentional lifetime changes are `shutdown=false` and `restart_when_active=false`, so ordinary source visibility changes do not destroy the aggregate document. Internal module scene rules still control audience layers. The operator confirmed Avatar is smooth and limited to its selected scenes. Widgets recovered through scoped durable operations and has one active responding owner; prior Tangia/Cameras/Reactive acceptance remains complete.
+
+The retained ad scheduler now reads the native Countdown envelope: running timers use `endTimeMs` against the current clock; paused timers use the saved remainder, preserving upward rounding and first-ad thresholds. Unknown/invalid/expired states retain normal scheduling. The private video entrance retains its native Video/clip busy checks and playback dispatch; legacy HTTP fallback is rejected. Exactly two native bodies changed with a final flushed backup, stable IDs and globals. Actual C# fixtures cover these paths without Twitch, OBS or media effects. Incoming Twitch was verified after the native restart.
+
+A hidden check exercised the installed aggregate with all twelve audience owners, aliases, no recursion, stable polling, scene exclusion/stale snapshots, retained widget groups, registry failure and reconnect. Existing real synthetic Avatar/Widgets and routing tests remain the individual preservation baseline. A separate private-loader regression reproduced nesting the full Universal Overlay inside the old aggregate; that fallback loader now excludes the aggregate package/UI IDs. This finding does not prove every earlier animation symptom had the same cause. A temporary diagnostic URL expired during an interruption and was removed; OBS now has a permanent URL and no probe dependency.
+
+With the old repository API server actually stopped, six samples over 26.27 seconds kept all 27 modules Ready, Phone Deck connected to OBS/native and one active widget owner. Protected settings/audio/source readbacks passed. This is a bounded readiness/connection check, not a new live stream/ad/redeem/playback acceptance. The old server was restored after that bounded test; it is now stopped after the later successful cold start. Private rollback and deferred data remain available. No real stream, ad, redemption or media playback was triggered.
+
+Tested private startup/shutdown guards are adopted: modern mode skips the old Node launch/readiness check and broad legacy stop script while retaining Ollama, Spotify and Ghost Chat startup, Companion-before-OBS ordering and intended Ghost Chat shutdown. Only the exact native shutdown watcher was replaced. OBS, Companion and independent services stayed running. Marker removal with matching backed-up scripts provides rollback. The controlled application cold start now passes through the normal Streamer.bot startup path, with the old API stopped throughout. All 27 modules become Ready; Phone Deck reconnects to OBS/native, one Widget owner responds, private data/readbacks pass, and incoming Twitch is verified with a controlled marker. Companion and Ghost Chat open their real desktop interfaces. No real stream, ad, redemption or media playback was invoked for these checks.
+
+
+The startup CMD issue is fixed at its entry point: one private batch Run Program step is now a nonwaiting windowless C# PowerShell dispatch, preserving action/subaction IDs and the existing startup script/working directory. The batch file is retained for rollback. Native C# assembly references are explicitly copied from known installed framework references and tested with the actual .NET Framework compiler; a missing-reference regression fails as expected. The earlier general C# harness used broader compiler defaults and missed this requirement. Console-free process settings and removal of inherited Electron test mode are checked with a disposable helper. Final real startup has no visible startup Terminal and no old API listener. Test processes have exited.
+
+The first strict preservation comparison also rejected a changed `currentScene` observation inside native routing configuration. Actual saved module rules were unchanged; verification now compares those preferences independently of the expected observed-scene update. Failed intermediate attempts restored applications before retrying; only the final successful run is recorded as acceptance.
+
+**Next cleanup:** remove migration-only Import settings controls/readers through a tested app/package update. Preserve regular action/media imports, private settings and deferred data. The old API remains stopped, with rollback available. Deferred Writing/TTRPG references are outside the 24 vital-feature acceptance and may still need their archived tools if used later. Observe the outstanding normal-use Walk Ons check without repeating accepted hardware/widget tests.
+
+## Initial November 14 audit (historical)
 
 All 24 required feature areas have implementations; this is not evidence that the personal repository can be shut down. This pass inspected current OBS browser inputs, installed public inventory, saved native action bodies and launcher ownership. No real stream, scene, mute, track, ad, redeem or viewer playback was triggered.
 
@@ -27,11 +46,11 @@ Readback confirmed one active responding renderer, completed recovery and identi
 ## Ordered completion backlog
 
 1. Completed: Widgets ownership recovered with preserved settings and prior acceptance.
-2. Replace the retained ad timing read and prove the video-entrance native branch. Preserve private actions, IDs, mappings and globals; use disposable native fixtures.
-3. Run hidden synthetic Universal Overlay acceptance for the installed package set, independent routing and all relevant state/lifetime transitions. Verify no old HTTP/static-server dependency.
-4. Adopt the modern URL on the existing OBS aggregate source with backed-up settings and no duplicate renderer. Preserve accepted individual module settings.
-5. Adopt startup/shutdown changes with rollback. Include Widgets' intended automatic-start setting in the cold-start checklist; current running status alone is insufficient.
-6. Stop only the verified old repository API server for a bounded rehearsal. Verify host, normal/ticker chat, module services, scene routing, phone pairing, guided launch state and synthetic owner dispatch without starting a real stream or ads. Restore immediately if any vital dependency remains.
+2. Completed November 15: replace the retained ad timing read and prove the video-entrance native branch. Preserve private actions, IDs, mappings and globals; use disposable native fixtures.
+3. Completed November 15: run hidden synthetic Universal Overlay acceptance for the installed package set, independent routing and all relevant state/lifetime transitions. Verify no old HTTP/static-server dependency.
+4. Completed November 15: adopt the modern URL on the existing OBS aggregate source with backed-up settings and no duplicate renderer. Preserve accepted individual module settings.
+5. Completed November 15: adopt startup/shutdown changes with rollback. Include Widgets' intended automatic-start setting in the cold-start checklist; current running status alone is insufficient.
+6. Completed November 15: stop only the verified old repository API server for a bounded rehearsal. Verify host, normal/ticker chat, module services, scene routing, phone pairing, guided launch state and synthetic owner dispatch without starting a real stream or ads. Restore immediately if any vital dependency remains.
 7. Cold-start the complete setup in a separately announced off-stream session; preserve Ollama and external application startup. Record tested behavior versus remaining operator observation.
 8. Remove migration-only Import settings buttons/readers after final-switch acceptance. Preserve ordinary action/media imports, backups and all private data.
 

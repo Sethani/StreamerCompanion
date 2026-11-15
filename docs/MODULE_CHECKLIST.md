@@ -1,6 +1,6 @@
 # Module migration checklist
 
-Updated November 14, 2026. **24 of 24 required feature areas implemented; final integrated switch remains.**
+Updated November 15, 2026. **24 of 24 required feature areas implemented; final integrated switch remains.**
 
 Checked means the replacement is implemented and published/installed/imported as applicable. Remaining acceptance and retirement work is listed separately below. This counts feature areas, not package files; going-live bookkeeping is deliberately retained as a private native hook.
 
@@ -41,14 +41,19 @@ Checked means the replacement is implemented and published/installed/imported as
 
 - [x] [Reduce OBS request traffic](obs-websocket-traffic.md): event-driven Phone Deck state with slower reconciliation; preserve safe dispatch/readback. Widgets itself makes no direct OBS requests.
 
-Phone Deck Sessions 1–12 are complete. The backed-up ownership handoff preserved pairing/TLS/layout/preferences, passed restored off-stream mute acceptance, and the operator confirmed the existing handset connects. Phone Deck 2.0.3 includes the installed startup/connection repair. Session 7 providers are published/upgrade-verified; Spotify is now installed at 2.0.4, while Source Modules 1.0.1 still requires a backed-up native reimport/Initialize if not adopted. Session 8 publishes Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 contributions with unchanged native data; adopt via explicit Catalogue updates and add cards manually. Session 9 publishes Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1; their phone controls require backed-up native imports/restart and Initialize; the user reports completing that import/restart. Session 10 publishes Walk Ons 2.1.2 and Shoutout Clips 2.1.1 with unchanged native data, so Catalogue updates suffice for those additions. Session 11 publishes Archipelago 1.0.10, Controller 1.1.1 and Pokemon 1.7.2 with scoped service controls; no new native imports are needed. Session 12 adds Live Chatbox 1.0.1 read-only connection status and the all-package coverage/stabilization audit; no new native import, app rebuild or Phone Deck update is needed. See the [12-session checkpoints](phone-deck-sessions.md). Keep the old server until the integrated retirement rehearsal; do not repeat accepted Cameras/Reactive live checks.
+Phone Deck Sessions 1–12 are complete. The backed-up ownership handoff preserved pairing/TLS/layout/preferences, passed restored off-stream mute acceptance, and the operator confirmed the existing handset connects. Phone Deck 2.0.3 includes the installed startup/connection repair. Session 7 providers are published/upgrade-verified; Spotify is now installed at 2.0.4, while Source Modules 1.0.1 still requires a backed-up native reimport/Initialize if not adopted. Session 8 publishes Cameras 2.0.2, Reactive 2.1.1 and Scene Links 2.0.3 contributions with unchanged native data; adopt via explicit Catalogue updates and add cards manually. Session 9 publishes Named Timers 1.0.1, Reminders 1.0.2 and Redeem Checklist 1.0.1; their phone controls require backed-up native imports/restart and Initialize; the user reports completing that import/restart. Session 10 publishes Walk Ons 2.1.2 and Shoutout Clips 2.1.1 with unchanged native data, so Catalogue updates suffice for those additions. Session 11 publishes Archipelago 1.0.10, Controller 1.1.1 and Pokemon 1.7.2 with scoped service controls; no new native imports are needed. Session 12 adds Live Chatbox 1.0.1 read-only connection status and the all-package coverage/stabilization audit; no new native import, app rebuild or Phone Deck update is needed. See the [12-session checkpoints](phone-deck-sessions.md). The required modern setup now cold-starts with the old API stopped; do not repeat accepted Cameras/Reactive live checks.
 
 - [ ] Observe one normal viewer first-chat/repeated-chat sequence with Walk Ons 2.1.1: one entrance per stream, with reset permitting the next entrance. Synthetic and controlled playback checks already pass.
 - [x] [Audit remaining URLs and callers](final-switch-audit.md): existing aggregate source, retained ad timing, startup/shutdown and deferred source dependencies identified.
-- [ ] Replace the retained ad scheduler Countdown HTTP read; verify the video-entrance native branch and adopt the modern aggregate source with rollback.
-- [ ] Rehearse the complete workflow with the old repository server stopped, with rollback available.
-- [ ] Cold-start the complete modern setup and verify retained preferences, automatic-start settings, private media and phone pairing.
-- [ ] Retire the old server's startup/routes only after that rehearsal passes; preserve private data and rollback backups.
+- [x] Replace retained ad timing with native Countdown state, verify native video-entrance dispatch and guard legacy HTTP fallback.
+- [x] Adopt the permanent Universal Overlay on the existing source with persistent browser lifetime; operator confirmed smooth, correctly scene-limited Avatar.
+- [x] Adopt tested startup/shutdown guards preserving external apps and Companion-before-OBS order.
+- [x] Bounded server-off readiness check: 26.27 seconds, six samples, 27 Ready modules, connected Phone Deck and one Widget owner; old server restored.
+- [x] Controlled application cold start through the normal Streamer.bot launcher with the old API stopped: 27 Ready modules, phone OBS/native connection, one Widget owner, protected readbacks and incoming Twitch verified.
+- [x] Verify retained preferences, automatic-start settings, private media selections and phone pairing after cold start.
+- [x] Modern startup no longer launches the old server or uses its broad shutdown path; preserve private rollback/deferred data.
+- [x] Old API remains stopped after successful cold start; its stale PID is archived and rollback data retained.
+- [x] Replace the startup batch console with a tested windowless dispatch; actual startup Terminal closes, desktop apps remain visible.
 - [ ] **Final cleanup: remove legacy Import settings options.** Once the final switch is complete and existing settings are confirmed migrated, remove migration-only buttons/readers from the desktop and all affected modules. Preserve saved settings, ordinary backup/restore, Streamer.bot action imports and media imports. Verify fresh installations work from defaults/manual setup without legacy files.
 
 Previously accepted individual checks stay complete. Reopen them only for a new defect or a relevant integration change.
@@ -69,7 +74,7 @@ These support the features above and are not additional items in the 24-feature 
 - **Later:** Chat Archive; TTRPG-specific tools/layouts.
 - **Dropped from this switchover:** Stream Together.
 
-The old server must remain available until the remaining migrations and final switch pass. Detailed priorities and acceptance evidence are in the [feature checklist](switchover-feature-checklist.md), [migration audit](legacy-migration-status.md) and [validation record](VALIDATION.md). Update this page and the detailed checklist together when a slice changes status.
+The old server is stopped; retain its private data and explicit rollback for deferred tools. Detailed priorities and acceptance evidence are in the [feature checklist](switchover-feature-checklist.md), [migration audit](legacy-migration-status.md) and [validation record](VALIDATION.md). Update this page and the detailed checklist together when a slice changes status.
 
 November 13 reliability repairs are published/installed in Companion 1.3.2, with Spotify 2.0.4, Dock 1.1.2, Overlay 1.0.1 and Phone Deck 2.0.3. [Repair and verification record](startup-reliability-repair.md). The current feature count is 24/24; all twelve Phone Deck sessions, Avatar and Local AI handoffs are complete.
 

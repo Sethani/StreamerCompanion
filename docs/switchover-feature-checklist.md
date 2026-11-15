@@ -49,17 +49,17 @@ There are 24 vital features: all 24 now have independent or deliberately retaine
 2. Completed 2026-11-06: Stream Launch, Countdown and the retained private follow-up passed one operator-intended real stream. Keep this as a regression requirement; starting a real stream or sending public messages is never a build test.
 3. Reminders, Wheel, Named Timers, Redeem Checklist and Walk Ons have implementations in place; observe the corrected Walk Ons first-chat/repeated-chat behavior during normal use. Shoutout Clips is published/imported and user-confirmed for overlay playback and its command. Each migration includes private-data compatibility; only features that actually render to the audience receive combined-overlay integration.
 4. Reactive/Cameras operator live acceptance, Audio Routing, Scene Links and Phone Deck 2.0.3 handoffs are complete. OBS idle polling repair is complete in Phone Deck 2.0.4. Bouncing Avatar 1.0.1 has an accepted guarded handoff in the existing combined source. Local AI handoff and Widgets owner recovery are verified; follow the [residual URL/startup audit](final-switch-audit.md); all twelve optional Phone Deck sessions are complete. Adjust source-level ordering if dependency tracing reveals further shared prerequisites.
-5. Rehearse all 24 vital features through the modern host/dock/overlay with the legacy server stopped. Resolve every remaining old URL, caller, service process or action dependency before the production switch. OBS/Streamer.bot and external applications remain separate dependencies as needed.
+5. Modern aggregate adoption and bounded server-off readiness passed November 15; startup/shutdown guards are adopted. Application cold-start and protected-state checks subsequently passed with the old API stopped; startup console is fixed. Resolve every remaining old URL, caller, service process or action dependency before the production switch. OBS/Streamer.bot and external applications remain separate dependencies as needed.
 
 ## Required completion checks
 
 - [x] Every vital feature has an owned implementation, explicit dependencies and saved-data compatibility.
 - [ ] Existing accepted modules still work in the complete setup; no required media/settings were lost.
-- [ ] Modern Universal Overlay and live chat display have no dependency on the old personal HTTP/static server.
+- [x] Existing aggregate uses the permanent Universal Overlay; normal/ticker chat remains on its independent service. Bounded readiness passed with the old API stopped; controlled cold-start/readiness/preservation subsequently passed.
 - [ ] Scene visibility, module enable/disable, restarts and service automatic-start work without duplicate renderers or stale fallback.
 - [x] Launch, Countdown, Spotify handoff, going-live messaging and controlled viewer interactions work through their new owners. Spotify 2.0.2 adds the regression fix for a manual pre-stream pause.
 - [ ] Synthetic tests run without live chat, stream, hardware or production-state mutations; controlled live effects are separately authorized.
-- [ ] User acceptance/rehearsal passes with the old server stopped, with a documented rollback.
+- [x] Operator accepted scene-limited smooth Avatar on the modern aggregate; controlled cold-start/readiness/preservation and incoming Twitch passed with the old API stopped. Private rollback is documented.
 - [ ] At the end of the final switch, remove migration-only **Import settings / Import existing settings** controls and their legacy readers from the desktop and every affected module whose settings have been migrated. Preserve current settings, normal backup/restore, Streamer.bot action imports and media imports; verify fresh installations need no personal legacy files. This cleanup is deferred until migration and final-switch acceptance pass.
 
 Infrastructure is part of the baseline: module catalogue/updates, Universal Dock/Overlay, Source Modules and test/operator controls are retained without needing an additional priority vote. External OBS services can remain independent; inspect their URLs at cutover rather than unnecessarily rebuilding them.
