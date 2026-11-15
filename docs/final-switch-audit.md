@@ -17,7 +17,7 @@ The startup CMD issue is fixed at its entry point: one private batch Run Program
 
 The first strict preservation comparison also rejected a changed `currentScene` observation inside native routing configuration. Actual saved module rules were unchanged; verification now compares those preferences independently of the expected observed-scene update. Failed intermediate attempts restored applications before retrying; only the final successful run is recorded as acceptance.
 
-**Next cleanup:** remove migration-only Import settings controls/readers through a tested app/package update. Preserve regular action/media imports, private settings and deferred data. The old API remains stopped, with rollback available. Deferred Writing/TTRPG references are outside the 24 vital-feature acceptance and may still need their archived tools if used later. Observe the outstanding normal-use Walk Ons check without repeating accepted hardware/widget tests.
+**Cleanup complete:** [Companion 1.3.3 and Controller 1.1.2](legacy-settings-import-retirement.md) remove the remaining migration-only settings controls/readers. Both are published and adopted with exact released-byte and saved-data checks. Regular action/media imports, backup formats, installed-data upgrade compatibility and deferred private data remain. The old API remains stopped, with rollback available. Deferred Writing/TTRPG references are outside the 24 vital-feature acceptance and may still need their archived tools if used later. Observe the outstanding normal-use Walk Ons check without repeating accepted hardware/widget tests.
 
 ## Initial November 14 audit (historical)
 
@@ -51,9 +51,9 @@ Readback confirmed one active responding renderer, completed recovery and identi
 4. Completed November 15: adopt the modern URL on the existing OBS aggregate source with backed-up settings and no duplicate renderer. Preserve accepted individual module settings.
 5. Completed November 15: adopt startup/shutdown changes with rollback. Include Widgets' intended automatic-start setting in the cold-start checklist; current running status alone is insufficient.
 6. Completed November 15: stop only the verified old repository API server for a bounded rehearsal. Verify host, normal/ticker chat, module services, scene routing, phone pairing, guided launch state and synthetic owner dispatch without starting a real stream or ads. Restore immediately if any vital dependency remains.
-7. Cold-start the complete setup in a separately announced off-stream session; preserve Ollama and external application startup. Record tested behavior versus remaining operator observation.
-8. Remove migration-only Import settings buttons/readers after final-switch acceptance. Preserve ordinary action/media imports, backups and all private data.
+7. Completed November 15: normal-launcher cold start with the old API stopped; protected data, automatic services, incoming Twitch and retained external application startup verified.
+8. Completed November 15: published and adopted Companion 1.3.3 / Controller 1.1.2 settings-import cleanup. Ordinary action/media imports, backups and private data preserved.
 
-The server remains running. No permanent production source URL, startup script, native action, service process or import control changed in this pass. Widgets recovery is complete, its original enabled state is restored, and the same aggregate source settings are retained.
+Historical November 14 recovery-only state: the server remained running, and no permanent production source URL, startup script, native action, service process or import control changed in that pass. Later completed changes are recorded above. Widgets recovery is complete, its original enabled state is restored, and the same aggregate source settings are retained.
 
 Post-recovery stability: 35.45 seconds, 35 active samples, zero ownership changes, zero OBS requests and no viewer actions. Temporary observer exited.

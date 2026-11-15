@@ -1,6 +1,6 @@
 # Module migration checklist
 
-Updated November 15, 2026. **24 of 24 required feature areas implemented; final integrated switch remains.**
+Updated November 15, 2026. **24 of 24 required feature areas implemented; required modern cutover and import cleanup complete.**
 
 Checked means the replacement is implemented and published/installed/imported as applicable. Remaining acceptance and retirement work is listed separately below. This counts feature areas, not package files; going-live bookkeeping is deliberately retained as a private native hook.
 
@@ -33,7 +33,7 @@ Checked means the replacement is implemented and published/installed/imported as
 
 ## Feature migration complete
 
-[Local AI release and private caller handoff](local-ai-extraction.md) passed. Remaining work concerns integrated ownership, startup and retirement.
+[Local AI release and private caller handoff](local-ai-extraction.md) passed. Required integrated ownership, startup and legacy-settings import cleanup are complete. One normal-use Walk Ons observation remains below.
 
 ## Remaining acceptance and final switch
 
@@ -54,7 +54,7 @@ Phone Deck Sessions 1–12 are complete. The backed-up ownership handoff preserv
 - [x] Modern startup no longer launches the old server or uses its broad shutdown path; preserve private rollback/deferred data.
 - [x] Old API remains stopped after successful cold start; its stale PID is archived and rollback data retained.
 - [x] Replace the startup batch console with a tested windowless dispatch; actual startup Terminal closes, desktop apps remain visible.
-- [ ] **Final cleanup: remove legacy Import settings options.** Once the final switch is complete and existing settings are confirmed migrated, remove migration-only buttons/readers from the desktop and all affected modules. Preserve saved settings, ordinary backup/restore, Streamer.bot action imports and media imports. Verify fresh installations work from defaults/manual setup without legacy files.
+- [x] **[Final cleanup: legacy Import settings options removed](legacy-settings-import-retirement.md).** Companion 1.3.3 and Controller 1.1.2 are published and installed with backed-up preservation checks. Fresh/default synthetic setup, ordinary action/media imports, backup formats and installed-data upgrade compatibility remain supported.
 
 Previously accepted individual checks stay complete. Reopen them only for a new defect or a relevant integration change.
 
@@ -78,4 +78,4 @@ The old server is stopped; retain its private data and explicit rollback for def
 
 November 13 reliability repairs are published/installed in Companion 1.3.2, with Spotify 2.0.4, Dock 1.1.2, Overlay 1.0.1 and Phone Deck 2.0.3. [Repair and verification record](startup-reliability-repair.md). The current feature count is 24/24; all twelve Phone Deck sessions, Avatar and Local AI handoffs are complete.
 
-Phone Deck 2.0.4 is published and installed with event-fed OBS state, scoped structural reads and slower reconciliation; [release/adoption verification](obs-websocket-traffic.md). Pairing/TLS/layout/preferences and OBS state were preserved, with no new native import or app rebuild. Feature count is 24/24; Avatar is operator-accepted and Local AI handoff is verified. Integrated retirement remains.
+Phone Deck 2.0.4 is published and installed with event-fed OBS state, scoped structural reads and slower reconciliation; [release/adoption verification](obs-websocket-traffic.md). Pairing/TLS/layout/preferences and OBS state were preserved, with no new native import or app rebuild. Feature count is 24/24; Avatar is operator-accepted and Local AI handoff is verified. Required modern cutover and legacy-settings import cleanup are complete; deferred data and rollback remain private.

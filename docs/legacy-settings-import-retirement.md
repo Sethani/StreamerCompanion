@@ -1,6 +1,6 @@
 # Retired personal-settings imports
 
-## Candidate scope - November 15, 2026
+## Completed scope - November 15, 2026
 
 Companion 1.3.3 removes the desktop's unused legacy settings-import action hook. The standalone host/preload/service registry already export no personal-settings import API. A stale service manifest and legacy preload method cannot recreate the removed control.
 
@@ -14,6 +14,10 @@ The complete source suite and synthetic C# engine suite pass. Actual packaged hi
 
 Tests use disposable profiles, synthetic native/OBS/provider data and isolated ports. No real media, chat, controller-input injection, stream or redeem is used as a build check. Normal Video/Wheel backup functions and installed-data migration code have no source changes in this release.
 
-## Release and adoption gates
+## Released and adopted
 
-Source/Windows/Linux checks, immutable app and single-module publication, released-byte checks and backed-up adoption must finish before the final checklist is marked complete. Publish only Controller among the modules. Replace the installed application at its current executable path to preserve the approved Phone Deck firewall scope, with normal shutdown, private configuration/pairing/TLS/favorites/automatic-start snapshots and rollback. OBS and Streamer.bot can remain open; do not restart the old API or repeat accepted hardware/widget tests. Preserve Widgets enabled state through acknowledged owner release before host shutdown and restore it before startup.
+Companion **1.3.3** ([preview release](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.3.3-preview.1)) and Controller **1.1.2** ([module release](https://github.com/Sethani/StreamerCompanion-Modules/releases/tag/controller-input-v1.1.2)) are published and installed. Source commit is c580caa. Source Windows/Linux Check 43698263174, app release 43698591629 and independent module publication 43698594565 passed. No other module was published by this cleanup. The actual downloaded app passed focused hidden Controller/navigation acceptance, including 120 synthetic modules and two dock clients. Published SHA256SUMS match the downloads; Controller archive bytes match the deterministic source build and every installed member. The installed app payload matches the released app payload.
+
+Backed-up adoption closed Companion normally and replaced it at its existing executable path, preserving the approved firewall scope. OBS and Streamer.bot stayed open; no native import/restart was needed. Widgets acknowledged release before shutdown; its original enabled preference was restored offline before startup, without rewriting ownership. Readback confirms 27 Ready modules, one active Widgets owner, Phone Deck connected to OBS/native, unchanged OBS scene/source/audio settings, and preserved private settings, phone pairing/TLS, favorites and automatic-start choices. The old API remains stopped. Private rollback copies retain the prior application and configuration; no private data is published.
+
+SHA-256: app ZIP e0ce32712843e92bbc4f37092cfc26278278407925d8a6cc4e48b9309ef8a033; app.asar 14995440c45fd0b4af3fd1472258b5625a6ddb404685040dc93534c43fe13dc7; Controller archive ee12899500f0be91f4254bd87d6a7745a20b936398f7ea2510ab688407f0b28b.
