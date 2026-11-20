@@ -1,23 +1,43 @@
 # Stream Launch
 
-Version 1.0.1 adds optional Phone Deck controls: **Go live (guided)** and a launch-progress widget. Guided Go Live dispatches only the existing Stream - Launch action, using saved launch settings; it keeps the mandatory 1.2-second hold and keyboard confirmation. Phone Deck's raw OBS Start remains independent. Progress reports the owner's starting/complete/partial/error/interrupted state and optional-step results, without inventing percentages or claiming completion from dispatch. Commands report Requested because these native actions have no matching request-ID acknowledgement. Configuration/readiness checks remain in this module's existing dock. No card is added automatically, and Phone Deck is not a dependency.
+Start a guided stream launch using a saved OBS scene and Countdown, with optional Spotify music and an existing private follow-up action. Use **Go Live…** only when you intend to start a real stream.
 
-The complete native export is identical to 1.0.0 after version metadata is excluded. Existing imported actions, globals, startup/fallback registrations and private settings remain authoritative; this metadata-only update needs no native reimport/restart or Companion rebuild.
+## Configure before launching
 
-Standalone Streamer.bot launch orchestration with the installed Countdown module, optional Spotify Music and an existing private announcement/bookkeeping action. First-party source: Sethani, MIT. No scene names, webhook, reward IDs, broadcaster identity, playlist, credentials or private action bodies are included.
+1. Connect Streamer.bot to OBS and Companion's local WebSocket transport. Install/import [Countdown](../countdown/README.md) and [Universal Dock](../universal-dock/README.md). Spotify Music is optional; use Companion 1.3.0 or newer.
+2. Back up Streamer.bot, install Stream Launch from **Catalogue** and choose **Import into Streamer.bot…** from its expanded Installed row for the six supplied actions. Existing current imports need no reimport/restart for this guide patch.
+3. Choose **Open controls**, or select Stream Launch in Universal Dock. Press **Load saved settings**, then **Check readiness / refresh scenes**. These controls read status/action availability; they do not start a stream, music or follow-up.
+4. Choose **Starting Soon scene**, Countdown seconds (1–86400 whole seconds) and Finished text. Check **Enable launch automation** when the intended settings are ready.
+5. Choose whether to **Start Spotify Music and its countdown fade**. Configure playlist/device/volumes/fade separately in [Spotify Music](../spotify/README.md).
+6. If needed, enable **Run an existing private announcement/bookkeeping action** and select its exact existing action name. Leave it off if you have none. Enable the online fallback only if you intend the behavior below.
+7. Press **Save launch settings**, then review readiness. Unsaved changes block Go Live. A missing enabled follow-up blocks launch before effects.
 
-Install from the catalogue and explicitly import the six actions. The four existing Stream - Launch Engine / Configure Launch / Launch / Online Fallback action IDs and portable.streamLaunch.* configuration/state/handled globals are preserved. Unknown saved configuration fields are retained. New profiles start disabled with an empty scene and no follow-up/fallback automation. Existing launch configuration retains its duration, text and scene; missing new switches migrate to the former enabled Spotify/follow-up/fallback behavior. Review them after import.
+Fresh profiles start disabled without a saved scene/follow-up/fallback. No background service or new OBS source is added. Countdown uses the existing [Universal Overlay](../universal-overlay/README.md) source and [Overlay Visibility](../source-modules/README.md) scene rules.
 
-Open controls in the existing Universal Dock. Load saved settings, choose the OBS scene from its dropdown, review the enabled steps and save. Check readiness reads OBS/Spotify status and validates action presence; it never starts playback, a stream or a private action. Go Live requires explicit confirmation and saved settings. The Countdown renderer and Source Modules continue to control timer drawing/scene visibility in the existing combined overlay. No service or new overlay/source is added by this module.
+## What Go Live does
 
-Manual launch selects and verifies the scene, starts Countdown, requests OBS streaming and waits up to 15 seconds for confirmation. Only then does it request enabled Spotify playback/fading and dispatch the private follow-up. Spotify receives the remaining Countdown seconds, so its already-owned fade clock replaces the personal server's clock. Playlist/device/volume/fade settings remain in Spotify Music; this package does not copy or change its credentials/settings. Existing scene-owned music sessions are shared by Spotify rather than unnecessarily restarted.
+Go Live requires explicit confirmation and saved ready settings. The native action selects/verifies the saved scene, starts Countdown, requests OBS streaming and waits up to 15 seconds for streaming confirmation. Only then does it request enabled Spotify playback/fading and the private follow-up. Spotify uses the countdown time remaining, sharing an existing scene-owned music session rather than restarting it unnecessarily.
 
-The native Twitch-online trigger is attached to Stream - Online Fallback. Existing GoingLive is deliberately not exported/overwritten: its original call to the same fallback ID and private walk-on reset remain. Both routes share a busy guard and the existing 30-minute persisted handled timestamp. Fallback requires enabled settings and an already-active OBS stream; it never selects a scene or starts streaming. Initialization/health never replay a launch or announcement after restart. Unknown engine modes are inert.
+OBS startup failure prevents Spotify/follow-up dispatch, although Countdown may remain running; inspect its controls. Once OBS is live, optional-step failure reports partial completion and does not stop the stream or blindly retry announcements. There is no automatic rollback of external effects. Inspect the failed module/action and actual stream before manually retrying.
 
-Keep **Stream - Announce and Bookkeeping** (or your chosen action) private in Streamer.bot. Its broadcaster lookup, Discord webhook, shoutout/session globals, Walk Ons engine reset and reward rename remain native, with their existing identities and configuration. The inspected private follow-up and Walk Ons reset engine have no personal HTTP dependency. No private hook is packaged or replaced. Disable the follow-up switch if you have no such action; when enabled, a missing action blocks launch before effects. A successful dispatch means requested, not proof that a remote webhook/reward update was delivered.
+The private follow-up remains your own action; credentials, webhook settings, reward changes and session-reset behavior stay there. Dispatch does not prove a remote webhook or reward update arrived. No private action body or personal scene/playlist is bundled.
 
-OBS startup failure prevents Spotify/follow-up dispatch. The countdown may remain running; review its controls. Once OBS is live, optional-step failure is reported as partial and does not stop the stream or blindly retry announcements. There is no automatic rollback of external effects. Inspect the failing module/action before any manual retry. The deduplication latch is written before effects; a late online event after a partial failure is suppressed. An interrupted persisted launch is reported on reload without replaying it.
+## Online fallback and duplicate protection
 
-The old HTTP report and Spotify fallback on the personal server are removed. Other unmigrated features and old dock routes still need their own migrations before shutting down the server. Existing named/language timers, manual Countdown pause/clear behavior and independent Spotify clock semantics are unchanged; this is not a new global timeline/pause controller.
+**Run fallback automation when Twitch reports the stream online** applies only if enabled and OBS is already streaming. It never chooses a scene or starts OBS. The fallback shares duplicate-launch protection with guided Go Live; duplicate online events are suppressed for 30 minutes after a launch attempt.
 
-Automated tests use the actual C# against recording OBS/action/HTTP adapters and run Spotify only in its explicit test mode with temporary configuration/ports. They do not start a real stream, contact Spotify, send chat/webhooks, mutate rewards or change installed data. Real Go Live acceptance is an operator step when intending to stream. Keep backups of your existing actions/globals and retain the previous module package for rollback; importing this package replaces only its six action definitions.
+The deduplication latch is saved before effects. Late online events after a partial launch are suppressed, and a persisted interrupted launch is reported on reload rather than replayed. Restarting does not replay a launch or announcement. Manual Countdown Start/Pause remains separate from guided launch and music automation.
+
+## Phone Deck
+
+[Phone Deck](../phone-deck/README.md) optionally provides **Go live (guided)** and **Launch progress**. Add cards explicitly; none are created automatically. Guided Go Live dispatches **Stream - Launch** using saved settings and retains the mandatory 1.2-second hold/keyboard confirmation.
+
+Phone Deck's **raw OBS Start** remains a direct stream command without this countdown/music/follow-up sequence. Progress shows starting/complete/partial/error/interrupted and optional-step results rather than invented percentages. Requested means dispatch, not confirmed completion. Configuration and readiness remain in this module's dock.
+
+## Recovery and backup
+
+If readiness fails, check the exact scene, OBS connection, required actions and enabled optional providers/follow-up. Recheck without launching; never use Go Live as a connection test. For an interrupted/partial run, inspect OBS, Countdown, Spotify and the private action before another intended launch.
+
+Saved launch configuration/state live in Streamer.bot and survive imports/updates. Back up those settings and private actions before engine changes, retaining the compatible previous module package for rollback. Guide-only updates require no native reimport or host rebuild.
+
+First-party code: Sethani, MIT.

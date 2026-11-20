@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "pokemon-encounters",
   "name": "Pokemon Encounters",
-  "version": "1.7.2",
+  "version": "1.7.6",
   "description": "Shows Pokemon Community Game encounters, type icons, and animated viewer ball throws.",
   "documentation": "README.md",
   "streamerbot": {
@@ -28,7 +28,7 @@
   "ui": {
     "id": "pokemon",
     "name": "Pokemon Encounters",
-    "category": "Effects",
+    "category": "Games",
     "order": 50,
     "dockPage": "/pokemon/settings",
     "ownership": "node",
@@ -190,7 +190,14 @@
           "fields": []
         }
       ]
-    }
+    },
+    "externalSetup": [
+      {
+        "id": "pokemon-community-game",
+        "name": "Pokemon Community Game",
+        "required": true
+      }
+    ]
   },
   "author": "Sethani",
   "license": "MIT",
@@ -206,5 +213,6 @@
       "embedded-node": "required"
     },
     "companion": ">=1.3.1"
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

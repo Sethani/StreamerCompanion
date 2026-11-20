@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "reminders",
   "name": "Reminders",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Private viewer reminder backlogs with chat commands and dock-only management.",
   "author": "Sethani",
   "license": "MIT",
@@ -197,5 +197,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

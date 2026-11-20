@@ -83,3 +83,9 @@ input[type=search],select { background:#121719; color:#eef3f1; border:1px solid 
 @media(max-width:800px){main{padding:16px}.toolbar{flex-wrap:wrap}.badges{width:100%}.api-section{align-items:start}.section-heading{align-items:start}}
 
 .module-heading .quick{margin:0}.row-details:not([open]){margin:0}.row-details > summary{display:none}.row-toggle[aria-expanded=false]::before{content:"▸ "}.row-toggle[aria-expanded=true]::before{content:"▾ "}
+
+.integration-info { white-space: normal; overflow-wrap: anywhere; }
+.integration-info p { margin: 8px 0; }
+.integration-group { margin: 8px 0; padding: 8px 10px; border: 1px solid #34413e; border-radius: 5px; }
+.integration-group li { margin: 8px 0; line-height: 1.5; }
+.integration-group ul { padding-left: 20px; }

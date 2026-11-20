@@ -213,8 +213,8 @@
 
     <script>
         window.CHAT_CORE_DEFAULTS = __CHAT_BOOTSTRAP__;
-        const CHAT_PARAMETERS = new URLSearchParams(window.CHAT_CORE_DEFAULTS.appearance || "");
         const explicitParameters = new URLSearchParams(window.location.search);
+        const CHAT_PARAMETERS = new URLSearchParams(explicitParameters.get('appearance_mode')==='standalone' ? '' : window.CHAT_CORE_DEFAULTS.appearance || "");
         for(const key of new Set(explicitParameters.keys())) CHAT_PARAMETERS.set(key,explicitParameters.get(key));
         const debug = () => {};
         const STREAMCHAT_VERSION = '0.3.4';
@@ -1040,22 +1040,13 @@
             const background_color = get_user_color(color);
             const text_color = get_text_color(background_color);
 
-            el_user.textContent = author.name;
-
-            if (el_badges) {
-                if (config['ui']['badges']['left'] === false) {
-                    el_user.appendChild(el_badges);
-                } else {
-                    el_user.prepend(el_badges);
-                }
-            }
-
-            if (el_timestamp) {
-                el_user.prepend(el_timestamp);
-            }
-
-            if (author.pronoun) {
-                el_user.appendChild(createElement('span', { 'class': 'msg-pronoun' }, author.pronoun));
+            const nameNode=[...el_user.childNodes].find(node=>node.nodeType===Node.TEXT_NODE);
+            if(nameNode&&nameNode.nodeValue!==author.name)nameNode.nodeValue=author.name;
+            const pronounNode=el_user.querySelector('.msg-pronoun'),pronounText=author.pronoun||'';
+            if((pronounNode?.textContent||'')!==pronounText){
+                if(!pronounText)pronounNode?.remove();
+                else if(pronounNode)pronounNode.textContent=pronounText;
+                else el_user.appendChild(createElement('span',{'class':'msg-pronoun'},pronounText));
             }
 
             if (config['ui']['bubbles']['enabled'] === true) {
@@ -1063,7 +1054,8 @@
             }
 
             el_user.style.color = get_color_hex(text_color);
-            el_message.innerHTML = message;
+            const content=document.createElement('template');content.innerHTML=message;
+            if(el_message.innerHTML!==content.innerHTML)el_message.replaceChildren(content.content);
         }
 
         let StreamerBot = {
@@ -1072,7 +1064,7 @@
                     badges = [], highlight = Highlights.None, pronoun = false, login = false, core_enriched = false) => {
                     // TODO handle cheermotes
 
-                    if (skip_message(message, author)) {
+                    if (!core_enriched && skip_message(message, author)) {
                         return;
                     }
 
@@ -1202,6 +1194,7 @@
                     let badges = [{
                         'url': 'https://yt3.ggpht.com/IkpeJf1g9Lq0WNjvSa4XFq4LVNZ9IP5FKW8yywXb12djo1OGdJtziejNASITyq4L0itkMNw=w24-h24-c-k-nd'
                     }];
+                    if(explicitParameters.get('preview')==='isolated')badges=[{url:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect width="24" height="24" rx="4" fill="#d22"/><path d="M9 6v12l10-6z" fill="white"/></svg>')}];
                     message = htmlentities(message);
 
                     const yt_emote_width = '28';
@@ -1343,6 +1336,7 @@
          * @returns {boolean} True if the message should be skipped, false otherwise
          */
         function skip_message(message, user) {
+            if(searchParamIsTrue('hide_commands') && String(message).trimStart().startsWith(searchParamOrDefault('command_prefix','!')))return true;
             if ((config['exclusion']['cmdprefix'] !== false && message.startsWith(config['exclusion']['cmdprefix'])) ||
                 (config['exclusion']['bots'].includes(user.toLowerCase()))) {
                 return true;
@@ -1587,8 +1581,9 @@
             }
             if(!window.CHAT_CORE_DEFAULTS.enabled || seenCoreMessages.has(payload.messageId))return;
             markCore(payload.messageId);
+            if(skip_message(payload.originalText ?? payload.text,payload.originalUser?.displayName || payload.user?.displayName || ''))return;
             const configuredDelay = Number(config['plugins']['chatcore']['display_delay_ms']);
-            const delay = Number.isFinite(configuredDelay) ? Math.max(0, Math.min(1000, configuredDelay)) : 200;
+            const delay = payload.enrichmentPending===false ? 0 : Number.isFinite(configuredDelay) ? Math.max(0, Math.min(1000, configuredDelay)) : 200;
             const pending = { payload, timer: null };
             pending.timer = setTimeout(() => {
                 if (pendingChatCoreMessages.get(payload.messageId) !== pending) {
@@ -1604,9 +1599,14 @@
         }
 
         function receiveChatCoreUpdate(payload) {
+            if(payload && skip_message(payload.originalText ?? payload.text,payload.originalUser?.displayName || payload.user?.displayName || ''))return;
             const pending = payload && pendingChatCoreMessages.get(payload.messageId);
             if (pending) {
                 pending.payload = payload;
+                if(payload.enrichmentPending===false){
+                    clearTimeout(pending.timer);pendingChatCoreMessages.delete(payload.messageId);
+                    renderChatCoreMessage(payload);setTimeout(remove_old_messages,400);
+                }
                 return;
             }
             updateChatCoreMessage(payload);
@@ -1624,6 +1624,18 @@
 
         // One service-owned feed; EventSource reconnects without opening parallel bot sockets.
         function initializeConnections() {
+            // This route renders only local fixtures: no SSE, native socket, or archive delivery.
+            if(explicitParameters.get('preview')==='isolated'){
+                window.CHAT_CORE_DEFAULTS.enabled=true;
+                const badge='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect width="24" height="24" rx="4" fill="#276bb0"/><text x="12" y="18" text-anchor="middle" font-size="18" fill="white">M</text></svg>');
+                const fixture={schemaVersion:1,synthetic:true,platform:'twitch',user:{id:'twitch:preview',login:'preview',displayName:'Preview Viewer',colour:'#5ad67e',pronouns:'They/Them'},text:'A local preview message',messageType:'chat',emotes:[],badges:[{imageUrl:badge}],role:0};
+                for(const [i,body] of ['A local preview message','  !example command','Hello from another viewer'].entries())renderChatCoreMessage({...fixture,messageId:'twitch:preview-'+i,text:body});
+                renderChatCoreMessage({...fixture,messageId:'twitch:preview-highlight',text:'A highlighted message',isHighlighted:true});
+                renderChatCoreMessage({...fixture,messageId:'twitch:preview-announcement',text:'An announcement for your viewers',messageType:'announcement'});
+                renderChatCoreMessage({...fixture,messageId:'youtube:preview-youtube',platform:'youtube',user:{...fixture.user,id:'youtube:preview',displayName:'YouTube Viewer'},text:'Hello from YouTube'});
+                renderChatCoreMessage({...fixture,messageId:'twitch:preview-member',text:'Hello from a PluralMind member',originalText:'M: Hello from a PluralMind member',user:{...fixture.user,displayName:'Preview Member',colour:'#df9bff'},originalUser:fixture.user,pluralmind:true,enriched:true,normalPronouns:'They/Them'});
+                return;
+            }
             if (chatCoreSource) return;
             chatCoreSource = new EventSource('/api/chat-core/events');
             const receive = (event, handler) => { try { handler(JSON.parse(event.data)); } catch (_) {} };

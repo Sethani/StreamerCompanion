@@ -1,6 +1,6 @@
 {
   "meta": {
-    "name": "Chat Routing",
+    "name": "Bot Chat Routing",
     "author": "Sethani",
     "version": "1.0.1",
     "description": "Shared bot chat and reply routing",

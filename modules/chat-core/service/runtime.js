@@ -1,6 +1,7 @@
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), http = require('node:http'), crypto = require('node:crypto');
 const pluralmind = require('./pluralmind.cjs');
+const chatboxOptions = require('./chatbox-options');
 const appearanceKeys = new Set(('direction background bubble_color text_color msg_color announcement_color announcement_bg_color highlight_color highlight_bg_color default_color pastel bubble_border_color cmdprefix bots timestamp timestamp_locale bubbles bubble_border_radius bubble_border_size fade_duration max_messages pronouns highlights announcements badges badges_left emote_size fontfamily fontsize pluralmind chat_core_delay_ms sb_twitch sb_youtube').split(' '));
 const defaults = { enabled: true, streamerBotUrl: 'ws://127.0.0.1:8080/', twitch: true, youtube: true, pronouns: true, pluralmind: true, appearance: '' };
 const text = (value, max = 200) => String(value ?? '').slice(0,max);
@@ -15,10 +16,31 @@ function partEmotes(parts) {
   }
   return result;
 }
+function messageEmotes(raw,parts,body){
+  // Current Streamer.bot events expose exclusive endIndex values. Rich parts give
+  // unambiguous UTF-16 positions; retain legacy inclusive ranges when parts are absent.
+  if(Array.isArray(parts)&&parts.map(part=>String(part.text||'')).join('')===body){const derived=partEmotes(parts);if(derived.length||!raw?.length)return media(derived.slice(0,100));}
+  return media((Array.isArray(raw)?raw:[]).slice(0,100).map(emote=>{
+    const start=emote.startIndex,end=emote.endIndex,name=emote.name;
+    const exclusive=Number.isInteger(start)&&Number.isInteger(end)&&end>start&&
+      ((typeof name==='string'&&body.slice(start,end)===name&&body.slice(start,end+1)!==name)||end===body.length);
+    return exclusive?{...emote,endIndex:end-1}:emote;
+  }));
+}
+function messageFragments(body,emotes) {
+  const fragments=[];let position=0;
+  for(const emote of [...emotes].sort((a,b)=>a.startIndex-b.startIndex)){
+    if(!Number.isInteger(emote.startIndex)||!Number.isInteger(emote.endIndex)||emote.startIndex<position||emote.endIndex<emote.startIndex||emote.endIndex>=body.length)continue;
+    if(emote.startIndex>position)fragments.push({type:'text',text:body.slice(position,emote.startIndex)});
+    fragments.push({type:'emote',text:body.slice(emote.startIndex,emote.endIndex+1),imageUrl:emote.imageUrl});position=emote.endIndex+1;
+  }
+  if(position<body.length)fragments.push({type:'text',text:body.slice(position)});
+  return fragments;
+}
 function appearance(value) {
   const raw = text(value, 16000).trim(); let params;
   try { params = new URL(raw).searchParams; } catch (_) { params = new URLSearchParams(raw.replace(/^\?/,'')); }
-  const clean = new URLSearchParams(); for (const [key,value] of params) if (appearanceKeys.has(key) && !clean.has(key)) clean.set(key,text(value,1000));
+  const clean = new URLSearchParams(); for (const [key,value] of params) if ((appearanceKeys.has(key)||chatboxOptions.keys.has(key)) && !clean.has(key)) clean.set(key,text(value,1000));
   return clean.toString();
 }
 function normalize(input = {}) {
@@ -36,10 +58,11 @@ function normalizeMessage(data, platform, type = 'chat', now = Date.now()) {
   const role = m.role || u.role || 0, names = new Set(badges.map(b => b.name));
   const userId = text(m.userId || u.id || data.userId,100), login = text(m.login || u.login || data.userLogin,100).replace(/^@+/,'').toLowerCase();
   const announcementColour={blue:'#0099ff',green:'#00ff00',orange:'#ff9900',purple:'#9900ff'}[String(data.announcementColor || '').toLowerCase()];
+  const body=text(typeof m.message==='string'?m.message:data.text||data.message,20000);
   return { schemaVersion: 1, platform, messageId: platform + ':' + rawId, occurredAtMs: Number(data.timestamp || data.timeStamp || m.timestamp) || Date.parse(data.createdAt) || now, channelId: text(data.broadcaster?.id || data.channelId,100), messageType: type,
     user: { id: platform + ':' + userId, login, displayName: text(m.displayName || u.name || u.displayName || login,200), colour: announcementColour || colour(m.color || u.color), pronouns: '' },
-    lookupId: userId || login, text: text(typeof m.message === 'string' ? m.message : data.text || data.message,20000),
-    emotes: media((Array.isArray(m.emotes || data.emotes) ? (m.emotes || data.emotes) : partEmotes(data.parts || m.parts)).slice(0,100)), badges:media(badges), role,
+    lookupId: userId || login, text: body,
+    emotes: messageEmotes(m.emotes||data.emotes,data.parts||m.parts,body), badges:media(badges), role,
     isSubscriber: flag(m.isSubscriber || u.isSubscriber || u.subscribed || u.isSponsor) || names.has('subscriber'), isVip: flag(m.isVip || u.isVip) || names.has('vip'),
     isModerator: flag(m.isModerator || u.isModerator) || names.has('moderator'), isBroadcaster: flag(m.isBroadcaster || u.isOwner) || names.has('broadcaster'), isVerified: flag(u.isVerified),
     isFirstMessage: flag(data.meta?.isFirstMessage || m.isFirstMessage), isHighlighted: flag(data.meta?.isHighlighted || m.isHighlighted), enriched: false, pluralmind: false };
@@ -49,6 +72,15 @@ function createService(options = {}) {
   fs.mkdirSync(directory,{recursive:true}); const configFile = path.join(directory,'config.json'), csrf = crypto.randomBytes(24).toString('hex'), now = options.now || Date.now;
   let saved = {}; try { saved = JSON.parse(fs.readFileSync(configFile)); } catch (_) {}
   let config; try { config = normalize(saved); } catch (_) { config = normalize(); }
+  const boxesFile=path.join(directory,'chatboxes.json');
+  let boxes={revision:0,items:[]};
+  if(fs.existsSync(boxesFile))boxes=JSON.parse(fs.readFileSync(boxesFile,'utf8'));
+  function saveBoxes(input){
+    if(input.revision!==boxes.revision){const error=Error('Chatboxes changed in another window. Reload saved chatboxes before saving.');error.status=409;throw error;}
+    if(!Array.isArray(input.items)||input.items.length>50)throw Error('Save up to 50 chatboxes.');
+    const ids=new Set(),items=input.items.map(item=>{if(typeof item.id!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(item.id)||ids.has(item.id)||typeof item.name!=='string'||!item.name.trim()||item.name.length>100||typeof item.appearance!=='string'||item.appearance.length>16000)throw Error('Invalid chatbox.');ids.add(item.id);return{id:item.id,name:item.name.trim(),appearance:chatboxOptions.snapshot(item.appearance)};});
+    const next={revision:boxes.revision+1,items};fs.writeFileSync(boxesFile+'.tmp',JSON.stringify(next,null,2));fs.renameSync(boxesFile+'.tmp',boxesFile);boxes=next;return boxes;
+  }
   const clients = new Set(), recent = new Map(), profiles = new Map(), inflight = new Map(), aborts = new Set();
   const WS = options.WebSocket || globalThis.WebSocket, request = options.fetch || fetch;
   let socket, generation = 0, epoch = 0, reconnect, watchdog, keepalive, closed = false, lastPacket = 0;
@@ -60,50 +92,64 @@ function createService(options = {}) {
   }
   function prune() { const cutoff = now() - 10*60000; for (const [id,item] of recent) if (item.at < cutoff) recent.delete(id); while (recent.size > 2000) recent.delete(recent.keys().next().value); }
   function status() { return { ...state, enabled: config.enabled, eventClients: clients.size }; }
+  function profile(key){const entry=profiles.get(key);if(entry){profiles.delete(key);profiles.set(key,entry);}return entry;}
   async function cached(key,url) {
-    const cached = profiles.get(key); if (cached && cached.until > now()) return cached.value;
+    const cached = profile(key); if (cached && cached.until > now()) return cached.value;
     if (inflight.has(key)) return inflight.get(key);
     // Bounded enrichment concurrency; message delivery never waits for a lookup.
     if (inflight.size >= 16) return null;
+    const lookupEpoch=epoch,previous=profiles.get(key);
     const task = (async () => {
       const abort = new AbortController(); aborts.add(abort); const timer = setTimeout(()=>abort.abort(),options.lookupTimeout || 2000);
       try {
         const response = await request(url,{signal:abort.signal,credentials:'omit',cache:'no-store'});
-        const value = response.status === 404 ? null : response.ok ? await response.json() : null;
+        const value = response.status === 404 ? null : response.ok ? await response.json() : previous?.value ?? null;
+        if(response.ok&&((key.startsWith('pronouns:')||key==='pronoun-catalog')&&!Array.isArray(value)))throw Error('Invalid pronoun response.');
+        if(response.ok&&key.startsWith('pluralmind:')&&value!==null&&!Array.isArray(value?.members))throw Error('Invalid member response.');
         if (!response.ok && response.status !== 404) state.enrichmentFailed++;
-        profiles.delete(key); profiles.set(key,{value,until:now() + (response.ok || response.status === 404 ? 5*60000 : 15000)});
+        if(lookupEpoch!==epoch||closed)return null;
+        profiles.delete(key); profiles.set(key,{value,confirmed:response.ok||response.status===404?true:previous?.confirmed===true,until:now() + (response.ok || response.status === 404 ? 5*60000 : 15000)});
         while(profiles.size>500)profiles.delete(profiles.keys().next().value); return value;
-      } catch (_) { state.enrichmentFailed++; return null; } finally { clearTimeout(timer);aborts.delete(abort); }
+      } catch (_) { state.enrichmentFailed++;if(lookupEpoch===epoch&&!closed&&previous){profiles.set(key,{...previous,until:now()+15000});return previous.value;}return null; } finally { clearTimeout(timer);aborts.delete(abort); }
     })();
-    inflight.set(key,task); try { return await task; } finally { inflight.delete(key); }
+    inflight.set(key,task); try { return await task; } finally { if(inflight.get(key)===task)inflight.delete(key); }
   }
   function wire(item) { const { lookupId, ...result } = item; return result; }
-  async function enrich(item, marker, currentEpoch) {
+  function resolveEnrichment(item,normal,catalog,system){
+    const pronounId=normal?.[0]?.pronoun_id,pronouns=text(Array.isArray(catalog)?catalog.find(p=>p.name===pronounId)?.display||pronounId||'':pronounId||'',100);
+    let proxy;try{if(system)proxy=pluralmind.getProxiedMessage(system,messageFragments(item.originalText,item.originalEmotes));}catch(_){state.enrichmentFailed++;}
+    return {...item,user:{...item.originalUser,pronouns:config.pronouns?text(proxy?.pronouns??pronouns,200):'',displayName:text(proxy?.member?.name||item.originalUser.displayName),colour:colour(proxy?.color)||item.originalUser.colour},text:text(proxy?.body??item.originalText,20000),emotes:proxy?partEmotes(proxy.cleanFragments):item.originalEmotes,enriched:true,pluralmind:Boolean(proxy),normalPronouns:pronouns,pronounsKnown:config.pronouns&&profiles.get('pronouns:'+item.user.login)?.confirmed===true,pluralmindMember:proxy?{systemId:text(proxy.system?.id),id:text(proxy.member?.id),pronounsKnown:config.pronouns&&profiles.get('pluralmind:'+item.lookupId)?.confirmed===true}:null};
+  }
+  const projectionKey=item=>JSON.stringify([item.user,item.text,item.emotes,item.pluralmind||false,item.normalPronouns||'',item.pronounsKnown||false,item.pluralmindMember||null]);
+  async function enrich(item, marker, currentEpoch, initial) {
     const [normal, catalog, system] = await Promise.all([
       config.pronouns && item.user.login ? cached('pronouns:'+item.user.login,'https://pronouns.alejo.io/api/users/'+encodeURIComponent(item.user.login)) : null,
       config.pronouns ? cached('pronoun-catalog','https://pronouns.alejo.io/api/pronouns') : null,
       config.pluralmind && item.lookupId ? cached('pluralmind:'+item.lookupId,'https://pluralmind.chat/api/v2/system/'+encodeURIComponent(item.lookupId)) : null
     ]);
     if (closed || currentEpoch !== epoch || recent.get(item.messageId) !== marker || marker.deleted) return;
-    const pronounId = normal?.[0]?.pronoun_id, pronouns = text(Array.isArray(catalog) ? catalog.find(p=>p.name===pronounId)?.display || pronounId || '' : pronounId || '',100);
-    let proxy; try { if (system) proxy = pluralmind.getProxiedMessage(system,item.text); } catch (_) { state.enrichmentFailed++; }
-    const resolved = { ...item, user: { ...item.user, pronouns: config.pronouns ? text(proxy?.pronouns || pronouns,200) : '', displayName: text(proxy?.member?.name || item.user.displayName), colour: colour(proxy?.color) || item.user.colour }, text: text(proxy?.body ?? item.text,20000), emotes: proxy ? [] : item.emotes, enriched:true, pluralmind:Boolean(proxy), normalPronouns:pronouns };
-    publish('message-update',wire(resolved));
+    const resolved=resolveEnrichment(item,normal,catalog,system);
+    if(projectionKey(resolved)!==projectionKey(initial))publish('message-update',wire({...resolved,enrichmentPending:false}));
   }
   function ingest(item, synthetic = false) {
     if (!item || !item.text || !config.enabled || (!synthetic && !config[item.platform])) return;
     prune(); if(recent.has(item.messageId))return;
     const marker = { at: now(), user: item.user.id, platform:item.platform, deleted:false };recent.set(item.messageId,marker);prune();
     item.originalText=item.text;item.originalUser={...item.user};item.originalEmotes=item.emotes;
-    state.delivered++;publish('message',wire(item));
-    if (!synthetic && item.platform==='twitch' && (config.pronouns || config.pluralmind)) enrich(item,marker,epoch).catch(()=>{state.enrichmentFailed++;});
+    const enabled=!synthetic&&item.platform==='twitch'&&(config.pronouns||config.pluralmind),keys=[];
+    if(enabled&&config.pronouns){if(item.user.login)keys.push('pronouns:'+item.user.login);keys.push('pronoun-catalog');}
+    if(enabled&&config.pluralmind&&item.lookupId)keys.push('pluralmind:'+item.lookupId);
+    const pending=enabled&&keys.some(key=>!profiles.has(key)||profiles.get(key).until<=now());
+    const initial=enabled?resolveEnrichment(item,config.pronouns?profile('pronouns:'+item.user.login)?.value:null,config.pronouns?profile('pronoun-catalog')?.value:null,config.pluralmind?profile('pluralmind:'+item.lookupId)?.value:null):item;
+    state.delivered++;publish('message',wire({...initial,enrichmentPending:pending}));
+    if(pending)enrich(item,marker,epoch,initial).catch(()=>{state.enrichmentFailed++;});
   }
   function remove(platform, data = {}) {
     const id = data.targetMessageId || data.messageId || data.message?.id || data.eventId;
     const user = data.userId || data.user?.id;
     if(id) { const key=platform+':'+text(id); const marker=recent.get(key)||{at:now(),platform}; marker.deleted=true; recent.set(key,marker);publish('message-delete',{schemaVersion:1,messageId:key}); }
     else if(user) { const key=platform+':'+text(user,100); for(const item of recent.values())if(item.user===key)item.deleted=true;publish('user-delete',{schemaVersion:1,userId:key,platform}); }
-    else { epoch++;for(const item of recent.values())if(item.platform===platform)item.deleted=true;publish('chat-clear',{schemaVersion:1,platform}); }
+    else { epoch++;inflight.clear();for(const abort of aborts)abort.abort();for(const item of recent.values())if(item.platform===platform)item.deleted=true;publish('chat-clear',{schemaVersion:1,platform}); }
     prune();
   }
   function handle(packet) {
@@ -132,7 +178,7 @@ function createService(options = {}) {
   function disconnect(){generation++;try{socket?.close();}catch(_){}socket=null;clearTimeout(reconnect);state.connected=false;state.subscribed=false;}
   function save(input) {
     const next=normalize({...config,...input});fs.writeFileSync(configFile+'.tmp',JSON.stringify(next,null,2));fs.renameSync(configFile+'.tmp',configFile);
-    config=next;epoch++;for(const abort of aborts)abort.abort();profiles.clear();disconnect();publish('configuration',safeConfig());if(!config.enabled)publish('chat-clear',{schemaVersion:1});if(config.enabled)connect();return config;
+    config=next;epoch++;for(const abort of aborts)abort.abort();profiles.clear();inflight.clear();disconnect();publish('configuration',safeConfig());if(!config.enabled)publish('chat-clear',{schemaVersion:1});if(config.enabled)connect();return config;
   }
   function json(response,code,value){const bytes=Buffer.from(JSON.stringify(value));response.writeHead(code,{'Content-Type':'application/json','Content-Length':bytes.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});response.end(bytes);}
   const server=http.createServer(async(req,res)=>{
@@ -154,7 +200,7 @@ function createService(options = {}) {
         if(clients.size>=20)return json(res,503,{error:'Too many chat renderers.'});
         res.writeHead(200,{'Content-Type':'text/event-stream; charset=utf-8','Cache-Control':'no-store','Connection':'keep-alive','X-Accel-Buffering':'no'});res.write('event: ready\ndata: '+JSON.stringify({schemaVersion:1,connection:status(),config:safeConfig()})+'\n\n');clients.add(res);req.on('close',()=>clients.delete(res));return;
       }
-      const pages={'/settings':'settings.html','/settings.js':'settings.js','/chat/chat.html':'chat.html'};
+      const pages={'/settings':'settings.html','/settings.js':'settings.js','/chatbox-options.js':'chatbox-options.js','/chatbox-editor.js':'chatbox-editor.js','/chat/chat.html':'chat.html'};
       if(req.method==='GET'&&pages[url.pathname]){
         let source=fs.readFileSync(path.join(__dirname,pages[url.pathname]),'utf8');
         if(url.pathname==='/chat/chat.html')source=source.replace('__CHAT_BOOTSTRAP__',JSON.stringify({...safeConfig(),appearance:config.appearance}).replaceAll('<','\\u003c'));
@@ -163,9 +209,11 @@ function createService(options = {}) {
       }
       if((origin && origin!=='http://'+host)||req.headers['x-companion-csrf']!==csrf || (req.method!=='GET' && origin!=='http://'+host))return json(res,403,{error:'Open Live Chatbox settings to make changes.'});
       if(req.method==='GET'&&url.pathname==='/api/chat-core/settings')return json(res,200,{config,connection:status()});
+      if(req.method==='GET'&&url.pathname==='/api/chat-core/chatboxes')return json(res,200,boxes);
       if(req.method!=='POST')return json(res,404,{error:'Not found.'});
       let size=0;const chunks=[];for await(const chunk of req){size+=chunk.length;if(size>20000)return json(res,413,{error:'Request too large.'});chunks.push(chunk);}const input=JSON.parse(Buffer.concat(chunks).toString()||'{}');
       if(url.pathname==='/api/chat-core/settings')return json(res,200,{config:save(input),connection:status()});
+      if(url.pathname==='/api/chat-core/chatboxes')return json(res,200,saveBoxes(input));
       if(url.pathname==='/api/chat-core/test'){
         if(!config.enabled)return json(res,409,{error:'Enable the live chatbox first.'});
         if(input.clear){publish('chat-clear',{schemaVersion:1,synthetic:true});return json(res,200,{ok:true});}
@@ -174,7 +222,7 @@ function createService(options = {}) {
         return json(res,200,{ok:true,deliveredTo:clients.size});
       }
       return json(res,404,{error:'Not found.'});
-    }catch(_){return json(res,400,{error:'Chatbox request failed. Check the local settings.'});}
+    }catch(error){return json(res,error.status===409?409:400,{error:error.status===409?error.message:'Chatbox request failed. Check the local settings.'});}
   });
   return {server,csrf,config:()=>({...config}),status,handle,save,
     async start(){closed=false;await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(options.port ?? Number(process.env.COMPANION_SERVICE_PORT||3136),'127.0.0.1',resolve);});connect();keepalive=setInterval(()=>{prune();for(const client of clients)client.write(': keepalive\n\n');},15000);watchdog=setInterval(()=>{if(socket&&now()-lastPacket>45000)retire(socket,generation);else if(socket?.readyState===1)try{socket.send(JSON.stringify({request:'GetStatus',id:'chat-core-heartbeat'}));}catch(_){retire(socket,generation);}},15000);return server.address().port;},

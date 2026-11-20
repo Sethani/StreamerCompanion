@@ -1,5 +1,9 @@
 'use strict';
 const $ = id => document.getElementById(id), frame = $('controls');
+let helpVisible = false, developerTools = false;
+function setView(help) { helpVisible = help; $('help-frame').hidden = !help; $('view-controls').setAttribute('aria-pressed', String(!help)); $('view-help').setAttribute('aria-pressed', String(help)); if (help && !$('help-frame').getAttribute('src')) $('help-frame').src = '/api/help/reader'; showSelection(); }
+$('view-help').onclick = () => { closePicker(false); setView(true); };
+$('view-controls').onclick = () => setView(false);
 let modules = [], favorites = new Set(), csrf = '', selected = '', onlyFavorites = false, available = true, preferencesAvailable = false;
 try { selected = localStorage.getItem('companion-dock-selected') || ''; onlyFavorites = localStorage.getItem('companion-dock-favorites') === 'true'; } catch (_) {}
 $('favorites').checked = onlyFavorites;
@@ -12,7 +16,7 @@ function showSelection() {
  const usable = available && item && !['broken','incompatible','missing-dependency'].includes(item.state);
  setText($('module-picker'), item ? item.name + ' ▾' : selected ? 'Selected module unavailable ▾' : 'Choose module…');
  setText($('status'), !available ? 'Companion unavailable. Reconnecting…' : item ? item.state === 'ready' ? preferencesAvailable ? 'Ready' : 'Ready · shared favorites unavailable' : item.problem || item.state : preferencesAvailable ? '' : 'Shared favorites unavailable; update Companion.');
- $('placeholder').hidden = Boolean(usable); frame.hidden = !usable;
+ $('placeholder').hidden = Boolean(usable) || helpVisible; frame.hidden = !usable; frame.classList.toggle('reading-help', helpVisible); frame.inert = helpVisible; frame.tabIndex = helpVisible ? -1 : 0;
  setText($('placeholder'), !available ? 'Companion is unavailable. Your selection is retained.' : selected ? 'The selected module is unavailable. Choose a module or wait for it to return.' : 'Choose a module to open its controls.');
  const url = usable ? item.nodeUrl : 'about:blank'; if(frame.getAttribute('src') !== url)frame.src=url;
 }
@@ -38,7 +42,7 @@ function draw() {
  }
  cats.forEach((cat,index)=>{const node=groups.get(cat).node,current=[...$('choices').children].filter(n=>!n.hidden)[index];if(node!==current)$('choices').insertBefore(node,current||null);});
 }
-function closePicker(){$('picker').hidden=true;$('module-picker').setAttribute('aria-expanded','false');$('module-picker').focus();}
+function closePicker(focus = true){$('picker').hidden=true;$('module-picker').setAttribute('aria-expanded','false');if(focus)$('module-picker').focus();}
 $('module-picker').onclick=()=>{const open=$('picker').hidden;$('picker').hidden=!open;$('module-picker').setAttribute('aria-expanded',String(open));if(open)$('search').focus();};
 $('picker').onkeydown=event=>{if(event.key==='Escape'){event.preventDefault();closePicker();}};
 $('search').oninput=draw;$('clear').onclick=()=>{$('search').value='';draw();$('search').focus();};
@@ -46,7 +50,7 @@ $('favorites').onchange=()=>{onlyFavorites=$('favorites').checked;try{localStora
 let refreshing=false;
 async function refresh(){if(refreshing)return;refreshing=true;try{
  const registry=await StreamingModuleRegistry.load();modules=registry.modules.filter(i=>i.packageId!=='universal-dock'&&i.nodeUrl).sort((a,b)=>compare.compare(category(a),category(b))||compare.compare(a.name,b.name)||a.packageId.localeCompare(b.packageId));available=true;
- try{const response=await fetch('/api/ui/preferences',{cache:'no-store'});if(!response.ok)throw new Error();const preferences=await response.json();favorites=new Set(preferences.favorites);csrf=preferences.csrf;preferencesAvailable=true;}catch(_){csrf='';preferencesAvailable=false;setText($('status'),'Shared favorites unavailable; update Companion.');}
- draw();showSelection();
+ try{const response=await fetch('/api/ui/preferences',{cache:'no-store'});if(!response.ok)throw new Error();const preferences=await response.json();developerTools=preferences.developerTools===true;favorites=new Set(preferences.favorites);csrf=preferences.csrf;preferencesAvailable=true;}catch(_){developerTools=false;csrf='';preferencesAvailable=false;setText($('status'),'Shared favorites unavailable; update Companion.');}
+ modules=modules.filter(i=>developerTools||i.packageId!=='update-probe');draw();showSelection();
 }catch(_){available=false;csrf='';showSelection();}finally{refreshing=false;}}
 refresh();setInterval(refresh,3000);

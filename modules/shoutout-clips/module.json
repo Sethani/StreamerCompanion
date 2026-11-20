@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "shoutout-clips",
   "name": "Shoutout Clips",
-  "version": "2.1.1",
-  "description": "Existing Twitch clip presentation, title styling, duration, mute and shared-overlay playback.",
+  "version": "2.1.3",
+  "description": "Play selected Twitch clips with saved duration, mute, layout and title styling.",
   "author": "Sethani",
   "license": "MIT",
   "configurationRequired": false,
@@ -37,7 +37,7 @@
   "ui": {
     "id": "shoutoutclip",
     "name": "Shoutout Clips",
-    "category": "Effects",
+    "category": "Media",
     "order": 20,
     "dockPage": "/shoutout-clips/index.html",
     "ownership": "streamerbot",
@@ -236,5 +236,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

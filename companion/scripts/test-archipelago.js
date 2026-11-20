@@ -66,7 +66,7 @@ async function main() {
   try {
     const catalog = buildModules(["archipelago"], { output: path.join(root, "packages") });
     const registry = new CompanionRegistry({ dataDirectory: path.join(root, "modules"), streamerBotUrl: "ws://127.0.0.1:1" });
-    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.10.streammodule")); registry.commit(staged); registry.finalize(staged);
+    const staged = registry.stage(path.join(root, "packages", "archipelago-1.0.12.streammodule")); registry.commit(staged); registry.finalize(staged);
     assert.equal(catalog.modules[0].dependencies.companion, ">=1.3.1");
     const host = new CompanionHost({ version: "1.3.1", dataDirectory: path.join(root, "host") }); host.registry = registry;
     assert.equal(host.publicInstalledModules(undefined, false).modules[0].extensionOverlayUrl, "", "Legacy aggregate must not automatically embed the replacement renderer");

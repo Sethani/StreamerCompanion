@@ -9,7 +9,7 @@ let test;const windows=[];const errors=[];let effects=0, hiddenModule=false, off
 async function wait(check,label){const until=Date.now()+12000;while(Date.now()<until){if(await check())return;await new Promise(r=>setTimeout(r,50));}throw new Error('Timed out: '+label);}
 function win(preload){const w=new BrowserWindow({show:false,width:920,height:680,webPreferences:{contextIsolation:true,nodeIntegration:false,backgroundThrottling:false,...(preload?{preload}: {})}});windows.push(w);w.webContents.on('console-message',(_e,level,message)=>{if(level===3&&!message.includes('Content Security Policy')){errors.push(message);console.error('Renderer:',message);}});return w;}
 async function main(){
- await app.whenReady();test=await fixture(temporary,CompanionHost);await test.host.installCatalogModule('video');
+ await app.whenReady();test=await fixture(temporary,CompanionHost);await test.host.installCatalogModule('video');test.host.uiPreferences.setDeveloperTools(true);
  for(let i=0;i<120;i++) {
   const directory=path.join(test.host.registry.dataDirectory,'picker-'+i);fs.mkdirSync(path.join(directory,'web'),{recursive:true});
   fs.writeFileSync(path.join(directory,'module.json'),JSON.stringify({schemaVersion:2,id:'picker-'+i,name:'Picker '+i,version:'1.0.0',description:'Synthetic café controls',streamerbot:{requiredActions:[]},web:{root:'web'},ui:{id:'picker-alias-'+i,name:'Picker '+i,category:i%2?'Games':'Chat',dockPage:'/index.html'}}));
@@ -65,6 +65,15 @@ async function main(){
  await wait(()=>d1("document.querySelector('iframe').contentDocument?.getElementById('refresh-media')!=null"),'selected module controls');
  await d1("window.originalFrame=document.querySelector('iframe').contentWindow;document.querySelector('#module-picker').click();document.querySelector('#search').value='no matches';document.querySelector('#search').dispatchEvent(new Event('input'))");
  await new Promise(r=>setTimeout(r,3300));assert.equal(await d1("originalFrame===document.querySelector('iframe').contentWindow"),true);
+ // A metadata-only recategorization must move the row without reloading selected controls.
+ await d1("document.querySelector('#clear').click()");
+ const categoryFile=path.join(test.host.registry.moduleDirectory('video'),'module.json'),categoryManifest=JSON.parse(fs.readFileSync(categoryFile));
+ categoryManifest.ui.category='Games';fs.writeFileSync(categoryFile,JSON.stringify(categoryManifest));await d1('refresh()');
+ await wait(()=>d1("[...document.querySelectorAll('.choose')].find(b=>b.textContent.startsWith('Video Player ·')).closest('section').querySelector('h2').textContent==='Games'"),'live category change to Games');
+ assert.equal(await d1("originalFrame===document.querySelector('iframe').contentWindow"),true,'Changing categories must retain controls and drafts');
+ categoryManifest.ui.category='Media';fs.writeFileSync(categoryFile,JSON.stringify(categoryManifest));await d1('refresh()');await d2('refresh()');
+ await wait(()=>d1("[...document.querySelectorAll('.choose')].find(b=>b.textContent.startsWith('Video Player ·')).closest('section').querySelector('h2').textContent==='Media'"),'live category change back to Media');
+ assert.equal(await d1("originalFrame===document.querySelector('iframe').contentWindow"),true);
  await d1("document.querySelector('#search').value='cafe picker 2';document.querySelector('#search').dispatchEvent(new Event('input'))");
  assert.equal(await d1("document.querySelector('#count').textContent"),'21 of 122 modules');
  await d1("document.querySelector('#clear').click();document.querySelector('.choose').focus()");

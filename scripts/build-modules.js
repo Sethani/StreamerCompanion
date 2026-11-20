@@ -7,6 +7,7 @@ const root = path.resolve(__dirname, "..");
 const requireCompanion = createRequire(path.join(root, "companion/package.json"));
 const AdmZip = requireCompanion("adm-zip");
 const { CompanionRegistry } = require("../companion/src/module-registry");
+const { summarize } = require('../companion/src/integration-summary');
 const textBytes = (file) => Buffer.from(fs.readFileSync(file, "utf8").replaceAll("\r\n", "\n"));
 
 function buildModules(ids, options = {}) {
@@ -27,6 +28,14 @@ function buildModules(ids, options = {}) {
     const zip = new AdmZip();
     zip.addFile("module.json", Buffer.from(JSON.stringify(manifest, null, 2) + "\n"));
     zip.addFile("README.md", textBytes(path.join(source, "README.md")));
+    if (manifest.developerDocumentation) {
+      const relative = manifest.developerDocumentation.replaceAll('\\', '/');
+      if (relative === manifest.documentation || relative === 'README.md' || /^(web|service|streamerbot)\//.test(relative)) throw new Error('Developer documentation must be a separate guide.');
+      const file = path.join(source, relative);
+      let component = source;
+      for (const part of relative.split('/')) { component = path.join(component, part); if (fs.lstatSync(component).isSymbolicLink()) throw new Error('Developer guide symlinks are not distributable.'); }
+      zip.addFile(relative, textBytes(file));
+    }
     zip.addFile("LICENSE", textBytes(path.join(root, "LICENSE")));
     const reviewFile = path.join(source, "reviewed-assets.json");
     const review = fs.existsSync(reviewFile) ? JSON.parse(fs.readFileSync(reviewFile, "utf8")) : { files: [] };
@@ -99,6 +108,7 @@ function buildModules(ids, options = {}) {
     modules.push({
       id, name: manifest.name, version: manifest.version, description: manifest.description,
       author: manifest.author, category: manifest.ui?.category || "System",
+      integrations: summarize(manifest),
       dependencies: manifest.dependencies, provides: [...new Set([...(manifest.provides || []), ...(manifest.service?.provides || [])])],
       streamerbot: { minimumVersion: manifest.streamerbot.minimumVersion || "1.0.0", requiredActions: manifest.streamerbot.requiredActions },
       package: { url: "https://github.com/Sethani/StreamerCompanion-Modules/releases/download/" + id + "-v" + manifest.version + "/" + name, sha256: crypto.createHash("sha256").update(bytes).digest("hex") }

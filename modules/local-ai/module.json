@@ -2,16 +2,22 @@
   "schemaVersion": 2,
   "id": "local-ai",
   "name": "Local AI",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Optional local Ollama flavour for raid and shoutout messages, preserving deterministic fallback text.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
-  "streamerbot": { "requiredActions": [] },
+  "streamerbot": {
+    "requiredActions": []
+  },
   "dependencies": {
-    "modules": { "universal-dock": "^1.0.0" },
+    "modules": {
+      "universal-dock": "^1.0.0"
+    },
     "optionalModules": {},
-    "capabilities": { "embedded-node": "required" },
+    "capabilities": {
+      "embedded-node": "required"
+    },
     "companion": ">=1.3.1"
   },
   "service": {
@@ -21,22 +27,62 @@
     "healthPath": "/health",
     "healthService": "local-ai",
     "settingsPath": "/settings",
-    "provides": ["local-ai"]
+    "provides": [
+      "local-ai"
+    ]
   },
   "ui": {
     "id": "local-ai",
     "name": "Local AI",
-    "category": "Stream",
+    "category": "System",
     "dockPage": "/settings",
     "ownership": "node",
     "overlays": [],
     "actions": [],
     "phoneDeck": {
       "schemaVersion": 1,
-      "owner": { "transport": "service", "apiPrefix": "/api/ai/", "statePath": "/api/ai/phone-deck/state" },
-      "state": { "fields": { "enabled": "enabled", "configured": "configured", "backendAvailable": "backendAvailable", "warming": "warming" } },
+      "owner": {
+        "transport": "service",
+        "apiPrefix": "/api/ai/",
+        "statePath": "/api/ai/phone-deck/state"
+      },
+      "state": {
+        "fields": {
+          "enabled": "enabled",
+          "configured": "configured",
+          "backendAvailable": "backendAvailable",
+          "warming": "warming"
+        }
+      },
       "actions": {},
-      "controls": [{ "id": "status", "name": "Local AI status", "kind": "widget", "display": ["enabled", "configured", "backendAvailable", "warming"], "displayLabels": { "enabled": "AI enabled", "configured": "Model selected", "backendAvailable": "Ollama available", "warming": "Warming model" }, "fields": [] }]
-    }
-  }
+      "controls": [
+        {
+          "id": "status",
+          "name": "Local AI status",
+          "kind": "widget",
+          "display": [
+            "enabled",
+            "configured",
+            "backendAvailable",
+            "warming"
+          ],
+          "displayLabels": {
+            "enabled": "AI enabled",
+            "configured": "Model selected",
+            "backendAvailable": "Ollama available",
+            "warming": "Warming model"
+          },
+          "fields": []
+        }
+      ]
+    },
+    "externalSetup": [
+      {
+        "id": "ollama",
+        "name": "Ollama and an installed model",
+        "required": true
+      }
+    ]
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

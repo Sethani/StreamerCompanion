@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "reactive",
   "name": "Reactive Guests",
-  "version": "2.1.1",
-  "description": "The established ordered reactive guest lineup, private roster and presentation controls.",
+  "version": "2.1.2",
+  "description": "Arrange saved reactive guests, manage lineup visibility and adjust their presentation.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -40,7 +40,7 @@
   },
   "ui": {
     "id": "reactive",
-    "name": "Reactive",
+    "name": "Reactive Guests",
     "category": "People",
     "order": 10,
     "dockPage": "/reactive/index.html",
@@ -218,5 +218,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

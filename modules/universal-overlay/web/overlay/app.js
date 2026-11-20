@@ -9,7 +9,7 @@ function render() {
   for (const module of modules) {
     if (module.overlayRouting) continue;
     if (!connected || module.state !== "ready" || module.packageId === "universal-overlay" || !module.extensionOverlayUrl) continue;
-    const rule = routing?.modules?.[module.id];
+    const rule = routing?.modules?.[module.routingId || module.id];
     if (!rule || rule.mode === "disabled" || rule.mode !== "global" && !(rule.mode === "scenes" && rule.scenes?.includes(routing.currentScene))) continue;
     wanted.set(module.id, module.extensionOverlayUrl);
   }

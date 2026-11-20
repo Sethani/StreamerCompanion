@@ -1,33 +1,41 @@
 # Redeem Checklist
 
-## Optional Phone Deck controls (1.0.1)
+Manage pending channel-point requests in a private operator checklist. Separate **Do on stream**, **Writing backlog** and **Recent resolutions** views keep the work visible without an audience overlay.
 
-Add Input cards for Complete pending redemption and Refund pending redemption, plus an optional pending-count widget. Pick the exact reward/viewer entry and confirm before dispatch. Only currently pending IDs are accepted; reward IDs, viewer input and history are not part of the phone projection. Completion/refund uses the existing native Twitch owner and preserves history and language routing. No history deletion, manual reward creation or duplicate language route is exposed.
+## Set up
 
-Back up and reimport the updated actions, then run Initialize. Stable action/trigger/timer/queue IDs, wrappers, existing globals and configuration are retained; only engine code changes. New controls require phoneDeckVersion 1 so old imports stay disabled. The owner saves an intent before contacting Twitch and a keyed terminal result afterward. Rejected responses report failure; thrown responses or failed persistence remain unknown, without automatic mutation retry. Serialized operations prevent competing resolutions. No Companion/Phone Deck rebuild, new service or automatically added card is needed.
+1. Connect Streamer.bot's local WebSocket server and Twitch account. Install [Named Timers](../named-timers/README.md) 1.0.1 or newer for managed language timing, plus [Universal Dock](../universal-dock/README.md). Use Companion 1.3.1 or newer.
+2. Back up Streamer.bot's Redeems action group and persisted globals: `portable.redeems.state`, `managedRedeemRewardsJson`, `managedRedeemDockBacklogJson`, `managedLanguageRedemptionsJson` and `managedLanguageActive`.
+3. Install Redeem Checklist from **Catalogue**. Expand its **Installed** row and choose **Import into Streamer.bot…** to import the supplied actions. Stable router/checker/resolver/queue identities replace the established implementation in place.
+4. On a fresh or required engine import, run **Redeems - Initialize** to publish/migrate saved state; it also runs at Streamer.bot startup. Existing current imports need no reimport or restart for this guide-only update.
+5. Choose **Open controls**, or select Redeem Checklist in Universal Dock. **Refresh** only rereads the saved checklist. No service, extra port or OBS source is needed.
 
-Redeem Checklist preserves the established private pending/history state and dock workflow while removing the old port-3124 callback. First-party code and design: Sethani, MIT.
+## Resolve a pending request
 
-## Install and cutover
+Review the reward, viewer and any input in Do on stream or Writing backlog. Choose **Complete** when fulfilled, or **Refund** to return its points. Review the confirmation dialog and select Complete or Refund points; Cancel leaves it unchanged.
 
-Requires Companion 1.3.0+, Named Timers 1.0.1+, Universal Dock and Streamer.bot's local WebSocket server. Back up the Redeems action group and these persisted globals before import: `portable.redeems.state`, `managedRedeemRewardsJson`, `managedRedeemDockBacklogJson`, `managedLanguageRedemptionsJson` and `managedLanguageActive`.
+These are real Twitch operations. Opening, refreshing or reading the checklist performs no resolution. After dispatch, check whether the entry moved into Recent resolutions or remains pending with an error; a request message alone does not prove Twitch accepted the change. Rejected updates remain pending. For a lost response or unknown result, inspect state before explicitly retrying.
 
-Importing replaces the established router, five-second checker and compatibility resolver by their stable action IDs. It preserves `Redeems - Initialize`, `Redeems - Add` and `Redeems - Resolve` IDs and keeps all existing state in place. Restart Streamer.bot once so Initialize republishes the checklist and migrates any old Node backlog. The dock is private operator UI; this module deliberately registers no OBS overlay.
+Pending/resolved entries are deduplicated by redemption ID. History is capped at 50 items, with the dock showing its recent portion. Keep that private history out of shared exports.
 
-The installed `Redeems - Create Managed Rewards` and `Redeems - Finalize Managed Rewards` setup actions remain private and are not replaced or packaged. Their saved reward map continues to work. New installations may duplicate the triggerless `Redeems - Trigger Adapter`, set a title/category and attach a native Streamer.bot channel-point trigger without creating a managed reward map.
+## Reward routing and your own adapter
 
-## Language handoff
+The imported **Redeems - Route Managed Redemption** is the single wildcard reward router. It uses the saved managed reward map; this dock is not a reward-mapping editor. Checklist rewards enter the private state. Language rewards delegate to **Named Timers - Queue Language**, while the five-second **Redeems - Check Timers and Retry** delegates language completion and migrates legacy backlog.
 
-`Redeems - Route Managed Redemption` remains the single installed wildcard reward trigger. Checklist items are added to `portable.redeems.state`; language items delegate to `Named Timers - Queue Language`. `Redeems - Check Timers and Retry` retains the shared five-second trigger but now only migrates any legacy backlog and delegates language completion to `Named Timers - Check Languages`.
+Keep one enabled router/checker. Do not add a second trigger for a reward already handled there.
 
-This import is the authority switch: do not retain a second enabled copy of the old router/checker. The package has no reward IDs, viewer records, private reward definitions or Twitch credentials. Existing `managedLanguageRedemptionsJson` records remain in place and Named Timers continues their serial queue.
+For a separate channel-point integration you intend to own, duplicate the triggerless **Redeems - Trigger Adapter**, rename the copy, set its **rewardTitle** and **category** arguments (live or writing), and attach the intended redemption trigger that supplies the actual redemption/reward/viewer arguments. Keep its call to **Redeems - Add**. A generic trigger without those redemption identifiers cannot resolve a real Twitch redemption. Do not enable overlapping wildcard/custom routes for the same reward.
 
-## Dock and resolution safety
+## Phone Deck
 
-The dock copies the established Do on stream, Writing backlog, recent resolutions and Complete/Refund confirmation workflow. Merely opening, refreshing or searching the dock executes nothing. Complete and Refund are the only controls that call Twitch, and each requires explicit confirmation. Failed Twitch updates remain pending with an error for retry.
+[Phone Deck](../phone-deck/README.md) optionally provides **Complete pending redemption**, **Refund pending redemption** and **Redeem backlog status**. Add Input cards/widget in its editor; no cards appear automatically. Select the exact reward/viewer entry and confirm before dispatch. Only currently pending IDs are accepted.
 
-History is capped at the established 50 items. Items are deduplicated by redemption ID across pending and history. No checklist state is bundled into source, packages, fixtures or diagnostics.
+The phone projection excludes reward IDs, viewer-entered text and history. Native Twitch ownership preserves history/language routing. Persisted request intents/results and serialized operations protect against competing resolutions and duplicate replay. Rejections report failure; thrown responses or failed persistence may remain unknown and are not automatically retried.
 
-## Testing
+Old native engines lacking phoneDeckVersion 1 leave these controls unavailable. Back up/import the current actions and run Initialize only if that engine upgrade is actually needed. This guide patch alone requires no native reimport. No phone history deletion, reward creation or second language queue is offered.
 
-Synthetic C# tests cover in-place initialization, deduplication, categories, backlog migration, managed-map routing, language delegation arguments, complete/refund success and Twitch failure without live calls. Package and hidden-browser tests cover stable IDs, trigger ownership, absence of port 3124/private definitions, private dock rendering, inert load/refresh and confirmation-gated resolution.
+## Troubleshooting and backup
+
+If the dock is disconnected/waiting, check Streamer.bot's WebSocket server and required imports. For missing requests, check the saved reward map and enabled single router; avoid adding a duplicate trigger to diagnose it. For resolution failures, check Twitch account permissions and the entry's saved error/status before another operation.
+
+Imports retain current pending/history/language state. Keep the private Streamer.bot backup made before an engine change; restore profile files only while Streamer.bot is closed. First-party code and design: Sethani, MIT.

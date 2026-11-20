@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "redeem-checklist",
   "name": "Redeem Checklist",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Private dock management for pending channel-point requests with coordinated Named Timers language routing.",
   "author": "Sethani",
   "license": "MIT",
@@ -190,5 +190,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

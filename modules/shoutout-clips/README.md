@@ -1,20 +1,37 @@
 # Shoutout Clips
 
-## Optional Phone Deck controls (2.1.1)
+Play a Twitch clip you select in the shared stream overlay. This module is the clip player: channel clip lookup, chat messages, official Twitch shoutouts and optional AI wording belong to separate caller automation.
 
-Add a Button for Play saved clip ID or an Input card for Play clip by ID, plus Stop shoutout clip and a status widget if desired. Playback accepts a Twitch clip ID directly and uses the native owner's existing player, duration limit, mute, layout and title styling. Phone controls add no channel lookup or AI step and do not change saved presentation settings. Status reflects the owner's saved clip visibility/ID/duration, not proof that a remote player is audible.
+## Set up the player
 
-Commands report Requested without a matching durable operation acknowledgement. Lost responses stay unknown and never retry automatically. Existing native actions/state and import data are unchanged; no new Streamer.bot import/restart, Companion/Phone Deck rebuild, service, dependency or automatic cards are needed.
+1. Connect Companion to Streamer.bot's local WebSocket server. Install Shoutout Clips from **Catalogue**, expand its **Installed** row and choose **Import into Streamer.bot…** to import the six supplied actions. Back up Streamer.bot before replacing imports. Existing current imports need no reimport for this guide patch.
+2. Choose **Open controls**, or select Shoutout Clips under Media in [Universal Dock](../universal-dock/README.md). No separate service is needed.
+3. Under **Clip player**, choose Player, Maximum duration (seconds) and Muted. Configure Position and size and Title bar as desired, then **Save settings**. Reset buttons change the draft; save to apply those defaults.
+4. Use the existing [Universal Overlay](../universal-overlay/README.md) source. In [Overlay Visibility](../source-modules/README.md), allow Shoutout Clips in the intended scenes. The internal routing ID stays shoutoutclip; do not add a duplicate clip source.
 
-The existing Streamer.bot-owned Twitch clip player, extracted with its established controls and shared-overlay appearance. Version 2.1.1 preserves the six action IDs and `portable.shoutoutClip.state`; importing never seeds personal settings or viewer data.
+## Play intentionally
 
-Install from Companion, import the included Streamer.bot export, and open Shoutout Clips in Universal Dock. Universal Overlay hosts the renderer using the existing `shoutoutclip` routing identity. The personal combined source can host the same packaged renderer; no extra OBS source is needed.
+Under **Preview and save**, enter a **Twitch clip ID** (the clip slug/ID, not a channel name), optional Channel label and Optional title, plus Preview seconds. **Play preview saves any unsaved player changes first**, then plays the supplied clip on the actual overlay wherever visible, including OBS. Choose an appropriate time to test it. Preview sends no chat or official shoutout and needs no AI.
 
-Configure player mode, maximum duration, mute, position, dimensions and title-bar appearance. Preview plays only the supplied clip; it sends no chat or official Twitch shoutout. Stop is guarded by the playback start identity, including when the same clip is replayed. Controls retain unsaved edits during refresh. Existing settings survive initialization, import and upgrades.
+**Stop** clears the current local clip. The native player guards completion by the playback start identity so a late completion cannot stop a newer run of the same clip. The saved maximum limits requested duration. **Health** checks native state and writes details to Streamer.bot's private log; it does not play a test.
 
-`Shoutout Clips - Play` accepts `clipId` (or `slug`), optional `channel`, `title` and `durationMs`. Duration is limited by the saved maximum. `Shoutout Clips - Stop` accepts optional `startedAtMs` to reject stale completion. Configure accepts the existing JSON `config`; the state-envelope contract is unchanged.
+## Use a custom caller
 
-Target lookup, clip selection, chat routing, official shoutouts and session bookkeeping remain in the separate private orchestration adapter. Its optional warm-text service is still a legacy dependency until the Ollama migration. Missing AI must retain fallback chat and must not prevent clip playback.
+In your own Streamer.bot action, add **Core → Arguments → Set Argument** for `clipId` with the selected slug, and optionally `channel`, `title` and `durationMs` (milliseconds, for example 15000). Then add **Core → Actions → Run Action**, choose **Shoutout Clips - Play** and enable **Run Action Immediately**. Enter argument names without percent signs. Attach your chosen trigger to the caller rather than changing the imported engine.
+
+Play also accepts slug as a compatibility argument. Stop accepts optional startedAtMs for guarded completion. Keep channel lookup/official shoutout/chat automation separate and supply only the clip you intend to play. Running your caller has real overlay/media effects.
+
+## Phone Deck
+
+[Phone Deck](../phone-deck/README.md) optionally offers **Play saved clip ID**, **Play clip by ID**, **Stop shoutout clip** and **Shoutout clip status**. Add Button/Input/widget cards in its editor; no cards appear automatically. Phone playback uses the native owner's saved mute/layout/title/duration limit and adds no channel lookup or AI step.
+
+Commands report **Requested** rather than durable confirmed delivery. Status reflects saved clip visibility/ID/duration, not audible remote playback. Lost responses remain unknown and are never automatically retried; check the actual player before another request.
+
+## Troubleshooting and backup
+
+Check the clip ID, scene rule, native imports and shared source if a clip does not appear. Provider restrictions or network failures can prevent playback even when the native state accepted it. Use Twitch embed when its saved mute behavior is required; the retained mature-content-compatible provider controls its own mute behavior.
+
+Initialization/imports/updates preserve saved player settings. Back up private Streamer.bot state and callers before engine changes. Removing the package does not erase that state or private adapters/session lists.
 
 ## External players
 

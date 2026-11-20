@@ -29,6 +29,10 @@ function parseCatchCommand(value) {
   const ball = ballAliases[requested];
   return ball ? { ball, requested: requested || "poke ball" } : { ball: "poke-ball", requested, fallback: true };
 }
+function pokemonDisplayName(value){
+  const label=cleanMessage(value).replace(/\s*[([]\s*(female|male|f|m|♀|♂)\s*[)\]]\s*$/i,'').trim();
+  return label.replace(/^((?:shiny\s+)?nidoran)(?:\s+(?:female|male|f|m)|[♀♂])$/i,'$1');
+}
 function parsePokemonLabel(value) {
   const original = cleanMessage(value);
   let name = original;
@@ -80,4 +84,4 @@ function parseCommunityMessage(sender, message, currentEncounter = null, nowMs =
   return { type: "ignored", reason: "unmatched", text };
 }
 
-module.exports = { cleanMessage, parseCatchCommand, parsePokemonLabel, slugFor, isMysteryPokemon, parseCommunityMessage };
+module.exports = { cleanMessage, parseCatchCommand, parsePokemonLabel,pokemonDisplayName, slugFor, isMysteryPokemon, parseCommunityMessage };

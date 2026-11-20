@@ -1,17 +1,39 @@
 # Scene Links
 
-## Optional Phone Deck controls
+Link an OBS program scene to a Twitch category and an existing Windows application window. Saving a link does not execute it; switching to its scene applies the saved behavior.
 
-Version 2.0.3 adds Apply saved scene link and a status widget. Select an exact saved binding; applying it requires confirmation and executes that binding's saved category/focus behavior without switching OBS scenes or editing mappings. It does not offer arbitrary categories/windows, draft tests or automatic scene handling. Completion uses the existing durable request acknowledgement; partial failures remain partial. Removed bindings stay unavailable. Native action data is unchanged, so no reimport, service, Phone Deck dependency or automatic card is required.
+## Set up your links
 
-Scene Links 2.0.3 preserves the existing dock editor, Twitch category updates and Windows application focus. First-party code: Sethani, MIT. It requires Companion 1.3.1, Universal Dock and Streamer.bot; Windows focus additionally requires Windows PowerShell. No overlay, service or extra port is installed.
+1. Connect Streamer.bot to OBS using its default OBS connection and authenticate Twitch for category updates. Windows focus also requires Windows PowerShell. Use Companion 1.3.1 or newer and [Universal Dock](../universal-dock/README.md).
+2. Back up Streamer.bot, then install Scene Links from **Catalogue**. Expand its **Installed** row and choose **Import into Streamer.bot…** to import the nine supplied actions. Existing current imports need no reimport for this guide/display-title patch.
+3. Choose **Open controls**, or select Scene Links in Universal Dock. Press **Refresh scenes and windows** to read available OBS scenes and window targets.
+4. On the desired scene row, enter its **Twitch category**, select a **Window target** and adjust **Title contains** as needed. Leave an empty category for no category change, or No window focus for no focus action.
+5. Press **Save links**. Fresh installations start with empty bindings. Scene names match exactly, including case; unavailable scenes/window targets remain saved rather than being replaced.
 
-Import the nine actions through Companion. The inventory retains all nine identities; the old Monitor action and queue remain disabled/inert compatibility records. Initialize has native startup/OBS connection registrations. Fresh installations start with empty bindings. Existing version-1 `portable.sceneBindings.config` and state globals are retained without personal fallback seeds. Scene names match exactly; missing scenes and unavailable window targets remain saved.
+No overlay, background service or extra port is installed. The old Monitor action/queue remain disabled/inert compatibility records; keep them that way. Initialize's startup/OBS registrations establish inventory/baselines without applying the current link.
 
-Save persists only. Actual OBS program-scene changes apply saved links after 350 ms debounce, independently attempting category and focus. Initialize, Refresh and reconnect establish inventory/baselines without applying the current binding. Apply explicitly executes a saved scene; Test Focus and Test Category affect only their respective draft value. Empty fields do nothing. Window focus restores an existing window and attempts foreground activation; it does not launch applications or resize/reposition them. The existing helper is embedded, with no personal filesystem path.
+## Apply and test deliberately
 
-Arguments remain `sceneBindingsMode`, `configJson`, `sceneName`/`obs.sceneName`, `windowJson` and `category`. An optional unique `requestId` correlates persisted terminal `operation` acknowledgements. Dispatch is not completion. Partial failures and unknown outcomes are visible; clients never retry mutations automatically. Twitch category results describe API acceptance, rather than claiming independent remote confirmation. Windows may refuse foreground activation.
+An actual OBS **program-scene** change applies its saved link after 350 ms debounce, independently attempting category and window focus. Save links persists the plan without applying it. Refresh and reconnect do not apply the current binding.
 
-Version 2.0.2 retains the latest 32 completed request results in `completedOperations`, including their execution details. Later inventory/events preserve those acknowledgements; request arguments are frozen for the invocation. Older request IDs outside this bounded window are not a permanent transaction journal. Use new IDs for new operations. This release supersedes 2.0.0 and 2.0.1.
+**Test focus** applies only that row's draft window target. **Test category** applies only its draft category. These tests have real effects even before saving, so choose an appropriate time. The dock has no general Apply button; the native **Scene Links - Apply** action and optional phone control explicitly execute a saved link.
 
-Private mappings, window titles, account credentials and OBS snapshots are not distributed. Removing the module does not delete saved globals. The private handoff guards old Node callers and retains their original configuration only for rollback. Full Phone Deck extraction is separate. Back up Streamer.bot before replacing actions and restore files only while it is closed.
+Applying a link does not switch OBS scenes. Window focus restores an existing window and attempts foreground activation; it does not start an application or resize/reposition it. Windows may refuse foreground activation. Category status reports Twitch API acceptance, not independent visual confirmation.
+
+If a saved scene is unavailable, its row remains visible with a Remove control. Removing it changes the draft; Save links applies the configuration change.
+
+## Phone Deck
+
+[Phone Deck](../phone-deck/README.md) optionally offers **Apply saved scene link** and **Scene Link status**. Add them in the deck editor; no cards appear automatically. Select the exact saved binding and confirm before applying its saved category/focus behavior. Removed bindings stay unavailable.
+
+Phone controls do not edit mappings, choose arbitrary category/window targets, run draft tests or change automatic scene handling. They use the native owner's durable request acknowledgement. Partial failures remain partial; unknown outcomes are not retried automatically.
+
+## Troubleshooting and private backups
+
+If no scenes appear, check OBS and Streamer.bot's default OBS connection, then Refresh scenes and windows. For unavailable windows, open the intended application yourself, refresh and review the saved process/title match. If category updates fail, check Twitch authentication/permissions and the reported result.
+
+Inspect partial failures and real state before explicitly retrying; dispatch alone does not guarantee completion. The native helper is embedded and contains no personal filesystem path.
+
+Saved version-1 `portable.sceneBindings.config` and state globals are retained. Removing the package does not delete mappings. Keep window titles, bindings and credentials private. Back up Streamer.bot before engine changes and restore profile files only while it is closed.
+
+First-party code: Sethani, MIT.

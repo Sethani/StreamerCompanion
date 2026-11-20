@@ -1,3 +1,17 @@
+## Companion 1.4.1 — usability polish preview
+
+Built-in Help provides getting-started instructions and module configuration guides in Companion and Universal Dock. Installed modules show clearer names, categories and optional integrations. Developer tools and engineering documentation stay hidden unless explicitly enabled.
+
+Independent module updates include Sound Player, the visual Live Chatbox normal/ticker URL designer and isolated sample preview, and separate command exclusion in Chat Archive. Existing copied chatbox URLs remain unchanged. Phone Deck integrations preserve existing cards; new cards are added explicitly.
+
+Upgrade Companion before Universal Dock 1.1.4, which requires Companion 1.4.1 for Help. Module updates remain independent of the application. Guide/label-only updates need no Streamer.bot reimport; functional Sound Player/Walk Ons adoption has its own documented action/import steps. Keep existing OBS URLs until deliberately adopting alternatives.
+
+Back up application settings, module data and the chat archive before adoption. Close the old Companion before replacing the application. Any active Widgets renderer must complete its documented ownership handoff before a host restart; a timeout is not proof that a renderer has closed. Preserve phone pairing/TLS, cards, favorites and automatic-start choices. No stream, recording, outgoing chat or real redeem test is required for this upgrade.
+
+This is an experimental preview. Named Raffles and personal checklist/Wheel-result integration remain planned features and are not included.
+
+## Previous previews
+
 Experimental application release by Sethani, under MIT for first-party code.
 
 Companion 1.3.3 removes the retired legacy settings-import desktop hook. Controller 1.1.2 removes its personal-layout JSON picker and reader. Existing module data, automatic starts, pairing and normal installed-data upgrades are preserved. Streamer.bot action imports, media imports and Video/Wheel backup import/export stay available. No Streamer.bot reimport is needed.

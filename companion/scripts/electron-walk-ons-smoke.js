@@ -9,7 +9,7 @@ async function waitFor(check, label) { const deadline = Date.now() + 10000; whil
 async function main() {
   await app.whenReady(); test = await fixture(path.join(temporary, "data"));
   const dock = window(), overlay = window(); const registration = test.host.publicInstalledModules().modules.find((item) => item.packageId === "walk-ons");
-  await overlay.loadURL(registration.extensionOverlayUrl); await dock.loadURL(registration.nodeUrl);
+  await overlay.loadURL(test.host.publicInstalledModules().modules.find(item=>item.packageId==="sound-player").extensionOverlayUrl); await dock.loadURL(registration.nodeUrl);
   const view = (code) => dock.webContents.executeJavaScript(code), output = (code) => overlay.webContents.executeJavaScript(code);
   await waitFor(() => view("document.getElementById('status').textContent.includes('0 configured')"), "empty roster");
   assert.equal(await output("getComputedStyle(document.body).backgroundColor"), "rgba(0, 0, 0, 0)");
@@ -19,10 +19,10 @@ async function main() {
   await waitFor(() => view("document.getElementById('walkon-list').textContent.includes('fixture_viewer')"), "roster save");
   await view("[...document.querySelectorAll('#walkon-list button')].find(button=>button.textContent==='Test').click()");
   await waitFor(() => test.calls.some((call) => call.name === "Walk Ons - Test"), "test action");
-  await waitFor(() => test.calls.some((call) => call.name === "Walk-on Sound - Stop"), "renderer completion handshake");
-  assert.ok(test.calls.some((call) => call.name === "Walk Ons - Configure")); assert.ok(test.calls.some((call) => call.name === "Walk Ons - Upsert"));
+  await waitFor(() => test.calls.some((call) => call.name === "Sound Player - Renderer" && call.args.rendererOperation === "complete"), "renderer ownership and completion handshake");
+  assert.ok(test.calls.some((call) => call.name === "Walk Ons - Upsert"));
   assert.equal(test.state().walkOns.session.seen.length, 0, "Tests do not consume first-chat eligibility");
   assert.equal(await output("document.getElementById('player').hasAttribute('src')"), false);
-  console.log("Hidden Walk Ons passed: established roster editor, private audio refresh, stable action transport, transparent playback and completion Stop handshake.");
+  console.log("Hidden Walk Ons passed: established roster editor, private audio refresh, stable action transport, transparent playback and single-owner completion handshake.");
 }
 main().catch((error) => { console.error(error.stack); failed = true; }).finally(async () => { for (const value of windows) value.destroy(); await test?.close(); app.exit(failed ? 1 : 0); });

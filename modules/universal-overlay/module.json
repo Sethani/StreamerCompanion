@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "universal-overlay",
   "name": "Universal Overlay",
-  "version": "1.0.2",
-  "description": "Manifest-driven browser overlay with explicit scene routing.",
+  "version": "1.1.1",
+  "description": "Combine supported overlays in one OBS browser source with scene visibility controls.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -31,5 +31,6 @@
     "optionalModules": {},
     "capabilities": {},
     "companion": ">=1.2.0"
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "stream-launch",
   "name": "Stream Launch",
-  "version": "1.0.1",
-  "description": "Guarded stream startup, Countdown integration, Spotify fades and existing private follow-up actions.",
+  "version": "1.0.3",
+  "description": "Start a guided OBS stream with Countdown, optional Spotify music and follow-up actions.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -147,5 +147,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

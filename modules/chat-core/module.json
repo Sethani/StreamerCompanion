@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "chat-core",
   "name": "Live Chatbox",
-  "version": "1.0.1",
-  "description": "The existing stream-chat design with live chat, moderation, pronouns and PluralMind, independent of the archive.",
+  "version": "1.4.1",
+  "description": "Show Twitch and YouTube chat with moderation, pronouns and PluralMind member details.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -101,6 +101,19 @@
           "fields": []
         }
       ]
-    }
-  }
+    },
+    "externalSetup": [
+      {
+        "id": "twitch-chat",
+        "name": "Twitch chat connection",
+        "required": false
+      },
+      {
+        "id": "youtube-chat",
+        "name": "YouTube chat connection",
+        "required": false
+      }
+    ]
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

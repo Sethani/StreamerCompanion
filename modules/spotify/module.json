@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "spotify",
   "name": "Spotify Music",
-  "version": "2.0.4",
+  "version": "2.0.7",
   "description": "Spotify playback, countdown fading, scene-owned music, and viewer song information.",
   "documentation": "README.md",
   "streamerbot": {
@@ -34,7 +34,7 @@
   "ui": {
     "id": "spotify",
     "name": "Spotify Music",
-    "category": "Stream",
+    "category": "Media",
     "order": 45,
     "dockPage": "/spotify/settings",
     "ownership": "node",
@@ -367,5 +367,6 @@
       "spotify-account": "optional"
     },
     "companion": ">=1.3.1"
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

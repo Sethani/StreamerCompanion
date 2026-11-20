@@ -1,7 +1,7 @@
 const http = require("node:http");
 const fs = require("node:fs");
 const path = require("node:path");
-const { parseCatchCommand, parseCommunityMessage, parsePokemonLabel, slugFor } = require("./pokemon-core");
+const { parseCatchCommand, parseCommunityMessage, parsePokemonLabel,pokemonDisplayName, slugFor } = require("./pokemon-core");
 
 function createService(options = {}) {
 const port = options.port ?? (Number(process.env.COMPANION_SERVICE_PORT || process.env.POKEMON_SERVICE_PORT) || 3128);
@@ -60,7 +60,7 @@ async function resolvePokemon(name, slugInput = "") {
       cacheVersion: 3,
       id: payload.id,
       slug: payload.name,
-      displayName: /^nidoran\s*[([]?[fm♀♂]/i.test(variant.original) ? "Nidoran" : variant.original,
+      displayName: pokemonDisplayName(variant.original),
       gender: variant.gender,
       shiny: variant.shiny,
       region: variant.region,
@@ -79,7 +79,7 @@ async function resolvePokemon(name, slugInput = "") {
     if (!image.ok) throw new Error("Pokemon artwork returned HTTP " + image.status + ".");
     fs.writeFileSync(artworkFile, Buffer.from(await image.arrayBuffer()));
   }
-  return { ...metadata, imageUrl: fs.existsSync(artworkFile) ? "/pokemon/art/" + encodeURIComponent(variantKey) + ".png" : metadata.artworkUrl };
+  return { ...metadata, displayName:pokemonDisplayName(variant.original),imageUrl: fs.existsSync(artworkFile) ? "/pokemon/art/" + encodeURIComponent(variantKey) + ".png" : metadata.artworkUrl };
 }
 
 async function handleMessage(sender, message) {

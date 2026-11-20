@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "embedded-widgets",
   "name": "Embedded Widgets",
-  "version": "1.0.0",
-  "description": "Private external widgets, including Tangia, in the existing combined overlay.",
+  "version": "1.0.2",
+  "description": "Arrange external widgets, including Tangia, in your shared stream overlay.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -91,6 +91,14 @@
         "tangia": "Tangia",
         "microlayer": "Other widgets"
       }
-    }
-  }
+    },
+    "externalSetup": [
+      {
+        "id": "widget-provider",
+        "name": "Widget provider embed URL",
+        "required": false
+      }
+    ]
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

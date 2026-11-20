@@ -65,6 +65,7 @@ function createDesktop(options) {
 
   ipcMain.handle("companion:list", () => host.listModules());
   ipcMain.handle('companion:ui-preferences', () => host.uiPreferences.read());
+  ipcMain.handle('companion:developer-tools', (_event, enabled) => host.uiPreferences.setDeveloperTools(enabled));
   ipcMain.handle('companion:favorite', (_event, { id, favorite }) => host.uiPreferences.setFavorite(id, favorite));
   ipcMain.handle("companion:refresh", () => host.listModules());
   ipcMain.handle("companion:module-link", async (_event, { id, target, copy }) => {
@@ -134,11 +135,11 @@ function createDesktop(options) {
     if (choice.response === 1) { shell.showItemInFolder(target); return { operation: "shown" }; }
     return { operation: "cancelled" };
   });
-  ipcMain.handle("companion:open-docs", async (_event, moduleId) => {
-    const target = registry.getDocumentationFile(moduleId);
-    if (!target) throw new Error("This module does not include local documentation.");
-    await shell.openPath(target);
-    return true;
+  ipcMain.handle('companion:help-index', () => host.helpGuides.index());
+  ipcMain.handle('companion:open-docs', (_event, id) => host.helpGuides.read(id));
+  ipcMain.handle('companion:help-external', (_event, url) => {
+    if (typeof url !== 'string' || !/^https:\/\/[^\s<>"']+$/i.test(url)) throw new Error('Unsupported Help link.');
+    return shell.openExternal(new URL(url).href);
   });
 
   return { get host() { return host; }, get window() { return window; }, ready };

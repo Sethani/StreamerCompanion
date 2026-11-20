@@ -1,53 +1,59 @@
 # Phone Deck
 
-Version 2.0.4 uses the existing OBS WebSocket's state events instead of scanning every input after every event or two-second UI tick. Structural changes coalesce into affected-inventory reads. Lightweight status reconciliation runs about every six seconds, with a full inventory reconciliation about every thirty seconds to recover missed events. Explicit refresh and button actions retain fresh target checks and readback. Reconnects never replay actions or clear pairing/layout data. The initial-load, offline and stalled-socket recovery from 2.0.3 is retained.
+Build an editable phone deck for OBS and optional Companion modules. Basic OBS controls work independently of Streamer.bot or feature modules. Installing a module makes its supported controls available to choose; it never adds cards automatically.
 
-Phone Deck 2.0.2 provides independent OBS controls and an editable HTTPS handset deck for Companion 1.3.1. Basic OBS operation needs no feature module or Streamer.bot connection. Optional controls come from installed packages; installing a module never adds cards automatically.
+## Connect OBS locally
 
-2.0.1 fixes opening the public page from a link or embedded settings. Private API requests still require the configured Host, same origin and CSRF token; unrelated origins cannot read or mutate private state. Existing layout, pairing and TLS identity are preserved.
+1. Install Phone Deck from **Catalogue**. Expand its **Installed** row, **Start** the service and open **Settings** or **Open controls**. It is also in [Universal Dock](../universal-dock/README.md). Requires Companion 1.3.1 or newer.
+2. In the deck's **Settings → Connections**, expand **OBS connection**. Enter your OBS WebSocket v5 address, normally `ws://127.0.0.1:4455`, and password, then **Save connection**. A blank password preserves the saved password; use Clear saved password only when intended.
+3. Check OBS status before using controls. OBS must be open and its WebSocket server enabled. Local management uses loopback port **3142**; passwords stay server-side.
 
-## Setup
+For optional module cards, expand **Module connections**. Enable **Discover installed Companion modules** with the Companion loopback address, normally `http://127.0.0.1:3135`. Enable **optional Streamer.bot controls** and enter its WebSocket address/password if the chosen providers require them. Press **Save optional connections**. Missing/stopped modules, missing imports and unavailable resources disable only their affected controls.
 
-Install Phone Deck from Catalogue, start its service and open settings. Management uses loopback **3142**. Configure OBS WebSocket v5 there. Passwords stay server-side; phones cannot change connection credentials or pairing administration.
+## Pair a phone
 
-For handset access, use a certificate covering the computer hostname or LAN IP. Put `phone-deck-cert.pem` and `phone-deck-key.pem` in the private module data directory's `tls/` folder, then restart the service. Trust the issuing certificate authority on the handset as appropriate. Save the matching hostname/IP in local settings. HTTPS uses **3125** and remains disabled until a certificate/key exists. Enter a hostname/IP without a scheme, port or path. Keep certificate keys private.
+Handset access uses HTTPS on port **3125**. Prepare a certificate covering your computer's hostname or LAN IP and its private key as `tls/phone-deck-cert.pem` and `tls/phone-deck-key.pem` inside the private Phone Deck module-data directory, then restart the service. HTTPS stays disabled until both exist. Trust the issuing certificate authority on the handset as appropriate; keep the private key private.
 
-Generate a pairing code locally, open the displayed HTTPS address on the phone and enter the code. Paired phones can use and edit the deck. Revoke devices in local settings. Pairings expire after 180 days; service restarts and module upgrades preserve identity and expiry. The installation API bearer token is never requested or sent to phones.
+In local **Settings → Phones → Phone address**, enter the matching hostname/IP without a scheme, port or path, then **Save phone address**. Under **Pairing**, use **Generate code**. Open the displayed HTTPS link or QR code on your phone, enter a Device name and Pairing code, then **Pair device**.
 
-## Controls
+Paired phones can use and edit the deck, but cannot change backend credentials or pairing administration. Revoke a device from the local Phones settings when needed. Pairings expire after 180 days; restarts and upgrades preserve their identity/expiry. The Companion installation API bearer token is never requested on the handset.
 
-| Area | Controls |
+## Add and edit cards
+
+1. Choose **Edit deck**. Select a Page or use **+ Page**. Card and Page have separate tabs.
+2. Use **+ Button**, **+ Widget** or **+ Input**. Choose a Label and Action/input/widget type. For module controls, choose its Module action and any required saved resource; Search module controls can narrow the list.
+3. Adjust appearance, size, colour and icon as desired. Existing cards can be selected, duplicated and reordered; pages can also be reordered.
+4. Press **Save deck** to apply the draft, or **Discard draft** to reload the saved deck. Closing the editor retains the draft and blocks execution until it is saved or discarded. Search never changes configuration.
+
+Wide windows show the deck beside the editor; phones/narrow docks use a dedicated editor view. Settings for Connections and Phones are separate from card editing. Deck, connection and phone-address saves are independent operations.
+
+## Choose the right control
+
+| Control area | Behavior |
 | --- | --- |
-| OBS base | Exact scene selection, raw streaming Start/Stop, recording Start/Stop/Toggle and input mute |
-| Common OBS | Volume presets/sliders, scene/group visibility, recording pause/resume, Studio Mode, preview/program transitions, replay buffer and virtual camera |
-| Stream Launch | Guided Go Live with saved automation and independent progress |
-| Countdown | Saved/custom/preset timers, save settings, pause/resume/clear and clock-based status |
-| Audio Routing | Native game-VOD toggle and status |
-| Wheel | Existing-profile spin, clear and status |
-| Video | Enabled registered-video ID, optional title, stop and status |
-| Streamer.bot | Optional title/category helpers and custom-action picker |
-| Chat Routing | Bot-message form |
+| OBS base/common controls | Scenes, input mute/volume, scene/group visibility, recording, Studio/preview transitions, replay buffer and virtual camera where supported |
+| Raw OBS Start/Stop | Direct streaming controls; no countdown, music or launch automation |
+| Stream Launch | Guided Go Live with configured automation and progress |
+| Countdown | Saved/custom/preset timing and status; existing Start cards resume paused timers and leave an already running timer alone |
+| Module actions/widgets | Each installed owner's declared controls, saved resources and status, including Sound/Video, Audio Routing, Cameras and Reactive Guests |
+| Optional Streamer.bot controls | Title/category helpers and a custom-action picker; Bot Chat Routing supplies a separate bot-message form |
 
-Enable optional Companion discovery and Streamer.bot connections in local settings as needed. Missing/stopped modules, missing imports and unavailable resources disable their own controls. Unsupported OBS features show prerequisites. Raw OBS Start invokes no countdown/music/launch automation. Streaming controls require a 1.2-second hold or keyboard confirmation.
+Streaming controls require a 1.2-second hold or keyboard confirmation. Unsupported OBS features explain their prerequisites. Actions can change the real stream, recordings, audio, overlays or chat; use each module's guide to understand its scope.
 
-## Editing and completion
+## Status, uncertain outcomes and updates
 
-**Edit deck** has separate **Card** and **Page** tabs. Select a card or add one; its module/action picker appears directly under Action. Appearance is folded separately. Phones and narrow docks switch to a dedicated editing view, while wide windows show the deck alongside the editor. Save and Discard stay visible. Closing edit mode retains the draft and shows a clear reminder before controls can run; incomplete new cards explain what to choose without replacing saved configuration. Search never changes configuration.
+OBS and Streamer.bot status are independent. Status updates automatically. **Refresh** rereads OBS. **Check module status** appears only when a module needs read-only recovery after stale/unavailable state or an unconfirmed operation; it never retries the original action.
 
-The separate **Settings** button opens **Connections** and **Phones**, with connection/address details folded by default. These private forms are not part of the card editor. Existing paired phones keep editing access but cannot access local-only connection or pairing administration. Deck, connection and phone-address saves remain separate operations.
+Execution never retries automatically. OBS changes use readback where available. **Requested** means owner dispatch/acceptance unless a matching persisted terminal acknowledgement proves completion. Audio Routing can report partial completion; Wheel and Video report Requested. Unknown outcomes block that owner until an explicit read-only status check succeeds. Inspect the real outcome before sending another action.
 
-OBS and Streamer.bot status are shown independently. Healthy module cards have no refresh button. **Check module status** appears only when the affected module needs read-only recovery after a stale/unavailable status or unconfirmed operation; it never retries the original action. An unsaved deck is identified as a draft rather than a connection failure. Open pages are not reloaded automatically during an upgrade: save or discard an older editor's draft before refreshing to load the new UI.
+The latest 256 operation records persist across restarts. Updates preserve card identities, layout, targets, pairings and TLS identity. Open pages are not automatically reloaded during upgrades; save/discard any older editor draft before refreshing when a new interface is installed. A service restart briefly disconnects phones; reconnects never replay actions or clear pairings/layout and refresh the session token.
 
-The established grid/editor supports pages, ordering, duplication, colours, icons, sizes and widgets. Save is explicit. Polling preserves drafts, focus, sliders, selected pages and card nodes. Revisions reject stale edits and execution. The module picker supports groups/search; missing saved resources are never substituted.
+## Troubleshooting and private backups
 
-Execution never retries automatically. OBS changes use readback where available. Owner acceptance reports **Requested** unless a matching persisted terminal acknowledgement proves completion. Audio Routing partial errors remain explicit; Wheel/Video report Requested. Unknown outcomes block that owner until its explicit read-only Refresh succeeds. The latest 256 operation records persist across restarts and later owner state.
+If a phone cannot connect, check that the service/HTTPS listener is running, the saved address matches its certificate, the phone trusts its issuer and the computer is reachable on your network. If OBS controls are unavailable, check OBS and the saved WebSocket connection. If only module controls fail, check discovery/native connection settings, the module service/import and its selected saved resources. Missing resources are never substituted.
 
-Reviewed legacy mappings retain card identities/layout/targets. Guided launch stays guided; legacy countdown Start resumes paused timers and leaves running timers alone. Combined widgets show independent Video/Wheel status and available launch progress. Writing cards remain parked. There is no public legacy Import settings option.
+Exact Host/Origin/CSRF checks protect private writes. Pairing administration stays local. Offline navigation shows a reconnect message; the service worker never caches credentials, API responses or mutations and removes old shell caches.
 
-## Network and private data
-
-Exact Host/Origin and CSRF checks protect writes; pairing administration is local-only. The service worker removes old Phone Deck shell caches and never caches credentials, API responses or mutations. Host outages disable controls; offline navigation shows a reconnect message. Reconnection never replays commands and refreshes the session token after host restart.
-
-Private files: `config.json`, `connection.json`, `providers.json`, `phone.json`, `auth.json`, `operations.json` and `tls/`. Back them up together; never distribute them. Stop closes both listeners and owner connections. The service exits when its Companion parent disappears. Optional integrations need no app rebuild.
+Back up private `config.json`, `connection.json`, `providers.json`, `phone.json`, `auth.json`, `operations.json` and `tls/` together; never distribute them. Stop the service before a consistent filesystem backup. Stopping closes both listeners and owner connections; the service also exits if its Companion parent disappears. Optional integrations need no app rebuild.
 
 First-party code: Sethani, MIT. Lucide retains its ISC notice in `third-party/lucide.txt`.

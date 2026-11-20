@@ -3,6 +3,7 @@ const path = require("node:path");
 const AdmZip = require("adm-zip");
 const semver = require("semver");
 const { getActions } = require("./streamerbot-client");
+const { validateSummary } = require('./integration-summary');
 
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 const VERSION_PATTERN = /^\d+\.\d+\.\d+$/;
@@ -35,6 +36,11 @@ class CompanionRegistry {
       throw new Error("Module requiredActions must be an array.");
     }
     if (manifest.documentation !== undefined) validateRelativeFile(manifest.documentation, "Module documentation");
+    if (manifest.ui?.externalSetup !== undefined) validateSummary({ schemaVersion: 1, phoneDeck: null, setup: manifest.ui.externalSetup, legacyRequired: [], legacyOptional: [] });
+    if (manifest.developerDocumentation !== undefined) {
+      validateRelativeFile(manifest.developerDocumentation, 'Developer documentation');
+      if (!/\.md$/i.test(manifest.developerDocumentation)) throw new Error('Developer documentation must be Markdown.');
+    }
     if (manifest.streamerbot.importFile !== undefined) validateRelativeFile(manifest.streamerbot.importFile, "Module Streamer.bot import");
     if (manifest.provides !== undefined && (!Array.isArray(manifest.provides) || manifest.provides.some((value) => typeof value !== "string" || !ID_PATTERN.test(value)))) throw new Error("Invalid module capabilities.");
     if (manifest.dependencies) {
@@ -53,6 +59,8 @@ class CompanionRegistry {
       for (const link of manifest.ui?.links || []) { if (!link.name || typeof link.name !== "string") throw new Error("Browser link name required."); page(link.path); }
     }
     if (manifest.media && !["video", "audio"].includes(manifest.media.kind)) throw new Error("Unsupported module media type.");
+    if (manifest.media?.owner !== undefined && (!ID_PATTERN.test(manifest.media.owner) || manifest.media.owner === manifest.id)) throw new Error("Invalid media owner alias.");
+    if (manifest.ui?.routingId !== undefined && !ID_PATTERN.test(manifest.ui.routingId)) throw new Error("Invalid overlay routing ID.");
     if (manifest.service) {
       if (manifest.schemaVersion < 2) throw new Error("Service modules require package schema 2.");
       if (manifest.service.apiVersion !== 1) throw new Error("Module requires an unsupported Companion service API version.");
@@ -101,7 +109,7 @@ class CompanionRegistry {
       const extracted = JSON.parse(fs.readFileSync(path.join(temporary, "module.json"), "utf8"));
       this.validate(extracted);
       if (extracted.id !== inspected.manifest.id || extracted.version !== inspected.manifest.version) throw new Error("Extracted module manifest changed during installation.");
-      for (const [file, label] of [[extracted.service?.entry, "service entry"], [extracted.streamerbot.importFile, "Streamer.bot import file"], [extracted.documentation, "documentation file"]]) {
+      for (const [file, label] of [[extracted.service?.entry, "service entry"], [extracted.streamerbot.importFile, "Streamer.bot import file"], [extracted.documentation, "documentation file"], [extracted.developerDocumentation, 'developer documentation']]) {
         if (file && (!fs.existsSync(path.join(temporary, file)) || !fs.statSync(path.join(temporary, file)).isFile())) throw new Error("Module " + label + " was not included in the package.");
       }
       if (extracted.web) {

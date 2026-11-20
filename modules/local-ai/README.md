@@ -1,13 +1,34 @@
 # Local AI
 
-Optional Ollama flavour for the existing raid and shoutout messages. The original prompt builders, phrase validation, pronoun handling and deterministic fallback text are preserved. AI failure or disabled settings returns the same fallback; this service never sends chat, triggers an official shoutout or plays a clip.
+Optionally add locally generated wording to raid and shoutout messages through Ollama. Existing deterministic fallback text remains available when AI is off or fails. This service never sends chat, performs an official shoutout or plays a clip; callers must explicitly use its result.
 
-Install and run Ollama separately. In Universal Dock, open Local AI, enter its loopback HTTP address, choose an already installed model and Save. **Check connection** reads the saved connection's installed-model list. Missing saved models remain selected rather than silently substituting another. Fresh installs are disabled with no model. This package never launches Ollama or downloads models.
+## Set up
 
-Advanced settings preserve the original request timeout and keep-alive options. **Warm model on service startup** is optional and defaults off. Explicit **Warm model** sends one empty, non-streaming generation request; status polling and reconnect probes never generate text. The folded sample preview uses synthetic facts and does not send Twitch chat. No prompts, generated messages, viewer identities or history are saved or logged. Settings/model names remain private.
+1. Install and run Ollama separately and install the model you want there. This module never starts Ollama or downloads a model.
+2. Install Local AI from **Catalogue**. Expand its **Installed** row, **Start** its service and open **Settings** or **Open controls**. It appears under System in [Universal Dock](../universal-dock/README.md).
+3. Enter **Ollama address**, normally `http://127.0.0.1:11434`, and your **Installed model** name. Choose **Save**, then **Check connection** to read the saved address's model list. Select an installed model if needed and Save again.
+4. Check **Enable AI flavour** and Save when ready. Fresh installs are disabled with no model. A missing saved model stays selected instead of being silently replaced.
 
-Management uses **3145**. Origin-less loopback native JSON clients call `POST /api/warmgeneration/raid` or `/api/warmgeneration/shoutout` and receive plain text. Generation routes reject browser Origin/Fetch headers and provide no CORS. They accept structured legacy facts only, not arbitrary prompts, endpoint overrides or model overrides. Browser previews/settings/warm commands use separate same-origin CSRF-protected routes. Private settings require revisions, atomic saves and explicit conflict resolution; failed saves preserve the previous configuration. No installation bearer token is exposed.
+Only loopback HTTP addresses are accepted, with no credentials, path, query or fragment. The local management service uses port **3145**. No overlay or Streamer.bot action import is required for Local AI itself.
 
-The Ollama URL must be loopback HTTP, without credentials/path/query/fragment. Responses and inputs are bounded, redirects are rejected, requests time out and inference concurrency is limited to two. Overflow, invalid responses and unavailable models use deterministic fallback without retrying generation. Disabling or changing configuration cancels old requests rather than returning obsolete AI results. Health distinguishes a running module from an unavailable Ollama backend, so optional AI failure does not become a missing module dependency.
+## Check and try it
 
-Optional Phone Deck contribution: read-only status. No phone cards are added automatically. No overlay, Streamer.bot import or Companion rebuild is required for the package itself. The existing private raid/shoutout callers need a separate backed-up endpoint handoff; no public legacy Import settings control is added. Writing Challenge's parked classifier is excluded. Model weights/software are not bundled or licensed by this package.
+**Check connection** reads available models without generating text or loading/downloading a model. Save draft connection changes first: checks use the saved address.
+
+Under **Try a sample**, **Preview shoutout** and **Preview raid** use synthetic facts and show a result locally. They may use your enabled AI backend, but never send Twitch chat or play a clip. Polling and reconnect checks do not generate text.
+
+**Warm model** explicitly sends one empty non-streaming generation request to load the selected model. It requires enabled AI and a saved model. Under **Advanced**, **Warm model on service startup** is optional and defaults off; enabling it also allows warm-up when the module service restarts during an update.
+
+## Advanced settings and fallback
+
+**Generation timeout (seconds)** accepts 1–300 seconds. **Keep model loaded** accepts a duration such as 30m, 0 to unload after a request, or -1 to keep it loaded. Save applies these settings. Responses and inputs are bounded, requests time out, redirects are rejected and at most two inference operations run concurrently.
+
+When disabled, busy, unavailable or given an invalid model/result, the caller gets deterministic fallback without an automatic generation retry. Disabling or changing settings cancels obsolete requests so old AI results cannot appear after a configuration change. A healthy module service and a working Ollama backend are separate status checks; optional AI failure does not make another module missing.
+
+## Phone Deck, recovery and privacy
+
+[Phone Deck](../phone-deck/README.md) optionally offers **Local AI status** under System. Add it in the deck editor; no cards appear automatically. It is read-only, with no phone generation or model-management control.
+
+If Ollama is unavailable, check that its process is running at the saved address and the selected model is installed, then Check connection. If another editor saved first, your draft and previous saved configuration are retained; use **Discard and reload**, review the current values and reapply edits.
+
+Back up private `module-data/local-ai` with your setup. Configuration/model names stay private. Prompts, generated messages, viewer identities and history are not saved or logged. Ollama software and model weights are not bundled or licensed by this package.

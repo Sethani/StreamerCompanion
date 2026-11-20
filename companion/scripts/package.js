@@ -17,7 +17,8 @@ async function main() {
     fs.copyFileSync(path.join(root, "src", file), destination);
   }
   const original = require("../package.json");
-  for (const file of ['ui-preferences.js', 'renderer/navigation.js']) {
+  for (const file of ['ui-preferences.js', 'renderer/navigation.js', 'integration-summary.js', 'renderer/integrations.js', 'help-guides.js', 'renderer/help-reader.js', 'renderer/help.css', 'renderer/help.html', 'renderer/help-http.js', 'guides/getting-started.md']) {
+    fs.mkdirSync(path.dirname(path.join(stage, 'src', file)), { recursive: true });
     fs.copyFileSync(path.join(root, 'src', file), path.join(stage, 'src', file));
   }
   fs.mkdirSync(path.join(stage, "assets"));

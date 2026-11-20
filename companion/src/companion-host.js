@@ -8,6 +8,8 @@ const { ModuleCatalog } = require("./catalog");
 const { moduleStates } = require("./module-state");
 const { WebAssets } = require("./web-assets");
 const { UiPreferences } = require('./ui-preferences');
+const { HelpGuides } = require('./help-guides');
+const { describe } = require('./integration-summary');
 
 // Application-independent orchestration. Personal services are registered by main.js.
 class CompanionHost {
@@ -21,6 +23,7 @@ class CompanionHost {
       dataDirectory: path.join(this.dataDirectory, "modules"),
       streamerBotUrl: options.streamerBotUrl || "ws://127.0.0.1:8080/"
     });
+    this.helpGuides = new HelpGuides(this.registry, () => this.uiPreferences.read().developerTools);
     this.services = new ServiceRegistry({
       systemCapabilities: options.systemCapabilities || ["windows", "powershell", "embedded-node"],
       configPath: path.join(this.dataDirectory, "services.json")
@@ -36,14 +39,16 @@ class CompanionHost {
       checkCatalog: () => this.catalog.check(),
       installCatalog: (id) => this.installCatalogModule(id),
       publicAssets: (request, response, url) => this.webAssets.handle(request, response, url),
-      uiPreferences: this.uiPreferences
+      uiPreferences: this.uiPreferences,
+      helpGuides: this.helpGuides
     });
     this.webAssets = new WebAssets({ registry: this.registry, dataDirectory: this.dataDirectory, port: () => this.controlApi.port, moduleStates: () => this.moduleState() });
     this.catalog = new ModuleCatalog({
       repository: options.catalogRepository, fetch: options.catalogFetch,
       version: this.version,
       registry: this.registry, directory: path.join(this.dataDirectory, "catalog"),
-      capabilities: () => this.availableCapabilities()
+      capabilities: () => this.availableCapabilities(),
+      integrationStates: () => this.services.moduleStates || new Map()
     });
   }
 
@@ -74,8 +79,10 @@ class CompanionHost {
   async listModules() {
     const status = await this.moduleState();
     const ui = new Map(this.publicInstalledModules(status.states).modules.map((item) => [item.packageId, item]));
-    const manifests = new Map(this.registry.manifests().map((item) => [item.manifest.id, item.manifest]));
-    return { ...status.registry, modules: status.registry.modules.map((item) => ({ ...item, ...status.states.get(item.id), category: manifests.get(item.id)?.ui?.category || 'Other', dependencies: manifests.get(item.id)?.dependencies || {}, ui: ui.get(item.id) || null, hasMedia: ["video", "audio"].includes(manifests.get(item.id)?.media?.kind), mediaKind: manifests.get(item.id)?.media?.kind || "" })) };
+    const installedItems = this.registry.manifests();
+    const manifests = new Map(installedItems.map((item) => [item.manifest.id, item.manifest]));
+    const context = { installed: installedItems, catalog: this.catalog.catalog?.modules || [], states: status.states, version: this.version, capabilities: status.capabilities };
+    return { ...status.registry, modules: status.registry.modules.map((item) => ({ ...item, ...status.states.get(item.id), category: manifests.get(item.id)?.ui?.category || 'Other', dependencies: manifests.get(item.id)?.dependencies || {}, integrationDetails: describe(manifests.get(item.id), context), ui: ui.get(item.id) || null, hasMedia: ["video", "audio"].includes(manifests.get(item.id)?.media?.kind), mediaKind: manifests.get(item.id)?.media?.kind || "" })) };
   }
 
   async listServices() {

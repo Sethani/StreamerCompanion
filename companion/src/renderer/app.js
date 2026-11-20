@@ -5,8 +5,9 @@ history.scrollRestoration = 'manual';
 const $ = selector => document.querySelector(selector), N = CompanionNavigation;
 const labels = { ready: 'Ready', broken: 'Broken', incompatible: 'Incompatible Companion version', 'missing-dependency': 'Missing dependency', 'dependency-unavailable': 'Waiting for dependency', 'streamerbot-required': 'Streamer.bot confirmation needed', 'verification-unavailable': 'Verification unavailable', 'configuration-required': 'Configuration needed' };
 let saved = {}; try { saved = JSON.parse(localStorage.getItem('companion-navigation-v1')) || {}; } catch (_) {}
-const view = { tab: ['installed','catalogue','settings'].includes(saved.tab) ? saved.tab : 'installed', filters: saved.filters || {}, groups: saved.groups || {}, rows: saved.rows || {}, scroll: saved.scroll || {} };
-let initialized = false;
+const helpReader = CompanionHelp.mount(document.getElementById('help-reader'), { index: () => window.companion.helpIndex(), read: id => window.companion.openDocs(id), external: url => window.companion.helpExternal(url) });
+const view = { tab: ['installed','catalogue','help','settings'].includes(saved.tab) ? saved.tab : 'installed', filters: saved.filters || {}, groups: saved.groups || {}, rows: saved.rows || {}, scroll: saved.scroll || {} };
+let initialized = false, developerTools = false;
 let modules = [], services = [], catalog = { modules: [] }, favorites = new Set();
 const rowMaps = { installed: new Map(), catalogue: new Map() }, groupMaps = { installed: new Map(), catalogue: new Map() };
 function persist() { try { localStorage.setItem('companion-navigation-v1', JSON.stringify(view)); } catch (_) {} }
@@ -15,8 +16,8 @@ function text(node, value) { value = String(value || ''); if (node.textContent !
 function feedback(message, error = false) { text($('#feedback'), message); $('#feedback').classList.toggle('error', error); }
 function button(label, handler, secondary = false) { const node = el('button', secondary ? 'secondary' : '', label); node.onclick = async () => { if (node.dataset.busy) return; node.dataset.busy = '1'; node.disabled = true; try { await handler(); } catch (error) { feedback(error.message, true); } finally { delete node.dataset.busy; node.disabled = false; renderLists(); } }; return node; }
 function slot(parent, key, label, handler, visible = true, disabled = false) { let node = [...parent.children].find(n => n.dataset.action === key); if (!node) { node = button(label, () => node.handler()); node.dataset.action = key; parent.append(node); } text(node, label); node.handler = handler; node.hidden = !visible; node.disabled = disabled || Boolean(node.dataset.busy); return node; }
-function selectTab(tab, focus = false) { if (initialized) view.scroll[view.tab] = window.scrollY; view.tab = tab; for (const name of ['installed','catalogue','settings']) { const active = name === tab; $('#panel-' + name).hidden = !active; const node = $('#tab-' + name); node.setAttribute('aria-selected', String(active)); node.tabIndex = active ? 0 : -1; } persist(); if (initialized) requestAnimationFrame(() => window.scrollTo(0, view.scroll[tab] || 0)); if (focus) $('#tab-' + tab).focus(); }
-for (const name of ['installed','catalogue','settings']) { $('#tab-' + name).onclick = () => selectTab(name); $('#tab-' + name).onkeydown = event => { const tabs = ['installed','catalogue','settings'], index = tabs.indexOf(name); let next; if (event.key === 'ArrowRight') next = tabs[(index + 1) % 3]; if (event.key === 'ArrowLeft') next = tabs[(index + 2) % 3]; if (event.key === 'Home') next = tabs[0]; if (event.key === 'End') next = tabs[2]; if (next) { event.preventDefault(); selectTab(next, true); } }; }
+function selectTab(tab, focus = false) { if (initialized) view.scroll[view.tab] = window.scrollY; view.tab = tab; for (const name of ['installed','catalogue','help','settings']) { const active = name === tab; $('#panel-' + name).hidden = !active; const node = $('#tab-' + name); node.setAttribute('aria-selected', String(active)); node.tabIndex = active ? 0 : -1; } persist(); if (tab === 'help') helpReader.refresh(); if (initialized) requestAnimationFrame(() => window.scrollTo(0, view.scroll[tab] || 0)); if (focus) $('#tab-' + tab).focus(); }
+for (const name of ['installed','catalogue','help','settings']) { $('#tab-' + name).onclick = () => selectTab(name); $('#tab-' + name).onkeydown = event => { const tabs = ['installed','catalogue','help','settings'], index = tabs.indexOf(name); let next; if (event.key === 'ArrowRight') next = tabs[(index + 1) % tabs.length]; if (event.key === 'ArrowLeft') next = tabs[(index + tabs.length - 1) % tabs.length]; if (event.key === 'Home') next = tabs[0]; if (event.key === 'End') next = tabs[tabs.length - 1]; if (next) { event.preventDefault(); selectTab(next, true); } }; }
 function createRow(kind, id) {
   const row = el('article', 'module'); row.dataset.moduleId = id;
   const heading = el('div', 'module-heading'), star = button('☆', async () => { const result = await window.companion.setFavorite(id, !favorites.has(id)); favorites = new Set(result.favorites); }); star.classList.add('favorite');
@@ -41,10 +42,9 @@ function updateInstalled(entry, item) {
   slot(quick, 'controls', 'Open controls', () => window.companion.moduleLink(item.id, 'controls'), Boolean(item.ui?.nodeUrl));
   slot(quick, 'start', 'Start', () => serviceAction(s.manifest.id, 'start'), Boolean(s), Boolean(state?.pid) || state?.status === 'running' || !s?.dependencies.ready);
   slot(quick, 'stop', 'Stop', () => serviceAction(s.manifest.id, 'stop'), Boolean(s), !state?.pid);
-  text(entry.info, (item.requiredActions || []).length + ' required Streamer.bot actions' + (item.missingActions?.length ? '; import needed.' : ' verified.') + '\nDependencies: ' + JSON.stringify(item.dependencies || {}));
-  if (item.standalone) text(entry.info, 'Standalone service; not attached to an installed package.');
+  CompanionIntegrations.render(entry, item, services, developerTools);
   slot(actions, 'import', 'Import into Streamer.bot…', async () => { const result = await window.companion.openImport(item.id); feedback(result.operation === 'copied' ? 'Import code copied. In Streamer.bot click Import, paste into Import String, review and import the actions, then refresh Companion.' : 'Drag the selected file into Streamer.bot’s Import String box, review and import, then refresh Companion.'); }, Boolean(item.hasImport));
-  slot(actions, 'docs', 'Documentation', () => window.companion.openDocs(item.id), Boolean(item.hasDocumentation));
+  slot(actions, 'docs', 'Documentation', async () => { selectTab('help'); await helpReader.refresh(); await helpReader.open(item.id); }, Boolean(item.hasDocumentation));
   slot(actions, 'overlay', 'Copy overlay URL', () => window.companion.moduleLink(item.id, 'overlay', true), Boolean(item.ui?.extensionOverlayUrl));
   slot(actions, 'media', item.mediaKind === 'audio' ? 'Import audio' : 'Add media', async () => { const result = await window.companion.importMedia(item.id); if (!result.canceled) feedback('Media copied privately. Refresh media in the module controls.'); }, Boolean(item.hasMedia));
   const links = item.ui?.links || [];
@@ -62,10 +62,11 @@ function updateInstalled(entry, item) {
   }
   if (entry.serviceBody) entry.serviceBody.hidden = !s;
   if (s) {
+    entry.pre.parentElement.hidden = !developerTools; entry.meta.hidden = !developerTools;
     entry.checkbox.checked = s.autoStart;
     const health = [];
     for (const name of ['production', 'shadow', 'endpoint']) if (state[name]) health.push(name + ': ' + (state[name].ready ? 'Ready' : 'Unavailable') + ' :' + state[name].port);
-    health.push('Process: ' + (state.pid || 'None')); text(entry.health, health.join(' · '));
+    if (developerTools) health.push('Process: ' + (state.pid || 'None')); text(entry.health, health.join(' · '));
     text(entry.meta, 'Provides: ' + (s.manifest.provides || []).join(', ') + ' | Required: ' + s.dependencies.required.join(', ') + ' | Optional: ' + s.dependencies.optional.join(', ') + (s.dependencies.missingOptional.length ? ' | Optional unavailable: ' + s.dependencies.missingOptional.join(', ') : ''));
     const follow = entry.pre.scrollHeight - entry.pre.clientHeight - entry.pre.scrollTop < 12, top = entry.pre.scrollTop;
     text(entry.pre, (state.logs || []).map(log => new Date(log.atMs).toLocaleTimeString() + ' [' + log.stream + '] ' + log.line).join('\n') || 'No logs yet.');
@@ -74,7 +75,7 @@ function updateInstalled(entry, item) {
 }
 function updateCatalog(entry, item) {
   text(entry.badges, item.state); text(entry.problem, item.problem || ''); entry.problem.hidden = !item.problem;
-  text(entry.info, 'By ' + item.author + ' · Installed: ' + (item.installedVersion || 'none') + '\nCompanion: ' + item.dependencies.companion + '\nRequired modules: ' + JSON.stringify(item.dependencies.modules) + '\nOptional modules: ' + JSON.stringify(item.dependencies.optionalModules) + '\nFacilities: ' + JSON.stringify(item.dependencies.capabilities) + '\nStreamer.bot: ' + (item.streamerbot.minimumVersion || 'Not specified') + '\nActions: ' + item.streamerbot.requiredActions.join(', '));
+  CompanionIntegrations.render(entry, item, services, developerTools, true);
   slot(entry.quick, 'install', item.installedVersion ? item.updateAvailable ? 'Update' : 'Install dependencies' : 'Install', async () => {
     if (!window.confirm('Download, verify and install: ' + item.installationPlan.map(i => i.name + ' ' + i.version).join(', ') + '? Required dependencies are included.')) return;
     const result = await window.companion.installCatalog(item.id); catalog = result.catalog; await refresh(); feedback('Installed ' + result.installed.map(i => i.name + ' ' + i.version).join(', ') + '.');
@@ -82,6 +83,7 @@ function updateCatalog(entry, item) {
 }
 function renderList(kind, items) {
   const list = kind === 'installed' ? $('#modules') : $('#catalog'), query = $('#' + kind + '-search').value;
+  items = items.filter(item => developerTools || item.id !== 'update-probe');
   const filtered = N.filter(items, query, $('#' + kind + '-filter').value, favorites, kind === 'catalogue');
   text($('#' + kind + '-count'), filtered.length + ' of ' + items.length + ' modules');
   const activeGroups = new Set(), activeRows = new Set(filtered.map(i => i.id));
@@ -107,18 +109,29 @@ function renderList(kind, items) {
   let empty = list.querySelector('.empty'); if (!empty) { empty = el('p', 'empty'); list.append(empty); } empty.hidden = Boolean(filtered.length); text(empty, items.length ? 'No matching modules. Clear search or change the filter.' : kind === 'installed' ? 'No modules installed. Browse the Catalogue to get started.' : 'No catalogue modules available. Check for updates.');
 }
 function renderLists() {
-  const installed = N.merge(modules, services); renderList('installed', installed); renderList('catalogue', catalog.modules || []);
+  const installed = N.merge(modules, services).filter(item => developerTools || item.id !== 'update-probe'); renderList('installed', installed); renderList('catalogue', catalog.modules || []);
   text($('#attention-count'), installed.filter(N.attention).length ? '(' + installed.filter(N.attention).length + ' need attention)' : '');
-  const updates = (catalog.modules || []).filter(i => i.updateAvailable).length; text($('#update-count'), updates ? '(' + updates + ' updates)' : '');
+  const updates = (catalog.modules || []).filter(i => i.updateAvailable && (developerTools || i.id !== 'update-probe')).length; text($('#update-count'), updates ? '(' + updates + ' updates)' : '');
   $('#autostart-all').checked = services.length > 0 && services.every(s => s.autoStart); $('#autostart-all').indeterminate = services.some(s => s.autoStart) && !services.every(s => s.autoStart);
   text($('#catalog-status'), (catalog.checkedAt ? 'Last checked ' + new Date(catalog.checkedAt).toLocaleString() + '. ' : 'Not checked yet. ') + (catalog.error || 'Updates install only when you choose them.'));
 }
 let refreshing;
 async function refresh() {
   if (refreshing) return refreshing;
-  refreshing = (async () => { const [inventory, serviceList, catalogue, preferences] = await Promise.all([window.companion.refresh(), window.companion.services(), window.companion.catalog(), window.companion.uiPreferences()]); modules = inventory.modules; services = serviceList; catalog = catalogue; favorites = new Set(preferences.favorites); text($('#streamerbot'), inventory.streamerBot.connected ? 'Streamer.bot connected' : 'Streamer.bot unavailable'); $('#streamerbot').className = 'connection ' + (inventory.streamerBot.connected ? 'ok' : 'error'); renderLists(); })().finally(() => { refreshing = null; }); return refreshing;
+  refreshing = (async () => { const [inventory, serviceList, catalogue, preferences] = await Promise.all([window.companion.refresh(), window.companion.services(), window.companion.catalog(), window.companion.uiPreferences()]); modules = inventory.modules; services = serviceList; catalog = catalogue; favorites = new Set(preferences.favorites); applyDeveloperTools(preferences.developerTools === true); text($('#streamerbot'), inventory.streamerBot.connected ? 'Streamer.bot connected' : 'Streamer.bot unavailable'); $('#streamerbot').className = 'connection ' + (inventory.streamerBot.connected ? 'ok' : 'error'); renderLists(); })().finally(() => { refreshing = null; }); return refreshing;
 }
 for (const kind of ['installed','catalogue']) { const filter = $('#' + kind + '-filter'); if ([...filter.options].some(o => o.value === view.filters[kind])) filter.value = view.filters[kind]; filter.onchange = () => { view.filters[kind] = filter.value; persist(); renderLists(); }; $('#' + kind + '-search').oninput = renderLists; $('#' + kind + '-clear').onclick = () => { $('#' + kind + '-search').value = ''; renderLists(); $('#' + kind + '-search').focus(); }; }
+function applyDeveloperTools(enabled) {
+  const changed = developerTools !== enabled; developerTools = enabled;
+  $('#developer-tools').checked = enabled; $('#developer-api').hidden = !enabled;
+  if (changed) helpReader.refresh();
+}
+$('#developer-tools').onchange = async () => {
+  const checkbox = $('#developer-tools'); checkbox.disabled = true;
+  try { const preferences = await window.companion.setDeveloperTools(checkbox.checked); applyDeveloperTools(preferences.developerTools === true); renderLists(); }
+  catch (error) { checkbox.checked = developerTools; feedback(error.message, true); }
+  finally { checkbox.disabled = false; }
+};
 $('#refresh').onclick = () => refresh().catch(error => feedback(error.message, true));
 $('#install').onclick = async () => { try { if (await window.companion.install()) { await refresh(); feedback('Module package installed and checked.'); } } catch (error) { feedback(error.message, true); } };
 $('#catalog-check').onclick = async () => { $('#catalog-check').disabled = true; try { catalog = await window.companion.checkCatalog(); renderLists(); } catch (error) { feedback(error.message, true); } finally { $('#catalog-check').disabled = false; } };

@@ -15,8 +15,8 @@ async function main() {
   let host, websocket;
   try {
     const output = path.join(root, "packages");
-    const catalog = buildModules(["universal-dock", "walk-ons"], { output });
-    const packagePath = path.join(output, "walk-ons-2.1.2.streammodule");
+    const catalog = buildModules(["universal-dock", "walk-ons", "sound-player"], { output });
+    const packagePath = path.join(output, "walk-ons-3.0.2.streammodule");
     const zip = new AdmZip(packagePath);
     const manifest = JSON.parse(zip.readAsText("module.json"));
     const bytes = Buffer.from(zip.readAsText("streamerbot/walk-ons.sb"), "base64");
@@ -26,11 +26,11 @@ async function main() {
     assert.deepEqual(actions.map((action) => action.name), manifest.streamerbot.requiredActions);
     assert.equal(actions.length, 16);
     assert.equal(manifest.media.kind, "audio");
-    assert.deepEqual(manifest.ui.overlays, ["walkonsound"]);
+    assert.deepEqual(manifest.ui.overlays, []);
     assert.equal(manifest.service, undefined);
     assert.equal(manifest.dependencies.modules["universal-dock"], "^1.1.1");
-    assert.equal(manifest.dependencies.optionalModules.video, "^2.2.0");
-    assert.deepEqual(manifest.ui.transports, [{ feature: "walkonSound", stateKey: "portable.walkonSound.state", actionPrefix: "Walk-on Sound" }]);
+    assert.equal(manifest.dependencies.optionalModules.video, "^2.3.0");
+    assert.deepEqual(manifest.ui.transports, undefined);
 
     const expected = {
       "Walk Ons - Engine": "1c5845b8-8d8f-4925-9574-8ded37c47a57",
@@ -66,11 +66,10 @@ async function main() {
     const audioSource = Buffer.from(actions.find((action) => action.name === "Walk-on Sound - Engine").subActions[0].byteCode, "base64").toString();
     assert.ok(rosterSource.includes("portable.walkOns.state"));
     assert.ok(rosterSource.includes("CPH.RunAction(\"Video - Play\""));
-    assert.ok(rosterSource.includes("CPH.RunAction(\"Walk-on Sound - Play\""));
+    assert.ok(rosterSource.includes("CPH.RunAction(\"Sound Player - Play Assigned\""));
     assert.ok(rosterSource.includes("lastAcceptedRequestId"), "Playback acceptance must be read from persisted state");
-    assert.ok(audioSource.includes("/api/public/media/walk-ons/"));
-    assert.ok(audioSource.includes("uri.Port == 3135"));
-    assert.ok(audioSource.includes("uri.Port == 7474"), "Legacy sound links stay valid until explicitly relinked");
+    assert.ok(audioSource.includes("Sound Player - "));
+    assert.equal(audioSource.includes("SetGlobalVar"), false, "Compatibility forwarder cannot own playback state");
     const archiveText = zip.getEntries().filter((entry) => !entry.isDirectory).map((entry) => entry.getData().toString()).join("\n");
     assert.equal(/sethiduck|ben colijn|onedrive|users[\\/]laptop|lucifer|divinity|hidan/i.test(archiveText), false);
     assert.equal(zip.getEntries().some((entry) => /\.(mp3|wav|ogg|m4a)$/i.test(entry.entryName)), false, "Private audio must not be packaged");
@@ -88,26 +87,27 @@ async function main() {
       socket.send(JSON.stringify({ id: request.id, status: "ok", ...response }));
     }));
     const reservation = http.createServer(); reservation.listen(0, "127.0.0.1"); await once(reservation, "listening"); const port = reservation.address().port; await new Promise((resolve) => reservation.close(resolve));
-    host = new CompanionHost({ version: "1.3.1", dataDirectory: path.join(root, "data"), controlApiPort: port, streamerBotUrl: "ws://127.0.0.1:" + websocket.address().port + "/", catalogFetch: async (url) => {
+    host = new CompanionHost({ version: require('../package.json').version, dataDirectory: path.join(root, "data"), controlApiPort: port, streamerBotUrl: "ws://127.0.0.1:" + websocket.address().port + "/", catalogFetch: async (url) => {
       const item = catalog.modules.find((entry) => entry.package.url === url); if (!item) throw new Error("External request blocked in test.");
       return new Response(fs.readFileSync(path.join(output, path.basename(new URL(url).pathname))));
     } });
     host.catalog.catalog = catalog; host.start(); await once(host.controlApi.server, "listening");
     await host.installCatalogModule("walk-ons");
+    await host.installCatalogModule("sound-player");
     const module = (await host.listModules()).modules.find((item) => item.id === "walk-ons");
     assert.equal(module.state, "ready"); assert.equal(module.hasMedia, true); assert.equal(module.mediaKind, "audio");
     const registration = host.publicInstalledModules().modules.find((item) => item.packageId === "walk-ons");
     assert.ok(registration.nodeUrl.endsWith("/walk-ons/walkons/index.html"));
-    assert.ok(registration.extensionOverlayUrl.endsWith("/walk-ons/overlay/index.html"));
+    assert.equal(registration.extensionOverlayUrl, "");
     assert.equal((await fetch(registration.nodeUrl)).status, 200);
-    assert.equal((await fetch(registration.extensionOverlayUrl)).status, 200);
+    assert.equal((await fetch(new URL("../overlay/index.html", registration.nodeUrl))).status, 200);
     assert.equal((await fetch(new URL("../../universal-dock/shared/streamerbot-transport.js", registration.nodeUrl))).status, 200);
     const synthetic = path.join(root, "synthetic.mp3"); fs.writeFileSync(synthetic, Buffer.from("synthetic-audio"));
     const media = host.webAssets.importMedia("walk-ons", [synthetic]); assert.equal(media.length, 1); assert.equal(media[0].label, "synthetic");
     const fetched = await fetch(media[0].src, { headers: { Range: "bytes=0-8" } });
     assert.equal(fetched.status, 206); assert.equal(fetched.headers.get("content-type"), "audio/mpeg"); assert.equal(await fetched.text(), "synthetic");
     assert.equal(JSON.stringify(host.webAssets.listMedia("walk-ons")).includes(root), false);
-    const upgrade = new AdmZip(packagePath), upgradedManifest = JSON.parse(upgrade.readAsText("module.json")); upgradedManifest.version = "2.1.2"; upgrade.updateFile("module.json", Buffer.from(JSON.stringify(upgradedManifest))); const upgradePath = path.join(root, "upgrade.streammodule"); upgrade.writeZip(upgradePath);
+    const upgrade = new AdmZip(packagePath), upgradedManifest = JSON.parse(upgrade.readAsText("module.json")); upgradedManifest.version = "3.0.3"; upgrade.updateFile("module.json", Buffer.from(JSON.stringify(upgradedManifest))); const upgradePath = path.join(root, "upgrade.streammodule"); upgrade.writeZip(upgradePath);
     await host.installModulePackage(upgradePath); assert.equal(host.webAssets.listMedia("walk-ons")[0].src, media[0].src);
     assert.equal(calls.length, 0, "Install, state checks, and media operations must not execute module actions");
     console.log("Walk Ons package passed: stable legacy identities, private audio boundary, dual transport, browser assets, isolated Ready state, range serving and upgrade preservation.");

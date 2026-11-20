@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "id": "chat-routing",
-  "name": "Chat Routing",
-  "version": "1.0.2",
-  "description": "Shared bot-account chat and reply routing for installed Streamer.bot modules.",
+  "name": "Bot Chat Routing",
+  "version": "1.0.3",
+  "description": "Send Twitch bot messages and replies from installed modules, your own actions or Phone Deck.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -28,7 +28,7 @@
   },
   "ui": {
     "id": "chat-routing",
-    "name": "Chat Routing",
+    "name": "Bot Chat Routing",
     "category": "Chat",
     "order": 1,
     "ownership": "streamerbot",
@@ -77,5 +77,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

@@ -1,42 +1,41 @@
 # Spotify Music
 
-Provides Spotify playback, countdown fading, scene-owned music, `!song`, `!playlist`, and optional automatic now-playing announcements.
+Control Spotify playback and optional scene/countdown music automation. Viewer commands and now-playing announcements use [Bot Chat Routing](../chat-routing/README.md); the playback service does not send chat directly.
 
-## Requirements
+## Connect your account and device
 
-- Companion 1.3.1 or newer.
-- Streamer.bot with its WebSocket server enabled on `127.0.0.1:8080`.
-- A Spotify application and a Spotify account capable of remote playback control.
-- Chat Routing for viewer-facing command responses and announcements.
+1. Use Companion 1.3.1 or newer, Streamer.bot's local WebSocket server and a Spotify application/account with playback-control access. Spotify's [playback API](https://developer.spotify.com/documentation/web-api/reference/start-a-users-playback) requires Premium for start/resume operations.
+2. Install Spotify Music from **Catalogue**. Expand its **Installed** row and choose **Import into Streamer.bot…** for the four supplied actions if missing. Install/import Bot Chat Routing for viewer-facing replies. Existing current imports need no reimport for this guide patch.
+3. **Start** Spotify Music and open **Settings** or **Open controls**, also under Media in [Universal Dock](../universal-dock/README.md). Its local service uses port **3127**.
+4. Enter the application's **Client ID** and **Client secret**. Register the exact displayed **Callback URL** in the Spotify application's redirect URIs. Spotify allows HTTP for explicit loopback IPs, but not localhost redirects; see its [redirect URI requirements](https://developer.spotify.com/documentation/web-api/concepts/redirect_uri).
+5. Press **Save Spotify settings**, then **Authorize Spotify** and complete the browser authorization. A blank Client secret field keeps the saved secret.
+6. Open Spotify on the intended computer/device, **Refresh devices**, choose **Playback device**, then save. Use the active device leaves selection to Spotify's current active device.
+7. Set **Playlist URL, URI, or ID**, Starting volume, Normal volume and Fade duration in seconds. Save before using them in automation.
 
-## Install
+Authorization and device availability are separate checks. **Read current song** reads playback without starting a playlist. A successful API request does not prove the audio is audible in OBS.
 
-1. Install `spotify.streammodule` through Streaming Companion.
-2. Use **Open Streamer.bot import** if Companion reports missing actions.
-3. Start Spotify Music and enable automatic startup if desired.
-4. Open Settings and enter the Spotify application client ID and secret.
-5. Add the displayed callback URL to the Spotify application's allowed redirect URIs.
-6. Save, choose **Authorize Spotify**, and complete authorization.
-7. Open Spotify on the stream computer, refresh devices, choose the device, and save.
-8. Configure the default playlist, volumes, fade duration, scenes, and chat options.
-9. Run the registered current-playback and scene tests before going live.
+## Scene-owned music
 
-## Behaviour
+Under **Scene automation**, enable scene-owned music and **Add scene**. Configure its OBS scene, playlist/volumes/fade and On leaving behavior, then Save Spotify settings. **Autoplay on entering** starts enabled for existing bindings. Turn it off for Starting Soon if you do not want selecting that scene to start music. Guided Stream Launch/countdown playback remains independent.
 
-Configured scenes start music only when playback is not already active. Music is paused on leaving only when the scene session started it. Countdown playback and scene playback share ownership so leaving Starting Soon does not interrupt an active countdown handoff. If playback is manually paused after entering Starting Soon, the later stream-start handoff observes that paused state and starts the configured playlist again before arming the fade.
+A configured scene starts music only if it is not already playing. On leaving, Pause if started here pauses only a session this automation started; Keep playing leaves it alone. Already playing music is preserved on entry.
 
-`!song`, `!playlist`, and automatic announcements are individually optional. Streamer.bot sends all public messages through `Chat - All Platforms`; service errors remain private.
+Scene and countdown requests share ownership so leaving Starting Soon does not interrupt an active countdown handoff. If music is manually paused after scene entry, the later guided launch observes that and can start the configured playlist before arming its fade. Default playlist/device/fade settings remain here; [Stream Launch](../stream-launch/README.md) decides when to request them.
 
-## Data and updates
+## Viewer chat and Phone Deck
 
-Spotify client credentials, refresh tokens, device IDs, playlists, and scene settings are stored in Companion's private `module-data/spotify` directory. They are not included in the module package or exposed by health responses. Module updates replace code without overwriting private configuration.
+Under **Viewer chat**, independently enable !song, !playlist and **Announce each newly playing song**, then save. The imported actions send messages through Chat - All Platforms in Bot Chat Routing. Enabled announcements can send real chat automatically; service errors remain private.
 
-## Optional Phone Deck controls
+[Phone Deck](../phone-deck/README.md) optionally offers Resume playback, Pause playback, Play / pause, Next/Previous, volume controls/presets and playback status. Add cards in its editor; no cards appear automatically. The service must be running and authorized. The phone uses server-side credentials and the saved device; it cannot edit credentials/playlists/scene bindings.
 
-Version 2.0.3 contributes Resume, Pause, Play/pause, Next, Previous, a volume input, volume presets and a playback-status widget. Add cards explicitly using Module action or the module input/widget picker. No cards are added automatically, and Phone Deck is not required to use Spotify Music.
+Manual Resume continues the current Spotify context instead of starting the countdown playlist. Manual Pause/Resume releases the service's scene/countdown ownership and fade. Manual volume cancels the active fade; Next/Previous retain ownership. Saved automation settings stay intact.
 
-The service must be running and authorized. The phone uses the existing device setting and server-side credentials; it cannot change credentials, playlists or scene bindings. Manual Resume continues the current Spotify context instead of starting the configured countdown playlist. Manual Pause/Resume releases the service's current scene/countdown ownership and fade; a manual volume request cancels the active fade. Saved automation settings remain intact. Next/Previous retain the current automation ownership.
+Commands report Requested when Spotify accepts them, with no automatic retry. Status reports track/artist/playback/volume but does not prove audible output. Check the device before retrying an uncertain result.
 
-Commands show **Requested** after Spotify accepts the API request. The widget independently reads playback, track, artist and volume; it does not prove audible output. No automatic mutation retry occurs. The owner stores recent request IDs privately to prevent duplicate dispatch after a lost response or service restart. Its narrow `/api/spotify/phone-deck/` endpoints enforce exact loopback Host/Origin and a session CSRF token. Existing native exports are unchanged; no Streamer.bot reimport is needed for this patch.
+## Troubleshooting, updates and backup
 
-Scene bindings include **Autoplay on entering**, enabled by default for existing bindings. Turn it off for Starting Soon to avoid starting music just by previewing that scene. Guided Stream Launch/countdown music remains independent and still starts at stream launch. Already-playing music is preserved on entry.
+For authorization failures, check application credentials, the exact allowed callback and account access. For a missing device, open Spotify there and refresh devices. For missing chat replies, check the optional chat switches/native imports and Bot Chat Routing. Avoid changing scenes as a diagnostic unless you intend their saved automation to run.
+
+Update between sessions when no fade or scene/countdown ownership needs preserving: package installation restarts this service. It does not overwrite private settings, but in-memory automation ownership is temporary. No Companion rebuild is needed.
+
+Client credentials, refresh tokens, device IDs, playlists and scene preferences are private in `module-data/spotify`. Back up that directory with the service stopped; do not share it. Health responses omit secrets and packages contain no personal data. Restarts should not be used as a playback test.

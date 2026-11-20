@@ -3,6 +3,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const semver = require("semver");
 const { provides } = require("./module-state");
+const { summarize, validateSummary, describe } = require('./integration-summary');
 
 const ID = /^[a-z0-9][a-z0-9-]*$/;
 const MAX_PACKAGE = 100 * 1024 * 1024;
@@ -14,6 +15,7 @@ class ModuleCatalog {
     this.version = options.version;
     this.registry = options.registry;
     this.capabilities = options.capabilities;
+    this.integrationStates = options.integrationStates;
     this.fetch = options.fetch || globalThis.fetch;
     this.directory = options.directory;
     this.cacheFile = path.join(this.directory, "cache.json");
@@ -63,6 +65,7 @@ class ModuleCatalog {
       if (!dependencies.capabilities || typeof dependencies.capabilities !== "object" || Array.isArray(dependencies.capabilities)) throw new Error("Invalid capability map.");
       for (const [capability, requirement] of Object.entries(dependencies.capabilities)) if (!ID.test(capability) || !["required", "optional"].includes(requirement)) throw new Error("Invalid capability dependency.");
       if (!Array.isArray(item.provides) || item.provides.some((value) => typeof value !== "string" || !ID.test(value))) throw new Error("Invalid provided capabilities.");
+      if (item.integrations !== undefined) validateSummary(item.integrations);
       if (!item.streamerbot || !Array.isArray(item.streamerbot.requiredActions) || item.streamerbot.requiredActions.some((value) => typeof value !== "string" || !value.trim())) throw new Error("Streamer.bot action requirements are required.");
     }
     return catalog;
@@ -173,7 +176,8 @@ class ModuleCatalog {
 
   async inventory() {
     const capabilities = await this.capabilities();
-    const installed = new Map(this.registry.manifests().filter((item) => !item.error).map((item) => [item.manifest.id, item.manifest]));
+    const installedItems = this.registry.manifests();
+    const installed = new Map(installedItems.filter((item) => !item.error).map((item) => [item.manifest.id, item.manifest]));
     const modules = (this.catalog?.modules || []).map((item) => {
       const old = installed.get(item.id);
       const updateAvailable = Boolean(old && semver.valid(old.version) && semver.gt(item.version, old.version));
@@ -182,7 +186,8 @@ class ModuleCatalog {
       try { plan = this.resolve(item.id, capabilities); } catch (error) { problem = error.message; }
       if (!problem && !semver.satisfies(this.version, item.dependencies.companion)) problem = "Incompatible Companion version.";
       const unavailable = /Incompatible Companion/.test(problem) ? "Incompatible Companion version" : /Missing|dependency|compatible catalogue/.test(problem) ? "Missing dependency" : "Unavailable";
-      return { ...item, installedVersion: old?.version || null, updateAvailable, problem, installationPlan: plan.map((entry) => ({ id: entry.id, name: entry.name, version: entry.version })), state: problem ? unavailable : !old ? "Available" : updateAvailable ? "Update available" : "Installed" };
+      const integrationDetails = describe(item, { installed: installedItems, catalog: this.catalog.modules, states: this.integrationStates?.() || new Map(), version: this.version, capabilities }, true);
+      return { ...item, integrationDetails, installedVersion: old?.version || null, updateAvailable, problem, installationPlan: plan.map((entry) => ({ id: entry.id, name: entry.name, version: entry.version })), state: problem ? unavailable : !old ? "Available" : updateAvailable ? "Update available" : "Installed" };
     });
     return { repository: this.repository, checkedAt: this.checkedAt, error: this.error, modules };
   }
@@ -200,6 +205,7 @@ class ModuleCatalog {
         const file = path.join(temporary, item.id + ".streammodule");
         fs.writeFileSync(file, bytes);
         const { manifest } = this.registry.inspectPackage(file);
+        if (item.integrations !== undefined && JSON.stringify(summarize(manifest)) !== JSON.stringify(item.integrations)) throw new Error('Package integration summary differs from its catalogue entry: ' + item.id + '.');
         if (manifest.id !== item.id || manifest.version !== item.version || manifest.author !== item.author || manifest.description !== item.description || JSON.stringify(manifest.dependencies) !== JSON.stringify(item.dependencies) || JSON.stringify(provides(manifest)) !== JSON.stringify(item.provides) || JSON.stringify(manifest.streamerbot.requiredActions) !== JSON.stringify(item.streamerbot.requiredActions)) throw new Error("Package metadata differs from its catalogue entry: " + item.id + ".");
         packages.push({ item, file });
       }

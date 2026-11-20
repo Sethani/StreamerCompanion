@@ -1,7 +1,10 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("companion", {
+  helpIndex: () => ipcRenderer.invoke('companion:help-index'),
+  helpExternal: url => ipcRenderer.invoke('companion:help-external', url),
   uiPreferences: () => ipcRenderer.invoke('companion:ui-preferences'),
+  setDeveloperTools: enabled => ipcRenderer.invoke('companion:developer-tools', enabled),
   setFavorite: (id, favorite) => ipcRenderer.invoke('companion:favorite', { id, favorite }),
   moduleLink: (id, target, copy = false) => ipcRenderer.invoke("companion:module-link", { id, target, copy }),
   importMedia: (id) => ipcRenderer.invoke("companion:import-media", id),

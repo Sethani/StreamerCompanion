@@ -1,15 +1,42 @@
 # Audio Routing
 
-Audio Routing 2.0.1 packages the established OBS source classifications and dock controls. Install in Companion and import its six Streamer.bot actions. Open Audio in Universal Dock. No audience overlay, child service or Companion rebuild is required. The existing default OBS connection in Streamer.bot supplies inventory and track operations.
+Choose which OBS audio sources reach the live stream and the VOD. Save a routing plan, apply it when ready, and switch game audio's VOD inclusion from the dock or Phone Deck.
 
-2.0.1 adds optional Phone Deck toggle/status declarations. The toggle uses the existing native owner and its persisted matching request acknowledgement; partial routing is reported as partial completion. It preserves classifications and the complete six-track routing rules. This metadata-only update has identical native export data to 2.0.0, so existing installations need no native reimport. Phone Deck is optional and no cards are added automatically.
+## Set up
 
-Existing action IDs and `portable.audioRouting.config` / `portable.audioRouting.state` are retained. Configuration stays version 2. New installations start with an empty source map and game audio enabled for VOD; upgrades never seed personal source names or overwrite saved mappings. Exact source names, including case, are significant. Missing sources retain their classifications.
+1. Connect Streamer.bot to OBS using its default OBS connection. Open **Help → Getting Started** in Companion for the shared setup.
+2. Install Audio Routing from **Catalogue**. Expand its **Installed** row and choose **Import into Streamer.bot…** to import the six supplied actions. Back up Streamer.bot before replacing imported actions.
+3. Choose **Open controls**, or select **Audio Routing** in [Universal Dock](../universal-dock/README.md).
+4. Press **Refresh** to read the available OBS sources. For each source you want managed, choose a classification below.
+5. Review **Routing Plan** and **Game audio goes to VOD**. Press **Save** to store choices, or **Apply to OBS** to save and change OBS routing.
 
-Save persists choices without changing OBS. Apply saves the draft and writes only available, eligible managed inputs. Live only uses track 1; Live + VOD uses 1 and 2; Game toggle uses 1 and optionally 2 according to the saved checkbox. These are complete six-track masks: managed routing turns tracks 3–6 off. Unmanaged/missing inputs, mute, volume, monitoring and OBS output profile settings are preserved. Initialize, Refresh and reconnect handling never apply tracks.
+No additional service or audience browser source is needed. New installations start without managed sources; updates retain your saved mappings. Source names must match exactly, including case.
 
-The existing Toggle action immediately flips the saved game preference and applies the entire managed routing plan. The dock checkbox is a draft until Save or Apply. The private Phone Deck compatibility bridge uses the same native action/state, without maintaining another routing map. The full Phone Deck migration is separate.
+| Classification | Applied tracks |
+| --- | --- |
+| Unmanaged | Leaves the source's existing tracks alone |
+| Live only | Track 1 |
+| Live + VOD | Tracks 1 and 2 |
+| Game toggle | Track 1, plus track 2 when Game audio goes to VOD is checked |
 
-Configure calls retain `configJson` for Save/Apply and `audioRoutingMode` on Engine. An optional `requestId` is acknowledged as `lastRequestId` only with a persisted terminal `operation`; dispatch alone is not success. OBS request errors and verified per-source readback failures appear in results; missing inputs are skipped. Partial/unknown outcomes are not retried automatically. Refresh before retrying after a timeout. Removing the module does not delete Streamer.bot globals.
+Applying a managed classification writes a complete six-track mask, turning tracks 3–6 off for that source. Check that this fits any separate recording tracks you use. The module preserves mute, volume, monitoring and OBS output profile settings; configure OBS's stream/VOD output tracks separately.
 
-Private classifications, device IDs, capture targets, credentials and OBS snapshots are not included in the package. The installer handoff backs up data, removes only the duplicate legacy shared-initializer call and makes the old Node endpoints delegate to Streamer.bot. Phone pairing/cards/certificates remain in place. First-party code: Sethani, MIT.
+## Everyday use
+
+**Save** stores the draft without changing OBS. **Apply to OBS** saves it and applies the managed plan to available eligible inputs. **Refresh** reads OBS; startup and reconnect handling do not apply routing.
+
+The **Game audio goes to VOD** checkbox remains a draft until Save or Apply to OBS. The imported **Audio Routing - Toggle** action instead flips the saved preference and immediately applies the entire managed routing plan.
+
+Missing sources remain under **Configured but unavailable**, retaining their classification for when they return. Unmanaged and unavailable sources are skipped during Apply.
+
+## Phone Deck
+
+[Phone Deck](../phone-deck/README.md) optionally provides **Toggle game audio VOD** and **Audio routing status**. Add them in the deck editor; no cards are created automatically. The toggle requires OBS to be available and uses the same saved routing plan as the dock. Check its completion status: partial application is reported as partial completion.
+
+## Troubleshooting and backup
+
+If Streamer.bot is disconnected, reconnect it before saving or applying. If OBS is unavailable, check Streamer.bot's default OBS connection and Refresh. After a timeout or partial result, inspect OBS and refresh before explicitly retrying; uncertain writes are not retried automatically.
+
+Saved source mappings live in Streamer.bot and survive module removal. Keep them in your private Streamer.bot backup with your phone settings. Do not include private source mappings in shared exports.
+
+First-party code: Sethani, MIT.

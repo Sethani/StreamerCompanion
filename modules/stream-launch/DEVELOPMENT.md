@@ -1,0 +1,17 @@
+# stream-launch developer notes
+
+## Implementation and migration reference
+
+The complete native export is identical to 1.0.0 after version metadata is excluded. Existing imported actions, globals, startup/fallback registrations and private settings remain authoritative; this metadata-only update needs no native reimport/restart or Companion rebuild.
+
+Keep **Stream - Announce and Bookkeeping** (or your chosen action) private in Streamer.bot. Its broadcaster lookup, Discord webhook, shoutout/session globals, Walk Ons engine reset and reward rename remain native, with their existing identities and configuration. The inspected private follow-up and Walk Ons reset engine have no personal HTTP dependency. No private hook is packaged or replaced. Disable the follow-up switch if you have no such action; when enabled, a missing action blocks launch before effects. A successful dispatch means requested, not proof that a remote webhook/reward update was delivered.
+
+The old HTTP report and Spotify fallback on the personal server are removed. Other unmigrated features and old dock routes still need their own migrations before shutting down the server. Existing named/language timers, manual Countdown pause/clear behavior and independent Spotify clock semantics are unchanged; this is not a new global timeline/pause controller.
+
+Automated tests use the actual C# against recording OBS/action/HTTP adapters and run Spotify only in its explicit test mode with temporary configuration/ports. They do not start a real stream, contact Spotify, send chat/webhooks, mutate rewards or change installed data. Real Go Live acceptance is an operator step when intending to stream. Keep backups of your existing actions/globals and retain the previous module package for rollback; importing this package replaces only its six action definitions.
+
+The native Twitch-online trigger is attached to Stream - Online Fallback. Existing GoingLive is deliberately not exported/overwritten: its original call to the same fallback ID and private walk-on reset remain. Both routes share a busy guard and the existing 30-minute persisted handled timestamp. Fallback requires enabled settings and an already-active OBS stream; it never selects a scene or starts streaming. Initialization/health never replay a launch or announcement after restart. Unknown engine modes are inert.
+
+Manual launch selects and verifies the scene, starts Countdown, requests OBS streaming and waits up to 15 seconds for confirmation. Only then does it request enabled Spotify playback/fading and dispatch the private follow-up. Spotify receives the remaining Countdown seconds, so its already-owned fade clock replaces the personal server's clock. Playlist/device/volume/fade settings remain in Spotify Music; this package does not copy or change its credentials/settings. Existing scene-owned music sessions are shared by Spotify rather than unnecessarily restarted.
+
+Install from the catalogue and explicitly import the six actions. The four existing Stream - Launch Engine / Configure Launch / Launch / Online Fallback action IDs and portable.streamLaunch.* configuration/state/handled globals are preserved. Unknown saved configuration fields are retained. New profiles start disabled with an empty scene and no follow-up/fallback automation. Existing launch configuration retains its duration, text and scene; missing new switches migrate to the former enabled Spotify/follow-up/fallback behavior. Review them after import.
