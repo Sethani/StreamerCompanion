@@ -82,3 +82,9 @@ The old server is stopped; retain its private data and explicit rollback for def
 November 13 reliability repairs are published/installed in Companion 1.3.2, with Spotify 2.0.4, Dock 1.1.2, Overlay 1.0.1 and Phone Deck 2.0.3. [Repair and verification record](startup-reliability-repair.md). The current feature count is 24/24; all twelve Phone Deck sessions, Avatar and Local AI handoffs are complete.
 
 Phone Deck 2.0.4 is published and installed with event-fed OBS state, scoped structural reads and slower reconciliation; [release/adoption verification](obs-websocket-traffic.md). Pairing/TLS/layout/preferences and OBS state were preserved, with no new native import or app rebuild. Feature count is 24/24; Avatar is operator-accepted and Local AI handoff is verified. Required modern cutover and legacy-settings import cleanup are complete; deferred data and rollback remain private.
+
+## November 20, 2026 — Polish releases published
+
+Companion [v1.4.1-preview.1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.4.1-preview.1) and all29 independent module updates are published from CI-passed merge f6e80c64d5354ccbebfa53aa1e7270a365865514. App packaged desktop acceptance passed; official app/module downloads and checksums, all29 catalogue versions/source refs and preservation of existing entries were verified. See [release record](polish-release-candidate.md) and [polish checklist](mvp-usability-polish-checklist.md).
+
+Publication did not install or restart anything in the running setup. Universal Dock1.1.4 requires Companion>=1.4.1; Sound Player/Walk Ons retain their separately reviewed functional import/ownership plan. Archive rollback to a pre-schema2 module requires its compatible database backup. Existing source URLs, private settings, phone pairing/cards and Widgets ownership remain unchanged. Production adoption remains a separate backed-up operation; do not rerun historical one-shot adoption helpers.

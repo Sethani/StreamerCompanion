@@ -1,6 +1,10 @@
-# Polish release candidate — updated November 20, 2026
+# Polish release record — November 20, 2026
 
-This is a reviewable proposal, not a published release. The planned fresh-user walkthrough is accepted November20, combining isolated packaged setup and operator menu confirmation; simulated platform operations remain explicitly distinguished. The operator approved source commit/push; [draft PR #1](https://github.com/Sethani/StreamerCompanion/pull/1) is open for Windows/Linux CI and review. No merge, remote release, production installation or app restart was performed during this release preparation.
+**Published:** [Companion v1.4.1-preview.1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.4.1-preview.1) and all29 independent module updates, with operator approval. PR #1 is merged; every release uses **f6e80c64d5354ccbebfa53aa1e7270a365865514**, which passed main Windows/Linux CI. The app release workflow also passed packaged desktop acceptance. No production installation or restart was performed during publication.
+
+Actual app ZIP SHA256: **ec0aff841953cedff02fe32f62a1962c3f15fa6cc532ec419c7dbba1f4f0905f**. Published ASAR: **c85a1216d5236e494fd5122ab8e4d2ece2da812fa3c943b76a2f05dff1a261fd**. Official checksum and downloaded ZIP verified; all25 shipped first-party host source files match approved source after line-ending normalization. All29 module downloads match the prepared r5 package hashes and official checksums; the final29-entry [catalogue](https://github.com/Sethani/StreamerCompanion-Modules/blob/main/catalog/modules.json) contains the expected versions and full source provenance, with existing entries preserved.
+
+The sections below retain prepublication proposal/build evidence. Local candidate ZIP/ASAR hashes differ from the CI-built published app and must not be substituted for its official checksums. Planned fresh-user acceptance combines isolated packaged setup and operator menu confirmation; simulated platform operations remain distinguished. Production adoption is a separate step.
 
 ## Proposed release
 
@@ -10,7 +14,7 @@ The standalone candidate ASAR is byte-identical to the already tested1.4.1 host:
 
 The independent module set has28 updates and the first public Sound Player package. Each proposed module tag is absent from the distribution repository's tag refs as checked November18; all existing module versions advance the current public catalogue version. Publish through each module's independent workflow, never by replacing existing release bytes.
 
-| Module ID | Current public version | Candidate |
+| Module ID | Previous public version | Published November20 |
 | --- | --- | --- |
 | archipelago | 1.0.10 | 1.0.12 |
 | audio-routing | 2.0.1 | 2.0.2 |
@@ -64,6 +68,8 @@ The246 reviewed implementation files are committed as **88d7eae3028e30f5fe86c8e4
 - Release notes now describe Help, guides, integrations, independent chat settings and the separate Sound/Walk Ons adoption path. Named Raffles and personal checklist/Wheel results are explicitly excluded as planned work.
 
 ## Remaining gates
+
+**Publication status:** steps1–4 below are complete: acceptance/review, approved merge, passing main CI, app plus29module publications and actual-download/catalogue verification. Step5 remains the separate production adoption gate. Earlier proposed tags/source/CI wording elsewhere in this record is historical. App workflow run44729580575 succeeded; individual module workflow/source/checksum provenance is available through their releases and catalogue.
 
 1. The installed Streamer.bot1.0.7 command/reward/subscription menu walkthrough passed November20. Immediate native caller propagation was already proven and temporary actions deleted; do not rerun that probe. Archive/Pokémon human repair checks are also accepted.
 2. Final publication-scope and packaging audit results are recorded below. The planned fresh-user walkthrough passed: empty-profile packaged installation/Help/import-copy/dependency/status/URL controls, plus operator-confirmed native and OBS menus. Catalogue delivery and native import outcomes were simulated; this is not a claim of exhaustive live platform configuration or viewer-effect testing.
