@@ -1,6 +1,6 @@
 # Polish release candidate — updated November 20, 2026
 
-This is a reviewable local proposal, not a published release or a completed human walkthrough. No commit, push, remote draft release, production installation or app restart was performed during this preparation.
+This is a reviewable proposal, not a published release or a completed fresh-user walkthrough. The operator approved the reviewed source commit/push November20; [draft PR #1](https://github.com/Sethani/StreamerCompanion/pull/1) is open for Windows/Linux CI and review. No merge, remote release, production installation or app restart was performed during this release preparation.
 
 ## Proposed release
 
@@ -52,7 +52,7 @@ Universal Dock1.1.4 corrects its minimum Companion version to **>=1.4.1**, becau
 - Standalone tested app: companion/out/build-SpSU14/packages/Streamer Companion Preview-win32-x64
 - Module hashes are recorded in the adjacent generated SHA256SUMS; published CI artifacts must have their own verified checksums. A local candidate is not a promise that a fresh CI ZIP has the same timestamps or hash.
 
-Source is still uncommitted over2b9889c443c5568b8ca9ea18ee5a461e7109d062. That base SHA does **not** identify this candidate. Capture the approved changes in a new source commit and obtain Windows/Linux source CI before publishing; module workflows require its full40-character SHA. Preserve the unrelated/local worktree and do not bulk-stage it.
+The246 reviewed implementation files are committed as **88d7eae3028e30f5fe86c8e42599ab0ad620db7d** over2b9889c443c5568b8ca9ea18ee5a461e7109d062 on **review/usability-polish-2026-11-20**, with operator approval. [Draft PR #1](https://github.com/Sethani/StreamerCompanion/pull/1) records any later checkpoint changes and their CI results. Confirm the exact full40-character CI-passed source SHA before publishing; module workflows require that full SHA. The old base alone does **not** identify this candidate. Only the hash-reviewed file list was staged.
 
 ## Verification completed
 
@@ -67,7 +67,7 @@ Source is still uncommitted over2b9889c443c5568b8ca9ea18ee5a461e7109d062. That b
 
 1. The installed Streamer.bot1.0.7 command/reward/subscription menu walkthrough passed November20. Immediate native caller propagation was already proven and temporary actions deleted; do not rerun that probe. Archive/Pokémon human repair checks are also accepted.
 2. Final publication-scope and packaging audit results are recorded below. Complete any broader fresh-user setup checks still recorded in the working checklist; the scoped menu review does not certify every fresh-user scenario.
-3. Obtain approval for the concrete commit/push/release scope, record the new source SHA and await source CI. This document does not itself authorize publishing.
+3. Commit/push approval was received and the reviewed source is in draft PR #1. Await passing Windows/Linux CI on the exact selected source SHA; merge/release approval remains separate. This document does not itself authorize publishing.
 4. Publish the app and independent module releases, then verify downloaded checksums and catalogue entries. Recheck tag availability immediately before doing so.
 5. Any later production cutover must use fresh backups, a consistent archive backup, advance restart notice and Widgets' acknowledged ownership-release procedure where applicable. No timeout-based owner takeover, URL rewrite, auto-created phone card or real viewer-effect test is implied.
 
@@ -94,4 +94,4 @@ Reviewed the accumulated public scope against the recorded base, focusing on Hel
 - Verified all25 packaged first-party host source files against current source, plus the recorded app ASAR and ZIP hashes. No host/package rebuild or production restart was needed for this review.
 - Found and fixed a CI coverage gap: the Windows native-engine entry point now also invokes the separate Sound Player native test. The complete entry point passed locally using synthetic effects only. This changes CI coverage, not shipped app/module bytes.
 
-The full current `npm run check` source suite passed locally on Windows with Node24.13.1. Remote Windows/Linux CI (configured for Node22) has not run for these uncommitted changes. A reviewed commit/push scope and its full source SHA are required before claiming those CI gates passed. No publication or production mutation was performed by this final review.
+The full current `npm run check` source suite passed locally on Windows with Node24.13.1. Remote Windows/Linux CI (configured for Node22) was requested through draft PR #1 after the reviewed commit/push; inspect the PR's latest checks for current outcomes. Local success is not a substitute for those checks. No publication or production mutation was performed by this review.
