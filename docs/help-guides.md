@@ -1,0 +1,13 @@
+# Packaged Help guides
+
+The module manifest's `documentation` entry remains the user-facing guide. It should cover setup, operation, limitations, notices, troubleshooting and ordinary backup advice. Help reads the installed package independently of service readiness or the Streamer.bot connection.
+
+An optional `developerDocumentation` entry declares a separate Markdown file, such as `DEVELOPMENT.md`. Put compiler, fixture, extraction and internal migration notes there. The module builder includes only that explicitly declared extra guide; it does not copy arbitrary documentation trees. The installer validates the path and requires the declared file to exist. Older packages without this field continue to work.
+
+In Companion Settings, **Developer tools** defaults off, including when upgrading old preference files. Enabling it exposes Update Probe, engineering guides, API controls and service logs. The preference changes presentation only; it does not install, import, start, stop or dispatch anything, and does not alter saved favorites or service automatic-start choices. Normal connection checks, previews and user-facing module tests remain accessible. API authentication and service permissions still apply independently of this preference.
+
+Desktop IPC and same-origin read-only loopback `/api/help/` routes use the same resolver. Guide IDs are package IDs; engineering guides use `developer:<package-id>` and are rejected while Developer tools is off. Callers cannot substitute filesystem paths or enable engineering access using query parameters. The resolver rejects symlink/junction escapes and reads only the declared entry points. Native exports and private module data are not Help assets.
+
+The shared reader builds a limited Markdown vocabulary with text nodes: headings, paragraphs, lists, tables, code, declared-guide links and explicit HTTPS links. It never executes raw HTML or automatically loads remote images. Links to arbitrary repository files stay unavailable. Engineering guides are removed from the index and an open engineering page is cleared when the setting is disabled. Unchanged Help polling preserves focus and controls remain mounted in Universal Dock.
+
+Verify changes with `node companion/scripts/test-help.js`, `node companion/scripts/test-developer-tools.js`, and `node companion/scripts/test-help-browser.js` against a freshly packaged app. All browser tests use disposable profiles and isolated ports. Coordinate the host release and Universal Dock's minimum host requirement before publishing Help changes; local development builds are not immutable releases.

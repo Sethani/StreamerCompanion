@@ -1,71 +1,52 @@
 # Archipelago
 
-## Optional Phone Deck controls (1.0.10)
+Show selected Archipelago players' progress, logic and recent activity on stream. Choose rooms and slots reported by Archipelago Controller; Companion remembers display choices separately for each room.
 
-Show/Hide changes only this module's overlay-enabled preference, preserving the selected room, per-slot Percentage/Logic choices, name hiding, filters and saved profiles. Source Modules scene rules still apply. Refresh selected room and confirmed Wake selected room reuse the existing Controller room actions and credentials; disconnected/unconfigured or unsupported actions stay unavailable. No calculation-management controls, slot editing or simulated item sends are exposed. Status reports the saved selection, Controller availability and room-online flag.
+## Before you start
 
-The phone uses a narrow private loopback API with exact Host/Origin checks, scoped CSRF tokens and persisted request intents. Credentials, broker/room identifiers, slot/player data and event history are not returned. Queued requests recheck room/generation context before dispatch. Commands report Requested; unknown outcomes never retry automatically. No Companion/Phone Deck rebuild or Streamer.bot import is needed. Catalogue update restarts this module's service; existing data and automatic-start preferences remain owned by Companion. No cards are added automatically.
+Use Companion 1.3.1 or newer and Archipelago Controller with Room data API 2.2 running locally. The default Controller address is `http://127.0.0.1:38283/api/controller/v2`. Expose the rooms you want in Controller. Controller owns the game connection and calculations; this module needs no Streamer.bot import or local logic worker.
 
-Choose a Controller room from a dropdown, check the reported game slots and save the display. Companion remembers each room's selection by team/slot identity. One stable OBS URL follows the saved room and slot choices.
+## Set up your display
 
-## Requirements and installation
+1. Install Archipelago from **Catalogue**. In **Installed**, expand its row and **Start** the service, then open **Settings**. Universal Dock is installed as a dependency.
+2. Under **Available rooms**, choose your room. Use **Reload rooms** if it is missing.
+3. Under **Slots**, check **Include** for the players you want, or use **Select all**. Choose **Percentage** and **Logic** independently for each included slot.
+4. Under **On stream**, choose Progress, Goals, Logic, Activity and Player names as needed. Check **Enable this overlay**, then **Save display**. A fresh installation displays nothing until configured.
+5. If you use [Universal Overlay](../universal-overlay/README.md), reuse that shared OBS source. In [Overlay Visibility](../source-modules/README.md), allow Archipelago in the intended scenes.
 
-- Companion **1.3.1 or newer**, with its embedded Node runtime. Universal Dock is installed as a dependency.
-- Archipelago Controller's **Room data API 2.2** running locally; default `http://127.0.0.1:38283/api/controller/v2`. Expose the desired rooms in Controller.
-- No Streamer.bot import, direct AP connection, tracker scraping, APWorld installation or local logic worker is part of this module. Controller owns those operations.
+For an advanced separate source, use the renderer address shown in Settings (default `http://127.0.0.1:3141/overlay`). Direct use does not need Universal Overlay or Overlay Visibility. Disable any old Archipelago renderer before showing the replacement. Keep Companion, the Archipelago service and Controller running.
 
-Install the module through the catalogue, start its service explicitly, and open Settings. Choose a room, check its slots (or Select all), choose progress/goals/logic/activity and enable the overlay. Press **Save display**. A new installation displays nothing until configured. Existing service automatic-start preferences are handled by Companion.
+## Everyday use
 
-Use the existing combined OBS source; no additional browser source is needed. The renderer URL in Settings is available for diagnostics or an advanced direct-source setup. The default is `http://127.0.0.1:3141/overlay`; no room ID, credentials or player names belong in the URL. Keep Companion, this service and Controller running. The transparent overlay renders the selected slots and recent selected activity. Its own preview uses the same saved configuration.
+**Save display** saves the current room's selections and display options. Returning to a room restores its choices. A new room generation requires a fresh slot selection so old slot IDs cannot display different players accidentally.
 
-Each included slot has independent **Percentage** and **Logic** checkboxes. **Hide logic for games at 100% checks** removes their logic results without hiding percentage or activity; completion uses reported checks, including released games that reach 100%. **Show BK games** controls fresh zero-check logic results; unavailable analysis is not treated as BK. These preferences are remembered per room. They control display only and do not cancel or prevent Controller calculations.
+**Enable overlay** / **Disable overlay** at the top saves immediately, even if Controller is offline, and retains your room choices and unsaved form edits. Disable also clears a live test. Scene routing still applies separately.
 
-The percentage strip sorts from highest to lowest, preserving the reported order for ties. The overlay preserves the legacy cyan summary strips and colored fading event stack at the bottom left of a fully transparent canvas and panel. All permitted selected slots share continuous progress and logic strips; there are no timed pages or alternating views. Polling preserves existing nodes and animation timelines.
+**Hide logic for games at 100% checks** hides completed games' logic without hiding their percentage or activity. **Show BK games** includes fresh logic results with no available checks. Neither option starts or cancels Controller calculations. Unavailable or stale analysis is labelled rather than counted as zero.
 
-Universal Overlay and Source Modules are optional. If using them, enable Archipelago in Source Modules for the intended scenes. Direct OBS use needs neither optional module. Before cutover, disable the old Archipelago renderer; do not run both renderers for the same feature. This package never edits OBS profiles, imports old secrets or switches the live setup automatically.
+SlotLock filtering starts enabled. Locked, unknown or unsynchronized slots stay hidden when the corresponding filter is on; rooms reporting no SlotLock restriction display normally. Activity involving a locked or unknown participant is also hidden when activity filtering is enabled. Only included game slots contribute to the display.
 
-Use **Test incoming item on live overlay** to show a marked synthetic item on the actual OBS URL for 15 seconds. Enable/save the overlay first. This explicit test works even when normal activity is hidden or SlotLock is pending, uses only sample identities, and does not change filters or room data. **Clear live test** removes it immediately. Only one test is held in process memory; it expires and is never replayed after restart. No Controller request or game item is sent.
+## Test the appearance
 
-Use **Test incoming item (preview)** to open a separate, clearly labeled synthetic item notification with a replay button. It uses the same renderer without fetching room data, sending items, calling Controller or changing the live overlay. This tests presentation, not actual broker event delivery.
+**Test incoming item (preview)** opens a separate synthetic notification with a replay button. It does not affect the live overlay, fetch room data or send game items.
 
-## Less typing, explicit controls
+**Test incoming item on live overlay** shows a marked sample on the actual OBS display for 15 seconds. Enable and save the overlay first; this test can appear even with normal activity hidden or SlotLock pending. **Clear live test** removes it immediately. It sends no game item or Controller request and is never replayed after restart.
 
-Rooms and player/game names come from Controller. No server address, room password or player name needs to be entered per room. Each room's saved checkboxes and display options are restored when switching back. A new generation of a saved room clears its selected slots and asks for a new selection, preventing old slot IDs from accidentally displaying a different seed's players. Missing slots stay stored but are not displayed until reported again.
+## Optional room actions and Phone Deck
 
-Progress, goals and logic display only selected game slots. SlotLock controllers themselves are excluded. Filtering defaults on: locked, missing or unsynchronized lock state is hidden, while a room explicitly reporting no SlotLock works normally. Activity involving any locked/unknown participant is hidden when activity filtering is enabled; identities are resolved by team/slot, not names. Filters can be changed explicitly per room.
+For **Refresh room**, **Wake room** or **Recalculate selected slots**, open **Connection settings**, paste the Controller API key (or **Choose API key file**) and **Save connection**. Passive local reads normally need no key. Wake and Recalculate require confirmation. Configure the appropriate YAML templates in Controller before recalculating. A starting response does not confirm a room has finished waking; some Controller builds require their Rooms screen open.
 
-Only fresh Ready analysis provides logic counts; unavailable/stale analysis is labeled accordingly. When Controller supplies `countAvailability`, only counts explicitly marked available are displayed. Older results without these flags retain the `glitchedSupported: true` check. Unavailable zero placeholders are never treated as BK. Go mode remains absent when unsupported/unknown. Checked sphere data is not treated as reachability. Display data is read from Controller, not recalculated by Companion.
+The key stays in private module data and never belongs in the overlay URL. Only loopback HTTP Controller addresses are supported. Changing the address clears the old key unless you supply a replacement.
 
-An explicit `not_governed` SlotLock target is permitted when its component is ready, fresh and synchronized. Unknown, stale or unsynchronized lock data keeps the existing filter behavior.
+[Phone Deck](../phone-deck/README.md) optionally offers Show/Hide, Refresh selected room, confirmed Wake selected room and status. Add the controls you want in its editor; no cards appear automatically. Show/Hide preserves room selections and scene rules. Room actions need the same connection/key as Settings. Commands report Requested: check status before retrying. The handset receives no credentials, player details or event history. Slot editing and recalculation remain in the local controls.
 
-## API key and room actions
+## If something looks wrong
 
-Local passive reads normally need no key. For **Refresh room**, **Wake room**, or **Recalculate selected slots**, open Connection settings and paste the Controller API key or choose a small text file containing it, then Save connection. The key is stored only in private module `auth.json`, never in browser responses, module packages, OBS URLs, exported settings or logs. Changing the broker address clears the previously saved key unless a replacement is explicitly supplied. Only loopback HTTP broker addresses are supported; redirects are refused.
+- **No rooms:** check Controller and the address in Connection settings, then Reload rooms.
+- **Nothing visible:** check the service, saved room, included slots, overlay enable switch and scene routing. SlotLock or stale analysis can legitimately hide results.
+- **Controller unavailable:** settings are retained while the display waits. Progress can remain available when an individual slot or activity read fails. A disconnected renderer hides after at most ten seconds.
+- **Room action failed:** inspect Controller's analysis details and the reported partial result before trying again. Mutating requests are not automatically retried.
 
-Wake and Recalculate ask for confirmation and never run from startup, room selection, overlay loading or polling. Recalculate sends one scoped request per selected reported game slot and reports partial failures without retrying mutations automatically. Configure their correct YAML templates in Controller first. Partial job failures direct you to Controller's analysis details. Current Controller builds may require their Rooms screen to be open for local wake requests; a `starting` response does not guarantee startup completed.
+Existing activity is not replayed as new notifications after service start, room changes or a new generation. Event messages stay in bounded memory for at most 75 seconds; no viewer/event archive is written. Restored save-file counts do not become item-delivery alerts.
 
-## Polling, outages and activity
-
-Version 1.0.9 bootstraps with a room snapshot, then reads the dashboard, SlotLock component and included slot snapshots with at most four concurrent Controller requests. Generation changes resynchronize through a room snapshot. Calculation notifications can refresh the affected selected slot's logic without becoming audience activity. A failed slot read leaves other slots and dashboard progress available. Room/slot conditional reads use ETags; cursor activity is never cached.
-
-The backend polls every five seconds for online rooms and fifteen for offline/unselected rooms, uses ETags, and backs off to at most sixty seconds after failures. Settings/overlay browser polling reads only this local service and does not multiply broker polling. Broker outages replace player details with a neutral waiting message; settings retain choices and report the issue. Pending SlotLock data also shows a neutral waiting message without exposing player identities. Activity failures do not suppress available progress and logic. A failed local browser read retains the previous frame for at most ten seconds before hiding it. No fallback to the old monolith or direct room parsing occurs.
-
-Activity starts at the current tail on service start, room switch and generation change. Existing history is not replayed as new alerts. Subsequent pages are deduplicated and bounded. A cursor reset resumes at the current tail and records an operator notice. Event messages stay in bounded process memory for at most 75 seconds; they are not written to disk. Activity types and maximum rows are configurable. Selected state can intentionally restart visibility when returning to a room, but old historical alerts are never fetched for replay.
-
-## Data and rollback
-
-Private `module-data/archipelago/config.json` stores the local broker address, chosen room ID, overlay enable state and per-room display preferences/slot identities. `auth.json` stores only the optional broker key. No viewer/event archive is created. Package updates replace code, preserving these files. No legacy Archipelago configuration or token file is copied automatically. Keep the original system available until your controlled cutover, scene changes, room switches and restart checks pass.
-
-Item notifications prefer explicit sender/receiver roles and resolved item/location names from Controller. Numeric protocol-only item messages are replaced with a readable details-unavailable notice; Companion does not guess item names or participant roles from IDs.
-
-Save-file restoration messages and unstructured item events without any participant or item metadata are excluded from stream activity. Restored received-item counts are operational state, not new deliveries. Controller's enriched sender/receiver, item/location and partial-resolution contract is supported; cheat items can name a receiver without inventing a sender.
-
-Controller events marked `audience: operations` or `displayEligible: false` are always excluded from the overlay, regardless of selected activity types. Older event payloads remain supported.
-
-## Existing combined overlay bridge
-
-The personal legacy combined overlay can now explicitly embed this renderer for Archipelago alone, suppressing its own old Archipelago renderer. It keeps the existing OBS source URL and scene/module routing, retains the iframe between health polls, and hides it while the module is offline without falling back to old room data. This private compatibility bridge is separate from the public Universal Overlay; it does not pull the personal monolith into the module. Version 1.0.7 permits read-only health/public-state GET responses to HTTP loopback origins; private settings/actions still require their existing controls and CSRF protection. Keep Companion and the Archipelago service running. Refresh the existing combined source after applying the bridge; remove or hide a separate direct Archipelago source to avoid duplicate output.
-
-## Immediate overlay switch
-
-The Enable overlay / Disable overlay button at the top of Settings saves immediately, including when Controller is offline. It retains the selected room, slot choices and display options, and keeps unsaved form edits. Disable hides the complete overlay, including waiting/error messages, and clears any active synthetic test. It does not change Source Modules scene rules; if you hid Archipelago there, allow it there when you want it visible again. The renderer no longer loads the dark settings stylesheet, and its panel has no background fill, shadow or backdrop blur.
+Updates preserve private `module-data/archipelago/config.json` and the optional key in `auth.json`. Back these up privately. Legacy settings and tokens are not copied automatically; retain your previous setup until your room, scene and restart checks pass.

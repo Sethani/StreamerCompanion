@@ -16,6 +16,7 @@ class ControlApi {
     this.installCatalog = options.installCatalog;
     this.publicAssets = options.publicAssets;
     this.uiPreferences = options.uiPreferences;
+    this.helpGuides = options.helpGuides;
     this.uiCsrf = crypto.randomBytes(32).toString('hex');
     this.authPath = path.join(this.dataDirectory, "companion-api.json");
     this.server = null;
@@ -73,6 +74,20 @@ class ControlApi {
 
   async handle(request, response) {
     const url = new URL(request.url, "http://127.0.0.1:" + this.port);
+    if (url.pathname.startsWith('/api/help/')) {
+      const host = String(request.headers.host || ''), origin = String(request.headers.origin || '');
+      if (!['127.0.0.1:' + this.port, 'localhost:' + this.port].includes(host) || (origin && origin !== 'http://' + host) || request.headers['sec-fetch-site'] === 'cross-site') return this.json(response, 403, { error: 'Same-origin local requests only.' });
+      if (request.method !== 'GET') return this.json(response, 405, { error: 'Help is read-only.' });
+      if (!this.helpGuides) return this.json(response, 404, { error: 'Help is unavailable.' });
+      if (url.pathname === '/api/help/index') return this.json(response, 200, this.helpGuides.index());
+      if (url.pathname === '/api/help/guide') return this.json(response, 200, this.helpGuides.read(url.searchParams.get('id')));
+      const assets = { 'reader': ['help.html', 'text/html'], 'help-reader.js': ['help-reader.js', 'text/javascript'], 'help-http.js': ['help-http.js', 'text/javascript'], 'help.css': ['help.css', 'text/css'] };
+      const asset = assets[url.pathname.slice('/api/help/'.length)];
+      if (!Object.hasOwn(assets, url.pathname.slice('/api/help/'.length))) return this.json(response, 404, { error: 'Not found' });
+      const body = fs.readFileSync(path.join(__dirname, 'renderer', asset[0]));
+      response.writeHead(200, { 'Content-Type': asset[1] + '; charset=utf-8', 'Content-Length': body.length, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'; img-src 'none'" });
+      return response.end(body);
+    }
     if (url.pathname.startsWith('/api/ui/')) {
       const host = String(request.headers.host || '');
       const origin = String(request.headers.origin || '');

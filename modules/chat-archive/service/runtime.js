@@ -1,9 +1,10 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),crypto=require('node:crypto'),{createStore}=require('./store');
-const defaults={revision:0,enabled:false,retentionDays:30,archiveAnnouncements:true,archiveDeletedText:false};
+const defaults={revision:0,enabled:false,retentionDays:30,archiveAnnouncements:true,archiveDeletedText:false,excludeCommands:false,commandPrefix:'!'};
 function validate(input,current=defaults){
  if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Invalid settings.');
- const next={...current};for(const key of ['enabled','archiveAnnouncements','archiveDeletedText'])if(key in input){if(typeof input[key]!=='boolean')throw Error('Invalid setting.');next[key]=input[key];}
+ const next={...current};for(const key of ['enabled','archiveAnnouncements','archiveDeletedText','excludeCommands'])if(key in input){if(typeof input[key]!=='boolean')throw Error('Invalid setting.');next[key]=input[key];}
+ if('commandPrefix'in input){if(typeof input.commandPrefix!=='string'||!input.commandPrefix.length||input.commandPrefix.length>100||input.commandPrefix!==input.commandPrefix.trim())throw Error('Use a nonempty command prefix without surrounding whitespace.');next.commandPrefix=input.commandPrefix;}
  if('retentionDays'in input){if(!Number.isInteger(input.retentionDays)||input.retentionDays<1||input.retentionDays>3650)throw Error('Retention must be 1–3650 days.');next.retentionDays=input.retentionDays;}
  return next;
 }
@@ -28,7 +29,7 @@ function createService(options={}){
   finally{await reader?.cancel().catch(()=>{});if(version===generation){connection.feedConnected=false;connection.chatConnected=false;if(!stopped&&config.enabled)retry=setTimeout(connect,options.reconnectDelay||3000);}}
   })();
  }
- function status(){return{enabled:config.enabled,...connection,count:store.count()};}
+ function status(){return{enabled:config.enabled,...connection,count:store.count(config)};}
  function save(input){if(input.revision!==config.revision){const e=Error('Settings changed in another window. Reload before saving.');e.status=409;throw e;}const next=validate(input,config);next.revision=config.revision+1;fs.writeFileSync(file+'.tmp',JSON.stringify(next,null,2));fs.renameSync(file+'.tmp',file);config=next;if(!config.archiveDeletedText)store.scrub();store.prune(config.retentionDays);connect();return config;}
  const json=(res,code,body)=>{res.writeHead(code,{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(body));};
  const server=http.createServer(async(req,res)=>{try{
@@ -38,9 +39,9 @@ function createService(options={}){
   if(req.method==='GET'&&route==='/health')return json(res,200,{service:'chat-archive',version:'1.0.0',ready:true,configured:true,enabled:config.enabled,connected:connection.feedConnected&&connection.chatConnected});
   if(req.method==='GET'&&['/settings','/settings.js'].includes(route)){res.writeHead(200,{'Content-Type':route.endsWith('.js')?'text/javascript; charset=utf-8':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'"});return res.end(fs.readFileSync(path.join(__dirname,route==='/settings'?'settings.html':'settings.js')));}
   if(req.method==='GET'&&route==='/api/archive/state')return json(res,200,{config,status:status(),csrf});
-  if(req.method==='GET'&&route==='/api/archive/search')return json(res,200,store.page(url.searchParams));
+  if(req.method==='GET'&&route==='/api/archive/search')return json(res,200,store.page(url.searchParams,config));
   if(req.method==='GET'&&['/api/archive/export.csv','/api/archive/export.json'].includes(route)){
-   const rows=store.exportRows(url.searchParams);const csv=route.endsWith('.csv'),keys=['occurred_at_ms','platform','login','original_name','display_name','pronouns','original_text','displayed_text','message_type','deleted'];
+   const rows=store.exportRows(url.searchParams,config);const csv=route.endsWith('.csv'),keys=['occurred_at_ms','platform','login','original_name','display_name','pronouns','original_text','displayed_text','message_type','deleted'];
    const cell=value=>'"'+String(/^[\s]*[=+@-]/.test(String(value))?"'"+value:value).replaceAll('"','""')+'"';
    res.writeHead(200,{'Content-Type':csv?'text/csv; charset=utf-8':'application/json','Content-Disposition':'attachment; filename="chat-archive.'+(csv?'csv':'json')+'"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
    return res.end(csv?'\uFEFF'+[keys.join(','),...rows.map(r=>keys.map(k=>cell(r[k])).join(','))].join('\r\n'):JSON.stringify({schemaVersion:1,rows}));

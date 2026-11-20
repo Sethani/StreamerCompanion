@@ -1,0 +1,436 @@
+{
+  "meta": {
+    "name": "Sound Player",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Private sound library, weighted pools, playback and master volume.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Engine",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Sound Player native owner",
+            "description": "Owns library, pools, playback, renderer claims and persisted acknowledgements.",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "a2c3bf74-d759-4950-bdcc-86f2da3ef5e6",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "sound-player-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "66e2e23f-9fc2-4245-a017-91cc799f2b87",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Initialize",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "2d81a693-5e20-49a4-970b-c3e2f7d66734",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "551ad17a-34f1-489e-9f4a-fc322c34caf5",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "8df67b1f-56fc-474a-87f0-d56a4c1ce527",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "2f8b7563-3042-4411-ace3-a3f3d0c7d869",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Health",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "health",
+            "autoType": false,
+            "id": "f3aa745b-b702-44a5-899c-971269337c19",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "e7e69cbb-4678-4dd9-8c34-b396e94e1713",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d38a06e2-d55a-4c70-a0fe-3dd2682c82f0",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Configure",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "configure",
+            "autoType": false,
+            "id": "0f94be58-b5c6-4e97-b5bd-5465f71836e1",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "ea800cca-d328-4693-9f0c-d315d5f06da9",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "3c3cbec6-dbd9-4f91-8586-1ed1b0a26932",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Play",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "play",
+            "autoType": false,
+            "id": "010b15ea-dc48-4ead-a83f-a3cf63ebce07",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "324ca682-ea67-4c22-8926-995b46444425",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "8479aa87-9aa8-4532-8042-e678f24e9512",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Play Pool",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "pool",
+            "autoType": false,
+            "id": "4c70e013-1cf8-48c9-92ff-0ab62af2db2e",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "24321954-70dd-447b-9918-5f63c54423f2",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "a7cf4e57-c949-40d8-b8c5-1bab91c4a44d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Play Assigned",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "assigned",
+            "autoType": false,
+            "id": "9d8ec700-3d6f-4e81-ab9b-41f4428ab690",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "58cbb91a-31dd-4406-b0ef-7aba13f71a78",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "79d87294-77a0-40ce-b83a-d7e770d3e264",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Stop",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "stop",
+            "autoType": false,
+            "id": "cf3225a5-4195-4baf-aa59-dec27be9d7ab",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "3d82e2c0-cd38-443c-b1ef-42577ff88016",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "faec376f-cee9-4ab8-a329-5a7dadffc423",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Set Volume",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "volume",
+            "autoType": false,
+            "id": "5b8c52c0-38d9-4d18-a202-96ff4bbb31c7",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "5da5d976-3497-4f25-93bd-020e21923a59",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "85a087c9-2118-4993-af3c-99d5aabb9b7c",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Trigger Adapter",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "adapter",
+            "autoType": false,
+            "id": "8e066305-ecdd-4662-8af1-5702d43a9cb6",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "8a4af0b4-9bb7-4e7e-904a-ce3f0bb85646",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "11d8872f-6f2b-4ace-a02d-fc915317bf1e",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Sound Player - Renderer",
+        "group": "Sound Player",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "soundPlayerMode",
+            "value": "renderer",
+            "autoType": false,
+            "id": "f0dae9c3-1fa1-40f5-87a1-c02987e38033",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+            "runImmedately": true,
+            "id": "f1f76f77-9904-4139-addc-f6ccdd36d044",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

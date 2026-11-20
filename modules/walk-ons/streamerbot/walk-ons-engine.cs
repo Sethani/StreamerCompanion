@@ -37,6 +37,7 @@ public class CPHInline
         catch (Exception ex)
         {
             CPH.LogError("[walk-ons] " + ex.Message);
+            try { Write(Payload(), ex.Message); } catch {}
             return true;
         }
     }
@@ -45,7 +46,7 @@ public class CPHInline
     {
         return new JObject {
             ["schemaVersion"] = 2,
-            ["moduleVersion"] = "2.1.1",
+            ["moduleVersion"] = "3.0.0",
             ["config"] = new JObject {
                 ["roster"] = new JObject(),
                 ["sounds"] = new JObject(),
@@ -78,7 +79,7 @@ public class CPHInline
             payload["config"] = Normalize(payload["config"] as JObject ?? new JObject());
         }
         payload["schemaVersion"] = 2;
-        payload["moduleVersion"] = "2.1.1";
+        payload["moduleVersion"] = "3.0.0";
         payload["session"] = new JObject { ["seen"] = new JArray() };
         if (payload["lastEvent"] == null) payload["lastEvent"] = JValue.CreateNull();
         return Write(payload);
@@ -88,7 +89,7 @@ public class CPHInline
     {
         JObject payload = Payload();
         JObject config = payload["config"] as JObject ?? new JObject();
-        CPH.LogInfo("[walk-ons] Health OK: schema=2 module=2.1.1 people=" + ((JObject)(config["roster"] ?? new JObject())).Count + " sounds=" + ((JObject)(config["sounds"] ?? new JObject())).Count);
+        CPH.LogInfo("[walk-ons] Health OK: schema=2 module=3.0.0 people=" + ((JObject)(config["roster"] ?? new JObject())).Count + " sounds=" + ((JObject)(config["sounds"] ?? new JObject())).Count);
         return true;
     }
 
@@ -97,7 +98,7 @@ public class CPHInline
         JObject payload = Payload();
         payload["config"] = Normalize(JObject.Parse(Arg("config")));
         payload["schemaVersion"] = 2;
-        payload["moduleVersion"] = "2.1.1";
+        payload["moduleVersion"] = "3.0.0";
         return Write(payload);
     }
 
@@ -115,6 +116,7 @@ public class CPHInline
                 ["enabled"] = (bool?)item["enabled"] ?? true,
                 ["type"] = type,
                 ["value"] = Limit((string)item["value"], 80),
+                ["poolId"] = Id((string)item["poolId"]),
                 ["choices"] = NormalizeChoices(item["choices"] as JArray),
                 ["title"] = Limit((string)item["title"], 140),
                 ["volume"] = Clamp((double?)item["volume"] ?? 1, 0, 1)
@@ -254,25 +256,29 @@ public class CPHInline
         JArray seen = payload["session"]?["seen"] as JArray ?? new JArray();
         bool once = (bool?)payload["config"]?["settings"]?["oncePerStream"] ?? true;
         if (!test && once && Contains(seen, login)) return true;
-        if (Busy()) { CPH.LogInfo("[walk-ons] Media busy; " + login + " remains eligible."); return true; }
+        if (Busy()) { return Write(payload, "Media busy; the entrance remains eligible."); }
         string type = (string)item["type"] ?? "", value = (string)item["value"] ?? "";
-        if (type == "soundpool") value = Pick(item["choices"] as JArray);
-        if (value == "") throw new Exception(login + " has incomplete configuration.");
+        // Weighted selection belongs to Sound Player; do not draw in the parent.
+        if (value == "" && type != "soundpool") throw new Exception(login + " has incomplete configuration.");
         CPH.SetArgument("id", value);
         CPH.SetArgument("volume", ((double?)item["volume"] ?? 1).ToString(CultureInfo.InvariantCulture));
         if (type == "video")
         {
             string title = (string)item["title"] ?? ""; if (title == "") title = login + " has entered chat";
             CPH.SetArgument("title", title);
+            string videoRequest = Guid.NewGuid().ToString();
+            CPH.SetArgument("videoRequestId", videoRequest);
             if (!CPH.RunAction("Video - Play", true)) throw new Exception("Video player rejected the walk-on.");
+            JObject video = JObject.Parse(CPH.GetGlobalVar<string>("portable.video.state", true) ?? "{}");
+            if ((string)video["payload"]?["lastAcceptedRequestId"] != videoRequest) throw new Exception("Video player rejected the walk-on.");
         }
         else
         {
-            JObject sound = payload["config"]?["sounds"]?[value] as JObject;
+            if (!CPH.ActionExists("Sound Player - Play Assigned")) throw new Exception("Sound Player is not imported.");
             string requestId = Guid.NewGuid().ToString();
             CPH.SetArgument("walkOnSoundRequestId", requestId);
-            CPH.SetArgument("src", (string)sound?["src"] ?? "");
-            if (!CPH.RunAction("Walk-on Sound - Play", true)) throw new Exception("Sound player rejected the walk-on.");
+            CPH.SetArgument("login", login);
+            if (!CPH.RunAction("Sound Player - Play Assigned", true)) throw new Exception("Sound player rejected the walk-on.");
             JObject playback = JObject.Parse(CPH.GetGlobalVar<string>("portable.walkonSound.state", true) ?? "{}");
             if ((string)playback["payload"]?["lastAcceptedRequestId"] != requestId) throw new Exception("Sound player rejected the walk-on.");
         }
@@ -302,24 +308,11 @@ public class CPHInline
         return true;
     }
 
-    private string Pick(JArray choices)
-    {
-        if (choices == null) return "";
-        double total = 0; List<KeyValuePair<string, double>> valid = new List<KeyValuePair<string, double>>();
-        foreach (JToken item in choices)
-        {
-            string value = (string)item["value"] ?? ""; double weight = (double?)item["weight"] ?? 1;
-            if (value != "" && weight > 0) { valid.Add(new KeyValuePair<string, double>(value, weight)); total += weight; }
-        }
-        double roll = new Random(Guid.NewGuid().GetHashCode()).NextDouble() * total;
-        foreach (KeyValuePair<string, double> item in valid) { roll -= item.Value; if (roll < 0) return item.Key; }
-        return valid.Count > 0 ? valid[valid.Count - 1].Key : "";
-    }
-
     private JObject Payload() { try { return (JObject)JObject.Parse(Read())["payload"] ?? new JObject(); } catch { return new JObject(); } }
     private string Read() { try { return CPH.GetGlobalVar<string>(StateKey, true) ?? ""; } catch { return ""; } }
-    private bool Write(JObject payload)
+    private bool Write(JObject payload, string error = "")
     {
+        payload["lastError"] = error;
         long revision = 1; try { revision = ((long?)JObject.Parse(Read())["revision"] ?? 0) + 1; } catch {}
         JObject envelope = new JObject { ["schemaVersion"] = 1, ["feature"] = "walkOns", ["type"] = "state", ["revision"] = revision, ["payload"] = payload };
         string json = envelope.ToString(Formatting.None); CPH.SetGlobalVar(StateKey, json, true); try { CPH.WebsocketBroadcastJson(json); } catch {}

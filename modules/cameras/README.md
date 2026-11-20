@@ -1,17 +1,41 @@
 # Cameras
 
-## Optional Phone Deck controls
+Switch the contents of two existing OBS camera scenes from one control panel. Use webcams, your PNG tuber, a Reactive guest or an OBS video input, with separate mode controls for Main Camera and Camera 2.
 
-Version 2.0.2 adds main-camera modes, Camera 2 Off/Laptop modes, an OBS video-input picker, a saved Reactive guest picker for Camera 2, and a mode/status widget. Set up private mappings in the existing dock first. Controls require the corresponding camera slot to be configured and OBS available; missing inputs/guests remain unavailable. Each command changes only its chosen slot and preserves the other slot and source mappings. Assigning a guest does not enable that guest in the overlay lineup. Commands report Requested; consult the owner status/OBS for the result. No new native engine, import, service, Phone Deck dependency or automatic cards are added.
+## Set up your source mappings
 
-Version 2.0.2 moves the established main/secondary camera controls and OBS inventory off the personal Node server. It controls existing OBS scenes through Streamer.bot's existing default OBS connection; no service, new port, OBS credential copy or browser overlay is required. The five installed action identities and `portable.cameras.state` are preserved. Source mappings are private settings; public defaults are empty and unconfigured.
+1. Connect Streamer.bot to OBS using its default OBS connection. Back up Streamer.bot and OBS before changing camera routing, and use one camera router for these scenes.
+2. Install Cameras from **Catalogue**. Expand its **Installed** row and choose **Import into Streamer.bot…** to import the supplied actions.
+3. Choose **Open controls**, or select Cameras in [Universal Dock](../universal-dock/README.md). Press **Refresh** to read the OBS scene/input inventory.
+4. Expand **Source mappings**. Choose your existing **Main scene** and **Camera 2 scene**, then map the source roles you use: Monitor webcam, Laptop webcam, My PNG tuber and Guest PNG tuber. Frame and Background are optional.
+5. Press **Save mappings**. This stores the mappings without switching cameras. When ready to change OBS, choose a mode for the relevant slot, or use **Reapply** for saved configured modes.
 
-Install/import through Companion. Open Cameras in Universal Dock, Refresh the read-only OBS inventory, then select existing scenes and source roles under Source mappings. Saving mappings never switches cameras. Main modes remain Off, Monitor, Laptop and My PNG tuber; Camera 2 remains Off, Laptop, Reactive guest and OBS video source. Reactive mode requires Reactive Guests 2.1.0; webcam/video-only use does not.
+New installations have empty mappings and do not change OBS until configured. No additional service or audience browser source is needed. Reactive Guests 2.1.0 or newer is optional and needed only for Reactive guest mode.
 
-Changing a mode applies only that slot; Reapply applies configured slots. Unconfigured startup does not modify OBS. A five-second native connection observer reapplies saved configured routing once after OBS reconnects, without retrying failed mutations on subsequent ticks. Missing selected guests clear the camera assignment and turn that slot off; lineup visibility remains independent. The observer and Initialize are included in the export and should be disabled if uninstalling imported actions.
+## Choose what each slot shows
 
-Selected sources and scene mappings are validated before current content is hidden. Missing laptop/video scene items can be added using the established slot template transform. Selected webcam/browser lifecycle settings retain the old deactivate/shutdown/restart behavior. OBS request failures are visible in private status; success means acknowledged OBS operations, not independent verification of a physical camera feed. After a partial failure inspect OBS and explicitly Reapply; browser writes are not retried automatically.
+Main Camera offers **Off**, **Monitor webcam**, **Laptop webcam** and **My PNG tuber**.
 
-Configure keeps its original mode/selection/changedSlot arguments. Configure Mappings takes JSON mappings (mainScene, secondaryScene, monitor, laptop, selfPng, guestPng, frame, background) without applying visibility. Refresh/Health only read OBS. Existing Assign Reactive accepts id and applies Camera 2. The optional requestId is echoed as lastRequestId after state persistence. Existing configuration fields are preserved; inventory and mapping fields are additive.
+Camera 2 offers **Off (empty)**, **Laptop webcam**, **Reactive guest** and **OBS video source**. Reactive guest reveals a saved-guest picker; OBS video source reveals an OBS source picker. Choose the intended entry before relying on that mode.
 
-Before local cutover, back up both systems and disable the legacy Node camera owner's configured/mainConfigured/secondaryConfigured flags while keeping its other settings for rollback. Do not run two camera routers against the same scenes. Do not restore the stale Node roster over live Streamer.bot data. Keep private mappings, URLs and OBS state out of exports. First-party source: Sethani, MIT.
+Changing a mode applies that slot immediately and preserves the other slot and source mappings. Assigning a Reactive guest to Camera 2 does not enable that guest in the overlay lineup. If a selected guest disappears, its camera assignment is cleared and Camera 2 turns off.
+
+**Refresh** reads OBS without changing visibility. **Reapply** applies the saved configured slots. After OBS reconnects, the native observer reapplies configured routing once; it does not repeatedly retry failed changes.
+
+## Phone Deck
+
+[Phone Deck](../phone-deck/README.md) optionally offers main-camera modes, Camera 2 Off/Laptop modes, an OBS video-input picker, a saved Reactive guest picker and mode/status information. Set up mappings in the local controls first, then add the controls you want in the deck editor. No cards are created automatically.
+
+Controls require the relevant configured slot and an available OBS connection; missing inputs or guests remain unavailable. Each command affects its chosen slot. A Requested result means the command was dispatched; check owner status and OBS for its outcome.
+
+## If a camera does not change
+
+Check the OBS connection and press Refresh. Confirm the scene and source names in Source mappings, save any correction, then explicitly Reapply when ready. Missing mappings are validated before current content is hidden. Missing laptop/video scene items may be added using the slot's existing template transform.
+
+After a partial failure, inspect OBS before Reapply. Failed browser writes are not retried automatically. A successful status confirms acknowledged OBS operations; check the actual picture in OBS to verify the camera feed.
+
+The router also manages the selected webcam/browser source's established deactivate, shutdown and restart settings. Review OBS if another feature uses the same inputs. If you uninstall the imported actions, disable their Initialize and Observe OBS startup/reconnect behavior as well.
+
+Keep source mappings and provider URLs private and retain your Streamer.bot/OBS backups. Updates preserve saved mappings.
+
+First-party source: Sethani, MIT.

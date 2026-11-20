@@ -7,10 +7,17 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'chat-core
   assert.throws(()=>normalize({streamerBotUrl:'ws://example.invalid/'}),/local/);assert.throws(()=>normalize({streamerBotUrl:'ws://user:secret@localhost:8080/'}),/local/);
   assert.equal(appearance('http://old.invalid/chat.html?bubbles=true&fontfamily=Open+Sans&token=secret&pluralmind_cdn=bad'),'bubbles=true&fontfamily=Open+Sans');
   assert.equal(appearance('?direction=vertical&direction=horizontal'),'direction=vertical','Legacy duplicate parameters use their first value');
+  const builder=require('../../modules/chat-core/service/chatbox-options'),legacyQuery='direction=horizontal&fontfamily=Open+Sans&fontsize=24px&background=123456&bubbles=true&timestamp=true&bots=first%2Csecond&cmdprefix=%21&max_messages=50';
+  const roundTrip=builder.snapshot('http://old.invalid/chat.html?'+legacyQuery+'&token=secret');for(const[k,v]of new URLSearchParams(legacyQuery))assert.equal(new URLSearchParams(roundTrip).get(k),v,'Supported generator option round trip: '+k);assert.equal(roundTrip.includes('secret'),false);
   const modern=normalizeMessage({messageId:'modern',text:'Hi Kappa',user:{id:'modern',name:'Modern Viewer',subscribed:true},parts:[{type:'text',text:'Hi '},{type:'emote',text:'Kappa',imageUrl:'https://example.invalid/kappa.png'}]},'twitch');
   assert.equal(modern.emotes[0].startIndex,3);assert.equal(modern.emotes[0].endIndex,7);assert.equal(modern.isSubscriber,true);
+  const endpoint={messageId:'endpoint',text:'Kappa',user:{id:'fixture',login:'fixture'},emotes:[{name:'Kappa',startIndex:0,endIndex:5,imageUrl:'https://example.invalid/kappa.png'}],parts:[{type:'emote',text:'Kappa',imageUrl:'https://example.invalid/kappa.png'}]};
+  assert.equal(normalizeMessage(endpoint,'twitch').emotes[0].endIndex,4,'Native exclusive endIndex at end of text normalizes to inclusive renderer range');
+  assert.equal(normalizeMessage({...endpoint,parts:undefined},'twitch').emotes[0].endIndex,4,'Named native ranges normalize without rich parts');
+  assert.equal(normalizeMessage({...endpoint,emotes:[{...endpoint.emotes[0],endIndex:4}],parts:undefined},'twitch').emotes[0].endIndex,4,'Legacy inclusive ranges stay unchanged');
+  const middle={...endpoint,text:'Kappa tail',parts:undefined};assert.equal(normalizeMessage(middle,'twitch').emotes[0].endIndex,4,'Exclusive range before trailing text must not consume a space');
   assert.equal(normalizeMessage({messageId:'announcement',text:'Fixture',announcementColor:'blue',user:{id:'one',name:'Fixture'}},'twitch','announcement').user.colour,'#0099ff');
-  const output=path.join(root,'packages');buildModules(['chat-core'],{output});const zip=new AdmZip(path.join(output,'chat-core-1.0.1.streammodule'));
+  const output=path.join(root,'packages');buildModules(['chat-core'],{output});const zip=new AdmZip(path.join(output,'chat-core-1.4.1.streammodule'));
   const manifest=JSON.parse(zip.readAsText('module.json'));assert.equal(manifest.service.port,3136);assert.equal(manifest.service.overlayPath,undefined);assert.deepEqual(manifest.ui.overlays,[]);assert.deepEqual(manifest.streamerbot.requiredActions,[]);
   assert.ok(zip.readAsText('third-party/stream-chat.txt').includes('2022 Izzy'));assert.ok(zip.readAsText('third-party/pluralmind.txt').includes('2026 leahinmoonlight'));
   assert.equal(crypto.createHash('sha256').update(zip.readFile('service/pluralmind.cjs')).digest('hex'),'82d30bffcc2ea2e2c2d4bab3372ee3fd9e9a503b94d58d2fb89c9fbcae274a7b');
@@ -19,6 +26,13 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'chat-core
   assert.equal(zip.getEntries().some(e=>/sqlite|\.sb$/.test(e.entryName)),false);
   const runtime=zip.readAsText('service/runtime.js');assert.equal(/node:sqlite|chat-archive|console\.log/.test(runtime),false);
   test=await fixture(path.join(root,'data'));
+  const originalConfig=JSON.stringify(test.service.config());
+  const boxes=await(await fetch(test.base+'/api/chat-core/chatboxes',{headers:{'X-Companion-CSRF':test.service.csrf}})).json();assert.deepEqual(boxes,{revision:0,items:[]});
+  let boxResponse=await test.post('/api/chat-core/chatboxes',{revision:0,items:[{id:'normal',name:'Normal',appearance:'fontsize=25px&token=private'},{id:'ticker',name:'Ticker',appearance:'direction=horizontal&hide_commands=true&command_prefix=%21'}]});assert.equal(boxResponse.status,200);
+  const savedBoxes=await boxResponse.json();assert.equal(savedBoxes.items[0].appearance.includes('private'),false);assert.ok(savedBoxes.items.every(item=>item.appearance.includes('appearance_mode=standalone')));
+  assert.equal((await test.post('/api/chat-core/chatboxes',{revision:0,items:[]})).status,409,'Stale saved-config revision is rejected');
+  assert.equal(JSON.stringify(test.service.config()),originalConfig,'Named chatboxes do not change global settings');
+  const copied=savedBoxes.items[0].appearance;assert.equal((await test.post('/api/chat-core/chatboxes',{revision:1,items:[]})).status,200);assert.ok(copied.includes('fontsize=25px'));
   await waitFor(()=>test.events.some(e=>e.type==='ready'),'ready event');
   assert.equal(test.calls.filter(c=>c.request==='Subscribe').length,1,'Hello/open must not duplicate subscriptions');
   const settings=await(await fetch(test.base+'/settings')).text();assert.ok(settings.includes(test.service.csrf));
@@ -30,8 +44,8 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'chat-core
   assert.equal(test.events.filter(e=>e.type==='message'&&e.data.messageId==='twitch:one').length,1);
   const enriched=test.events.find(e=>e.type==='message-update'&&e.data.messageId==='twitch:one').data;
   assert.equal(enriched.user.displayName,'Fixture Member');assert.equal(enriched.user.pronouns,'She/Her');assert.equal(enriched.text.trim(),'Hello');assert.equal(enriched.originalText,'M: Hello');
-  test.emit('ChatMessage',message('two','No proxy'));await waitFor(()=>test.events.some(e=>e.type==='message-update'&&e.data.messageId==='twitch:two'),'normal pronouns');
-  assert.equal(test.events.find(e=>e.type==='message-update'&&e.data.messageId==='twitch:two').data.user.pronouns,'They/Them');assert.equal(test.lookups.length,3,'Profile lookups must be cached');
+  test.emit('ChatMessage',message('two','No proxy'));await waitFor(()=>test.events.some(e=>e.type==='message'&&e.data.messageId==='twitch:two'),'cached initial pronouns');
+  assert.equal(test.events.find(e=>e.type==='message'&&e.data.messageId==='twitch:two').data.user.pronouns,'They/Them');assert.equal(test.lookups.length,3,'Profile lookups must be cached');
   test.emit('ChatMessageDeleted',{targetMessageId:'one'});test.emit('UserTimedOut',{userId:'fixture'});test.emit('ChatCleared',{});
   await waitFor(()=>test.events.some(e=>e.type==='chat-clear'),'moderation');assert.ok(test.events.some(e=>e.type==='message-delete'&&e.data.messageId==='twitch:one'));assert.ok(test.events.some(e=>e.type==='user-delete'&&e.data.userId==='twitch:fixture'));
   test.emit('UserTimedOut',{targetUser:{id:'modern-user'}});await waitFor(()=>test.events.some(e=>e.type==='user-delete'&&e.data.userId==='twitch:modern-user'),'modern targetUser moderation');
@@ -46,16 +60,16 @@ async function main(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'chat-core
   await new Promise(r=>setTimeout(r,180));assert.equal(test.events.some(e=>e.type==='message-update'&&e.data.messageId==='twitch:late'),false);
   for(const socket of test.websocket.clients)socket.terminate();await waitFor(()=>test.service.status().subscribed,'reconnect');
   const {CompanionRegistry}=require('../src/module-registry'),{InstalledService}=require('../src/installed-service');
-  const registry=new CompanionRegistry({dataDirectory:path.join(root,'installed')});let staged=registry.stage(path.join(output,'chat-core-1.0.1.streammodule'));registry.commit(staged);registry.finalize(staged);
+  const registry=new CompanionRegistry({dataDirectory:path.join(root,'installed')});let staged=registry.stage(path.join(output,'chat-core-1.4.1.streammodule'));registry.commit(staged);registry.finalize(staged);
   const childData=path.join(root,'child-data');fs.mkdirSync(childData);fs.writeFileSync(path.join(childData,'config.json'),JSON.stringify({...test.service.config(),pronouns:false,pluralmind:false,appearance:'bubbles=true&fontsize=27px'}));
   const reservation=require('node:http').createServer();await new Promise(r=>reservation.listen(0,'127.0.0.1',r));const childPort=reservation.address().port;await new Promise(r=>reservation.close(r));
   child=new InstalledService({app:{},moduleDirectory:registry.moduleDirectory('chat-core'),dataDirectory:childData,manifest:{...manifest,service:{...manifest.service,port:childPort}}});
   assert.equal((await child.start()).status,'running');assert.equal((await child.state()).endpoint.details.service,'chat-core');await child.stop();assert.equal((await child.probe(200)).ready,false);
-  const upgrade=new AdmZip(path.join(output,'chat-core-1.0.1.streammodule'));upgrade.updateFile('module.json',Buffer.from(JSON.stringify({...manifest,version:'1.0.1'})));const upgradeFile=path.join(root,'upgrade.streammodule');upgrade.writeZip(upgradeFile);staged=registry.stage(upgradeFile);registry.commit(staged);registry.finalize(staged);
+  const upgrade=new AdmZip(path.join(output,'chat-core-1.4.1.streammodule'));upgrade.updateFile('module.json',Buffer.from(JSON.stringify({...manifest,version:'1.4.2'})));const upgradeFile=path.join(root,'upgrade.streammodule');upgrade.writeZip(upgradeFile);staged=registry.stage(upgradeFile);registry.commit(staged);registry.finalize(staged);
   assert.equal(JSON.parse(fs.readFileSync(path.join(childData,'config.json'))).appearance,'bubbles=true&fontsize=27px');
   assert.equal((await child.start()).status,'running');await child.stop();assert.equal((await child.probe(200)).ready,false);
   await test.close();test=null;
-  const files=fs.readdirSync(path.join(root,'data'));assert.deepEqual(files,['config.json']);const persisted=fs.readFileSync(path.join(root,'data/config.json'),'utf8');assert.equal(/M: Hello|Fixture Viewer|other-fixture/.test(persisted),false);
+  const files=fs.readdirSync(path.join(root,'data'));assert.deepEqual(files,['chatboxes.json','config.json']);const persisted=files.map(file=>fs.readFileSync(path.join(root,'data',file),'utf8')).join('');assert.equal(/M: Hello|Fixture Viewer|other-fixture/.test(persisted),false);
   console.log('Live Chatbox passed: package/notices/pinned helper, no archive/aggregate/import, connection dedup, live/enriched messages, pronouns/proxies, moderation, platform IDs, cache/timeouts, synthetic tests, CSRF/config preservation, reconnect and no persisted viewer data.');
  }finally{await child?.stop();await test?.close();fs.rmSync(root,{recursive:true,force:true});}
 }

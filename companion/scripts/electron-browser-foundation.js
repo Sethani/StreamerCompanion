@@ -40,6 +40,11 @@ async function main() {
   // Connected only confirms the socket; wait for saved globals before editing
   // the library, otherwise a fast click races its initial configuration load.
   await waitFor(() => executeDock("document.querySelector('iframe').contentDocument.querySelector('.video-row .src')?.value === '/streaming/videos/synthetic.mp4'"), "saved video library hydrated");
+  const callsBeforeId=test.calls.length;
+  assert.equal(await executeDock("document.querySelector('iframe').contentDocument.querySelector('[aria-label=\"Video ID\"]').value"),'legacy');
+  assert.equal(await executeDock("document.querySelector('iframe').contentDocument.querySelector('[aria-label=\"Video ID\"]').readOnly"),true);
+  await executeDock("document.querySelector('iframe').contentDocument.querySelector('[aria-label=\"Video ID\"]').focus()");
+  assert.equal(test.calls.length,callsBeforeId,'Selecting a video ID must not execute an action');
   await executeDock("document.querySelector('iframe').contentDocument.getElementById('refresh-media').click()");
   await waitFor(() => executeDock("document.querySelector('iframe').contentDocument.querySelectorAll('.video-row').length===2"), "private media registration");
   await executeDock("{const select=document.querySelector('iframe').contentDocument.querySelector('.video-row select');select.selectedIndex=1;select.dispatchEvent(new Event('change'));}");

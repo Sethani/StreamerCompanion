@@ -41,9 +41,61 @@ class WebAssets {
   constructor(options) { Object.assign(this, options); }
   base(id) { return "http://127.0.0.1:" + this.port() + "/api/public/assets/" + encodeURIComponent(id); }
   mediaDirectory(id) { return path.join(this.dataDirectory, "module-data", id, "media"); }
+  mediaOwner(id, visited = new Set()) {
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(id) || visited.has(id)) throw new Error("Invalid media owner alias.");
+    visited.add(id);
+    const manifest = this.registry.readManifest(id);
+    if (!manifest || !MEDIA[manifest.media?.kind]) throw new Error("This module does not accept media.");
+    const owner = manifest.media.owner;
+    if (!owner) return id;
+    const target = this.registry.readManifest(owner);
+    if (!target || target.media?.kind !== manifest.media.kind) throw new Error("Install " + owner + " to manage this media.");
+    return this.mediaOwner(owner, visited);
+  }
   index(id) { try { return JSON.parse(fs.readFileSync(path.join(this.mediaDirectory(id), "index.json"), "utf8")); } catch (_) { return []; } }
-  listMedia(id) { return this.index(id).map((item) => ({ ...item, src: "http://127.0.0.1:" + this.port() + "/api/public/media/" + encodeURIComponent(id) + "/" + encodeURIComponent(item.filename), enabled: true })); }
+  listMedia(id) { const owner = this.mediaOwner(id); return this.index(owner).map((item) => ({ ...item, src: "http://127.0.0.1:" + this.port() + "/api/public/media/" + encodeURIComponent(owner) + "/" + encodeURIComponent(item.filename), enabled: true })); }
+  copyAliasedMedia(id) {
+    const owner = this.mediaOwner(id);
+    if (owner === id) throw new Error("A media alias is required for migration.");
+    const source = this.mediaDirectory(id), target = this.mediaDirectory(owner), entries = this.index(id), existing = this.index(owner);
+    if (!Array.isArray(entries) || !Array.isArray(existing)) throw new Error("Invalid media inventory.");
+    const dataRoot = fs.realpathSync(this.dataDirectory) + path.sep;
+    for (const directory of [source, target]) {
+      for (let component = path.resolve(directory); component !== path.resolve(this.dataDirectory); component = path.dirname(component)) {
+        if (fs.existsSync(component) && (fs.lstatSync(component).isSymbolicLink() || !fs.realpathSync(component).startsWith(dataRoot))) throw new Error("Media migration cannot follow links.");
+        if (path.dirname(component) === component) throw new Error("Invalid data directory.");
+      }
+    }
+    const extensions = MEDIA[this.registry.readManifest(owner).media.kind].extensions;
+    const digest = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+    // Validate the entire copy plan before creating or changing any destination files.
+    const plan = [], seen = new Set();
+    for (const entry of entries) {
+      if (!entry || !/^[a-f0-9-]{36}$/i.test(entry.id) || seen.has(entry.id) || !extensions.some(ext => entry.filename === entry.id + ext)) throw new Error("Invalid legacy media inventory.");
+      seen.add(entry.id);
+      const file = inside(source, entry.filename), hash = digest(file);
+      const collision = existing.find(item => item.id === entry.id || item.filename === entry.filename);
+      if (collision && (JSON.stringify(collision) !== JSON.stringify(entry) || digest(inside(target, entry.filename)) !== hash)) throw new Error("Media migration collision; original files retained.");
+      if (!collision && fs.existsSync(path.join(target, entry.filename))) throw new Error("Unregistered destination file; original files retained.");
+      plan.push({ entry, file, hash, collision });
+    }
+    fs.mkdirSync(target, { recursive: true });
+    if (!fs.realpathSync(target).startsWith(dataRoot)) throw new Error("Invalid media migration destination.");
+    const created = [], temporary = path.join(target, 'index.migration.tmp');
+    if (fs.existsSync(temporary)) throw new Error("An unfinished media migration needs inspection.");
+    try {
+      for (const item of plan) if (!item.collision) {
+        const destination = path.join(target, item.entry.filename);
+        fs.copyFileSync(item.file, destination, fs.constants.COPYFILE_EXCL); created.push(destination);
+        if (digest(destination) !== item.hash) throw new Error("Media copy verification failed.");
+      }
+      fs.writeFileSync(temporary, JSON.stringify([...existing, ...plan.filter(item => !item.collision).map(item => item.entry)], null, 2), { flag: 'wx' });
+      fs.renameSync(temporary, path.join(target, 'index.json'));
+    } catch (error) { for (const file of created) fs.rmSync(file, { force: true }); fs.rmSync(temporary, { force: true }); throw error; }
+    return { owner, files: plan.length, copied: created.length };
+  }
   importMedia(id, files) {
+    id = this.mediaOwner(id);
     const manifest = this.registry.readManifest(id);
     const media = MEDIA[manifest?.media?.kind];
     if (!media) throw new Error("This module does not accept media.");
@@ -79,8 +131,10 @@ class WebAssets {
         response.writeHead(200, { "Content-Type": "application/json", "Content-Length": body.length, "Cache-Control": "no-store" }); response.end(request.method === "HEAD" ? undefined : body); return true;
       }
       let filename; try { filename = decodeURIComponent(encoded); } catch (_) { throw Object.assign(new Error("Invalid media path."), { statusCode: 400 }); }
-      if (!this.index(id).some((item) => item.filename === filename)) throw Object.assign(new Error("Media not found."), { statusCode: 404 });
-      sendFile(request, response, inside(this.mediaDirectory(id), filename)); return true;
+      // Old links retain their registered original inventory during a coordinated migration.
+      const owner = this.index(id).some((item) => item.filename === filename) ? id : this.mediaOwner(id);
+      if (!this.index(owner).some((item) => item.filename === filename)) throw Object.assign(new Error("Media not found."), { statusCode: 404 });
+      sendFile(request, response, inside(this.mediaDirectory(owner), filename)); return true;
     }
     if (!manifest.web) throw Object.assign(new Error("Module has no browser assets."), { statusCode: 404 });
     const state = (await this.moduleStates()).states.get(id);

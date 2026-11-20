@@ -1,0 +1,266 @@
+{
+  "schemaVersion": 1,
+  "status": "isolated-source-candidate-not-installed",
+  "packageId": "sound-player",
+  "proposedVersion": "1.0.0",
+  "proposedWalkOnsVersion": "3.0.0",
+  "proposedVideoVersion": "2.3.0",
+  "minimumCompanion": "1.4.0",
+  "canonicalPlayback": {
+    "global": "portable.walkonSound.state",
+    "feature": "walkonSound",
+    "actionPrefix": "Sound Player",
+    "ownerPackage": "sound-player",
+    "routingId": "walk-ons"
+  },
+  "legacyActions": {
+    "Walk-on Sound - Engine": "3999caa3-0625-419f-be94-eaa3fcee8cb9",
+    "Walk-on Sound - Initialize": "11b4bbee-286a-46d8-9c3f-6d85ec7a3ec3",
+    "Walk-on Sound - Play": "7b2a868f-867f-404b-ab47-0e1f58e335d1",
+    "Walk-on Sound - Stop": "16f3bce9-9c70-4791-98b5-bef600897957"
+  },
+  "newActions": {
+    "Sound Player - Engine": "f111f7b1-6aa6-4682-9e21-f21b53df3565",
+    "Sound Player - Initialize": "66e2e23f-9fc2-4245-a017-91cc799f2b87",
+    "Sound Player - Health": "2f8b7563-3042-4411-ace3-a3f3d0c7d869",
+    "Sound Player - Configure": "d38a06e2-d55a-4c70-a0fe-3dd2682c82f0",
+    "Sound Player - Play": "3c3cbec6-dbd9-4f91-8586-1ed1b0a26932",
+    "Sound Player - Play Pool": "8479aa87-9aa8-4532-8042-e678f24e9512",
+    "Sound Player - Play Assigned": "a7cf4e57-c949-40d8-b8c5-1bab91c4a44d",
+    "Sound Player - Stop": "79d87294-77a0-40ce-b83a-d7e770d3e264",
+    "Sound Player - Set Volume": "faec376f-cee9-4ab8-a329-5a7dadffc423",
+    "Sound Player - Trigger Adapter": "85a087c9-2118-4993-af3c-99d5aabb9b7c",
+    "Sound Player - Renderer": "11d8872f-6f2b-4ace-a02d-fc915317bf1e"
+  },
+  "existingWalkOnsPhoneRevisions": {
+    "test": "849b7fac7ae06b8161211d0a3962595197771c5effa0c61e24d16014ecb56d42",
+    "test-picker": "b993597fd0c27be5326ee1c72559dee2c3ff279cc1780d9ea8d3d94f551fb72d",
+    "stop": "8f62af73e2b6d7348fd0d95a2a857621d339acbbfb509d7ae010b3a3bf361f1c",
+    "reset": "5a4f130bf5f6c5c0322bb99017c5910f867c5f0cf391eea5231956e91639fc22",
+    "status": "ce9afedc4e37626634c0063aaaf29a259f4181204116b52dab4e33b2ef742185"
+  },
+  "mediaCompatibility": {
+    "canonicalPackage": "sound-player",
+    "legacyPackage": "walk-ons",
+    "legacyEndpointRetained": true,
+    "legacyFilesRetained": true,
+    "legacyStaticPort": 7474
+  },
+  "weightedSelection": {
+    "owner": "sound-player",
+    "numberOfDraws": 1,
+    "preserveMigratedOrderAndWeights": true,
+    "legacySemanticsMarker": "walk-ons-v2",
+    "noSilentRenormalization": true
+  },
+  "busyPolicies": {
+    "directAndLegacyPlay": "replace-current-audio",
+    "walkOns": "reject-when-video-shoutout-or-audio-busy",
+    "queue": false
+  },
+  "phoneDeck": {
+    "schemaVersion": 1,
+    "owner": {
+      "transport": "streamerbot"
+    },
+    "state": {
+      "global": "portable.walkonSound.state",
+      "fields": {
+        "phoneDeckVersion": "payload.phoneDeckVersion",
+        "visible": "payload.current.visible",
+        "playing": "payload.current.label",
+        "volume": "payload.config.settings.masterVolumePercent",
+        "lastError": "payload.current.lastError"
+      },
+      "ack": {
+        "path": "payload.phoneDeckResults",
+        "requestId": "$key",
+        "status": "status"
+      }
+    },
+    "resources": {
+      "sounds": {
+        "path": "payload.config.library",
+        "id": "$key",
+        "label": "label",
+        "filter": {
+          "path": "enabled",
+          "equals": true
+        }
+      },
+      "pools": {
+        "path": "payload.config.pools",
+        "id": "$key",
+        "label": "label",
+        "filter": {
+          "path": "enabled",
+          "equals": true
+        }
+      }
+    },
+    "actions": {
+      "play": {
+        "id": "3c3cbec6-dbd9-4f91-8586-1ed1b0a26932",
+        "args": {
+          "id": {
+            "field": "sound"
+          }
+        }
+      },
+      "pool": {
+        "id": "8479aa87-9aa8-4532-8042-e678f24e9512",
+        "args": {
+          "poolId": {
+            "field": "pool"
+          }
+        }
+      },
+      "stop": {
+        "id": "79d87294-77a0-40ce-b83a-d7e770d3e264",
+        "args": {}
+      },
+      "volume": {
+        "id": "faec376f-cee9-4ab8-a329-5a7dadffc423",
+        "args": {
+          "volumePercent": {
+            "field": "volumePercent"
+          }
+        }
+      }
+    },
+    "controls": [
+      {
+        "id": "play",
+        "name": "Play sound",
+        "kind": "button",
+        "action": "play",
+        "prerequisites": [
+          {
+            "field": "phoneDeckVersion",
+            "equals": 1
+          }
+        ],
+        "fields": [
+          {
+            "id": "sound",
+            "label": "Registered sound",
+            "type": "resource",
+            "resource": "sounds",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "play-picker",
+        "name": "Choose sound to play",
+        "kind": "form",
+        "action": "play",
+        "prerequisites": [
+          {
+            "field": "phoneDeckVersion",
+            "equals": 1
+          }
+        ],
+        "fields": [
+          {
+            "id": "sound",
+            "label": "Registered sound",
+            "type": "resource",
+            "resource": "sounds",
+            "required": true,
+            "input": true
+          }
+        ]
+      },
+      {
+        "id": "play-pool",
+        "name": "Play weighted sound pool",
+        "kind": "button",
+        "action": "pool",
+        "prerequisites": [
+          {
+            "field": "phoneDeckVersion",
+            "equals": 1
+          }
+        ],
+        "fields": [
+          {
+            "id": "pool",
+            "label": "Saved sound pool",
+            "type": "resource",
+            "resource": "pools",
+            "required": true
+          }
+        ]
+      },
+      {
+        "id": "stop",
+        "name": "Stop sound",
+        "kind": "button",
+        "action": "stop",
+        "prerequisites": [
+          {
+            "field": "phoneDeckVersion",
+            "equals": 1
+          }
+        ],
+        "fields": []
+      },
+      {
+        "id": "volume",
+        "name": "Set sound volume",
+        "kind": "form",
+        "action": "volume",
+        "prerequisites": [
+          {
+            "field": "phoneDeckVersion",
+            "equals": 1
+          }
+        ],
+        "fields": [
+          {
+            "id": "volumePercent",
+            "label": "Volume (%)",
+            "type": "number",
+            "min": 0,
+            "max": 100,
+            "integer": true,
+            "required": true,
+            "input": true
+          }
+        ]
+      },
+      {
+        "id": "status",
+        "name": "Sound playback status",
+        "kind": "widget",
+        "display": [
+          "visible",
+          "playing",
+          "volume",
+          "lastError"
+        ],
+        "displayLabels": {
+          "visible": "Playing",
+          "playing": "Selection",
+          "volume": "Master volume (%)",
+          "lastError": "Playback issue"
+        },
+        "fields": [],
+        "prerequisites": [
+          {
+            "field": "phoneDeckVersion",
+            "equals": 1
+          }
+        ]
+      }
+    ]
+  },
+  "rendererContract": {
+    "claimPerRequest": true,
+    "claimAction": "11d8872f-6f2b-4ace-a02d-fc915317bf1e",
+    "persistClaimBeforeAudio": true,
+    "initialSnapshotDoesNotReplay": true,
+    "matchingOwnerAndStartRequiredForCompletion": true
+  }
+}

@@ -1,5 +1,7 @@
 # Module migration checklist
 
+Current polish work is tracked in the [MVP usability polish checklist](mvp-usability-polish-checklist.md), including the agreed plan, module-by-module checks and interruption checkpoints.
+
 Updated November 15, 2026. **24 of 24 required feature areas implemented; required modern cutover and import cleanup complete.**
 
 Checked means the replacement is implemented and published/installed/imported as applicable. Remaining acceptance and retirement work is listed separately below. This counts feature areas, not package files; going-live bookkeeping is deliberately retained as a private native hook.

@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 2,
+  "id": "sound-player",
+  "name": "Sound Player",
+  "version": "1.1.1",
+  "description": "Play sound effects and weighted sound pools with shared volume and phone controls.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "developerDocumentation": "DEVELOPMENT.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "requiredActions": [
+      "Sound Player - Engine",
+      "Sound Player - Initialize",
+      "Sound Player - Health",
+      "Sound Player - Configure",
+      "Sound Player - Play",
+      "Sound Player - Play Pool",
+      "Sound Player - Play Assigned",
+      "Sound Player - Stop",
+      "Sound Player - Set Volume",
+      "Sound Player - Trigger Adapter",
+      "Sound Player - Renderer"
+    ],
+    "importFile": "streamerbot/sound-player.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.1"
+    },
+    "optionalModules": {
+      "source-modules": "^1.1.0",
+      "universal-overlay": "^1.1.0"
+    },
+    "capabilities": {},
+    "companion": ">=1.4.0"
+  },
+  "web": {
+    "root": "web",
+    "overlayPage": "/overlay/index.html"
+  },
+  "media": {
+    "kind": "audio"
+  },
+  "ui": {
+    "id": "sound-player",
+    "name": "Sound Player",
+    "category": "Media",
+    "order": 29,
+    "dockPage": "/sound/index.html",
+    "ownership": "streamerbot",
+    "packagedOverlay": true,
+    "routingId": "walk-ons",
+    "overlays": [
+      "walkonsound"
+    ],
+    "actions": [
+      "Sound Player - Initialize",
+      "Sound Player - Health",
+      "Sound Player - Configure",
+      "Sound Player - Play",
+      "Sound Player - Play Pool",
+      "Sound Player - Play Assigned",
+      "Sound Player - Stop",
+      "Sound Player - Set Volume",
+      "Sound Player - Trigger Adapter",
+      "Sound Player - Renderer"
+    ],
+    "dependencies": [
+      "universal-dock",
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [
+      "source-modules",
+      "universal-overlay"
+    ],
+    "settings": [
+      "sounds",
+      "pools",
+      "masterVolume"
+    ],
+    "tests": [],
+    "transport": {
+      "feature": "walkonSound",
+      "stateKey": "portable.walkonSound.state",
+      "actionPrefix": "Sound Player"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.walkonSound.state",
+        "fields": {
+          "phoneDeckVersion": "payload.phoneDeckVersion",
+          "visible": "payload.current.visible",
+          "playing": "payload.current.label",
+          "volume": "payload.config.settings.masterVolumePercent",
+          "lastError": "payload.current.lastError"
+        },
+        "ack": {
+          "path": "payload.phoneDeckResults",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "resources": {
+        "sounds": {
+          "path": "payload.config.library",
+          "id": "$key",
+          "label": "label",
+          "filter": {
+            "path": "enabled",
+            "equals": true
+          }
+        },
+        "pools": {
+          "path": "payload.config.pools",
+          "id": "$key",
+          "label": "label",
+          "filter": {
+            "path": "enabled",
+            "equals": true
+          }
+        }
+      },
+      "actions": {
+        "play": {
+          "id": "3c3cbec6-dbd9-4f91-8586-1ed1b0a26932",
+          "args": {
+            "id": {
+              "field": "sound"
+            }
+          }
+        },
+        "pool": {
+          "id": "8479aa87-9aa8-4532-8042-e678f24e9512",
+          "args": {
+            "poolId": {
+              "field": "pool"
+            }
+          }
+        },
+        "stop": {
+          "id": "79d87294-77a0-40ce-b83a-d7e770d3e264",
+          "args": {}
+        },
+        "volume": {
+          "id": "faec376f-cee9-4ab8-a329-5a7dadffc423",
+          "args": {
+            "volumePercent": {
+              "field": "volumePercent"
+            }
+          }
+        }
+      },
+      "controls": [
+        {
+          "id": "play",
+          "name": "Play sound",
+          "kind": "button",
+          "action": "play",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "sound",
+              "label": "Registered sound",
+              "type": "resource",
+              "resource": "sounds",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "play-picker",
+          "name": "Choose sound to play",
+          "kind": "form",
+          "action": "play",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "sound",
+              "label": "Registered sound",
+              "type": "resource",
+              "resource": "sounds",
+              "required": true,
+              "input": true
+            }
+          ]
+        },
+        {
+          "id": "play-pool",
+          "name": "Play weighted sound pool",
+          "kind": "button",
+          "action": "pool",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "pool",
+              "label": "Saved sound pool",
+              "type": "resource",
+              "resource": "pools",
+              "required": true
+            }
+          ]
+        },
+        {
+          "id": "stop",
+          "name": "Stop sound",
+          "kind": "button",
+          "action": "stop",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "volume",
+          "name": "Set sound volume",
+          "kind": "form",
+          "action": "volume",
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "fields": [
+            {
+              "id": "volumePercent",
+              "label": "Volume (%)",
+              "type": "number",
+              "min": 0,
+              "max": 100,
+              "integer": true,
+              "required": true,
+              "input": true
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Sound playback status",
+          "kind": "widget",
+          "display": [
+            "visible",
+            "playing",
+            "volume",
+            "lastError"
+          ],
+          "displayLabels": {
+            "visible": "Playing",
+            "playing": "Selection",
+            "volume": "Master volume (%)",
+            "lastError": "Playback issue"
+          },
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

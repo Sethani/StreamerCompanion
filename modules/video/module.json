@@ -1,9 +1,9 @@
 {
   "schemaVersion": 2,
   "id": "video",
-  "name": "Video",
-  "version": "2.2.1",
-  "description": "Owned video playback, titles, presentation settings, and overlay tests.",
+  "name": "Video Player",
+  "version": "2.4.1",
+  "description": "Play local videos with adjustable placement, sound and optional titles.",
   "configurationRequired": false,
   "documentation": "README.md",
   "streamerbot": {
@@ -111,7 +111,7 @@
     },
     "id": "video",
     "name": "Video Player",
-    "category": "Effects",
+    "category": "Media",
     "order": 10,
     "dockPage": "/video/index.html",
     "ownership": "streamerbot",
@@ -226,5 +226,6 @@
   },
   "media": {
     "kind": "video"
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

@@ -1,27 +1,50 @@
 # Wheel
 
-2.1.2 adds optional Phone Deck controls to spin a selected existing profile, clear the wheel and view status. Missing profiles remain unavailable. Dispatch uses the established native actions, weights, animation and sound; it reports Requested because those actions have no matching completion acknowledgement. This metadata-only update retains identical native export data to 2.1.1 and needs no native reimport. Phone Deck is optional; existing layouts receive no automatic cards.
+Create saved wheels with weighted entries, then spin one on your stream. Configure its timing, position, appearance and result sound from the dock. The same profiles can be used by commands, rewards, subscriptions and Phone Deck.
 
-Wheel is the direct package extraction of the established Wheel 2 module. It preserves the existing profile editor, weighted selection, timing, placement, appearance, transparent canvas animation, result presentation and result sound. First-party code and design: Sethani, MIT. No credentials, viewer history, OBS profile or installed Streamer.bot state is packaged.
+## Set up a profile
 
-## Install and migration
+1. Connect Companion to Streamer.bot's local WebSocket server. Install Wheel from **Catalogue**, expand its **Installed** row and choose **Import into Streamer.bot…** to import the six core actions and triggerless adapter. Back up Streamer.bot and the saved `portable.wheel.profiles` / `portable.wheel.state` globals first.
+2. On a fresh or required engine import, run **Wheel - Initialize** once to load saved profiles; it also runs at Streamer.bot startup. Existing current imports need no reimport/restart for this guide-only patch. Requires Companion 1.3.0 or newer and [Universal Dock](../universal-dock/README.md); no module service is needed.
+3. Choose **Open controls**, or select Wheel in Universal Dock. Pick a Profile or use **New**; Duplicate copies the selected profile. Set Profile name and use **Add entry** for each result label/weight.
+4. Positive weights determine relative chance: weight 2 is twice as likely as weight 1. Zero-weight entries are not selected, and a wheel needs at least one positive entry. Review Minimum spin, Maximum spin and Result display durations.
+5. Adjust Position and size and Appearance, then **Save settings**. Reset buttons change the draft and still need Save. **Import** loads a settings export into a draft for review; **Export** creates a JSON copy of your settings. Keep private profile data out of public exports.
+6. Use your existing [Universal Overlay](../universal-overlay/README.md) OBS source and allow Wheel in [Overlay Visibility](../source-modules/README.md). Refresh the shared source if needed after first installation; do not add a duplicate Wheel source.
 
-Requires Companion 1.3.0+, Universal Dock and Streamer.bot's local WebSocket server. Install through the catalogue, back up the existing Wheel actions and the `portable.wheel.profiles` and `portable.wheel.state` globals, then import the Wheel action group. The six established core action IDs are preserved. Import replaces their implementation in place and adds one inert `Wheel - Trigger Adapter` action with no trigger.
+## Preview deliberately
 
-Restart Streamer.bot once after import so the preserved startup trigger runs `Wheel - Initialize`, then open Wheel in Universal Dock. Initialization normalizes the existing schema-2 profile container without changing its profile slugs, labels, weights, timings, position or appearance. Existing `Sub Spin` and `Selfcare wheel` actions are deliberately not exported: they remain in the installed profile with their IDs and triggers, and their `sub-spin` and `selfcare-spin` calls remain supported by the new engine. The old Node backend is no longer needed by the imported actions.
+**Preview spin** displays the chosen profile on the actual overlay, including OBS wherever visible, and can play its result sound. It saves unsaved settings first. Optional test user supplies a display label; no real viewer/chat request is required. **Clear** removes the local display. Test at a time when the real visual/audio output is appropriate.
 
-Refresh the existing combined OBS browser source after installation. Do not add a second Wheel source. Public standalone installations can use Universal Overlay and Source Modules; the package renderer is the same transparent Wheel renderer used by the legacy module.
+The Status and Last result fields show the current run and selected label. Profile settings, weights, original transparent animation and result sound are retained across package updates.
 
-## Trigger adapter
+## Prepare your own trigger adapter
 
-`Wheel - Trigger Adapter` is an untriggered Streamer.bot action template. Duplicate it, rename the copy, change its plain `profile` argument to a profile slug shown in the Wheel dock, then attach any native Streamer.bot command, channel-point redeem, subscription, gift-subscription or other trigger. It passes the triggering `userName` to the existing Wheel engine, waits until selection completes and leaves the selected label in the existing `result` argument for optional downstream actions. The module never creates or enables personal triggers automatically.
+Select the saved profile and use **Copy profile slug** in the Trigger adapter panel. The slug is the internal profile key, which may differ from its display name.
 
-## Compatibility and exact scope
+In Streamer.bot, duplicate **Wheel - Trigger Adapter**, rename the copy for its intended purpose and replace its **profile** Set Argument value with that slug, without percent signs. Keep wheelActionMode set to trigger-spin and its immediate call to Wheel - Engine. Attach the trigger to your copy; leave the imported template untriggered so it remains reusable. It passes userName (or user) from the trigger, spins the selected profile and waits for its selection duration.
 
-The package retains `portable.wheel.profiles`, `portable.wheel.state`, schema 2, `wheelActionMode`, the original two compatibility modes, the established default profiles, and the existing six core action IDs. Dock and renderer markup, styling, canvas drawing, easing, label fitting, positioning, palette, result timing and sound behavior come directly from the legacy Wheel files. The only user-facing addition is the trigger-adapter guidance and copy-profile-slug control in the dock.
+## Command, reward and subscription examples
 
-Wheel 2.1.1 does not include the personal result-chat actions called after the existing adapters. Those remain private and continue to receive the `result` argument. The public package contains no legacy server route, personal static path or Node fallback. Roll back by restoring the Streamer.bot backup and previous package; saved globals are not deleted by package removal.
+Use separate adapter copies when different triggers need different profiles or rules:
 
-## Testing
+- **Chat command:** create a command such as !wheel in Streamer.bot's Commands tab, choose its permissions/cooldown, then add **Core → Commands → Command Triggered** to the adapter copy and select that command. The fixed profile argument selects the saved wheel; the command sender supplies the user context. See the [Command Triggered reference](https://docs.streamer.bot/api/triggers/core/commands/command-triggered).
+- **Channel points:** configure your intended channel-point reward, then add **Twitch → Channel Reward → Reward Redemption** to its adapter copy and select that exact reward. Do not select Any unless every reward should spin this wheel. Redemption Updated and Automatic Reward Redemption are different events; avoid a second handler for the same reward. See [Reward Redemption](https://docs.streamer.bot/api/triggers/twitch/channel-reward/reward-redemption).
+- **New subscription:** add **Twitch → Subscriptions → Subscription** to its adapter copy and choose the intended tiers. Resubscription and Gift Subscription are separate triggers; add them only when deliberately wanted, avoiding overlap with gift-bomb handling. See [Subscription](https://docs.streamer.bot/api/triggers/twitch/subscriptions/subscription).
 
-Automated tests use synthetic profiles and an isolated Streamer.bot endpoint. They cover stable action identities, schema migration, configuration preservation, weighted-spin boundaries, adapter behavior, dock editing, import/export, animation reconstruction, exact legacy CSS/design invariants, result timing, sound invocation, clearing and disconnect handling. No production wheel, redeem, subscription, chat message or OBS source is activated by build tests.
+These recipes create real stream behavior when enabled. This package never creates/enables personal commands, rewards or subscription handlers. A spin does not itself refund/complete a reward, perform a result-specific task or announce a chat result; that automation belongs to your own caller.
+
+## Use the selected result
+
+The engine records the selected label in `portable.wheel.state` at `payload.currentSpin.result`, together with the spin ID, profile, user and start/end timestamps. It also sets an engine-local **result** argument before waiting for the spin duration. The dock displays the chosen label after selection completes.
+
+Immediate visual Run Action argument propagation was verified in Streamer.bot 1.0.7 using a triggerless child that sets a synthetic argument and a parent that logs it. In your adapter copy, add Set Argument for **result** with an empty value before its Wheel - Engine call, keep **Run Action Immediately** enabled, then use **%result%** in optional downstream steps after that call. Check that result is nonempty before announcing or acting on it; an invalid profile or failed spin must not reuse an older inherited value.
+
+Keep immediate execution enabled for this recipe. Queued calls need their own completion strategy. For advanced work reading persisted spin state, match its ID/profile/timestamps to the intended spin: another spin or Clear can replace the current state, so an uncorrelated latest result is not proof of your caller's outcome.
+
+## Phone Deck and backup
+
+[Phone Deck](../phone-deck/README.md) optionally offers spin for an existing profile, Clear and status. Add cards explicitly; missing profiles stay unavailable and no cards appear automatically. It uses the same weights, animation and sound. Commands report Requested because these native actions have no matching durable completion acknowledgement; inspect status before retrying an uncertain result.
+
+If nothing appears, check required imports, saved positive-weight entries, profile slug and scene routing. Back up actions/profiles/state before engine changes. Updates preserve profiles, settings and presentation; removing the package does not delete saved globals. Restore Streamer.bot profile files only while it is closed.
+
+First-party code/design: Sethani, MIT. No credentials, viewer history or OBS profile is bundled.

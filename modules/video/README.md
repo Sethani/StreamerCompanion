@@ -1,45 +1,91 @@
 # Video Player
 
-2.2.1 adds optional Phone Deck play/stop/status declarations. Play selects an enabled registered video by ID and accepts an optional title; the native owner resolves its saved source, and no source URL reaches the handset. Missing/disabled resources remain unavailable. Native dispatch reports Requested. This metadata-only update retains identical native export data to 2.2.0 and needs no native reimport. Phone Deck is optional and existing layouts receive no automatic cards.
+Play saved local videos through the shared overlay, with optional titles, adjustable placement and volume. Use it directly, from a custom trigger, or as the video owner for [Walk Ons](../walk-ons/README.md).
 
-Provides reusable local-video playback in the shared overlay, including an optional title bar, a registered video library, volume and fit controls, positioning, and guarded playback completion.
+Find Video Player under **Media** in Companion and Universal Dock. Its Streamer.bot actions retain the `Video -` names.
 
-## Requirements
+## What you need
 
-- Companion 1.2.0, Universal Dock 1.x, Universal Overlay 1.x and Source Modules 1.x. The catalogue installs the required browser modules together.
-- Streamer.bot with its local WebSocket enabled. Browser transport currently supports unauthenticated loopback WebSockets.
+- Companion and Streamer.bot running, with the local Streamer.bot WebSocket connected.
+- Universal Dock, [Universal Overlay](../universal-overlay/README.md) and [Overlay Visibility](../source-modules/README.md), installed with the player through the catalogue.
+- Video and Overlay Visibility actions imported into Streamer.bot.
 
-Companion must stay running to host the packaged editor, overlay and privately copied media. The old static tree and monolithic server are not required for newly registered media.
+The browser transport currently uses an unauthenticated loopback Streamer.bot WebSocket. Companion serves the editor, overlay and copied files. No separate Video service, personal server or extra OBS video source is required for newly added media. Phone Deck and Walk Ons are optional.
 
-## Install
+## First setup
 
-1. Back up Streamer.bot through its normal backup process, then install Video through Companion's catalogue.
-2. Explicitly import Source Modules and all six Video actions. Existing names and IDs are preserved. Import the new exports even if old action names already show as verified: name checks cannot establish imported code/version.
-3. Run `Module Routing - Initialize` and `Video - Initialize` once. Their startup triggers handle later starts; Source Modules also includes OBS Scene Changed.
-4. Choose **Add media** on Video's Companion card. In Video controls, press **Refresh media** and Save to register the selected copies.
-5. Copy Universal Overlay's overlay URL from Companion into a separate OBS browser source. Enable Video in Source Modules for the intended scenes. Unconfigured overlays stay hidden.
-6. Use Universal Dock's Tests link. Verify health, a short video, title, scene change, natural completion, disconnect and restart before cutting over production. Play/Stop tests ask for confirmation.
+1. Back up Streamer.bot. Install Video Player in Companion and choose **Import into Streamer.bot…**. Paste the copied code into Streamer.bot's **Import → Import String**, review and import all six Video actions. Import Overlay Visibility' actions as well if they are not set up.
+2. On a fresh setup, run **Module Routing - Initialize** and **Video - Initialize** once. Their startup triggers handle later starts. Installing package files alone does not import actions.
+3. Choose **Add media** on Video Player in Companion. Supported files are MP4, WebM, M4V and MOV; the file's codec must also be supported by the OBS browser.
+4. Open **Controls**, press **Refresh media**, label the videos and press **Save settings**. Uncheck availability to stop offering an entry for new selections.
+5. Add the Universal Overlay URL to OBS once, using your canvas dimensions. Reuse an existing shared source rather than adding a second copy.
+6. In Overlay Visibility, allow **Video Player** in **All scenes** or the chosen exact scene names, and save.
+7. Choose a video and optional title under **Preview and save**, then press **Play preview**. Check the title, placement, sound and natural completion; **Stop** hides it.
 
-Do not run old and new Video overlays simultaneously at cutover. Packages do not automatically change OBS sources, live actions or saved globals.
+**Play preview** uses the real shared overlay and can be visible to viewers. It is not an isolated editor preview; do the first check off-stream. Save pending settings before relying on them in Phone Deck or other actions.
 
-## Behaviour
+## Adjust presentation
 
-`Video - Play` accepts a registered `id`, optional `title`/`src`, fit, volume, muted, loop and legacy pixel geometry. An empty ID has no personal fallback; an empty title displays no title bar. `Video - Stop` hides playback. Completion uses the active start timestamp so an older completion cannot stop a newer video.
+| Controls | Purpose |
+| --- | --- |
+| Anchor, X/Y offset, Width | Place and size the video relative to the canvas. |
+| Aspect ratio | Choose 16:9, 4:3, Square or Source. |
+| Video fit | Contain keeps the whole image; Cover crops to fill; Stretch fills without preserving proportions. |
+| Volume (%) | Set playback volume; zero is silent. |
+| Title position/size/colours/opacity | Style the optional title bar. An empty title hides it. |
+| Reset buttons | Stage defaults for position or title styling. Save to apply. |
 
-Disconnect hides playback; reconnect reads globals without issuing Play. Leaving an allowed scene removes the renderer frame. Returning recreates it from saved current state and may restart an active clip from the beginning. Avoid opening multiple copies of the playback overlay.
+Presentation changes apply when saved and used for the next playback. The active video keeps its playback snapshot. Stop affects Video only, not Sound Player or Shoutout Clips.
 
-The module does not own birthday matching, walk-on selection, or shoutout clip lookup. Those are separate modules which may depend on Video Player.
+## Library, IDs and replacement files
 
-## Settings and media
+**Video ID** is read-only. Select and copy it for a custom Streamer.bot action. Labels can change without changing the ID.
 
-The library and presentation remain in `portable.video.state`. Installing package files does not overwrite that global; Initialize preserves valid library entries and presentation. Legacy `/streaming/videos/` and port 7474 URLs remain supported, requiring their original host until intentionally migrated.
+To replace a file while retaining an existing ID, add the new file through Companion and press **Refresh media**. In the original row choose the replacement in **Replace media**, then save. New copies also receive their own library IDs; disable duplicates you do not want to offer.
 
-To remove that dependency, add copies through Companion, refresh media, then choose a replacement in the existing library row's **Replace media** selector and Save. The row retains its ID so existing actions keep working. New copies receive independent IDs; disable duplicates you no longer want. Keep original files/settings for rollback.
+**Export** downloads the current settings, including staged edits. **Import** loads a settings file into the editor; inspect it and save to apply. These buttons import/export settings, not the actual media files. Original files are never moved or deleted.
 
-Copied media and its index live privately in `module-data/video/media`, outside installed package code. Original absolute paths and media bytes never enter releases. Export/import settings stages changes until Save. No original files are moved or deleted, and missing legacy files are not silently scanned or copied.
+Legacy local video URLs remain supported while their original host is available. Replace them deliberately through the existing row to remove that dependency. Missing old files are not silently scanned or copied. Keep original files/settings for rollback.
 
-## Uninstall and rollback
+## Connect a command, reward or subscription
 
-Keep backups of Streamer.bot and the preview data profile. Restore compatible browser packages, imported actions and intentionally changed settings together: code rollback alone cannot revert globals. Code upgrades preserve private media/preferences. Static packages have no child service or auto-start setting.
+Create a separate wrapper action for each selection; keep the supplied actions intact.
 
-No automatic uninstall/data deletion is provided. Intentional removal must affect only Video's own actions/global, preserving other modules and shared media. Keep the original production applications available until a controlled cutover passes.
+1. Add an action such as **Play celebration video** in Streamer.bot.
+2. Add **Core → Arguments → Set Argument**, Variable Name `id`, Value the copied **Video ID**. No percent signs belong around the variable name.
+3. Optionally add a second Set Argument named `title` with fixed text. Leave it empty for no title bar.
+4. Add **Core → Actions → Run Action**, choose **Video - Play**, and keep **Run Action Immediately** enabled.
+5. Attach one of these triggers to your wrapper:
+
+| Trigger | Setup |
+| --- | --- |
+| Chat command | Add a command such as `!celebrate` in **Commands**, configure permissions/cooldown, then choose it in **Core → Commands → Command Triggered** on the wrapper. |
+| Channel points | Use **Twitch → Channel Reward → Reward Redemption** and select one specific configured reward. Video playback does not automatically fulfill or refund the redemption. |
+| Subscription | Use **Twitch → Subscriptions → Subscription**, choosing the desired tiers. Add resubscription or gift triggers separately if wanted. |
+
+For a stop wrapper, run **Video - Stop** with no media argument. The module does not create commands, rewards or subscription triggers for you, and does not perform birthday matching or shoutout clip lookup.
+
+These recipes use registered IDs rather than viewer-supplied file paths. Test the wrapper manually off-stream before enabling an audience trigger.
+
+Streamer.bot references: [Set Argument](https://docs.streamer.bot/api/sub-actions/core/arguments/set-argument), [Run Action](https://docs.streamer.bot/api/sub-actions/core/actions/run-action), [Commands](https://docs.streamer.bot/guide/core/commands), [Reward Redemption](https://docs.streamer.bot/api/triggers/twitch/channel-reward/reward-redemption), [Subscription](https://docs.streamer.bot/api/triggers/twitch/subscriptions/subscription).
+
+## Optional integrations
+
+**Phone Deck:** add Play registered video, Stop video or Video status. Play selects an enabled saved video and can take a title; private source paths are not sent to the handset. Commands show **Requested**, not proof of audible/visible playback. No cards are added automatically.
+
+**Walk Ons:** save a Video assignment there. Walk Ons handles the person and eligibility; Video handles playback. Sound Player is not required for video-only entrances.
+
+## Troubleshooting and recovery
+
+| Symptom | Check |
+| --- | --- |
+| No registered videos | Add media in Companion, refresh here and save. |
+| Black/hidden playback | Current scene visibility, open Universal Overlay, saved enabled ID and a browser-supported codec. |
+| No sound | Player volume, any muting argument, OBS source audio and monitoring/output. |
+| Clip restarts after a scene change | Leaving an allowed scene removes Video's frame. Returning may rebuild an active clip from the beginning. Avoid multiple playback overlays. |
+| Disconnected | Keep Companion/Streamer.bot running and restore the WebSocket connection. Reconnect reads saved state without issuing a new Play. |
+| Old actions look Ready but behave differently | Names alone cannot verify imported code. Reimport a required functional update after backing up; documentation/editor-only updates need no native reimport. |
+
+Back up Streamer.bot and Companion's data profile before uninstall or rollback. Package installation preserves copied media and saved settings; it does not modify OBS sources. Restore compatible browser packages, native actions and intentionally changed settings together. Removing package code does not erase imported actions, globals or private media.
+
+Video 2.3.0 introduced request-bound acceptance for Walk Ons and required updated native actions. The later category, guide and read-only ID changes keep that native action data unchanged.

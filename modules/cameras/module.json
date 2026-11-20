@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "cameras",
   "name": "Cameras",
-  "version": "2.0.2",
-  "description": "Native OBS camera modes, private source mappings and read-only scene inventory.",
+  "version": "2.0.5",
+  "description": "Switch OBS camera modes and map existing scenes and sources.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -297,5 +297,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

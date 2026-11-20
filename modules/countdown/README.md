@@ -1,23 +1,47 @@
 # Countdown
 
-Version 1.1.1 adds optional Phone Deck controls: start the saved timer, 3/5-minute presets, custom whole-second duration/finished text, save settings, pause, resume, clear and a live status widget. Starts/presets retain native behavior, including updating saved duration; Save settings does not restart an active timer. The widget follows the saved end timestamp using Companion's clock, freezes when paused and shows Unknown for unavailable data. Local display expiry sends no native action. These timer controls never launch a stream, play music or announce going live. Dispatch reports Requested, since the existing native actions do not retain matching request-ID results. No cards are added automatically and Phone Deck is not a dependency.
+Show a countdown and multiline finished message in your shared stream overlay. Start, pause, resume and clear it from the dock or Phone Deck. Countdown controls only the timer; use [Stream Launch](../stream-launch/README.md) for guided stream startup.
 
-This changes metadata/documentation only. The full native export body matches 1.1.0; existing imports/settings/active timers/combined-overlay rendering are preserved. Existing installations need no native reimport/restart or Companion rebuild.
+## Set up
 
-Start, pause, resume and clear a countdown in the existing combined OBS overlay. Preserves the original centered yellow-to-green text and multiline finished message. First-party code/design: Sethani, MIT. No font files or external assets are bundled; the original Algerian/Georgia/serif font preference is retained.
+1. Connect Companion to Streamer.bot's local WebSocket server. **Help → Getting Started** covers the shared setup.
+2. Install Countdown from **Catalogue**. Expand its **Installed** row and choose **Import into Streamer.bot…** to import the supplied Countdown actions. Back up Streamer.bot before replacing imports. No separate module service is needed.
+3. Choose **Open controls**, or select Countdown in [Universal Dock](../universal-dock/README.md). Press **Load saved state** once after import. The supplied Initialize action also runs at Streamer.bot startup and preserves saved timer settings/state.
+4. Enter whole-number **Hours**, **Minutes** and **Seconds**, plus **Finished text**. Use actual line breaks for a multiline message. Press **Save preset** to keep these choices without restarting the current timer.
+5. Use your existing [Universal Overlay](../universal-overlay/README.md) OBS source. In [Overlay Visibility](../source-modules/README.md), allow Countdown in the intended scenes. Refresh the shared source if needed after first installation; do not add a second countdown source.
 
-## Install
+The module requires Companion 1.2.2 or newer and Universal Dock. Shared rendering also uses Universal Overlay and Overlay Visibility.
 
-Requires Companion 1.2.2+, Universal Dock and Streamer.bot's local WebSocket server. Install through the catalogue and import the Countdown action group. No Node service is installed or started. Initialize is registered for Streamer.bot startup; it preserves existing timer/config globals. Open Countdown in the dock, click Load saved state once after import, save a preset if desired, then Start/Pause/Resume/Clear. These are live timer controls; no automatic test starts on page load. Refresh your existing combined OBS source to load the integration. Do not add another OBS browser source. Source Modules controls scene visibility.
+## Run the timer
 
-Public standalone installations can use Universal Overlay and Source Modules. The renderer is served from the module package; the existing personal combined shell embeds that renderer with its old countdown drawing suppressed. If Streamer.bot disconnects or the package is not Ready, the renderer hides instead of showing stale countdown text. The countdown advances from its saved end timestamp without requiring a tick service or per-second action calls.
+**Start countdown** saves the entered duration/message and starts a new timer, replacing an existing run. **Pause** freezes its remaining time; **Resume** continues a paused timer. **Clear** returns it to idle and removes its display.
 
-## Compatibility and scope
+**Save preset** updates settings for the next run without restarting or replacing the active timer. Empty finished text retains the previous saved message. An explicit zero-second duration finishes immediately. Use nonnegative whole seconds; the total cannot exceed 2,147,483,647 seconds.
 
-The original six Countdown action IDs are preserved, along with portable.countdown.config and portable.countdown.state and the countdownMode argument. New Configure and Health wrappers are self-contained. The export contains only Countdown actions and startup initialization: no personal queues, chat commands, stream-start action, OBS credentials, media or Spotify settings. Imports replace the matching existing actions rather than requiring duplicate groups. Existing Streamer.bot globals and active timer state are retained; unknown config/state fields survive initialization. No legacy installer is executed and installed Streamer.bot JSON is never edited by builds.
+These controls affect the actual overlay wherever visible. Nothing starts automatically when the control page opens. Starting a countdown does not start OBS streaming, play music or announce going live.
 
-The old countdown dock also orchestrates Stream - Launch, Stream - Configure Launch and legacy /api/stream/config routes. Those are a separate stream-launch feature and are deliberately still available in their original tools. The existing legacy stream-launch automation already forwards Countdown - Start while keeping a separate Node timer for Spotify fades; those action IDs and that call shape remain compatible. After timer cutover use this module's manual timer controls, not the old Node-only timer buttons. This package does not claim that launching a stream or retiring that backend has been migrated. Starting the timer does not trigger streaming, Spotify or OBS operations.
+The overlay retains the centred yellow-to-green text, multiline completion message and Algerian/Georgia/serif font preference. Check its placement and font fallback in your own OBS canvas before using it on stream.
 
-## Tests and limits
+## Use your own Streamer.bot trigger
 
-C# tests compile the actual engine against a synthetic CPH adapter and cover initialization, preservation, start/pause/resume/clear, preset configuration and invalid-input atomicity. Browser fixtures use a fake Streamer.bot endpoint; no real stream action is invoked. Final real Streamer.bot import/compiler and OBS visual acceptance remain controlled user checks. Old timer globals stay in Streamer.bot; no viewer history, tokens or personal defaults are copied into Companion or this package.
+For a fixed-duration caller, create your own action and add **Core → Arguments → Set Argument** with `durationSeconds` set to the desired whole-second value, for example 300. Optionally set `finishedText`. Then add **Core → Actions → Run Action**, choose **Countdown - Start** and enable **Run Action Immediately**. Enter argument names without percent signs. Attach your chosen trigger to this caller rather than editing the imported engine.
+
+To save a future preset instead, call **Countdown - Configure** with those arguments. To control an existing run, call **Countdown - Pause**, **Countdown - Resume** or **Countdown - Clear** without duration arguments. These actions affect the same timer as the dock and phone.
+
+Streamer.bot's [Set Argument](https://docs.streamer.bot/api/sub-actions/core/arguments/set-argument) and [Run Action](https://docs.streamer.bot/api/sub-actions/core/actions/run-action) references describe the dialogs. Running Start is a real display action; perform intentional tests when it is appropriate to show them.
+
+## Phone Deck
+
+[Phone Deck](../phone-deck/README.md) optionally offers Start saved countdown, 3/5-minute starts, custom duration/finished text, Save settings, Pause, Resume, Clear and Countdown status. Add controls in its editor; no cards are created automatically.
+
+Starts and presets use the same native actions and update the saved duration. Save settings does not restart a running timer. Phone duration fields use whole seconds. The status widget follows the saved end timestamp, freezes when paused and shows Unknown when state is unavailable; display expiry sends no additional native action.
+
+Commands report Requested rather than claiming confirmed native completion. Check timer status before retrying. These phone controls never launch a stream or play music.
+
+## Troubleshooting and updates
+
+If controls are unavailable, check Streamer.bot's WebSocket server and the required action import. If the overlay is absent, check its scene rule and shared source. During a lost connection the audience timer hides rather than keeping stale text; saved timer state is used when the connection returns.
+
+Timer settings and state live in Streamer.bot's private globals and are retained by imports/updates. Include them in your private Streamer.bot backup. Guide-only package updates need no native reimport or Companion rebuild.
+
+First-party code/design: Sethani, MIT. No font files or external assets are bundled.

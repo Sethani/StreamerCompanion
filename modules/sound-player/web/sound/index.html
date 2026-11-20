@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sound Player</title><link rel="stylesheet" href="./styles.css"></head><body><main>
+<h1>Sound Player</h1><p id="connection">Connecting to Streamer.bot…</p><p id="feedback" role="status"></p>
+<form id="settings"><section><h2>Sound library</h2><p>Use Import audio in Companion, then refresh and save here.</p><button type="button" id="refresh">Refresh media</button><div id="library"></div></section>
+<section><h2>Weighted pools</h2><p>Choose sounds and positive weights. Each play draws once.</p><button type="button" id="add-pool">Create pool</button><div id="pools"></div></section>
+<section><h2>Volume and playback</h2><label>Master volume (%) <input id="volume" type="number" min="0" max="100" step="1" value="100" required></label><p id="playback">Waiting for state</p><label>Sound <select id="sound"></select></label><button type="button" id="play">Play sound</button><label>Pool <select id="pool"></select></label><button type="button" id="play-pool">Play pool</button><button type="button" id="stop">Stop</button></section>
+<p id="dirty">Saved</p><button type="submit">Save settings</button></form><p>Phone Deck discovers these controls automatically. Add cards in its editor. Accepted playback still requires an open overlay and audible OBS output.</p>
+</main><script src="../../universal-dock/shared/streamerbot-transport.js"></script><script src="./app.js"></script></body></html>

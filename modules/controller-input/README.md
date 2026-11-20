@@ -1,33 +1,37 @@
-# Controller
+# Controller Display
 
-## Optional Phone Deck controls (1.1.1)
+Show your controller's buttons and sticks in the stream overlay. Windows XInput supplies input while OBS has focus; the module only reads input and never generates game, keyboard or chat commands.
 
-Show/Hide changes only the enabled preference and preserves position, size, scale, selected controller index and saved additional preferences. Source Modules scene routing still applies. Status distinguishes ready/stale/unavailable input; a disconnected or synthetic-test input is never presented as a real connected controller. No input simulation or native-helper start/stop is exposed to the phone.
+## Set up
 
-The private loopback API enforces exact Host/Origin and CSRF checks, serialized requests and persisted no-replay intents. Commands report Requested and do not automatically retry unknown outcomes. Config saves become visible in memory only after persistence succeeds. No Companion/Phone Deck rebuild or Streamer.bot import is needed; Catalogue updates restart only this module service, retaining saved settings and automatic-start preferences. Existing layouts receive no new cards automatically.
+1. Use Companion 1.3.1 or newer on Windows with PowerShell available. Connect an XInput-compatible controller.
+2. Install Controller Display from **Catalogue**. Expand its **Installed** row, **Start** its service and open **Settings** or **Open controls**. You can also select Controller Display under Games in [Universal Dock](../universal-dock/README.md).
+3. Choose **First connected** or a specific **Index 0–3** under Controller. Check **Input status** to confirm that the service sees your device.
+4. Set **X**, **Y**, **Width**, **Height**, **Scale X** and **Scale Y** for your canvas. Check **Enable controller display** and press **Save display**. Fresh installations start disabled; the layout defaults to X 1420, Y 850, width 260, height 190 and scale 1 on each axis.
+5. Use your existing [Universal Overlay](../universal-overlay/README.md) source. In [Overlay Visibility](../source-modules/README.md), allow Controller Display in the intended scenes. If necessary, refresh the existing OBS source to load a newly installed integration. Do not add a duplicate renderer.
 
-Native Windows XInput and the existing local controller drawing, in the same combined OBS overlay as the other modules. First-party code and drawing: Sethani, MIT. No external skin, GamepadViewer connection, Streamer.bot import or controller driver installation is part of this package.
+No Streamer.bot import, external skin, GamepadViewer connection or new driver installation is required. The local service uses port **3126**; keep it and Companion running.
 
-## Install and cutover
+## Everyday use and tests
 
-Requires Companion 1.3.1+, Windows, PowerShell and Universal Dock. Universal Overlay and Source Modules are optional for a standalone public setup. The existing personal combined overlay is integrated directly; do not create another OBS browser source.
+Edit position, size, scale or controller selection and **Save display**. Width/height set the display box; Scale X and Scale Y adjust its drawing. Updates preserve your layout, device choice and automatic-start preference.
 
-Install Controller, start its service explicitly, open Settings, enable/save the display, then refresh the existing combined OBS source. Port 3126 must have one owner: if the old built-in Controller Input service is running, stop only that service before starting this module. Leave OBS, Streamer.bot, Controller room hosting and other Companion services running. Existing scene rules retain the UI key `controller`; the package/service ID remains `controller-input`.
+**Test buttons and sticks** shows a clearly labelled synthetic state on the actual overlay for ten seconds, including OBS wherever the renderer is visible. Use it when that output is appropriate. **Clear test** removes it early. Neither control sends input to Windows, games or chat, and tests do not survive restart.
 
-The drawing, button mapping, trigger thresholds, axis dead zones and stick directions are preserved. Layout defaults are X 1420, Y 850, width 260, height 190, scale 1, matching the old layout defaults. New installations start disabled. Configure the display directly in Settings. Version 1.1.2 removes the retired personal-layout importer; existing installed layout settings remain in private module data and are preserved on upgrade. Existing installed-module data and automatic-start preferences are retained during upgrades; cross-profile copies are explicit.
+The diagnostic **Renderer URL for diagnostics** section includes **Open renderer**. Advanced direct-source use is possible without Universal Overlay or Overlay Visibility; use only one renderer for this feature.
 
-## Input and tests
+## Phone Deck
 
-The Node service owns a hidden PowerShell helper using XInputGetState from Windows. Native input continues while OBS has focus. It reads up to four XInput controllers; select the first connected or a specific index. Non-XInput devices may require an existing Windows compatibility layer. When native input is unavailable, the renderer can use the browser Gamepad API if exposed; this fallback may depend on browser focus/device permission. No keyboard/game input is generated.
+[Phone Deck](../phone-deck/README.md) optionally provides Show overlay, Hide overlay and Controller status. Add the controls you want in its editor; no cards appear automatically. The provider is listed as Controller Display in Games.
 
-Settings show current input diagnostics. **Test buttons and sticks** displays a clearly labeled synthetic state on the actual combined overlay for ten seconds. **Clear test** removes it. Neither sends input to Windows/games/chat. No test or input history survives restart. Stale native snapshots are cleared, preventing stuck pressed buttons. The disconnected label is part of the existing drawing, not an operational log message.
+Show/Hide changes the enabled preference and retains layout, device selection and scene routing. It cannot override a hidden scene rule. Commands report Requested; check status before retrying an uncertain outcome. Status distinguishes ready, stale and unavailable input; synthetic test state is not reported as a real connected controller. The phone cannot simulate input or start/stop the native helper.
 
-## Ownership and data
+## Troubleshooting and backup
 
-The legacy read-only `/state` response retains `source: native-xinput`, `pads`, indices, pressed buttons and normalized axes. New health/settings/overlay routes belong to this service. Read-only health/input responses permit HTTP loopback origins; settings and test writes require the settings-page CSRF token. Data under private `module-data/controller-input` contains layout config and a helper PID marker only (it can remain after a forced Windows termination and is replaced on the next start); no controller input history, viewer data or credentials are stored. Source code and helper are packaged independently of the personal monolith.
+If the display is absent, check the service, saved enabled preference, selected index and scene rule. The native helper reads up to four XInput controllers. Non-XInput hardware may need an existing Windows compatibility layer. A browser Gamepad API fallback may be available, depending on browser focus and device permissions.
 
-The helper watches its actual parent process and exits if that process ends, including forced Windows service stops. Normal stop also explicitly stops the helper. The package does not alter your system drivers, OBS source URLs, games or legacy service automatic-start preferences.
+Stale native snapshots are cleared to prevent stuck pressed buttons. DISCONNECTED is part of the controller drawing. Input status in Settings shows connection diagnostics. If port 3126 is occupied, identify and stop only a duplicate Controller Display service before starting this one.
 
-## Verification
+The private `module-data/controller-input` directory stores layout and preferences, not input history, viewer data or credentials. Back it up with your setup. Stopping the service also stops its hidden input helper. Updates do not alter drivers, games or OBS source URLs. Its internal package/routing IDs remain controller-input/controller so existing scene rules and phone cards continue to work.
 
-Tests cover sanitized inputs/settings, rendering, XInput mapping/dead-zone source, the real helper startup/shutdown, temporary package installation and data retention, synthetic live tests and combined-overlay routing/duplicate suppression. Real physical-button response and final OBS placement remain controlled user acceptance checks.
+First-party code and drawing: Sethani, MIT.

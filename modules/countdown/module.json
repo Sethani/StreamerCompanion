@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "countdown",
   "name": "Countdown",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Start, pause, resume and clear a countdown in the combined overlay using Streamer.bot state.",
   "author": "Sethani",
   "license": "MIT",
@@ -277,5 +277,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

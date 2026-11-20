@@ -3,10 +3,10 @@ const assert=require('node:assert/strict'),{moduleStates}=require('../src/module
 async function main(){
  const manifests=['chat-routing','named-timers','spotify','phone-deck'].map(id=>({manifest:require('../../modules/'+id+'/module.json')}));
  manifests.push({manifest:require('../../modules/universal-dock/module.json')},{manifest:require('../../modules/source-modules/module.json')},{manifest:require('../../modules/universal-overlay/module.json')});
- const offline=moduleStates(manifests,'1.3.2',[],[],false);
+ const offline=moduleStates(manifests,require('../package.json').version,[],[],false);
  for(const id of ['chat-routing','named-timers','spotify']){assert.notEqual(offline.states.get(id).state,'missing-dependency');assert.match(offline.states.get(id).problem,/Streamer.bot/);}
- const actions=manifests.flatMap(m=>m.manifest.streamerbot.requiredActions);const online=moduleStates(manifests,'1.3.2',['streamerbot-websocket'],actions,true);assert.equal(online.states.get('named-timers').state,'ready');
- const actualMissing=moduleStates(manifests.filter(m=>m.manifest.id!=='chat-routing'),'1.3.2',['streamerbot-websocket'],actions,true);assert.equal(actualMissing.states.get('named-timers').state,'missing-dependency');
+ const actions=manifests.flatMap(m=>m.manifest.streamerbot.requiredActions);const online=moduleStates(manifests,require('../package.json').version,['streamerbot-websocket'],actions,true);assert.equal(online.states.get('named-timers').state,'ready');
+ const actualMissing=moduleStates(manifests.filter(m=>m.manifest.id!=='chat-routing'),require('../package.json').version,['streamerbot-websocket'],actions,true);assert.equal(actualMissing.states.get('named-timers').state,'missing-dependency');
  const r=new ServiceRegistry(),calls=[];for(const id of ['spotify','phone-deck'])r.register({manifest:{schemaVersion:1,id,name:id,provides:[],dependencies:{requiredCapabilities:id==='spotify'?['streamerbot-websocket']:[]}},status:'stopped',async state(){return{status:this.status};},async start(){calls.push(id);await new Promise(r=>setTimeout(r,5));this.status='running';},async stop(){this.status='stopped';}});
  r.config.autoStart={spotify:true,'phone-deck':true};await r.startAll({automaticOnly:true});assert.deepEqual(calls,['phone-deck']);assert.equal(r.dependencyState(r.get('spotify')).missingRequired.length,0);assert.deepEqual(r.dependencyState(r.get('spotify')).waitingRequired,['streamerbot-websocket']);
  r.systemCapabilities.add('streamerbot-websocket');await Promise.all([r.reconcileAutomatic(),r.reconcileAutomatic()]);assert.deepEqual(calls,['phone-deck','spotify']);await r.reconcileAutomatic();assert.equal(calls.length,2);

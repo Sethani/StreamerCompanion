@@ -1,0 +1,29 @@
+# Native Wheel caller boundary — investigation checkpoint
+
+November 17, 2026. Read-only investigation after the operator reopened Streamer.bot1.0.7 and Companion following a computer restart. All29 modules Ready; no live action/import/spin/chat/stream/configuration/ownership mutation occurred.
+
+Inspected managed metadata and CIL from the installed executable without loading/executing its code. Private inspector uses System.Reflection.Metadata/PEReader; constant strings are redacted. Vendor-code/IL excerpts remain only in the private working workspace, outside the public repository.
+
+Binary identity: executable SHA25625d7d968d60a9905e11d3c1f771788ac60c4235775b685d7a7a186fbb236471b; Common.dll SHA2568ed6e032549dfa5e5dc73e1c4576dd5ccf9becb524d81e4e42883a581a7fc1d0. Bind these observations to that installed version; do not assume future native builds behave identically.
+
+The C# RunAction helper and visual type4 Run Action sub-action have separate dispatch code. In the visual immediate branch, the incoming dictionary is passed into the child action execution routine; queued dispatch passes through a dictionary-copy helper. Traced action argument setup, inline C# invocation and proxy argument assignment without finding a required copy at that immediate boundary. This is static evidence suggesting shared arguments for immediate execution, not an executed end-to-end proof of every branch or Wheel's caller result.
+
+The isolated C# regression fixture intentionally gives child engines separate dictionaries to stress persisted acknowledgement safety. Its old comment incorrectly stated this as unconditional native behavior. Corrected that comment only; test semantics and persisted acknowledgement safeguards remain unchanged. No test rerun is needed for a comment-only correction, and this investigation does not waive the native caller check.
+
+Next requires a harmless manual native caller test or a fully isolated native test profile. Proposed manual check: two temporary triggerless actions; a child only sets a synthetic argument, the parent invokes it immediately and logs the resulting synthetic value. No wheel engine, persistent global, real command/reward/subscription trigger, chat, OBS or external provider call is needed. Compare immediate versus queued only deliberately; do not test with a real streaming action. Delete the temporary actions afterward. Do not claim this test has run.
+
+Human Streamer.bot menu walkthrough remains open. Wheel Verified remains unchecked; its installed guide conservatively avoids claiming parent argument propagation. No module/package version changed. Existing source/privacy/publication and Pass4 work remain as recorded in the main checklist.
+
+## Native confirmation completed — November 17, 2026
+
+Operator created two temporary triggerless actions through the native1.0.7 interface. Child contains only CPH.SetArgument of a synthetic value and returns true. Parent contains Set Argument(parent-before), immediate visual Run Action(child), then C# TryGetArg/LogInfo. Both actions are enabled, Concurrent off and have no triggers. Their exact saved code, action IDs, sub-action types/counts and immediate flag were validated before dispatch.
+
+The API was initially unavailable because port8080 remained bound to exited old nativePID14428. Independent listener/process queries and an exclusive bind probe established the stale collision; current nativePID29216 remained running. Backed up native actions/settings and Companion prefs/phone/Widgets, then gracefully closed only Companion. This freed8080. User restarted the native WebSocket server successfully. Reopened established Companion executable independently from the native process; all29 modules Ready. No profile edits, native restart or port change needed. Socket inheritance is a plausible explanation, but the exact retaining handle was not identified.
+
+Dispatched only Polish test - Parent once by its validated ID. New log output after the recorded offset was **[Polish caller test] child-ok**. Therefore immediate visual Run Action propagates this child's C# argument to the parent's later C# sub-action on this installed1.0.7 build. No Wheel/native global/chat/OBS/external call was involved. Queued behavior was not dynamically tested and is not covered by this confirmation.
+
+Private evidence output/native-wheel-boundary/native-result.json and validated-test-actions.private.json; scripts/run-native-caller-probe.js has a durable run-once guard. Do not rerun it or treat static inspection alone as the executed proof. Temporary Child/Parent actions remain until operator cleanup; delete only those two from Temporary polish test. They have no triggers.
+
+Wheel guide updated to use immediate result propagation with an empty result sentinel before the engine call and a nonempty check afterward, avoiding stale inherited results on failed spins. Advanced persisted-state correlation caveat retained. Tested Wheel package plus all29 guide packages; runtime/assets/native import data/phone declarations unchanged. Installed Wheel2.1.4 through API and verified exact Help/package bytes, Wheel profiles/state, phone cards/revisions/private preferences and all service processes unchanged. No service/native/app restart for the guide patch. Artifact companion/out/wheel-native-result-guide-preview/wheel-2.1.4.streammodule, SHA25695296eac8cd913558b12dd573fa7db0c6c3e22b70aaa718f17dc573c777eab1d. Private output/wheel-native-result-guide-preview and helper apply-wheel-native-result-guide-preview.js prepare/install/verify complete; do not repeat mutations.
+
+Wheel Verified can now be checked based on source/compiled-engine/browser coverage plus this executed native caller-boundary test. The broader human menu walkthrough, prepublication review and Pass4 visual chatbox/command-filter implementation remain open. Widgets' existing unconfirmed owner was not recovered; keep ownership work separate.

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "phone-deck",
   "name": "Phone Deck",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Editable HTTPS handset deck with independent OBS controls and optional module contributions.",
   "author": "Sethani",
   "license": "MIT",
@@ -184,6 +184,14 @@
           ]
         }
       ]
-    }
-  }
+    },
+    "externalSetup": [
+      {
+        "id": "obs-websocket",
+        "name": "OBS WebSocket connection",
+        "required": true
+      }
+    ]
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

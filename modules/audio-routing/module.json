@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "audio-routing",
   "name": "Audio Routing",
-  "version": "2.0.1",
-  "description": "Existing OBS live/VOD track classifications, explicit Save/Apply and game-audio toggle.",
+  "version": "2.0.2",
+  "description": "Choose OBS live and VOD audio tracks, save a routing plan and toggle game audio.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -92,7 +92,7 @@
       ]
     },
     "id": "audio-routing",
-    "name": "Audio",
+    "name": "Audio Routing",
     "category": "Stream",
     "order": 30,
     "dockPage": "/audio/index.html",
@@ -121,5 +121,6 @@
       "stateKey": "portable.audioRouting.state",
       "actionPrefix": "Audio Routing"
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

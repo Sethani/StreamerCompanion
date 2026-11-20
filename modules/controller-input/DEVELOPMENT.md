@@ -1,0 +1,20 @@
+# controller-input developer notes
+
+## Verification
+
+Tests cover sanitized inputs/settings, rendering, XInput mapping/dead-zone source, the real helper startup/shutdown, temporary package installation and data retention, synthetic live tests and combined-overlay routing/duplicate suppression. Real physical-button response and final OBS placement remain controlled user acceptance checks.
+
+## Implementation and migration reference
+
+The private loopback API enforces exact Host/Origin and CSRF checks, serialized requests and persisted no-replay intents. Commands report Requested and do not automatically retry unknown outcomes. Config saves become visible in memory only after persistence succeeds. No Companion/Phone Deck rebuild or Streamer.bot import is needed; Catalogue updates restart only this module service, retaining saved settings and automatic-start preferences. Existing layouts receive no new cards automatically.
+
+Requires Companion 1.3.1+, Windows, PowerShell and Universal Dock. Universal Overlay and Source Modules are optional for a standalone public setup. The existing personal combined overlay is integrated directly; do not create another OBS browser source.
+
+Install Controller, start its service explicitly, open Settings, enable/save the display, then refresh the existing combined OBS source. Port 3126 must have one owner: if the old built-in Controller Input service is running, stop only that service before starting this module. Leave OBS, Streamer.bot, Controller room hosting and other Companion services running. Existing scene rules retain the UI key `controller`; the package/service ID remains `controller-input`.
+
+The legacy read-only `/state` response retains `source: native-xinput`, `pads`, indices, pressed buttons and normalized axes. New health/settings/overlay routes belong to this service. Read-only health/input responses permit HTTP loopback origins; settings and test writes require the settings-page CSRF token. Data under private `module-data/controller-input` contains layout config and a helper PID marker only (it can remain after a forced Windows termination and is replaced on the next start); no controller input history, viewer data or credentials are stored. Source code and helper are packaged independently of the personal monolith.
+
+The drawing, button mapping, trigger thresholds, axis dead zones and stick directions are preserved. Layout defaults are X 1420, Y 850, width 260, height 190, scale 1, matching the old layout defaults. New installations start disabled. Configure the display directly in Settings. Version 1.1.2 removes the retired personal-layout importer; existing installed layout settings remain in private module data and are preserved on upgrade. Existing installed-module data and automatic-start preferences are retained during upgrades; cross-profile copies are explicit.
+
+The helper watches its actual parent process and exits if that process ends, including forced Windows service stops. Normal stop also explicitly stops the helper. The package does not alter your system drivers, OBS source URLs, games or legacy service automatic-start preferences.
+

@@ -6,7 +6,7 @@ function routingRows(items) {
   for(const item of items.filter(m=>m.extensionOverlayUrl&&m.packageId!=="universal-overlay")){
     const p=item.overlayRouting;
     if(p){if(p.version!==1||p.retainOnSceneHide!==true||!Array.isArray(p.groups)||!p.groups.length||p.groups.length>16||new Set(p.groups).size!==p.groups.length||p.groups.some(id=>typeof id!=="string"||!/^[a-z][a-z0-9-]{0,63}$/.test(id)))continue;for(const id of p.groups)rows.set(id,{id,name:item.name+" · "+(typeof p.labels?.[id]==="string"?p.labels[id]:id)});}
-    else rows.set(item.id,item);
+    else rows.set(item.routingId || item.id,{...item,id:item.routingId || item.id});
   }return [...rows.values()];
 }
 const status = document.getElementById("status"), feedback = document.getElementById("feedback");
@@ -27,7 +27,7 @@ transport.subscribe("connection", (health) => { status.textContent = health.conn
 document.getElementById("routing").onsubmit = async (event) => {
   event.preventDefault();
   try {
-    const rules = {};
+    const rules = structuredClone(config.modules || {});
     for (const select of document.querySelectorAll("select[data-module]")) rules[select.dataset.module] = { mode: select.value, scenes: select.closest("section").querySelector("textarea").value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean) };
     await transport.execute("moduleRouting", "Save", { moduleRoutingJson: JSON.stringify({ version: 1, modules: rules }) }); dirty = false;
     await transport.refresh(); feedback.textContent = "Routing saved.";

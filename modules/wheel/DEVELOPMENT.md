@@ -1,0 +1,14 @@
+# wheel developer notes
+
+## Testing
+
+Automated tests use synthetic profiles and an isolated Streamer.bot endpoint. They cover stable action identities, schema migration, configuration preservation, weighted-spin boundaries, adapter behavior, dock editing, import/export, animation reconstruction, exact legacy CSS/design invariants, result timing, sound invocation, clearing and disconnect handling. No production wheel, redeem, subscription, chat message or OBS source is activated by build tests.
+
+## Implementation and migration reference
+
+Restart Streamer.bot once after import so the preserved startup trigger runs `Wheel - Initialize`, then open Wheel in Universal Dock. Initialization normalizes the existing schema-2 profile container without changing its profile slugs, labels, weights, timings, position or appearance. Existing `Sub Spin` and `Selfcare wheel` actions are deliberately not exported: they remain in the installed profile with their IDs and triggers, and their `sub-spin` and `selfcare-spin` calls remain supported by the new engine. The old Node backend is no longer needed by the imported actions.
+
+The package retains `portable.wheel.profiles`, `portable.wheel.state`, schema 2, `wheelActionMode`, the original two compatibility modes, the established default profiles, and the existing six core action IDs. Dock and renderer markup, styling, canvas drawing, easing, label fitting, positioning, palette, result timing and sound behavior come directly from the legacy Wheel files. The only user-facing addition is the trigger-adapter guidance and copy-profile-slug control in the dock.
+
+Wheel 2.1.1 does not include the personal result-chat actions called after the existing adapters. Those remain private and continue to receive the `result` argument. The public package contains no legacy server route, personal static path or Node fallback. Roll back by restoring the Streamer.bot backup and previous package; saved globals are not deleted by package removal.
+

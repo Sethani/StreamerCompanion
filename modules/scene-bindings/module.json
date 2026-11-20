@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "scene-bindings",
   "name": "Scene Links",
-  "version": "2.0.3",
-  "description": "Existing scene-linked Twitch categories and Windows window focus.",
+  "version": "2.0.4",
+  "description": "Link OBS program scenes to Twitch category changes and Windows window focus.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -145,5 +145,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

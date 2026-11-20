@@ -41,7 +41,7 @@ async function fixture(root, packageFile) {
   }));
   const reservation = http.createServer(); reservation.listen(0, '127.0.0.1'); await once(reservation, 'listening');
   const port = reservation.address().port; await new Promise(resolve => reservation.close(resolve));
-  const host = new CompanionHost({ version: '1.3.1', dataDirectory: path.join(root, 'data'), controlApiPort: port, streamerBotUrl: `ws://127.0.0.1:${websocket.address().port}/`, catalogFetch: async url => {
+  const host = new CompanionHost({ version:require('../package.json').version, dataDirectory: path.join(root, 'data'), controlApiPort: port, streamerBotUrl: `ws://127.0.0.1:${websocket.address().port}/`, catalogFetch: async url => {
     const item = catalog.modules.find(entry => entry.package.url === url);
     if (!item) throw Error('External request blocked');
     return new Response(fs.readFileSync(packageFile && item.id === 'shoutout-clips' ? packageFile : path.join(output, path.basename(new URL(url).pathname))));

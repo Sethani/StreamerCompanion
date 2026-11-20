@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "archipelago",
   "name": "Archipelago",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "Choose Controller rooms and slots for a clean progress, logic and activity overlay.",
   "author": "Sethani",
   "license": "MIT",
@@ -176,6 +176,14 @@
           "fields": []
         }
       ]
-    }
-  }
+    },
+    "externalSetup": [
+      {
+        "id": "archipelago-controller",
+        "name": "Archipelago Controller Room data API",
+        "required": true
+      }
+    ]
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }

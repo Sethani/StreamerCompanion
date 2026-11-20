@@ -1,9 +1,9 @@
 {
   "meta": {
-    "name": "Source Modules",
+    "name": "Overlay Visibility",
     "author": "Sethani",
-    "version": "1.0.1",
-    "description": "Shared overlay scene routing",
+    "version": "1.1.1",
+    "description": "Choose which supported overlays appear in each OBS scene.",
     "autoRunAction": null,
     "minimumVersion": null
   },

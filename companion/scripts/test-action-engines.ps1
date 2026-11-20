@@ -9,7 +9,7 @@ $launchSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/s
 $remindersSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/reminders/streamerbot/reminders-engine.cs')
 $wheelSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/wheel/streamerbot/wheel-engine.cs')
 $walkOnsSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/walk-ons/streamerbot/walk-ons-engine.cs')
-$walkSoundSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/walk-ons/streamerbot/walk-on-sound-engine.cs')
+$walkSoundSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/sound-player/streamerbot/sound-player-engine.cs')
 $shoutoutSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'modules/shoutout-clips/streamerbot/shoutout-clips-engine.cs')
 $fields = 'public FakeCPH CPH = new FakeCPH(); public System.Collections.Generic.Dictionary<string,object> args = new System.Collections.Generic.Dictionary<string,object>();'
 $videoSource = $videoSource.Replace('public class CPHInline {', ('public class VideoInline {' + $fields))
@@ -85,12 +85,19 @@ namespace EngineTest {
    var child=new WalkSoundInline();
    child.CPH.Globals=parent.Globals;
    child.CPH.FailPersist=parent.FailPersist;
-   // Streamer.bot passes inputs to a child action; child argument changes do not return.
+   // Conservative isolation fixture: child receives a separate argument dictionary.
+   // This stress model does not prove native immediate Run Action propagation.
    child.args=new System.Collections.Generic.Dictionary<string,object>(parent.Arguments);
    child.CPH.Arguments=child.args;
-   child.args["walkonSoundMode"]="play";
+   child.args["soundPlayerMode"]="configure";child.args["migrateWalkOns"]="true";child.Execute();child.args.Remove("migrateWalkOns");child.args["soundPlayerMode"]="assigned";
    child.Execute();
-   if(complete){child.args["walkonSoundMode"]="stop";child.Execute();}
+   if(complete){child.args["soundPlayerMode"]="stop";child.Execute();}
+  }
+  public static void Video(FakeCPH parent) {
+   var child=new VideoInline();child.CPH.Globals=parent.Globals;child.CPH.FailPersist=parent.FailPersist;
+   child.args=new System.Collections.Generic.Dictionary<string,object>(parent.Arguments);child.CPH.Arguments=child.args;
+   child.args["videoMode"]="play";child.args["src"]="http://127.0.0.1:3135/api/public/media/video/11111111-1111-1111-1111-111111111111.mp4";child.Execute();
+   child.args["videoMode"]="stop";child.Execute();
   }
   public static void ConcurrentState() {
    const string config="{\"roster\":{\"fixture\":{\"type\":\"sound\",\"value\":\"tone\"}},\"sounds\":{\"tone\":{\"src\":\"http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav\"}},\"settings\":{\"oncePerStream\":true}}";
@@ -98,7 +105,7 @@ namespace EngineTest {
    int plays=0;
    System.Threading.Tasks.Parallel.For(0,32,index=>{
     var engine=new WalkOnsInline();engine.CPH.Globals=initial.CPH.Globals;engine.CPH.Arguments=engine.args;
-    engine.CPH.RunActionHook=name=>{if(name=="Walk-on Sound - Play"){System.Threading.Interlocked.Increment(ref plays);Play(engine.CPH,true);}};
+    engine.CPH.RunActionHook=name=>{if(name=="Sound Player - Play Assigned"){System.Threading.Interlocked.Increment(ref plays);Play(engine.CPH,true);}};
     engine.args["walkOnsMode"]=index%2==0?"watch":"configure";engine.args["userName"]="fixture";engine.args["message"]="hello";engine.args["config"]=config;engine.Execute();
    });
    var payload=Newtonsoft.Json.Linq.JObject.Parse((string)initial.CPH.Globals["portable.walkOns.state"])["payload"];
@@ -144,7 +151,7 @@ Run-Engine $video @{ videoMode = 'play' }
 Assert-True ($video.CPH.Globals['portable.video.state'] -eq $before) 'Play without a registered ID must not choose personal fallback media'
 Run-Engine $video @{ videoMode = 'play'; id = 'companion'; title = 'Synthetic title' }
 $state = $video.CPH.Globals['portable.video.state'] | ConvertFrom-Json
-Assert-True ($state.payload.current.visible -and $state.payload.moduleVersion -eq '2.2.0') 'Video must enter current playback state'
+Assert-True ($state.payload.current.visible -and $state.payload.moduleVersion -eq '2.3.0') 'Video must enter current playback state'
 $start = $state.payload.current.startedAtMs
 Run-Engine $video @{ videoMode = 'stop'; startedAtMs = ($start - 1).ToString() }
 $state = $video.CPH.Globals['portable.video.state'] | ConvertFrom-Json
@@ -387,7 +394,7 @@ Write-Output 'Remaining-time alignment and interrupted-launch preservation passe
 
 $walk = [EngineTest.WalkOnsInline]::new()
 $walk.args = $walk.CPH.Arguments
-$playSound = [System.Action[string]] { param($name) if ($name -eq 'Walk-on Sound - Play') { [EngineTest.WalkOnRecorder]::Play($walk.CPH, $true) } }
+$playSound = [System.Action[string]] { param($name) if ($name -eq 'Sound Player - Play Assigned') { [EngineTest.WalkOnRecorder]::Play($walk.CPH, $true) } }
 $walk.CPH.RunActionHook = $playSound
 Run-Engine $walk @{ walkOnsMode = 'initialize' }
 $walkConfig = '{"roster":{"fixture":{"enabled":true,"type":"soundpool","choices":[{"value":"sound-a","weight":3}],"volume":0.4}},"sounds":{"sound-a":{"label":"Synthetic","src":"http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav"}},"settings":{"oncePerStream":true}}'
@@ -403,7 +410,7 @@ $walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).pa
 Assert-True ($walkState.session.seen.Count -eq 0 -and $walk.CPH.Actions.Count -eq 1) 'Explicit Test must play without consuming eligibility'
 Assert-True (-not $walk.args.ContainsKey('walkOnSoundAccepted')) 'The parent must not receive child acceptance arguments'
 Assert-True (-not (($walk.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload.current.visible)) 'Acknowledgement must survive immediate completion'
-Assert-True ($walk.CPH.Arguments['src'] -like 'http://127.0.0.1:3135/*' -and $walk.CPH.Arguments['volume'] -eq '0.4') 'Weighted selection must forward private media and volume'
+Assert-True ($walk.CPH.Arguments['login'] -eq 'fixture' -and $walk.CPH.Arguments['volume'] -eq '0.4') 'Parent passes assignment and gain; owner selects private media'
 Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'hello' }
 Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'again' }
 $walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload
@@ -416,7 +423,7 @@ $walk.CPH.RunActionHook = $playSound
 Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'retry accepted' }
 Assert-True ((($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 1) 'Reset and successful retry must permit one entrance'
 Run-Engine $walk @{ walkOnsMode = 'reset'; login = 'fixture' }
-$walk.CPH.RunActionHook = [System.Action[string]] { param($name) if ($name -eq 'Walk-on Sound - Play') { $walk.args['walkOnSoundAccepted'] = $true } }
+$walk.CPH.RunActionHook = [System.Action[string]] { param($name) if ($name -eq 'Sound Player - Play Assigned') { $walk.args['walkOnSoundAccepted'] = $true } }
 Run-Engine $walk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'stale acknowledgement' }
 Assert-True ((($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 0) 'An old request acknowledgement and a child-style argument cannot acknowledge a new play'
 $walk.CPH.RunActionHook = $playSound
@@ -429,23 +436,29 @@ Run-Engine $walk @{ walkOnsMode = 'initialize' }
 $walkState = ($walk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload
 Assert-True ($walkState.config.roster.fixture.type -eq 'soundpool' -and $walkState.config.sounds.'sound-a'.label -eq 'Synthetic') 'Restart must preserve private configuration'
 $videoWalk = [EngineTest.WalkOnsInline]::new()
+$videoWalk.CPH.RunActionHook = [System.Action[string]] { param($name) if ($name -eq 'Video - Play') { [EngineTest.WalkOnRecorder]::Video($videoWalk.CPH) } }
 $videoWalk.args = $videoWalk.CPH.Arguments
 Run-Engine $videoWalk @{ walkOnsMode = 'initialize' }
 Run-Engine $videoWalk @{ walkOnsMode = 'configure'; config = '{"roster":{"fixture":{"type":"video","value":"synthetic-video"}},"settings":{"oncePerStream":true}}' }
 Run-Engine $videoWalk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'hello' }
 Run-Engine $videoWalk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'again' }
-Assert-True ($videoWalk.CPH.Actions.Count -eq 1 -and $videoWalk.CPH.Actions[0] -eq 'Video - Play') 'Video assignments must retain once-per-stream behavior without an audio acknowledgement'
+Assert-True ($videoWalk.CPH.Actions.Count -eq 1 -and $videoWalk.CPH.Actions[0] -eq 'Video - Play') 'Video assignments must retain once-per-stream behavior with durable Video acknowledgement'
 
+Run-Engine $videoWalk @{ walkOnsMode = 'reset'; login = 'fixture' }
+$videoWalk.CPH.FailPersist = $true
+Run-Engine $videoWalk @{ walkOnsMode = 'watch'; userName = 'fixture'; message = 'failed video' }
+$videoWalk.CPH.FailPersist = $false
+Assert-True ((($videoWalk.CPH.Globals['portable.walkOns.state'] | ConvertFrom-Json).payload.session.seen.Count) -eq 0) 'Failed Video persistence cannot consume eligibility'
 $sound = [EngineTest.WalkSoundInline]::new()
 $sound.args = $sound.CPH.Arguments
-Run-Engine $sound @{ walkonSoundMode = 'play'; id = 'fixture'; src = 'https://example.invalid/private.mp3' }
-Assert-True (-not $sound.CPH.Arguments['walkOnSoundAccepted'] -and -not $sound.CPH.Globals.ContainsKey('portable.walkonSound.state')) 'External audio URLs must be rejected without playback state'
-Run-Engine $sound @{ walkonSoundMode = 'play'; id = 'fixture'; src = 'http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav'; volume = 0 }
+Run-Engine $sound @{ soundPlayerMode = 'play'; id = 'fixture'; src = 'https://example.invalid/private.mp3' }
+Assert-True (-not $sound.CPH.Globals.ContainsKey('portable.walkonSound.state')) 'External audio URLs must be rejected without playback state'
+Run-Engine $sound @{ soundPlayerMode = 'play'; id = 'fixture'; src = 'http://127.0.0.1:3135/api/public/media/walk-ons/11111111-1111-1111-1111-111111111111.wav'; volume = 0 }
 $soundState = ($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload
-Assert-True ($sound.CPH.Arguments['walkOnSoundAccepted'] -and $soundState.current.visible -and $soundState.current.volume -eq 0) 'Companion audio must be accepted and zero volume preserved'
-Run-Engine $sound @{ walkonSoundMode = 'stop'; startedAtMs = 1 }
+Assert-True ($soundState.current.visible -and $soundState.current.volume -eq 0) 'Companion audio must be accepted and zero volume preserved'
+Run-Engine $sound @{ soundPlayerMode = 'stop'; startedAtMs = 1 }
 Assert-True ((($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload.current.visible)) 'Stale completion must not stop a newer sound'
-Run-Engine $sound @{ walkonSoundMode = 'stop'; startedAtMs = $soundState.current.startedAtMs }
+Run-Engine $sound @{ soundPlayerMode = 'stop'; startedAtMs = $soundState.current.startedAtMs }
 Assert-True (-not (($sound.CPH.Globals['portable.walkonSound.state'] | ConvertFrom-Json).payload.current.visible)) 'Matching completion must stop playback'
 Write-Output 'Actual Walk Ons C# passed: command/busy guards, weighted media and volume, Test eligibility, once-per-stream chat, rejected playback retry, restart preservation, URL validation and stale completion protection.'
 
@@ -485,3 +498,4 @@ Write-Output 'Actual Shoutout Clips C# passed: saved layout/mute/title preservat
 & (Join-Path $PSScriptRoot 'test-named-timers-engine.ps1')
 & (Join-Path $PSScriptRoot 'test-redeem-checklist-engine.ps1')
 & (Join-Path $PSScriptRoot 'test-phone-backlog-engines.ps1')
+& (Join-Path $PSScriptRoot 'test-sound-player-engines.ps1')

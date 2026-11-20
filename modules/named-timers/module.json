@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "id": "named-timers",
   "name": "Named Timers",
-  "version": "1.0.1",
-  "description": "Named and queued language timers using the established Streamer.bot globals, chat command and transparent overlay.",
+  "version": "1.0.3",
+  "description": "Create named timers and manage queued language timing with chat and shared-overlay controls.",
   "author": "Sethani",
   "license": "MIT",
   "documentation": "README.md",
@@ -177,5 +177,6 @@
         }
       ]
     }
-  }
+  },
+  "developerDocumentation": "DEVELOPMENT.md"
 }
