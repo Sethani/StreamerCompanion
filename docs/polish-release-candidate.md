@@ -1,6 +1,6 @@
 # Polish release candidate — updated November 20, 2026
 
-This is a reviewable proposal, not a published release or a completed fresh-user walkthrough. The operator approved the reviewed source commit/push November20; [draft PR #1](https://github.com/Sethani/StreamerCompanion/pull/1) is open for Windows/Linux CI and review. No merge, remote release, production installation or app restart was performed during this release preparation.
+This is a reviewable proposal, not a published release. The planned fresh-user walkthrough is accepted November20, combining isolated packaged setup and operator menu confirmation; simulated platform operations remain explicitly distinguished. The operator approved source commit/push; [draft PR #1](https://github.com/Sethani/StreamerCompanion/pull/1) is open for Windows/Linux CI and review. No merge, remote release, production installation or app restart was performed during this release preparation.
 
 ## Proposed release
 
@@ -66,7 +66,7 @@ The246 reviewed implementation files are committed as **88d7eae3028e30f5fe86c8e4
 ## Remaining gates
 
 1. The installed Streamer.bot1.0.7 command/reward/subscription menu walkthrough passed November20. Immediate native caller propagation was already proven and temporary actions deleted; do not rerun that probe. Archive/Pokémon human repair checks are also accepted.
-2. Final publication-scope and packaging audit results are recorded below. Complete any broader fresh-user setup checks still recorded in the working checklist; the scoped menu review does not certify every fresh-user scenario.
+2. Final publication-scope and packaging audit results are recorded below. The planned fresh-user walkthrough passed: empty-profile packaged installation/Help/import-copy/dependency/status/URL controls, plus operator-confirmed native and OBS menus. Catalogue delivery and native import outcomes were simulated; this is not a claim of exhaustive live platform configuration or viewer-effect testing.
 3. Commit/push approval was received and the reviewed source is in draft PR #1. Await passing Windows/Linux CI on the exact selected source SHA; merge/release approval remains separate. This document does not itself authorize publishing.
 4. Publish the app and independent module releases, then verify downloaded checksums and catalogue entries. Recheck tag availability immediately before doing so.
 5. Any later production cutover must use fresh backups, a consistent archive backup, advance restart notice and Widgets' acknowledged ownership-release procedure where applicable. No timeout-based owner takeover, URL rewrite, auto-created phone card or real viewer-effect test is implied.
