@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Self Clip Shoutouts</title><link rel="stylesheet" href="styles.css"></head><body><main>
+<h1>Self Clip Shoutouts</h1><p id="connection">Connecting to Streamer.bot…</p><p>Play an unused clip from your connected broadcaster account. The saved cycle starts over when its available clips have all been used.</p>
+<p id="feedback" role="status"></p><section><h2>Your clips</h2><p id="summary">Import and initialize the Self Clips actions, then refresh your clips.</p><p id="last"></p><p id="error" class="error"></p>
+<div class="buttons"><button id="refresh">Refresh own clips</button><button id="play">Play next self clip</button><button id="stop">Stop self clip</button></div>
+<p>Playback uses Shoutout Clips’ saved layout, mute and duration limit. Allow that player in Overlay Visibility and keep your normal overlay open. No chat message or official Twitch shoutout is sent.</p></section>
+<section><h2>Cycle history</h2><p>A clip counts as used when the clip player accepts its request. Remote playback and audible OBS output are not guaranteed. If it failed to show, return it to the unused pool.</p>
+<div class="buttons"><button id="return">Return last clip to unused</button><button id="resolve">Check pending request</button><button id="skip">Skip unconfirmed selection</button></div>
+<p>Unconfirmed requests do not replay automatically. Check the player first; skipping marks that selection used without sending another playback request.</p>
+<p id="page-status"></p><div class="buttons"><button id="previous">Previous clips</button><button id="next">Next clips</button></div><table><thead><tr><th>Clip</th><th>This cycle</th></tr></thead><tbody id="clips"></tbody></table></section>
+<p>Phone Deck discovers these controls. Add cards explicitly in its editor; existing cards stay unchanged.</p>
+</main><script src="../../universal-dock/shared/streamerbot-transport.js"></script><script src="app.js"></script></body></html>

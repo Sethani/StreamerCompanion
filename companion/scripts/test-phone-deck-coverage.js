@@ -1,11 +1,12 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),schema=require('../../modules/phone-deck/service/provider-schema');
 const expected={
+ 'brb-rotation':['start','stop','toggle','refresh','clear-pending','status'],
  archipelago:['show','hide','refresh','wake','status'], 'bouncing-avatar':['status'], 'audio-routing':['toggle','status'], cameras:['main-mode','secondary-mode','secondary-video','assign-guest','status'],
  'chat-core':['status'], 'chat-routing':['bot-message'], 'controller-input':['show','hide','status'], countdown:['start','preset-3','preset-5','custom','configure','pause','resume','clear','status'],
  'embedded-widgets':['status'], 'local-ai':['status'], 'named-timers':['create','status'], 'phone-deck':['title','category','custom-action'], 'pokemon-encounters':['clear','status'], reactive:['show-guest','hide-guest'],
  'redeem-checklist':['complete','refund','status'], reminders:['add','complete','status'], 'scene-bindings':['apply-link','status'], 'shoutout-clips':['play','play-input','stop','status'],
- 'sound-player':['play','play-picker','play-pool','stop','volume','status'], 'source-modules':['set-mode'], spotify:['resume','pause','toggle','next','previous','volume','volume-preset','status'], 'stream-launch':['go-live','progress'], video:['play','stop','status'], 'walk-ons':['test','test-picker','stop','reset','status'],wheel:['spin','clear','status']
+ 'self-clips':['play-next','refresh','return-last','resolve','skip-pending','stop','status'], 'sound-player':['play','play-picker','play-pool','stop','volume','status'], 'source-modules':['set-mode'], spotify:['resume','pause','toggle','next','previous','volume','volume-preset','status'], 'stream-launch':['go-live','progress'], video:['play','stop','status'], 'walk-ons':['test','test-picker','stop','reset','status'],wheel:['spin','clear','status']
 };
 const excluded={'chat-archive':'Private history management remains in its local dock; no phone data/history exposure.','universal-dock':'Desktop/OBS navigation foundation; no additional phone action.','universal-overlay':'Shared renderer foundation; individual owners expose their controls.','update-probe':'Installation/update test utility; no stream operation.'};
 function inventory(){const root=path.resolve(__dirname,'../../modules');return fs.readdirSync(root).filter(id=>fs.existsSync(path.join(root,id,'module.json'))).sort().map(id=>JSON.parse(fs.readFileSync(path.join(root,id,'module.json'),'utf8')));}

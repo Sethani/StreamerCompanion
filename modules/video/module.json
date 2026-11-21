@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "video",
   "name": "Video Player",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "description": "Play local videos with adjustable placement, sound and optional titles.",
   "configurationRequired": false,
   "documentation": "README.md",

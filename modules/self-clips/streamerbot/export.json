@@ -1,0 +1,401 @@
+{
+  "meta": {
+    "name": "Self Clip Shoutouts",
+    "author": "Sethani",
+    "version": "1.0.0",
+    "description": "Select unused clips from the connected broadcaster and reuse the clip player.",
+    "autoRunAction": null,
+    "minimumVersion": null
+  },
+  "data": {
+    "actions": [
+      {
+        "id": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Engine",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "name": "Execute",
+            "description": "Owns account-scoped clip catalogue, persistent selection cycles and request recovery.",
+            "references": [
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\mscorlib.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.dll",
+              "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Core.dll",
+              ".\\Newtonsoft.Json.dll",
+              ".\\Twitch.Common.dll",
+              ".\\Streamer.bot.Plugin.Interface.dll"
+            ],
+            "precompile": false,
+            "delayStart": false,
+            "saveResultToVariable": false,
+            "saveToVariable": "",
+            "id": "33efb536-4163-48df-bd7c-b271d575786f",
+            "weight": 0,
+            "type": 99999,
+            "parentId": null,
+            "enabled": true,
+            "index": 0,
+            "sourceFile": "self-clips-engine.cs"
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "afc4fc85-cac6-4f64-8550-7d375f53c760",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Initialize",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [
+          {
+            "id": "7f026d9d-4cb4-4a73-b02a-74a0a41f9f63",
+            "type": 706,
+            "enabled": true,
+            "exclusions": []
+          }
+        ],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "initialize",
+            "autoType": false,
+            "id": "e1b59508-e04c-4c16-98b7-36e6b08c794a",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "1afff59e-ac52-484f-a439-284edc3ba739",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "2f235cf8-9096-4cab-9063-6acfa8df16b2",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Health",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "health",
+            "autoType": false,
+            "id": "d73e938b-2d6f-4566-b546-ffa3aba28346",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "50c90737-8c98-4d5d-b8cc-c4bce8f01f9f",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "2359cb56-a39a-4905-8d72-ac3aa7285314",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Refresh",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "refresh",
+            "autoType": false,
+            "id": "1386b604-35eb-478b-988a-ce69af1a5d98",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "c3739ba1-4c69-465b-8ca4-f8d83abea80e",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "aad8e777-3961-4827-b275-25ad66f84111",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Play Next",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "play next",
+            "autoType": false,
+            "id": "6e05e1c9-55f5-436f-8315-7b1c4dccf084",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "fd8695ec-1468-4f25-8689-7e7f34978455",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "6d01033f-b41a-4c84-bc6a-999fe08ae3bc",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Return Last",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "return last",
+            "autoType": false,
+            "id": "e4171690-1731-4983-a90e-464a26c79029",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "48a2ea88-2950-472d-88df-88dd3360b7ef",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "2a6ee0ab-4f59-47b1-8691-74874fa1f57f",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Resolve Pending",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "resolve pending",
+            "autoType": false,
+            "id": "b3ea3693-de1a-475e-9d40-d782333ccaa9",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "572c680e-5f25-419e-a5d8-981c59425409",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "bd1ed943-50ae-417f-9e4e-5d65dd12c030",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Skip Pending",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "skip pending",
+            "autoType": false,
+            "id": "29aae05f-5951-48fc-86d8-4036ba4185d8",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "bdd5df38-cae8-4777-8fa0-078140429927",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "68fc6c25-3c1f-459d-9542-1b649d983419",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Stop",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "stop",
+            "autoType": false,
+            "id": "eeb3c287-e880-495d-8d3e-38ceb9580cc9",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "a83f8942-17d1-4da9-a552-915675f81515",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      },
+      {
+        "id": "d9652a36-e95f-45c7-8b18-a2c71852ae38",
+        "queue": null,
+        "enabled": true,
+        "excludeFromHistory": false,
+        "excludeFromPending": false,
+        "name": "Self Clips - Show Clips",
+        "group": "Self Clip Shoutouts",
+        "alwaysRun": false,
+        "randomAction": false,
+        "concurrent": false,
+        "triggers": [],
+        "subActions": [
+          {
+            "variableName": "selfClipsMode",
+            "value": "show clips",
+            "autoType": false,
+            "id": "00673283-054c-45e7-beac-df4ee582a4b3",
+            "weight": 0,
+            "type": 123,
+            "parentId": null,
+            "enabled": true,
+            "index": 0
+          },
+          {
+            "actionId": "e0f0f7c9-f587-4a4e-9edc-759af85a780d",
+            "runImmedately": true,
+            "id": "42b4e4b8-f34f-4e2a-9197-a19a89957987",
+            "weight": 0,
+            "type": 4,
+            "parentId": null,
+            "enabled": true,
+            "index": 1
+          }
+        ],
+        "collapsedGroups": []
+      }
+    ],
+    "queues": [],
+    "commands": [],
+    "websocketServers": [],
+    "websocketClients": [],
+    "timers": []
+  },
+  "version": 24,
+  "exportedFrom": "1.0.7",
+  "minimumVersion": "1.0.0-alpha.1"
+}

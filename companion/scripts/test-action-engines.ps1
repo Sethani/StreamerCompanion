@@ -151,7 +151,7 @@ Run-Engine $video @{ videoMode = 'play' }
 Assert-True ($video.CPH.Globals['portable.video.state'] -eq $before) 'Play without a registered ID must not choose personal fallback media'
 Run-Engine $video @{ videoMode = 'play'; id = 'companion'; title = 'Synthetic title' }
 $state = $video.CPH.Globals['portable.video.state'] | ConvertFrom-Json
-Assert-True ($state.payload.current.visible -and $state.payload.moduleVersion -eq '2.3.0') 'Video must enter current playback state'
+Assert-True ($state.payload.current.visible -and $state.payload.moduleVersion -eq '2.5.0') 'Video must enter current playback state'
 $start = $state.payload.current.startedAtMs
 Run-Engine $video @{ videoMode = 'stop'; startedAtMs = ($start - 1).ToString() }
 $state = $video.CPH.Globals['portable.video.state'] | ConvertFrom-Json
@@ -499,3 +499,6 @@ Write-Output 'Actual Shoutout Clips C# passed: saved layout/mute/title preservat
 & (Join-Path $PSScriptRoot 'test-redeem-checklist-engine.ps1')
 & (Join-Path $PSScriptRoot 'test-phone-backlog-engines.ps1')
 & (Join-Path $PSScriptRoot 'test-sound-player-engines.ps1')
+& (Join-Path $PSScriptRoot 'test-self-clips-engines.ps1')
+
+& (Join-Path $PSScriptRoot 'test-brb-engines.ps1')

@@ -10,9 +10,9 @@ try {
   const registry = new CompanionRegistry({ dataDirectory: path.join(temporary, 'modules') });
   for (const entry of catalog.modules) await registry.install(path.join(temporary, 'packages', path.basename(new URL(entry.package.url).pathname)));
   let developerTools = false; const help = new HelpGuides(registry, () => developerTools);
-  assert.equal(help.index().length, 29, 'First-run plus 27 user modules; Update Probe is developer-only');
+  assert.equal(help.index().length, 31, 'First-run plus 30 user modules; Update Probe is developer-only');
   const engineering = registry.manifests().filter(m => m.manifest.developerDocumentation);
-  assert.equal(engineering.length, 27, 'All reviewed engineering material is packaged separately; Universal Dock needs no engineering guide');
+  assert.equal(engineering.length, 29, 'All reviewed engineering material is packaged separately; Universal Dock needs no engineering guide');
   for (const item of engineering) {
     assert.throws(() => help.read('developer:' + item.manifest.id), /unavailable/);
     const user = help.read(item.manifest.id);
@@ -34,7 +34,7 @@ try {
     assert.ok(help.read('developer:' + id).markdown.length > 20);
     assert.equal(help.read(id).links['DEVELOPMENT.md'], 'developer:' + id);
   }
-  console.log('Guide packages passed: all 29 packages, 27 separate engineering guides, gated direct reads/links, retained recovery/backup/privacy/notices/provider limitations and safe preview instructions.');
+  console.log('Guide packages passed: all 31 packages, 29 separate engineering guides, gated direct reads/links, retained recovery/backup/privacy/notices/provider limitations and safe preview instructions.');
 } finally { assert.ok(path.resolve(temporary).startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(temporary, { recursive: true, force: true }); }
 
 }

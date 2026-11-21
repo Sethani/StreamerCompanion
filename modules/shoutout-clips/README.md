@@ -2,9 +2,11 @@
 
 Play a Twitch clip you select in the shared stream overlay. This module is the clip player: channel clip lookup, chat messages, official Twitch shoutouts and optional AI wording belong to separate caller automation.
 
+The2.2.0 candidate adds correlated, deduplicated acceptance for [Self Clip Shoutouts](../self-clips/README.md). Import its updated native actions when adopting that integration; the older player does not implement its acceptance protocol. Existing manual callers, action IDs and saved layout/mute/duration settings are preserved.
+
 ## Set up the player
 
-1. Connect Companion to Streamer.bot's local WebSocket server. Install Shoutout Clips from **Catalogue**, expand its **Installed** row and choose **Import into Streamer.bot…** to import the six supplied actions. Back up Streamer.bot before replacing imports. Existing current imports need no reimport for this guide patch.
+1. Connect Companion to Streamer.bot's local WebSocket server. Install Shoutout Clips from **Catalogue**, expand its **Installed** row and choose **Import into Streamer.bot…** to import the six supplied actions. Back up Streamer.bot before replacing imports. Version 2.2.1 requires an updated native import and initialization for fractional clip timing and Self Clip Shoutouts support.
 2. Choose **Open controls**, or select Shoutout Clips under Media in [Universal Dock](../universal-dock/README.md). No separate service is needed.
 3. Under **Clip player**, choose Player, Maximum duration (seconds) and Muted. Configure Position and size and Title bar as desired, then **Save settings**. Reset buttons change the draft; save to apply those defaults.
 4. Use the existing [Universal Overlay](../universal-overlay/README.md) source. In [Overlay Visibility](../source-modules/README.md), allow Shoutout Clips in the intended scenes. The internal routing ID stays shoutoutclip; do not add a duplicate clip source.
@@ -40,3 +42,5 @@ Twitch and MustachedManiac players load remotely; their code, clips and media ar
 The retained mature-content-compatible mode uses the existing MustachedManiac hosted player with `clipId` and `platform=obs`. Its mute behavior is provider-controlled: the legacy integration has no verified mute parameter for this mode. Use Twitch embed when the saved mute setting is required. External player/provider terms continue to apply.
 
 First-party source: Sethani, MIT. No external player code or media assets are included. Removing this module does not delete Streamer.bot state, private adapters or session lists.
+
+Timing fix in 2.2.1: numeric or invariant-decimal fractional milliseconds are rounded up within the saved duration limit, rather than falling back to that limit. Import the updated native actions and initialize while idle.

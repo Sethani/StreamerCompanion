@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "shoutout-clips",
   "name": "Shoutout Clips",
-  "version": "2.1.3",
+  "version": "2.2.1",
   "description": "Play selected Twitch clips with saved duration, mute, layout and title styling.",
   "author": "Sethani",
   "license": "MIT",

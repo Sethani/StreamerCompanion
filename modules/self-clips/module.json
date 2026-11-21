@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 2,
+  "id": "self-clips",
+  "name": "Self Clip Shoutouts",
+  "version": "1.0.1",
+  "description": "Play your clips without repeats, with saved cycle history and phone controls.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "developerDocumentation": "DEVELOPMENT.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "minimumVersion": "1.0.7",
+    "requiredActions": [
+      "Self Clips - Engine",
+      "Self Clips - Initialize",
+      "Self Clips - Health",
+      "Self Clips - Refresh",
+      "Self Clips - Play Next",
+      "Self Clips - Return Last",
+      "Self Clips - Resolve Pending",
+      "Self Clips - Skip Pending",
+      "Self Clips - Stop",
+      "Self Clips - Show Clips"
+    ],
+    "importFile": "streamerbot/self-clips.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.4",
+      "shoutout-clips": "^2.2.1"
+    },
+    "optionalModules": {
+      "phone-deck": "^2.0.5"
+    },
+    "capabilities": {},
+    "companion": ">=1.4.1"
+  },
+  "web": {
+    "root": "web"
+  },
+  "ui": {
+    "id": "self-clips",
+    "name": "Self Clip Shoutouts",
+    "category": "Media",
+    "order": 21,
+    "dockPage": "/self-clips/index.html",
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [
+      "Self Clips - Initialize",
+      "Self Clips - Health",
+      "Self Clips - Refresh",
+      "Self Clips - Play Next",
+      "Self Clips - Return Last",
+      "Self Clips - Resolve Pending",
+      "Self Clips - Skip Pending",
+      "Self Clips - Stop",
+      "Self Clips - Show Clips"
+    ],
+    "dependencies": [
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [],
+    "settings": [],
+    "tests": [],
+    "transport": {
+      "feature": "selfClip",
+      "stateKey": "portable.selfClips.state",
+      "actionPrefix": "Self Clips"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.selfClips.state",
+        "fields": {
+          "phoneDeckVersion": "payload.phoneDeckVersion",
+          "cycle": "payload.cycle",
+          "eligibleCount": "payload.eligibleCount",
+          "usedCount": "payload.usedCount",
+          "remainingCount": "payload.remainingCount",
+          "lastTitle": "payload.lastTitle",
+          "lastStatus": "payload.lastStatus",
+          "lastError": "payload.lastError",
+          "pendingRequestId": "payload.pendingRequestId"
+        },
+        "ack": {
+          "path": "payload.phoneDeckResults",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "actions": {
+        "play-next": {
+          "id": "aad8e777-3961-4827-b275-25ad66f84111",
+          "args": {}
+        },
+        "refresh": {
+          "id": "2359cb56-a39a-4905-8d72-ac3aa7285314",
+          "args": {}
+        },
+        "return-last": {
+          "id": "6d01033f-b41a-4c84-bc6a-999fe08ae3bc",
+          "args": {}
+        },
+        "resolve": {
+          "id": "2a6ee0ab-4f59-47b1-8691-74874fa1f57f",
+          "args": {}
+        },
+        "skip-pending": {
+          "id": "bd1ed943-50ae-417f-9e4e-5d65dd12c030",
+          "args": {}
+        },
+        "stop": {
+          "id": "68fc6c25-3c1f-459d-9542-1b649d983419",
+          "args": {}
+        }
+      },
+      "controls": [
+        {
+          "id": "play-next",
+          "name": "Play next self clip",
+          "kind": "button",
+          "action": "play-next",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "refresh",
+          "name": "Refresh own clips",
+          "kind": "button",
+          "action": "refresh",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "return-last",
+          "name": "Return last clip to unused",
+          "kind": "button",
+          "action": "return-last",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "confirm": true
+        },
+        {
+          "id": "resolve",
+          "name": "Check pending request",
+          "kind": "button",
+          "action": "resolve",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "skip-pending",
+          "name": "Skip unconfirmed selection",
+          "kind": "button",
+          "action": "skip-pending",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "confirm": true
+        },
+        {
+          "id": "stop",
+          "name": "Stop self clip",
+          "kind": "button",
+          "action": "stop",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "status",
+          "name": "Self clip cycle status",
+          "kind": "widget",
+          "display": [
+            "cycle",
+            "eligibleCount",
+            "usedCount",
+            "remainingCount",
+            "lastTitle",
+            "lastStatus",
+            "lastError"
+          ],
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

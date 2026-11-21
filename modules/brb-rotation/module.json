@@ -1,0 +1,205 @@
+{
+  "schemaVersion": 2,
+  "id": "brb-rotation",
+  "name": "BRB Rotation",
+  "version": "1.0.1",
+  "description": "Mix selected videos, followed-channel clips and self clips until you return.",
+  "author": "Sethani",
+  "license": "MIT",
+  "documentation": "README.md",
+  "developerDocumentation": "DEVELOPMENT.md",
+  "configurationRequired": false,
+  "streamerbot": {
+    "minimumVersion": "1.0.7",
+    "requiredActions": [
+      "BRB - Engine",
+      "BRB - Initialize",
+      "BRB - Health",
+      "BRB - Configure",
+      "BRB - Refresh",
+      "BRB - Start",
+      "BRB - Stop",
+      "BRB - Toggle",
+      "BRB - Clear Pending",
+      "BRB - Tick",
+      "BRB - Command Start",
+      "BRB - Command Stop"
+    ],
+    "importFile": "streamerbot/brb-rotation.sb"
+  },
+  "dependencies": {
+    "modules": {
+      "universal-dock": "^1.1.4",
+      "video": "^2.5.0",
+      "self-clips": "^1.0.1",
+      "shoutout-clips": "^2.2.1"
+    },
+    "optionalModules": {
+      "phone-deck": "^2.0.5"
+    },
+    "capabilities": {},
+    "companion": ">=1.4.1"
+  },
+  "web": {
+    "root": "web"
+  },
+  "ui": {
+    "id": "brb-rotation",
+    "name": "BRB Rotation",
+    "category": "Media",
+    "order": 22,
+    "dockPage": "/brb/index.html",
+    "ownership": "streamerbot",
+    "overlays": [],
+    "actions": [
+      "BRB - Initialize",
+      "BRB - Health",
+      "BRB - Configure",
+      "BRB - Refresh",
+      "BRB - Start",
+      "BRB - Stop",
+      "BRB - Toggle",
+      "BRB - Clear Pending",
+      "BRB - Tick",
+      "BRB - Command Start",
+      "BRB - Command Stop"
+    ],
+    "dependencies": [
+      "streamerbot-websocket"
+    ],
+    "optionalDependencies": [],
+    "settings": [],
+    "tests": [],
+    "transport": {
+      "feature": "brb",
+      "stateKey": "portable.brb.state",
+      "actionPrefix": "BRB"
+    },
+    "phoneDeck": {
+      "schemaVersion": 1,
+      "owner": {
+        "transport": "streamerbot"
+      },
+      "state": {
+        "global": "portable.brb.state",
+        "fields": {
+          "phoneDeckVersion": "payload.phoneDeckVersion",
+          "active": "payload.active",
+          "status": "payload.status",
+          "error": "payload.error",
+          "currentSource": "payload.currentSource",
+          "followedCached": "payload.followedCached",
+          "refreshRemaining": "payload.refreshRemaining",
+          "pending": "payload.pending"
+        },
+        "ack": {
+          "path": "payload.phoneDeckResults",
+          "requestId": "$key",
+          "status": "status"
+        }
+      },
+      "actions": {
+        "start": {
+          "id": "1f6f9123-a82b-459b-946d-6379beda9922",
+          "args": {}
+        },
+        "stop": {
+          "id": "4e8bdf5e-1968-4963-ae96-670c7df3b54e",
+          "args": {}
+        },
+        "toggle": {
+          "id": "931bca1a-7218-4b50-b081-8a3fd24ca8e4",
+          "args": {}
+        },
+        "refresh": {
+          "id": "84f59952-c395-4e36-9cd9-513101dde057",
+          "args": {}
+        },
+        "clear-pending": {
+          "id": "06c0cb55-243f-4e2e-96a2-28874ce10f38",
+          "args": {}
+        }
+      },
+      "controls": [
+        {
+          "id": "start",
+          "name": "Start BRB rotation",
+          "kind": "button",
+          "action": "start",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "stop",
+          "name": "Stop BRB rotation",
+          "kind": "button",
+          "action": "stop",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "toggle",
+          "name": "Toggle BRB rotation",
+          "kind": "button",
+          "action": "toggle",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "refresh",
+          "name": "Refresh followed clips",
+          "kind": "button",
+          "action": "refresh",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ]
+        },
+        {
+          "id": "clear-pending",
+          "name": "Clear unconfirmed BRB ownership",
+          "kind": "button",
+          "action": "clear-pending",
+          "fields": [],
+          "prerequisites": [
+            {
+              "field": "phoneDeckVersion",
+              "equals": 1
+            }
+          ],
+          "confirm": true
+        },
+        {
+          "id": "status",
+          "name": "BRB rotation status",
+          "kind": "widget",
+          "display": [
+            "active",
+            "status",
+            "currentSource",
+            "error"
+          ],
+          "fields": []
+        }
+      ]
+    }
+  }
+}
