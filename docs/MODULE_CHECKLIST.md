@@ -88,3 +88,7 @@ Phone Deck 2.0.4 is published and installed with event-fed OBS state, scoped str
 Companion [v1.4.1-preview.1](https://github.com/Sethani/StreamerCompanion/releases/tag/v1.4.1-preview.1) and all29 independent module updates are published from CI-passed merge f6e80c64d5354ccbebfa53aa1e7270a365865514. App packaged desktop acceptance passed; official app/module downloads and checksums, all29 catalogue versions/source refs and preservation of existing entries were verified. See [release record](polish-release-candidate.md) and [polish checklist](mvp-usability-polish-checklist.md).
 
 Publication did not install or restart anything in the running setup. Universal Dock1.1.4 requires Companion>=1.4.1; Sound Player/Walk Ons retain their separately reviewed functional import/ownership plan. Archive rollback to a pre-schema2 module requires its compatible database backup. Existing source URLs, private settings, phone pairing/cards and Widgets ownership remain unchanged. Production adoption remains a separate backed-up operation; do not rerun historical one-shot adoption helpers.
+
+## Additional clip/media releases — November 21, 2026
+
+Self Clip Shoutouts 1.0.1 and BRB Rotation 1.0.1 are published, alongside Shoutout Clips 2.2.1 and Video Player 2.5.0. Native setup and corrected playback were operator-accepted. See [release review and verified publications](clip-rotation-release.md) for imports, timer setup, checksums, CI provenance and Phone Deck acceptance limits. Companion remains 1.4.1; the catalogue now has 31 independent packages.
