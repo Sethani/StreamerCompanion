@@ -1,3 +1,16 @@
+# Self Clip Shoutouts and BRB Rotation — November 21, 2026
+
+Independent module releases; Companion remains at 1.4.1.
+
+- **Self Clip Shoutouts 1.0.1:** refresh your own Twitch clips and play unused selections through the existing player. Account-scoped cycles/history survive restarts, with explicit recovery and optional Phone Deck controls. Actual clip timings avoid waiting for the player maximum.
+- **BRB Rotation 1.0.1:** mix selected registered videos, followed-channel clips and self clips by item count. `!brb` starts and `!back` stops; Phone Deck shares Start/Stop/Toggle/status. Playback is independent of scenes. Reuses Auto Shoutouts' follow/exclusion lists and the existing self-clip history.
+- **Shoutout Clips 2.2.1:** correlated busy-safe playback for the new callers; numeric/fractional clip milliseconds are rounded correctly instead of falling back to the configured maximum. Existing layout/mute/duration settings and action IDs remain.
+- **Video Player 2.5.0:** correlated, deduplicated BRB acceptance and guarded playback identities preserve existing manual controls/settings.
+
+Back up Streamer.bot and update/import Video Player, Shoutout Clips, Self Clip Shoutouts and BRB Rotation as applicable. Initialize idle players, refresh own/followed clips and save a mix. Native imports may leave **BRB rotation tick** disabled: enable it under **Services → Timers** (Repeat, 2 seconds, Lines 0). Resolve any existing `!brb`/`!back` command conflicts in the import preview. No new OBS source or Companion restart is required. Keep the existing Video/Shoutout Clips overlay visibility rules enabled where you want media to appear.
+
+No cards are added automatically. Unknown playback requests never retry automatically; player acceptance does not guarantee remote loading or audible output. The BRB follow adapter uses existing Auto Shoutouts globals and caches up to 20 clips per followed channel.
+
 ## Companion 1.4.1 — usability polish preview
 
 Built-in Help provides getting-started instructions and module configuration guides in Companion and Universal Dock. Installed modules show clearer names, categories and optional integrations. Developer tools and engineering documentation stay hidden unless explicitly enabled.

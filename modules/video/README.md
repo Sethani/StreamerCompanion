@@ -89,3 +89,5 @@ Streamer.bot references: [Set Argument](https://docs.streamer.bot/api/sub-action
 Back up Streamer.bot and Companion's data profile before uninstall or rollback. Package installation preserves copied media and saved settings; it does not modify OBS sources. Restore compatible browser packages, native actions and intentionally changed settings together. Removing package code does not erase imported actions, globals or private media.
 
 Video 2.3.0 introduced request-bound acceptance for Walk Ons and required updated native actions. The later category, guide and read-only ID changes keep that native action data unchanged.
+
+BRB Rotation requires Video Player 2.5.0's updated native import and initialization. Its optional correlated request protocol rejects busy playback and preserves accepted request IDs across configuration and Stop. Existing manual Video actions retain their identities and settings.

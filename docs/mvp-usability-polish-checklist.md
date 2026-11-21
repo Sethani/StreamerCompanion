@@ -8,7 +8,9 @@ Agreed November 15, 2026. This document is the working plan for the polish phase
 
 **Current phase:** Publication complete November20: Companion v1.4.1-preview.1 and all29 independent module releases published from merged source f6e80c64d5354ccbebfa53aa1e7270a365865514. Main Windows/Linux CI and app release acceptance passed; all actual downloads/checksums and final catalogue entries verified. See polish-release-candidate.md. Production adoption was not performed; the running local previews and settings remain unchanged.
 
-**Next bounded session:** Agree whether to adopt any public downloads or begin a scheduled backlog feature. Publication approval did not request a production cutover. Any adoption needs fresh backups, explicit restart notice and applicable Widgets ownership handoff; retain current OBS URLs/phone settings and the installed noninheriting native launcher. PR #1 is merged and the planned walkthrough is complete. Historical r5 candidates remain local comparison evidence; official downloads now have verified published checksums.
+**Active publication checkpoint:** Operator accepted corrected BRB playback/return test and explicitly authorized publishing all accumulated changes November21. Preparing source review/CI and independent Shoutout Clips2.2.1, Video2.5.0, Self Clips1.0.1 and BRB Rotation1.0.1 releases. Companion host remains1.4.1; no new app build needed. See clip-rotation-release.md for scope, native imports/timer setup, evidence and limitations. Preserve the running setup and native launcher; publication itself requires no restart.
+
+**Official adoption complete November20:** Operator requested the cutover and confirmed OBS and all views closed. Published app installed at the existing Streamer.bot launch path using the same profile; Dock1.1.4 adopted, other28 modules already matched official bytes. Full stopped-profile/app and consistent Archive backups retained. All29 modules Ready, all29 official payloads verified,146 protected settings/media files and243 Archive messages preserved, phone pairing/TLS/cards and native actions/startup retained. OBS reopened with16 browser sources unchanged and one active Widgets owner; streaming/recording stopped. Backlog prioritization remains undecided.
 
 **Current walkthrough checkpoint:** Head a366b73a83edbd06780279c0b48925561d21d8a3 passed Windows/Linux CI. November20 clean-profile packaged setup passed with actual candidate packages and simulated catalogue/native transport. Operator then confirmed all requested OBS Custom Browser Docks and Browser Source property labels. This acceptance does not claim live Twitch redemptions, actual fresh-profile native imports or real playback tests; the scoped automated/native/operator evidence remains distinguished.
 
@@ -266,12 +268,12 @@ Additional Pass 3 tasks:
 - [x] Preserve native data for guide/label-only updates; no blanket reimport requirement. Sound/Walk Ons functional adoption retains its separate reviewed backup/import plan. Private native shutdown repair is separate from public packages.
 - [x] Review complete public files and generated packages for private content, correct links and third-party notices. November20 audit/rebuild comparison passed; no claim that automated patterns detect every possible secret.
 - [x] Verify actual app/module downloads, official checksums, all29 catalogue versions/source refs and existing entry preservation; record exact source/publication provenance, November20.
-- [ ] Verify installed package members if adopting official downloads; publication alone does not replace the running local preview.
-- [ ] Back up application/private settings and the chat database correctly before adoption; do not copy a live SQLite file without accounting for its WAL.
-- [ ] Announce any required Companion/service restart. Preserve Widgets' acknowledged ownership-release discipline and enabled preference.
-- [ ] Preserve private settings, native action identities, phone pairing/TLS/cards, favorites, automatic-start choices and existing OBS source settings.
-- [ ] Leave existing OBS URLs untouched; adopting a newly generated chatbox URL is an explicit user action.
-- [ ] Verify production readiness after adoption without repeating accepted physical camera/widget tests or sending real viewer effects.
+- [x] Verify the official installed app tree/ASAR and all29 module payloads; November20 cutover passed.
+- [x] Back up the old app, full stopped profile and consistent Archive snapshot before replacement; WAL/integrity/table-content checks passed.
+- [x] Announce Companion/service restart and complete acknowledged Widgets owner release under fresh closed-view confirmation; restore original enabled preference.
+- [x] Preserve private settings, all232 native actions/startup code, phone pairing/TLS/cards, favorites, automatic-start choices and existing OBS source settings; November20 verification passed.
+- [x] Leave all16 existing OBS browser-source settings/URLs untouched; no generated chatbox URL adopted.
+- [x] Verify post-adoption29Ready, original services restored, OBS connected/off-stream/not recording and one active Widgets owner without real viewer-effect tests or repeated hardware acceptance.
 - [x] Record publication completion, provenance, limitations and existing rollback/adoption requirements in this checklist, module checklist and private handover. Production adoption gates above remain open.
 
 ## Follow-up — Restore normalized Archive profiles
@@ -286,9 +288,25 @@ Additional Pass 3 tasks:
 - [x] Correct the display label for gender-qualified encounters: Shinx (F) should display Shinx while retaining female artwork/gender metadata. November18 read-only check confirmed female parsing and cached female artwork are correct, but metadata displayName reuses the original label. Preserve shiny/regional/form descriptors and Nidoran species distinctions; account for existing cached metadata. Fixed and installed in Pokémon1.7.6, including old cached labels.
 - [x] Operator confirms the clean encounter name and correct female artwork. Accepted November20,2026.
 
+## Feature backlog review — November 20, 2026
+
+Reassessment requested after publication. This is a planning proposal; no new priority order or feature implementation is approved by this review alone. Official-download adoption is maintenance and remains separate from choosing new feature work.
+
+| Workstream | Features | Suggested implementation boundary |
+| --- | --- | --- |
+| Media / BRB | Self clip shoutouts, then weighted BRB rotation | Add clip selection and persistent cycle history while reusing the existing Shoutout Clips player; BRB consumes that selector plus selected Video items and followed-channel clips. Share self-clip history across manual and BRB requests. |
+| Checklist workflow | Personal non-Twitch items, then optional Wheel-result additions | Extend Redeem Checklist with explicit local item kinds and local completion before connecting Wheel events. Preserve real Twitch completion/refund semantics. |
+| Audience participation | Daily check-in; Named Raffles | Independent features. Daily check-in is a contained cumulative day-count feature; raffles can start with named manual rounds, then optional timer/auto-draw integration. Neither depends on the media workstream. |
+
+Proposed next choice if improving BRB is the priority: build self-clip selection/history first, then BRB mixing. For a smaller independent addition, daily check-in is a candidate; for immediate operator workflow improvements, personal checklist items are a candidate. Named Raffles is still active, with no automatic priority based on request age. Ask the operator which workstream matters most before fixing the order.
+
+Scope questions stay with their feature design: check-in command/day boundary; raffle eligibility/entries/draw policy; local item/Wheel mapping; clip eligibility/when playback counts as used; BRB duration, stop/scene behavior, percentage by clip count versus duration and empty-source fallback. Phone Deck remains part of each relevant feature's design and acceptance.
+
+Older deferred ideas: TTRPG tools remain later, voice commands remain lowest priority, Writing Challenge stays parked, and Stream Together stays dropped. Do not silently reactivate them. Existing migration documents' deferred Chat Archive wording is historical: Archive has since been implemented, repaired and published.
+
 ## Additional feature backlog — Named Raffles
 
-Added at the operator's request November 17, 2026. Implementation order is not yet assigned; current acceptance tasks and Pass4 remain open.
+Added at the operator's request November 17, 2026. The polish releases are now published; feature implementation order is under review.
 
 - [ ] Add **Named Raffles** with reusable named raffle configurations and independently identifiable running rounds. Support opening/closing entry collection, reviewing entry/status and drawing manually; keep eligibility/deduplication and winner selection explicit.
 - [ ] Keep basic raffles usable independently of timers. Add **optional Named Timers integration** for a timed raffle: associate the exact raffle round with a timer/deadline, close entries when it expires, and optionally draw automatically. Auto draw must be an explicit saved choice, not an effect of ordinary status refresh or loading controls.
@@ -321,22 +339,26 @@ Added at the operator's request November 20, 2026. Planning only; implementation
 
 ## Additional feature backlog — Self clip shoutouts
 
-Added at the operator's request November 20, 2026. Planning only; supplies the self-clip source for BRB rotations below.
+Added at the operator's request November 20, 2026. Local candidate installed; real lookup and operator playback acceptance passed November21. Supplies the self-clip source for future BRB rotations below. Publication remains open.
 
-- [ ] Add a module that gives the operator a clip shoutout on request. Maintain persistent tracking of which eligible clips have and have not been shouted out in the current cycle; select an unused clip until all eligible clips are done, then start a new cycle.
+- [x] Add a module that gives the operator a clip shoutout on request. Maintain persistent tracking of which eligible clips have and have not been shouted out in the current cycle; select an unused clip until all eligible clips are done, then start a new cycle. Synthetic full-cycle/restart checks and operator single-playback acceptance passed.
 - [ ] Share the same selection/history contract with BRB playback so manual self shoutouts and BRB self clips do not independently repeat already-used clips. Define when a clip counts as used, failure/cancellation handling, concurrent requests, newly discovered/deleted clips and restart recovery before implementation.
-- [ ] Reuse existing clip/video playback where appropriate, keeping playback and any chat announcement explicit. Include a Phone Deck request control and cycle/status information without automatically adding cards.
-- [ ] Test complete cycles, cycle reset, changing eligibility, duplicate requests, playback failures and persisted history using synthetic clips.
+- [x] Reuse existing Shoutout Clips playback with explicit requests and no chat announcement. Register Phone Deck request/recovery controls and cycle/status information without automatically adding cards. Native adoption and operator playback accepted; phone-specific human operation remains unverified.
+- [x] Test complete cycles, cycle reset, changing eligibility, duplicate requests, playback failures and persisted history using synthetic clips.
 
 ## Additional feature backlog — BRB promotional clip rotation
 
 Added at the operator's request November 20, 2026. These are promotional clip/video breaks during BRB; Twitch advertising API calls are not part of this request.
 
-- [ ] Add an operator-controlled BRB playback session that mixes three sources: selected items from the Video module, clips from randomly selected people the operator follows, and the operator's own clips through the self clip shoutout module above.
-- [ ] Allow configurable percentages for selected videos, followed-channel clips and self shoutouts. Validate the mix and let zero disable a source; agree whether percentages describe clip selections or playback time. Review followed-channel selection/filtering and empty/unavailable-source fallback during design.
-- [ ] Define how long the break runs, manual start/stop, optional BRB scene integration and behavior when leaving BRB. Coordinate with the existing Video player so sessions do not overlap other playback; settle queue ownership, interruption/resume, audio and end-of-session behavior.
-- [ ] Register Phone Deck start/stop/status controls and suitable saved preset selection. Preserve existing cards; keep starting playback an explicit action.
-- [ ] Test weighted selection, missing sources, unavailable clips, self-cycle sharing, concurrent requests, session stop/scene exit and restart behavior without real promotional playback during automated tests.
+- [x] Implement an operator-controlled BRB playback session mixing selected Video items, followed-channel clips and the operator's own clips through Self Clip Shoutouts. Local candidate installed; native imports and real playback acceptance pending.
+- [x] Implement configurable percentages by clip selections, validation, zero disables and redistribution among eligible sources. Reuse follows/exclusions; explicit staged refresh caches up to20 clips/channel. Full-cache refresh failure preserves previous cache. Native imports/human checks remain pending.
+- [x] Agree mix units: number of clips. Clip duration does not alter the source's selection weight. Show configured mix separately from actual completed playback counts; failures must not be reported as completed plays.
+- [x] Identify the existing followed-channel owner: reuse the Auto Shoutouts followed list and respect its exclusions. Operator explicitly requested this November21. Do not fetch/store a second follow list or run the chat-sending watcher for BRB. Keep manual additions separate from the followed-only pool unless explicitly enabled, and keep BRB playback history separate from first-chat/session shoutout suppression.
+- [x] Agree session control: operator confirmed November21 that BRB playback is an explicit on/off session, independent of the current screen/OBS scene. `!brb` starts; `!back` stops. Phone Deck provides the same controls plus a toggle and shared status. No automatic start/stop or scene switching when changing scenes, no fixed session duration. Repeated Start while active and Stop while inactive are harmless.
+- [x] Implement guarded Video/Shoutout Clips ownership, interruption handling, saved player presentation/audio and stopping only session-owned media. Scene state is never read or changed. Restart disarms the session and retains uncertain intents without replay. Synthetic verification passed; real acceptance pending.
+- [x] Register Phone Deck start/stop/toggle/status and refresh/recovery controls using the same native state as commands and the saved mix. No automatic cards or existing command changes. Existing command JSON conflict inspection found no !brb/!back entries; inspect native import preview as well. Actual phone operation remains pending imports/operator review.
+- [x] Test weighted selection, missing sources, shared self cycles, concurrent requests/ticks, duplicate Start/Stop/Toggle, guarded media takeover, command authorization, UI acknowledgement/confirmation, source refresh failures and inert restart with synthetic media. Separate real command/Phone Deck and audio/visual checks remain pending.
+- [ ] Complete native imports and controlled real BRB command/Phone Deck/player acceptance before marking the feature ready for publication.
 
 ## Checkpoint log
 
@@ -640,3 +662,95 @@ Operator confirmed all requested OBS labels: Docks → Custom Browser Docks with
 Operator explicitly approved publication after confirming the merge. Main Check44729107636 passed Windows/Linux; source tree exactly matches the reviewed PR. App release workflow44729580575 passed source/native/packaging/full desktop acceptance and published v1.4.1-preview.1. Actual app ZIP/official checksum and25first-party host source files verified. Published ZIPec0aff841953cedff02fe32f62a1962c3f15fa6cc532ec419c7dbba1f4f0905f; ASARc85a1216d5236e494fd5122ab8e4d2ece2da812fa3c943b76a2f05dff1a261fd. These are CI-built release hashes, not historical local candidate hashes.
 
 Published29modules serially through the existing independent workflow/global catalogue lock. Each used full source_reff6e80c64d5354ccbebfa53aa1e7270a365865514 and succeeded; actual package plus official checksum matched the prepared candidate, and catalogue version/hash/source ref matched. Final catalogue contains29entries and preserves all existing entries. Private release/run/download receipts retained outside public repository. No production app/module install, native import, restart, OBS URL/settings edit or phone/Widgets change performed. Publication gates complete; production adoption remains separate. Recorded status/provenance in release record, module checklist and private handover.
+
+### November20,2026 — New-feature backlog reassessment proposed
+
+Reviewed the five active requests and older deferred ideas after release publication. Grouped them into Media/BRB (self-clip selector/history before BRB mix), checklist workflow (local items before optional Wheel additions), and audience participation (independent daily check-in and named/manual raffles before timer automation). Existing Shoutout Clips only plays supplied clip IDs; reuse that playback boundary while designing the requested selection/history module. No implementation priority chosen yet; operator value preference should determine the next workstream. Phone Deck retained in feature scopes. TTRPG later/voice lowest/Writing parked/Stream Together dropped stay unchanged. No runtime/package/release change. This planning edit remains local pending the operator's prioritization discussion.
+
+### November20,2026 — Official published build adopted with existing settings
+
+Operator requested the official-build cutover and confirmed OBS closed with no other windows open; that confirmation sufficiently establishes streaming/recording stopped and external views closed. Existing app/profile backups, consistent live Archive snapshot and full stopped-profile backup were retained. Used scoped Widgets disable/release/closed-owner recovery, gracefully closed the exact Companion owner, then replaced the app at its existing launch path. Streamer.bot pointer, startup script and repaired noninheriting native launcher were unchanged. Only Dock1.1.3→1.1.4 required package replacement; other28 already matched official bytes, and no native import was needed.
+
+Published app tree/ASAR and all29 official module payloads verified. All29Ready,146 protected settings/media files unchanged, all243 Archive messages plus user/member/moderation tables preserved, phone pairing/TLS/cards/layout and automatic starts preserved, all232 native actions unchanged. Original Widgets preference restored; OBS reopened normally,16 browser-source settings/URLs unchanged, exactly one active owner, stream/record false. Private receipts/paired rollback app/profile backups retained; no real playback/chat/redeem tests. Adoption checkpoint updates remain local alongside the uncommitted backlog review; no new product source/release change.
+
+### November 20, 2026 — Self Clip Shoutouts candidate installed; native imports pending
+
+Operator selected Self Clip Shoutouts as the next backlog module. Local feature/self-clip-shoutouts source adds per-broadcaster private catalogue/used-ID cycles, explicit refresh, existing-player delegation, persistent pre-dispatch intent, correlated acceptance, no automatic retry, guarded Stop, return-last and pending recovery. Shoutout Clips2.2.0 adds an optional backward-compatible request protocol without changing its web player or existing action IDs. Seven optional Phone Deck controls declared; no cards automatically added. BRB automation is not implemented.
+
+Full npm run check and the complete test-action-engines.ps1 entry point passed. Both engines compile against the installed native interface/model DLLs via Roslyn; synthetic runtime tests cover cycle reset, account/restart preservation, concurrent/duplicate/busy calls, saturated catalogue splits and failures before/after player acceptance. Isolated new-selector and existing-player Electron tests passed; external media requests intercepted. Real Twitch lookup, actual native imports and audible OBS playback are NOT verified by these tests. No host rebuild is required.
+
+Installed only the two tested candidate packages through the existing authorized Companion API after checking OBS absent, no pending phone operation and player idle. Backed up the prior player package, native actions/globals and protected settings privately. Exact installed package payloads, unchanged native actions/player state, protected settings and Phone Deck card config verified. Self Clips reports streamerbot-required; Shoutout Clips reports Ready by existing names but still requires its updated import. No Initialize/play/chat effect, host/service restart, native modification, commit/push/publication or OBS URL change performed.
+
+Artifacts: companion/out/self-clips-candidate/modules. SHA256 self-clips1.0.0 4efc942a287e80dc6d90b69b1ed220b746437050cdb3a2e36690a9c670a2e188; shoutout-clips2.2.0 1ea0a472d65e01b798dfca0ab71fa375cf9871b2d94f5ce7c61c776ec863ef85. Private source/native logs, backups and verification are outside the public repo. Next: operator imports BOTH sets using Companion's import controls, then stopped-player initialization and controlled own-catalogue/playback review. Publication remains separately gated.
+
+### November 21, 2026 — Native imports confirmed; real catalogue refresh passed
+
+Operator confirmed both imports. Native GetActions verified expected IDs/names/enabled entries. Initialized the idle existing player and selector; actual player reports protocol1/version2.2.0 and saved player config is unchanged. First verification sampled before the queued actions completed; corrected the private verification helper to await persisted completion rather than DoAction queue acknowledgement. Completed real native Twitch catalogue refresh for connected broadcaster:81 eligible,0 used,81 remaining,cycle1, no error. No Play/Stop/chat or OBS mutation was sent. Private before/after globals receipts retained outside public repo. Next: operator opens Media → Self Clip Shoutouts, checks catalogue, deliberately plays one clip off-stream and verifies visual/audio behavior plus count change. Real media acceptance remains pending; source candidate remains unpublished.
+
+### November 21, 2026 — Operator playback acceptance passed
+
+Operator responded 'Looks like it worked perfectly' to the requested single-clip visual/audio and 1-used/80-remaining count check. Marked the scoped local playback acceptance and core module implementation complete. Full-cycle/restart guarantees retain synthetic evidence; phone-specific human use, BRB integration and public release are not claimed complete. Documentation only; no further playback, settings changes or publication.
+
+
+### November21, 2026 — BRB followed-channel source clarified
+
+Operator pointed out that Auto Shoutouts already maintains the followed-channel list. Confirmed actual native data/actions.json includes Sync auto shoutout follows, administration actions and watcher using autoShoutoutFollowedLogins / autoShoutoutExcludedLogins; manual and session lists are separate. BRB will reuse this source read-only, respect exclusions and avoid invoking chat effects or changing first-chat session suppression. No native/global/list mutation or playback performed. Existing Video renderer reports guarded ended/error Stop; clip renderer uses guarded expiry, so completion/timeout and cross-player ownership must be explicitly coordinated before queue implementation. Asked whether mix percentages mean item selections or playback time; implementation of selection policy waits for that preference. Existing self-clip release remains unpublished.
+
+### November21, 2026 — BRB mix counts clip selections
+
+Operator confirmed percentages refer to number of clips. Recorded the decision; no duration weighting. Source weights apply to selection opportunities and zero disables a source. Actual playback/completion counts remain separate from configured selection mix. Remaining session controls and player coordination must be settled before live adoption. No runtime or production changes in this checkpoint.
+
+
+### November21, 2026 — BRB command and Phone Deck session controls agreed
+
+Operator requested a toggle controlled with !brb / !back or Phone Deck, unrelated to the screen currently shown. Locked Start/Stop semantics for those commands and shared Phone Deck start/stop/toggle/status controls. Session remains active across scene changes until explicitly stopped; no automatic scene switching or duration cutoff. Repeated Start/Stop must not create duplicate sessions or replay media. Queue/player ownership and restart guards remain implementation work. Documentation and read-only command conflict inspection only; no native trigger, command, phone card or playback mutation.
+
+
+### November21, 2026 — BRB Rotation implemented and candidate installed; native imports pending
+
+Implemented independent native BRB Rotation1.0.0 with explicit Start/Stop/Toggle, broadcaster/moderator !brb/!back commands, two-second native timer, saved whole-number clip-count mix and selected registered video IDs. No scene read/change, chat message, ad API, host rebuild, renderer or service. Uses Auto Shoutouts followed/exclusion globals read-only; explicit staged refresh caches up to20 clips per channel/2,000 channels and replaces the prior cache only after successful completion. Source selection redistributes weights among eligible sources. Own clips delegate to Self Clips and share its existing account-scoped no-repeat history.
+
+Video Player2.5.0 adds an optional correlated busy-reject/dedup acceptance protocol, serialized state and monotonically increasing start IDs; existing action IDs/settings/manual calls preserved. BRB saves dispatch intent before effects, waits on guarded player state/expiry, stops only its saved start identity, halts on manual takeover and never retries unknown acceptance. Ten-minute video watchdog bounds stalled items. Restart/Initialize disarms sessions; Stop resolves saved known ownership, and explicit confirmed clear handles uncertainty without media effects. Six Phone Deck controls registered, including status, with existing cards preserved. One saved mix is shared by all callers.
+
+Full npm run check and test-action-engines.ps1 passed. Additional four-engine tests passed100 selections at50/30/20, redistributed50/20 across70 selections with missing followed source, zero weights, shared self cycles, exclusions, concurrent duplicate toggle/ticks, player takeover/guarded Stop, denied command behavior, invalid config, failed refresh/private saves, post-effect unknown intent, inert restart and watchdog. Roslyn compiled final BRB/Video sources against installed native interface/model DLLs. New BRB browser passed real controls/transport validation, unsaved edit preservation, safe labels, correlated save/start/toggle, pending confirmation, double-click guard and inert reload. Existing Video packaged hidden browser passed actual synthetic media completion, state duplication, routing and reconnect. These tests do not certify real Twitch cache queries, native import/command permission menus, phone operation or audible OBS playback.
+
+After confirming OBS absent, phone idle and both players idle, installed only BRB Rotation1.0.0 and Video2.5.0 packages through authorized Companion API. Exact payloads, unchanged native actions/player states/protected settings/Phone Deck cards verified. Backups/receipts/logs private under output/brb-candidate; actual data/actions.json and available native commands/timers JSON were copied, plus before globals and prior Video package. No BRB native import, Initialize, Start/Stop/playback/chat or phone card mutation was sent. BRB reports streamerbot-required; Video may appear Ready by old action names but still needs its updated native import. Private adopt-brb-candidate.cjs completed: do not rerun blindly.
+
+Artifacts companion/out/brb-candidate/modules. BRB SHA256994550aa59a4fd69178b54bc96c75c112041525c4cc46957fda51365ccfc6ad9; Video SHA25688059ddc9d773946329ef2245cefc935fbbb53d555e5822d2b183677b2cc0319. Source remains local/uncommitted on feature/self-clip-shoutouts alongside accepted Self Clips work and prior documentation changes. No push/PR/public release. Next operator step: import BOTH Video Player and BRB Rotation through Companion, inspect command conflicts in the native preview, then verify compiled versions, initialize idle players and configure/refresh before deliberate playback. Preserve the noninheriting launcher and all Widgets/OBS URLs.
+
+### November21, 2026 — Imports verified; native timer needs enabling
+
+Operator confirmed both imports. GetActions checked IDs/names/enabled state. Video Initialize reports2.5.0/protocol1 and preserves config; BRB initialized stopped with no pending ownership. Self history and Shoutout Clips state unchanged. Native GetCommands shows one enabled !brb and one !back; all six Phone Deck controls have no unavailable reason. Current saved mix34/33/33, no selected videos; three registered videos available. Followed metadata refresh accepted but did not advance within40seconds. Native settings confirms BRB rotation tick imported enabled=false, repeat=true, interval2, lines0. Cancelled stalled refresh through BRB Stop with completed acknowledgement; no media effects. Next operator action: Services → Timers → enable BRB rotation tick. Real refresh/command/phone/playback acceptance remains open. Private receipts output/brb-candidate; do not rerun initialization helper blindly.
+
+
+### November21, 2026 — Enabled BRB timer advances real metadata refresh
+
+Operator enabled BRB rotation tick. Started a fresh metadata-only followed refresh; native timer advanced from112 to111 queued channels with active=false and no error. This confirms actual timer dispatch/native clip lookup; full cache refresh is still running and must be checked on resume. No playback started. Next user preference: percentages for selected videos/followed clips/self clips and which registered videos to include (40Today, DiviWalkon, HydrateOrDiedrate). Do not start or silently choose these settings. Phone/native playback acceptance remains pending.
+
+
+### November21, 2026 — Operator BRB mix saved
+
+Operator requested only HydrateOrDiedrate10%, mostly other-channel clips and occasional self clips. Readback initially showed20/70/10 with correct sole video. Adjusted through native Configure to10% selected video /80% followed clips /10% self, preserving the selected HydrateOrDiedrate ID. Correlated completion and exact saved config verified; active=false. Native refresh continues with65 queued channels at last read, no error; old cache remains empty until staged refresh completes. Do not test playback until refreshRemaining=0 and cache availability is checked, or source redistribution would change the effective mix. No playback sent. Actual command/phone/audio/visual acceptance still pending.
+
+
+### November21, 2026 — Real followed refresh completed
+
+User asked whether progress was real/visible. Two read-only snapshots five seconds apart confirm refreshRemaining=0,112 cached channels,1,929 cached clips, status Followed clips refreshed, no error and active=false. The prior40 remaining was a genuine intermediate snapshot, not a completed cache. Controls show cache status in Media → BRB Rotation → Followed clips and recovery. Saved mix10/80/10 and selected HydrateOrDiedrate remain unchanged; no playback was dispatched. Metadata/native timer acceptance complete; real command/Phone Deck/player acceptance remains pending.
+
+
+### November21, 2026 — Confirmed fractional-duration black waits; timing fix installed
+
+Operator observed clip1 and clip3 ending to prolonged black while clip2 advanced correctly. Read-only native state/cache and log correlation show clip1 metadata9399.999618530273ms ran from14:06:31 to14:07:31 (60seconds); clip2 metadata25000ms ran25seconds; clip3 metadata32599.998474121094ms had the same fractional parsing issue. Native Int32.TryParse rejected fractional arguments and fell back to configured60s maximum. Stopped BRB through its guarded Stop before changes.
+
+Shoutout Clips2.2.1 now reads numeric duration values without locale string conversion, accepts invariant decimal strings, rounds up and clamps to saved bounds; finite validation added. Self Clips1.0.1 stores actual durations on refresh and forwards them, addressing separate maximum-duration waits on own clips. Its Initialize/history remain preserving. BRB1.0.1 only tightens dependencies to the corrected owners; native BRB code/actions unchanged.
+
+Regression tests reproduce exact9.4s/32.6s values, integral25s, Dutch culture, native hide deadlines, own-clip duration forwarding and full BRB followed dispatch. Full npm run check and complete native entrypoint passed; final sources compile against installed native interface. Corrected packages installed through API with backups and exact payload checks. Existing10/80/10 config, followed cache, self history, native actions/player states and phone settings/cards unchanged; no automatic restart or playback. Private receipts output/brb-duration-fix/adoption; completed adoption helper must not be rerun blindly. Package source is local/uncommitted/unpublished. Operator must reimport Shoutout Clips and Self Clip Shoutouts, then initialize player and refresh own timing metadata before deliberate retest. Public/later phone acceptance remains incomplete.
+
+
+### November21, 2026 — Timing-fix native imports verified; ready for controlled retest
+
+Operator confirmed Shoutout Clips/Self Clip Shoutouts reimports. Verified expected action IDs/names/enabled state, initialized idle player and confirmed module2.2.1/durationProtocol1. Real own-clip refresh completed: all81 catalogue clips now carry positive whole-millisecond durations. Compared every account's used IDs and cycle unchanged; player config and complete BRB private mix/cache/session unchanged. BRB remains active=false. No playback was sent. Private before/after receipts output/brb-duration-fix and native-timing-verification.json. Next: operator deliberately uses !brb, inspects several transitions for removal of60-second fallback black waits, then !back; command stop/Phone Deck and real audio/visual acceptance still need confirmation. Source remains unpublished.
+
+### November21, 2026 — Corrected playback accepted; publication authorized
+
+Operator reports 'Works perfectly' after the requested timing-fix transitions/return retest, then explicitly requests publication of everything updated. Recorded scoped real acceptance and release scope: new Self Clip Shoutouts/BRB Rotation, updated Shoutout Clips/Video Player. Phone-specific full manual acceptance remains distinguished from discovery/native synthetic tests. Preparing exact source review and remote Windows/Linux CI before independent module publication; no host rebuild, production restart or extra playback implied.

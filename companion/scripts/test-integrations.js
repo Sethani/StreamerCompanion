@@ -10,21 +10,21 @@ async function main() {
   try {
     const full = buildModules(undefined, { output: path.join(temporary, 'all') });
     const validation = new ModuleCatalog({ directory: temporary, version: '1.3.3' }); validation.validate(full);
-    assert.equal(full.modules.filter(m => m.integrations.phoneDeck).length, 25);
-    assert.equal(full.modules.flatMap(m => m.integrations.phoneDeck?.controls || []).length, 78);
+    assert.equal(full.modules.filter(m => m.integrations.phoneDeck).length, 27);
+    assert.equal(full.modules.flatMap(m => m.integrations.phoneDeck?.controls || []).length, 91);
     assert.equal(JSON.stringify(full.modules.map(m => m.integrations)).includes('apiPrefix'), false);
     const manifests = full.modules.map(m => ({ manifest: JSON.parse(fs.readFileSync(path.join(__dirname, '../../modules', m.id, 'module.json'))) }));
     const phone = manifests.find(m => m.manifest.id === 'phone-deck').manifest;
     const context = { installed: [], catalog: full.modules, version: '1.3.3', capabilities: new Set(['windows', 'powershell', 'embedded-node']), states: new Map() };
     const absent = describe(phone, context);
     assert.equal(absent.required.length, 0, 'Phone Deck must remain OBS-only at its base');
-    assert.equal(absent.optional.length, 24, 'Derive providers from contribution declarations, including uninstalled catalogue providers');
+    assert.equal(absent.optional.length, 26, 'Derive providers from contribution declarations, including uninstalled catalogue providers');
     assert.ok(absent.optional.every(m => m.installedVersion === null && m.compatible === null && m.catalogueOnly));
     assert.ok(absent.external.some(e => e.id === 'obs-websocket' && e.required));
     const legacy = structuredClone(full); for (const entry of legacy.modules) delete entry.integrations;
     validation.validate(legacy);
     const unknown = describe(legacy.modules.find(m => m.id === 'phone-deck'), { ...context, catalog: legacy.modules }, true);
-    assert.equal(unknown.optional.length, 0); assert.equal(unknown.summaryKnown, false); assert.equal(unknown.unknownPhoneDeck, 28);
+    assert.equal(unknown.optional.length, 0); assert.equal(unknown.summaryKnown, false); assert.equal(unknown.unknownPhoneDeck, 30);
     const provider = manifests.find(m => m.manifest.id === 'local-ai');
     const installedContext = { ...context, installed: [provider], states: new Map([['local-ai', { state: 'ready' }]]) };
     const installedPhone = describe(phone, installedContext);
